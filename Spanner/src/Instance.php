@@ -29,7 +29,6 @@ use Google\Cloud\Core\LongRunning\LROTrait;
 use Google\Cloud\Spanner\Admin\Database\V1\DatabaseAdminClient;
 use Google\Cloud\Spanner\Admin\Instance\V1\Instance\State;
 use Google\Cloud\Spanner\Admin\Instance\V1\InstanceAdminClient;
-use Google\Cloud\Spanner\Backup;
 use Google\Cloud\Spanner\Connection\ConnectionInterface;
 use Google\Cloud\Spanner\Connection\IamInstance;
 use Google\Cloud\Spanner\Session\SessionPoolInterface;
@@ -123,6 +122,11 @@ class Instance
     private $iam;
 
     /**
+     * @var array
+     */
+    private $directedReadOptions;
+
+    /**
      * Create an object representing a Cloud Spanner instance.
      *
      * @param ConnectionInterface $connection The connection to the
@@ -137,6 +141,14 @@ class Instance
      *        returned as a {@see \Google\Cloud\Core\Int64} object for 32 bit platform
      *        compatibility. **Defaults to** false.
      * @param array $info [optional] A representation of the instance object.
+     * @param array $options [optional]{
+     *     Instance options
+     *
+     *     @type array $directedReadOptions Directed read options.
+     *           {@see \Google\Cloud\Spanner\V1\DirectedReadOptions}
+     *           If using the `replicaSelection::type` setting, utilize the constants available in
+     *           {@see \Google\Cloud\Spanner\V1\DirectedReadOptions\ReplicaSelection\Type} to set a value.
+     * }
      */
     public function __construct(
         ConnectionInterface $connection,
@@ -145,7 +157,8 @@ class Instance
         $projectId,
         $name,
         $returnInt64AsObject = false,
-        array $info = []
+        array $info = [],
+        array $options = []
     ) {
         $this->connection = $connection;
         $this->projectId = $projectId;
@@ -154,6 +167,7 @@ class Instance
         $this->info = $info;
 
         $this->setLroProperties($lroConnection, $lroCallables, $this->name);
+        $this->directedReadOptions = $options['directedReadOptions'] ?? [];
     }
 
     /**
@@ -303,7 +317,7 @@ class Instance
         ];
 
         if (isset($options['nodeCount']) && isset($options['processingUnits'])) {
-            throw new \InvalidArgumentException("Must only set either `nodeCount` or `processingUnits`");
+            throw new \InvalidArgumentException('Must only set either `nodeCount` or `processingUnits`');
         }
         if (empty($options['nodeCount']) && empty($options['processingUnits'])) {
             $options['nodeCount'] = self::DEFAULT_NODE_COUNT;
@@ -382,7 +396,7 @@ class Instance
     public function update(array $options = [])
     {
         if (isset($options['nodeCount']) && isset($options['processingUnits'])) {
-            throw new \InvalidArgumentException("Must only set either `nodeCount` or `processingUnits`");
+            throw new \InvalidArgumentException('Must only set either `nodeCount` or `processingUnits`');
         }
 
         $operation = $this->connection->updateInstance([
@@ -755,10 +769,10 @@ class Instance
     private function fullyQualifiedInstanceName($name, $project)
     {
         // try {
-            return InstanceAdminClient::instanceName(
-                $project,
-                $name
-            );
+        return InstanceAdminClient::instanceName(
+            $project,
+            $name
+        );
         // } catch (ValidationException $e) {
         //     return $name;
         // }
@@ -793,5 +807,20 @@ class Instance
             'name' => $this->name,
             'info' => $this->info
         ];
+    }
+
+    /**
+     * Return the directed read options.
+     *
+     * Example:
+     * ```
+     * $name = $instance->directedReadOptions();
+     * ```
+     *
+     * @return array
+     */
+    public function directedReadOptions()
+    {
+        return $this->directedReadOptions;
     }
 }

@@ -11,39 +11,41 @@ use Google\Protobuf\Internal\GPBUtil;
 /**
  * A `CustomTargetType` resource in the Cloud Deploy API.
  * A `CustomTargetType` defines a type of custom target that can be referenced
- * in a `Target` in order to facilitate deploying to a runtime that does not
- * have a 1P integration with Cloud Deploy.
+ * in a `Target` in order to facilitate deploying to other systems besides the
+ * supported runtimes.
  *
  * Generated from protobuf message <code>google.cloud.deploy.v1.CustomTargetType</code>
  */
 class CustomTargetType extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Optional. Name of the `CustomTargetType`. Format is
-     * `projects/{project}/locations/{location}/customTargetTypes/[a-z][a-z0-9\-]{0,62}`.
+     * Identifier. Name of the `CustomTargetType`. Format is
+     * `projects/{project}/locations/{location}/customTargetTypes/{customTargetType}`.
+     * The `customTargetType` component must match
+     * `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
      *
-     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = IDENTIFIER];</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Output only. Resource id of the `CustomTargetType`.
      *
      * Generated from protobuf field <code>string custom_target_type_id = 2 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $custom_target_type_id = '';
+    protected $custom_target_type_id = '';
     /**
      * Output only. Unique identifier of the `CustomTargetType`.
      *
      * Generated from protobuf field <code>string uid = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $uid = '';
+    protected $uid = '';
     /**
      * Optional. Description of the `CustomTargetType`. Max length is 255
      * characters.
      *
      * Generated from protobuf field <code>string description = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $description = '';
+    protected $description = '';
     /**
      * Optional. User annotations. These attributes can only be set and used by
      * the user, and not by Cloud Deploy. See
@@ -72,13 +74,13 @@ class CustomTargetType extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp create_time = 7 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $create_time = null;
+    protected $create_time = null;
     /**
      * Output only. Most recent time at which the `CustomTargetType` was updated.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp update_time = 8 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $update_time = null;
+    protected $update_time = null;
     /**
      * Optional. This checksum is computed by the server based on the value of
      * other fields, and may be sent on update and delete requests to ensure the
@@ -86,7 +88,7 @@ class CustomTargetType extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string etag = 9 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $etag = '';
+    protected $etag = '';
     protected $definition;
 
     /**
@@ -96,8 +98,10 @@ class CustomTargetType extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type string $name
-     *           Optional. Name of the `CustomTargetType`. Format is
-     *           `projects/{project}/locations/{location}/customTargetTypes/[a-z][a-z0-9\-]{0,62}`.
+     *           Identifier. Name of the `CustomTargetType`. Format is
+     *           `projects/{project}/locations/{location}/customTargetTypes/{customTargetType}`.
+     *           The `customTargetType` component must match
+     *           `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
      *     @type string $custom_target_type_id
      *           Output only. Resource id of the `CustomTargetType`.
      *     @type string $uid
@@ -129,8 +133,8 @@ class CustomTargetType extends \Google\Protobuf\Internal\Message
      *           other fields, and may be sent on update and delete requests to ensure the
      *           client has an up-to-date value before proceeding.
      *     @type \Google\Cloud\Deploy\V1\CustomTargetSkaffoldActions $custom_actions
-     *           Configures render and deploy for the `CustomTargetType` using Skaffold
-     *           custom actions.
+     *           Optional. Configures render and deploy for the `CustomTargetType` using
+     *           Skaffold custom actions.
      * }
      */
     public function __construct($data = NULL) {
@@ -139,10 +143,12 @@ class CustomTargetType extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Optional. Name of the `CustomTargetType`. Format is
-     * `projects/{project}/locations/{location}/customTargetTypes/[a-z][a-z0-9\-]{0,62}`.
+     * Identifier. Name of the `CustomTargetType`. Format is
+     * `projects/{project}/locations/{location}/customTargetTypes/{customTargetType}`.
+     * The `customTargetType` component must match
+     * `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
      *
-     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = IDENTIFIER];</code>
      * @return string
      */
     public function getName()
@@ -151,10 +157,12 @@ class CustomTargetType extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Optional. Name of the `CustomTargetType`. Format is
-     * `projects/{project}/locations/{location}/customTargetTypes/[a-z][a-z0-9\-]{0,62}`.
+     * Identifier. Name of the `CustomTargetType`. Format is
+     * `projects/{project}/locations/{location}/customTargetTypes/{customTargetType}`.
+     * The `customTargetType` component must match
+     * `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
      *
-     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = IDENTIFIER];</code>
      * @param string $var
      * @return $this
      */
@@ -423,10 +431,10 @@ class CustomTargetType extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Configures render and deploy for the `CustomTargetType` using Skaffold
-     * custom actions.
+     * Optional. Configures render and deploy for the `CustomTargetType` using
+     * Skaffold custom actions.
      *
-     * Generated from protobuf field <code>.google.cloud.deploy.v1.CustomTargetSkaffoldActions custom_actions = 10;</code>
+     * Generated from protobuf field <code>.google.cloud.deploy.v1.CustomTargetSkaffoldActions custom_actions = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @return \Google\Cloud\Deploy\V1\CustomTargetSkaffoldActions|null
      */
     public function getCustomActions()
@@ -440,10 +448,10 @@ class CustomTargetType extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Configures render and deploy for the `CustomTargetType` using Skaffold
-     * custom actions.
+     * Optional. Configures render and deploy for the `CustomTargetType` using
+     * Skaffold custom actions.
      *
-     * Generated from protobuf field <code>.google.cloud.deploy.v1.CustomTargetSkaffoldActions custom_actions = 10;</code>
+     * Generated from protobuf field <code>.google.cloud.deploy.v1.CustomTargetSkaffoldActions custom_actions = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @param \Google\Cloud\Deploy\V1\CustomTargetSkaffoldActions $var
      * @return $this
      */

@@ -20,45 +20,46 @@ class PasswordValidationPolicy extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.Int32Value min_length = 1;</code>
      */
-    private $min_length = null;
+    protected $min_length = null;
     /**
      * The complexity of the password.
      *
      * Generated from protobuf field <code>.google.cloud.sql.v1.PasswordValidationPolicy.Complexity complexity = 2;</code>
      */
-    private $complexity = 0;
+    protected $complexity = 0;
     /**
      * Number of previous passwords that cannot be reused.
      *
      * Generated from protobuf field <code>.google.protobuf.Int32Value reuse_interval = 3;</code>
      */
-    private $reuse_interval = null;
+    protected $reuse_interval = null;
     /**
      * Disallow username as a part of the password.
      *
      * Generated from protobuf field <code>.google.protobuf.BoolValue disallow_username_substring = 4;</code>
      */
-    private $disallow_username_substring = null;
+    protected $disallow_username_substring = null;
     /**
      * Minimum interval after which the password can be changed. This flag is only
      * supported for PostgreSQL.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration password_change_interval = 5;</code>
      */
-    private $password_change_interval = null;
+    protected $password_change_interval = null;
     /**
      * Whether the password policy is enabled or not.
      *
      * Generated from protobuf field <code>.google.protobuf.BoolValue enable_password_policy = 6;</code>
      */
-    private $enable_password_policy = null;
+    protected $enable_password_policy = null;
     /**
-     * Disallow credentials that have been previously compromised by a public data
-     * breach.
+     * This field is deprecated and will be removed in a future version of the
+     * API.
      *
-     * Generated from protobuf field <code>.google.protobuf.BoolValue disallow_compromised_credentials = 7;</code>
+     * Generated from protobuf field <code>.google.protobuf.BoolValue disallow_compromised_credentials = 7 [deprecated = true];</code>
+     * @deprecated
      */
-    private $disallow_compromised_credentials = null;
+    protected $disallow_compromised_credentials = null;
 
     /**
      * Constructor.
@@ -80,8 +81,8 @@ class PasswordValidationPolicy extends \Google\Protobuf\Internal\Message
      *     @type \Google\Protobuf\BoolValue $enable_password_policy
      *           Whether the password policy is enabled or not.
      *     @type \Google\Protobuf\BoolValue $disallow_compromised_credentials
-     *           Disallow credentials that have been previously compromised by a public data
-     *           breach.
+     *           This field is deprecated and will be removed in a future version of the
+     *           API.
      * }
      */
     public function __construct($data = NULL) {
@@ -118,7 +119,7 @@ class PasswordValidationPolicy extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.google.protobuf.Int32Value min_length = 1;</code>
      * @return int|null
      */
-    public function getMinLengthValue()
+    public function getMinLengthUnwrapped()
     {
         return $this->readWrapperValue("min_length");
     }
@@ -147,7 +148,7 @@ class PasswordValidationPolicy extends \Google\Protobuf\Internal\Message
      * @param int|null $var
      * @return $this
      */
-    public function setMinLengthValue($var)
+    public function setMinLengthUnwrapped($var)
     {
         $this->writeWrapperValue("min_length", $var);
         return $this;}
@@ -207,7 +208,7 @@ class PasswordValidationPolicy extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.google.protobuf.Int32Value reuse_interval = 3;</code>
      * @return int|null
      */
-    public function getReuseIntervalValue()
+    public function getReuseIntervalUnwrapped()
     {
         return $this->readWrapperValue("reuse_interval");
     }
@@ -236,7 +237,7 @@ class PasswordValidationPolicy extends \Google\Protobuf\Internal\Message
      * @param int|null $var
      * @return $this
      */
-    public function setReuseIntervalValue($var)
+    public function setReuseIntervalUnwrapped($var)
     {
         $this->writeWrapperValue("reuse_interval", $var);
         return $this;}
@@ -270,7 +271,7 @@ class PasswordValidationPolicy extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.google.protobuf.BoolValue disallow_username_substring = 4;</code>
      * @return bool|null
      */
-    public function getDisallowUsernameSubstringValue()
+    public function getDisallowUsernameSubstringUnwrapped()
     {
         return $this->readWrapperValue("disallow_username_substring");
     }
@@ -299,7 +300,7 @@ class PasswordValidationPolicy extends \Google\Protobuf\Internal\Message
      * @param bool|null $var
      * @return $this
      */
-    public function setDisallowUsernameSubstringValue($var)
+    public function setDisallowUsernameSubstringUnwrapped($var)
     {
         $this->writeWrapperValue("disallow_username_substring", $var);
         return $this;}
@@ -371,7 +372,7 @@ class PasswordValidationPolicy extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.google.protobuf.BoolValue enable_password_policy = 6;</code>
      * @return bool|null
      */
-    public function getEnablePasswordPolicyValue()
+    public function getEnablePasswordPolicyUnwrapped()
     {
         return $this->readWrapperValue("enable_password_policy");
     }
@@ -400,57 +401,64 @@ class PasswordValidationPolicy extends \Google\Protobuf\Internal\Message
      * @param bool|null $var
      * @return $this
      */
-    public function setEnablePasswordPolicyValue($var)
+    public function setEnablePasswordPolicyUnwrapped($var)
     {
         $this->writeWrapperValue("enable_password_policy", $var);
         return $this;}
 
     /**
-     * Disallow credentials that have been previously compromised by a public data
-     * breach.
+     * This field is deprecated and will be removed in a future version of the
+     * API.
      *
-     * Generated from protobuf field <code>.google.protobuf.BoolValue disallow_compromised_credentials = 7;</code>
+     * Generated from protobuf field <code>.google.protobuf.BoolValue disallow_compromised_credentials = 7 [deprecated = true];</code>
      * @return \Google\Protobuf\BoolValue|null
+     * @deprecated
      */
     public function getDisallowCompromisedCredentials()
     {
+        @trigger_error('disallow_compromised_credentials is deprecated.', E_USER_DEPRECATED);
         return $this->disallow_compromised_credentials;
     }
 
     public function hasDisallowCompromisedCredentials()
     {
+        @trigger_error('disallow_compromised_credentials is deprecated.', E_USER_DEPRECATED);
         return isset($this->disallow_compromised_credentials);
     }
 
     public function clearDisallowCompromisedCredentials()
     {
+        @trigger_error('disallow_compromised_credentials is deprecated.', E_USER_DEPRECATED);
         unset($this->disallow_compromised_credentials);
     }
 
     /**
      * Returns the unboxed value from <code>getDisallowCompromisedCredentials()</code>
 
-     * Disallow credentials that have been previously compromised by a public data
-     * breach.
+     * This field is deprecated and will be removed in a future version of the
+     * API.
      *
-     * Generated from protobuf field <code>.google.protobuf.BoolValue disallow_compromised_credentials = 7;</code>
+     * Generated from protobuf field <code>.google.protobuf.BoolValue disallow_compromised_credentials = 7 [deprecated = true];</code>
      * @return bool|null
      */
-    public function getDisallowCompromisedCredentialsValue()
+    public function getDisallowCompromisedCredentialsUnwrapped()
     {
+        @trigger_error('disallow_compromised_credentials is deprecated.', E_USER_DEPRECATED);
         return $this->readWrapperValue("disallow_compromised_credentials");
     }
 
     /**
-     * Disallow credentials that have been previously compromised by a public data
-     * breach.
+     * This field is deprecated and will be removed in a future version of the
+     * API.
      *
-     * Generated from protobuf field <code>.google.protobuf.BoolValue disallow_compromised_credentials = 7;</code>
+     * Generated from protobuf field <code>.google.protobuf.BoolValue disallow_compromised_credentials = 7 [deprecated = true];</code>
      * @param \Google\Protobuf\BoolValue $var
      * @return $this
+     * @deprecated
      */
     public function setDisallowCompromisedCredentials($var)
     {
+        @trigger_error('disallow_compromised_credentials is deprecated.', E_USER_DEPRECATED);
         GPBUtil::checkMessage($var, \Google\Protobuf\BoolValue::class);
         $this->disallow_compromised_credentials = $var;
 
@@ -460,14 +468,14 @@ class PasswordValidationPolicy extends \Google\Protobuf\Internal\Message
     /**
      * Sets the field by wrapping a primitive type in a Google\Protobuf\BoolValue object.
 
-     * Disallow credentials that have been previously compromised by a public data
-     * breach.
+     * This field is deprecated and will be removed in a future version of the
+     * API.
      *
-     * Generated from protobuf field <code>.google.protobuf.BoolValue disallow_compromised_credentials = 7;</code>
+     * Generated from protobuf field <code>.google.protobuf.BoolValue disallow_compromised_credentials = 7 [deprecated = true];</code>
      * @param bool|null $var
      * @return $this
      */
-    public function setDisallowCompromisedCredentialsValue($var)
+    public function setDisallowCompromisedCredentialsUnwrapped($var)
     {
         $this->writeWrapperValue("disallow_compromised_credentials", $var);
         return $this;}

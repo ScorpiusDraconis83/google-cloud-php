@@ -16,8 +16,9 @@ use Google\Protobuf\Internal\GPBUtil;
  * encoded as ASCII. For a given crypto key and context, the same identifier
  * will be replaced with the same surrogate. Identifiers must be at least two
  * characters long. In the case that the identifier is the empty string, it will
- * be skipped. See https://cloud.google.com/dlp/docs/pseudonymization to learn
- * more.
+ * be skipped. See
+ * https://cloud.google.com/sensitive-data-protection/docs/pseudonymization to
+ * learn more.
  * Note: We recommend using  CryptoDeterministicConfig for all use cases which
  * do not require preserving the input alphabet space and size, plus warrant
  * referential integrity.
@@ -31,7 +32,7 @@ class CryptoReplaceFfxFpeConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.privacy.dlp.v2.CryptoKey crypto_key = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $crypto_key = null;
+    protected $crypto_key = null;
     /**
      * The 'tweak', a context may be used for higher security since the same
      * identifier in two different contexts won't be given the same surrogate. If
@@ -50,7 +51,7 @@ class CryptoReplaceFfxFpeConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.privacy.dlp.v2.FieldId context = 2;</code>
      */
-    private $context = null;
+    protected $context = null;
     /**
      * The custom infoType to annotate the surrogate with.
      * This annotation will be applied to the surrogate by prefixing it with
@@ -62,7 +63,7 @@ class CryptoReplaceFfxFpeConfig extends \Google\Protobuf\Internal\Message
      * will be: 'MY_TOKEN_INFO_TYPE(3):abc'
      * This annotation identifies the surrogate when inspecting content using the
      * custom infoType
-     * [`SurrogateType`](https://cloud.google.com/dlp/docs/reference/rest/v2/InspectConfig#surrogatetype).
+     * [`SurrogateType`](https://cloud.google.com/sensitive-data-protection/docs/reference/rest/v2/InspectConfig#surrogatetype).
      * This facilitates reversal of the surrogate when it occurs in free text.
      * In order for inspection to work properly, the name of this infoType must
      * not occur naturally anywhere in your data; otherwise, inspection may
@@ -77,7 +78,7 @@ class CryptoReplaceFfxFpeConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.privacy.dlp.v2.InfoType surrogate_info_type = 8;</code>
      */
-    private $surrogate_info_type = null;
+    protected $surrogate_info_type = null;
     protected $alphabet;
 
     /**
@@ -114,8 +115,7 @@ class CryptoReplaceFfxFpeConfig extends \Google\Protobuf\Internal\Message
      *           This must be encoded as ASCII.
      *           The order of characters does not matter.
      *           The full list of allowed characters is:
-     *           <code>0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
-     *           ~`!&#64;#$%^&*()_-+={[}]|\:;"'<,>.?/</code>
+     *           ``0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~`!&#64;#$%^&*()_-+={[}]|\:;"'<,>.?/``
      *     @type int $radix
      *           The native way to select the alphabet. Must be in the range [2, 95].
      *     @type \Google\Cloud\Dlp\V2\InfoType $surrogate_info_type
@@ -129,7 +129,7 @@ class CryptoReplaceFfxFpeConfig extends \Google\Protobuf\Internal\Message
      *           will be: 'MY_TOKEN_INFO_TYPE(3):abc'
      *           This annotation identifies the surrogate when inspecting content using the
      *           custom infoType
-     *           [`SurrogateType`](https://cloud.google.com/dlp/docs/reference/rest/v2/InspectConfig#surrogatetype).
+     *           [`SurrogateType`](https://cloud.google.com/sensitive-data-protection/docs/reference/rest/v2/InspectConfig#surrogatetype).
      *           This facilitates reversal of the surrogate when it occurs in free text.
      *           In order for inspection to work properly, the name of this infoType must
      *           not occur naturally anywhere in your data; otherwise, inspection may
@@ -286,8 +286,7 @@ class CryptoReplaceFfxFpeConfig extends \Google\Protobuf\Internal\Message
      * This must be encoded as ASCII.
      * The order of characters does not matter.
      * The full list of allowed characters is:
-     * <code>0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
-     * ~`!&#64;#$%^&*()_-+={[}]|\:;"'<,>.?/</code>
+     * ``0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~`!&#64;#$%^&*()_-+={[}]|\:;"'<,>.?/``
      *
      * Generated from protobuf field <code>string custom_alphabet = 5;</code>
      * @return string
@@ -311,8 +310,7 @@ class CryptoReplaceFfxFpeConfig extends \Google\Protobuf\Internal\Message
      * This must be encoded as ASCII.
      * The order of characters does not matter.
      * The full list of allowed characters is:
-     * <code>0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
-     * ~`!&#64;#$%^&*()_-+={[}]|\:;"'<,>.?/</code>
+     * ``0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~`!&#64;#$%^&*()_-+={[}]|\:;"'<,>.?/``
      *
      * Generated from protobuf field <code>string custom_alphabet = 5;</code>
      * @param string $var
@@ -368,7 +366,7 @@ class CryptoReplaceFfxFpeConfig extends \Google\Protobuf\Internal\Message
      * will be: 'MY_TOKEN_INFO_TYPE(3):abc'
      * This annotation identifies the surrogate when inspecting content using the
      * custom infoType
-     * [`SurrogateType`](https://cloud.google.com/dlp/docs/reference/rest/v2/InspectConfig#surrogatetype).
+     * [`SurrogateType`](https://cloud.google.com/sensitive-data-protection/docs/reference/rest/v2/InspectConfig#surrogatetype).
      * This facilitates reversal of the surrogate when it occurs in free text.
      * In order for inspection to work properly, the name of this infoType must
      * not occur naturally anywhere in your data; otherwise, inspection may
@@ -410,7 +408,7 @@ class CryptoReplaceFfxFpeConfig extends \Google\Protobuf\Internal\Message
      * will be: 'MY_TOKEN_INFO_TYPE(3):abc'
      * This annotation identifies the surrogate when inspecting content using the
      * custom infoType
-     * [`SurrogateType`](https://cloud.google.com/dlp/docs/reference/rest/v2/InspectConfig#surrogatetype).
+     * [`SurrogateType`](https://cloud.google.com/sensitive-data-protection/docs/reference/rest/v2/InspectConfig#surrogatetype).
      * This facilitates reversal of the surrogate when it occurs in free text.
      * In order for inspection to work properly, the name of this infoType must
      * not occur naturally anywhere in your data; otherwise, inspection may

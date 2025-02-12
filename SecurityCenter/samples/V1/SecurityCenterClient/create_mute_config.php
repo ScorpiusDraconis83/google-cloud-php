@@ -24,16 +24,17 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START securitycenter_v1_generated_SecurityCenter_CreateMuteConfig_sync]
 use Google\ApiCore\ApiException;
+use Google\Cloud\SecurityCenter\V1\Client\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\CreateMuteConfigRequest;
 use Google\Cloud\SecurityCenter\V1\MuteConfig;
-use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
 
 /**
  * Creates a mute config.
  *
  * @param string $formattedParent  Resource name of the new mute configs's parent. Its format is
- *                                 "organizations/[organization_id]", "folders/[folder_id]", or
- *                                 "projects/[project_id]". Please see
- *                                 {@see SecurityCenterClient::projectName()} for help formatting this field.
+ *                                 `organizations/[organization_id]`, `folders/[folder_id]`, or
+ *                                 `projects/[project_id]`. Please see
+ *                                 {@see SecurityCenterClient::organizationLocationName()} for help formatting this field.
  * @param string $muteConfigFilter An expression that defines the filter to apply across
  *                                 create/update events of findings. While creating a filter string, be
  *                                 mindful of the scope in which the mute configuration is being created.
@@ -67,14 +68,18 @@ function create_mute_config_sample(
     // Create a client.
     $securityCenterClient = new SecurityCenterClient();
 
-    // Prepare any non-scalar elements to be passed along with the request.
+    // Prepare the request message.
     $muteConfig = (new MuteConfig())
         ->setFilter($muteConfigFilter);
+    $request = (new CreateMuteConfigRequest())
+        ->setParent($formattedParent)
+        ->setMuteConfig($muteConfig)
+        ->setMuteConfigId($muteConfigId);
 
     // Call the API and handle any network failures.
     try {
         /** @var MuteConfig $response */
-        $response = $securityCenterClient->createMuteConfig($formattedParent, $muteConfig, $muteConfigId);
+        $response = $securityCenterClient->createMuteConfig($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());
@@ -92,7 +97,7 @@ function create_mute_config_sample(
  */
 function callSample(): void
 {
-    $formattedParent = SecurityCenterClient::projectName('[PROJECT]');
+    $formattedParent = SecurityCenterClient::organizationLocationName('[ORGANIZATION]', '[LOCATION]');
     $muteConfigFilter = '[FILTER]';
     $muteConfigId = '[MUTE_CONFIG_ID]';
 

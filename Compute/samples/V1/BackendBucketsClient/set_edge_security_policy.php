@@ -25,14 +25,15 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // [START compute_v1_generated_BackendBuckets_SetEdgeSecurityPolicy_sync]
 use Google\ApiCore\ApiException;
 use Google\ApiCore\OperationResponse;
-use Google\Cloud\Compute\V1\BackendBucketsClient;
+use Google\Cloud\Compute\V1\Client\BackendBucketsClient;
 use Google\Cloud\Compute\V1\SecurityPolicyReference;
+use Google\Cloud\Compute\V1\SetEdgeSecurityPolicyBackendBucketRequest;
 use Google\Rpc\Status;
 
 /**
  * Sets the edge security policy for the specified backend bucket.
  *
- * @param string $backendBucket Name of the BackendService resource to which the security policy should be set. The name should conform to RFC1035.
+ * @param string $backendBucket Name of the BackendBucket resource to which the security policy should be set. The name should conform to RFC1035.
  * @param string $project       Project ID for this request.
  */
 function set_edge_security_policy_sample(string $backendBucket, string $project): void
@@ -40,17 +41,17 @@ function set_edge_security_policy_sample(string $backendBucket, string $project)
     // Create a client.
     $backendBucketsClient = new BackendBucketsClient();
 
-    // Prepare any non-scalar elements to be passed along with the request.
+    // Prepare the request message.
     $securityPolicyReferenceResource = new SecurityPolicyReference();
+    $request = (new SetEdgeSecurityPolicyBackendBucketRequest())
+        ->setBackendBucket($backendBucket)
+        ->setProject($project)
+        ->setSecurityPolicyReferenceResource($securityPolicyReferenceResource);
 
     // Call the API and handle any network failures.
     try {
         /** @var OperationResponse $response */
-        $response = $backendBucketsClient->setEdgeSecurityPolicy(
-            $backendBucket,
-            $project,
-            $securityPolicyReferenceResource
-        );
+        $response = $backendBucketsClient->setEdgeSecurityPolicy($request);
         $response->pollUntilComplete();
 
         if ($response->operationSucceeded()) {

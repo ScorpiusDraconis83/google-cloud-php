@@ -11,7 +11,7 @@ use Google\Protobuf\Internal\GPBUtil;
 /**
  * Message for detecting output from deidentification transformations
  * such as
- * [`CryptoReplaceFfxFpeConfig`](https://cloud.google.com/dlp/docs/reference/rest/v2/organizations.deidentifyTemplates#cryptoreplaceffxfpeconfig).
+ * [`CryptoReplaceFfxFpeConfig`](https://cloud.google.com/sensitive-data-protection/docs/reference/rest/v2/organizations.deidentifyTemplates#cryptoreplaceffxfpeconfig).
  * These types of transformations are
  * those that perform pseudonymization, thereby producing a "surrogate" as
  * output. This should be used in conjunction with a field on the
@@ -38,6 +38,4 @@ class SurrogateType extends \Google\Protobuf\Internal\Message
 
 }
 
-// Adding a class alias for backwards compatibility with the previous class name.
-class_alias(SurrogateType::class, \Google\Cloud\Dlp\V2\CustomInfoType_SurrogateType::class);
 

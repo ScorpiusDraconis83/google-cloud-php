@@ -16,6 +16,13 @@ use Google\Protobuf\Internal\GPBUtil;
 class Disk extends \Google\Protobuf\Internal\Message
 {
     /**
+     * The access mode of the disk. - READ_WRITE_SINGLE: The default AccessMode, means the disk can be attached to single instance in RW mode. - READ_WRITE_MANY: The AccessMode means the disk can be attached to multiple instances in RW mode. - READ_ONLY_MANY: The AccessMode means the disk can be attached to multiple instances in RO mode. The AccessMode is only valid for Hyperdisk disk types.
+     * Check the AccessMode enum for the list of possible values.
+     *
+     * Generated from protobuf field <code>optional string access_mode = 41155486;</code>
+     */
+    private $access_mode = null;
+    /**
      * The architecture of the disk. Valid values are ARM64 or X86_64.
      * Check the Architecture enum for the list of possible values.
      *
@@ -52,6 +59,12 @@ class Disk extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.CustomerEncryptionKey disk_encryption_key = 271660677;</code>
      */
     private $disk_encryption_key = null;
+    /**
+     * Whether this disk is using confidential compute mode.
+     *
+     * Generated from protobuf field <code>optional bool enable_confidential_compute = 102135228;</code>
+     */
+    private $enable_confidential_compute = null;
     /**
      * A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options.
      *
@@ -143,7 +156,7 @@ class Disk extends \Google\Protobuf\Internal\Message
      */
     private $provisioned_iops = null;
     /**
-     * Indicates how much throughput to provision for the disk. This sets the number of throughput mb per second that the disk can handle. Values must be between 1 and 7,124.
+     * Indicates how much throughput to provision for the disk. This sets the number of throughput mb per second that the disk can handle. Values must be greater than or equal to 1.
      *
      * Generated from protobuf field <code>optional int64 provisioned_throughput = 526524181;</code>
      */
@@ -172,6 +185,12 @@ class Disk extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.DiskResourceStatus resource_status = 249429315;</code>
      */
     private $resource_status = null;
+    /**
+     * Output only. Reserved for future use.
+     *
+     * Generated from protobuf field <code>optional bool satisfies_pzi = 480964257;</code>
+     */
+    private $satisfies_pzi = null;
     /**
      * [Output Only] Reserved for future use.
      *
@@ -233,6 +252,18 @@ class Disk extends \Google\Protobuf\Internal\Message
      */
     private $source_image_id = null;
     /**
+     * The source instant snapshot used to create this disk. You can provide this as a partial or full URL to the resource. For example, the following are valid values: - https://www.googleapis.com/compute/v1/projects/project/zones/zone /instantSnapshots/instantSnapshot - projects/project/zones/zone/instantSnapshots/instantSnapshot - zones/zone/instantSnapshots/instantSnapshot 
+     *
+     * Generated from protobuf field <code>optional string source_instant_snapshot = 219202054;</code>
+     */
+    private $source_instant_snapshot = null;
+    /**
+     * [Output Only] The unique ID of the instant snapshot used to create this disk. This value identifies the exact instant snapshot that was used to create this persistent disk. For example, if you created the persistent disk from an instant snapshot that was later deleted and recreated under the same name, the source instant snapshot ID would identify the exact version of the instant snapshot that was used.
+     *
+     * Generated from protobuf field <code>optional string source_instant_snapshot_id = 287582708;</code>
+     */
+    private $source_instant_snapshot_id = null;
+    /**
      * The source snapshot used to create this disk. You can provide this as a partial or full URL to the resource. For example, the following are valid values: - https://www.googleapis.com/compute/v1/projects/project /global/snapshots/snapshot - projects/project/global/snapshots/snapshot - global/snapshots/snapshot 
      *
      * Generated from protobuf field <code>optional string source_snapshot = 126061928;</code>
@@ -264,6 +295,12 @@ class Disk extends \Google\Protobuf\Internal\Message
      */
     private $status = null;
     /**
+     * The storage pool in which the new disk is created. You can provide this as a partial or full URL to the resource. For example, the following are valid values: - https://www.googleapis.com/compute/v1/projects/project/zones/zone /storagePools/storagePool - projects/project/zones/zone/storagePools/storagePool - zones/zone/storagePools/storagePool 
+     *
+     * Generated from protobuf field <code>optional string storage_pool = 360473440;</code>
+     */
+    private $storage_pool = null;
+    /**
      * URL of the disk type resource describing which disk type to use to create the disk. Provide this when creating the disk. For example: projects/project /zones/zone/diskTypes/pd-ssd . See Persistent disk types.
      *
      * Generated from protobuf field <code>optional string type = 3575610;</code>
@@ -288,6 +325,9 @@ class Disk extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
+     *     @type string $access_mode
+     *           The access mode of the disk. - READ_WRITE_SINGLE: The default AccessMode, means the disk can be attached to single instance in RW mode. - READ_WRITE_MANY: The AccessMode means the disk can be attached to multiple instances in RW mode. - READ_ONLY_MANY: The AccessMode means the disk can be attached to multiple instances in RO mode. The AccessMode is only valid for Hyperdisk disk types.
+     *           Check the AccessMode enum for the list of possible values.
      *     @type string $architecture
      *           The architecture of the disk. Valid values are ARM64 or X86_64.
      *           Check the Architecture enum for the list of possible values.
@@ -301,6 +341,8 @@ class Disk extends \Google\Protobuf\Internal\Message
      *           An optional description of this resource. Provide this property when you create the resource.
      *     @type \Google\Cloud\Compute\V1\CustomerEncryptionKey $disk_encryption_key
      *           Encrypts the disk using a customer-supplied encryption key or a customer-managed encryption key. Encryption keys do not protect access to metadata of the disk. After you encrypt a disk with a customer-supplied key, you must provide the same key if you use the disk later. For example, to create a disk snapshot, to create a disk image, to create a machine image, or to attach the disk to a virtual machine. After you encrypt a disk with a customer-managed key, the diskEncryptionKey.kmsKeyName is set to a key *version* name once the disk is created. The disk is encrypted with this version of the key. In the response, diskEncryptionKey.kmsKeyName appears in the following format: "diskEncryptionKey.kmsKeyName": "projects/kms_project_id/locations/region/keyRings/ key_region/cryptoKeys/key /cryptoKeysVersions/version If you do not provide an encryption key when creating the disk, then the disk is encrypted using an automatically generated key and you don't need to provide a key to use the disk later.
+     *     @type bool $enable_confidential_compute
+     *           Whether this disk is using confidential compute mode.
      *     @type array<\Google\Cloud\Compute\V1\GuestOsFeature>|\Google\Protobuf\Internal\RepeatedField $guest_os_features
      *           A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options.
      *     @type int|string $id
@@ -332,7 +374,7 @@ class Disk extends \Google\Protobuf\Internal\Message
      *     @type int|string $provisioned_iops
      *           Indicates how many IOPS to provision for the disk. This sets the number of I/O operations per second that the disk can handle. Values must be between 10,000 and 120,000. For more details, see the Extreme persistent disk documentation.
      *     @type int|string $provisioned_throughput
-     *           Indicates how much throughput to provision for the disk. This sets the number of throughput mb per second that the disk can handle. Values must be between 1 and 7,124.
+     *           Indicates how much throughput to provision for the disk. This sets the number of throughput mb per second that the disk can handle. Values must be greater than or equal to 1.
      *     @type string $region
      *           [Output Only] URL of the region where the disk resides. Only applicable for regional resources. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
      *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $replica_zones
@@ -341,6 +383,8 @@ class Disk extends \Google\Protobuf\Internal\Message
      *           Resource policies applied to this disk for automatic snapshot creations.
      *     @type \Google\Cloud\Compute\V1\DiskResourceStatus $resource_status
      *           [Output Only] Status information for the disk resource.
+     *     @type bool $satisfies_pzi
+     *           Output only. Reserved for future use.
      *     @type bool $satisfies_pzs
      *           [Output Only] Reserved for future use.
      *     @type string $self_link
@@ -361,6 +405,10 @@ class Disk extends \Google\Protobuf\Internal\Message
      *           The customer-supplied encryption key of the source image. Required if the source image is protected by a customer-supplied encryption key.
      *     @type string $source_image_id
      *           [Output Only] The ID value of the image used to create this disk. This value identifies the exact image that was used to create this persistent disk. For example, if you created the persistent disk from an image that was later deleted and recreated under the same name, the source image ID would identify the exact version of the image that was used.
+     *     @type string $source_instant_snapshot
+     *           The source instant snapshot used to create this disk. You can provide this as a partial or full URL to the resource. For example, the following are valid values: - https://www.googleapis.com/compute/v1/projects/project/zones/zone /instantSnapshots/instantSnapshot - projects/project/zones/zone/instantSnapshots/instantSnapshot - zones/zone/instantSnapshots/instantSnapshot 
+     *     @type string $source_instant_snapshot_id
+     *           [Output Only] The unique ID of the instant snapshot used to create this disk. This value identifies the exact instant snapshot that was used to create this persistent disk. For example, if you created the persistent disk from an instant snapshot that was later deleted and recreated under the same name, the source instant snapshot ID would identify the exact version of the instant snapshot that was used.
      *     @type string $source_snapshot
      *           The source snapshot used to create this disk. You can provide this as a partial or full URL to the resource. For example, the following are valid values: - https://www.googleapis.com/compute/v1/projects/project /global/snapshots/snapshot - projects/project/global/snapshots/snapshot - global/snapshots/snapshot 
      *     @type \Google\Cloud\Compute\V1\CustomerEncryptionKey $source_snapshot_encryption_key
@@ -372,6 +420,8 @@ class Disk extends \Google\Protobuf\Internal\Message
      *     @type string $status
      *           [Output Only] The status of disk creation. - CREATING: Disk is provisioning. - RESTORING: Source data is being copied into the disk. - FAILED: Disk creation failed. - READY: Disk is ready for use. - DELETING: Disk is deleting.
      *           Check the Status enum for the list of possible values.
+     *     @type string $storage_pool
+     *           The storage pool in which the new disk is created. You can provide this as a partial or full URL to the resource. For example, the following are valid values: - https://www.googleapis.com/compute/v1/projects/project/zones/zone /storagePools/storagePool - projects/project/zones/zone/storagePools/storagePool - zones/zone/storagePools/storagePool 
      *     @type string $type
      *           URL of the disk type resource describing which disk type to use to create the disk. Provide this when creating the disk. For example: projects/project /zones/zone/diskTypes/pd-ssd . See Persistent disk types.
      *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $users
@@ -383,6 +433,44 @@ class Disk extends \Google\Protobuf\Internal\Message
     public function __construct($data = NULL) {
         \GPBMetadata\Google\Cloud\Compute\V1\Compute::initOnce();
         parent::__construct($data);
+    }
+
+    /**
+     * The access mode of the disk. - READ_WRITE_SINGLE: The default AccessMode, means the disk can be attached to single instance in RW mode. - READ_WRITE_MANY: The AccessMode means the disk can be attached to multiple instances in RW mode. - READ_ONLY_MANY: The AccessMode means the disk can be attached to multiple instances in RO mode. The AccessMode is only valid for Hyperdisk disk types.
+     * Check the AccessMode enum for the list of possible values.
+     *
+     * Generated from protobuf field <code>optional string access_mode = 41155486;</code>
+     * @return string
+     */
+    public function getAccessMode()
+    {
+        return isset($this->access_mode) ? $this->access_mode : '';
+    }
+
+    public function hasAccessMode()
+    {
+        return isset($this->access_mode);
+    }
+
+    public function clearAccessMode()
+    {
+        unset($this->access_mode);
+    }
+
+    /**
+     * The access mode of the disk. - READ_WRITE_SINGLE: The default AccessMode, means the disk can be attached to single instance in RW mode. - READ_WRITE_MANY: The AccessMode means the disk can be attached to multiple instances in RW mode. - READ_ONLY_MANY: The AccessMode means the disk can be attached to multiple instances in RO mode. The AccessMode is only valid for Hyperdisk disk types.
+     * Check the AccessMode enum for the list of possible values.
+     *
+     * Generated from protobuf field <code>optional string access_mode = 41155486;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setAccessMode($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->access_mode = $var;
+
+        return $this;
     }
 
     /**
@@ -589,6 +677,42 @@ class Disk extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\Compute\V1\CustomerEncryptionKey::class);
         $this->disk_encryption_key = $var;
+
+        return $this;
+    }
+
+    /**
+     * Whether this disk is using confidential compute mode.
+     *
+     * Generated from protobuf field <code>optional bool enable_confidential_compute = 102135228;</code>
+     * @return bool
+     */
+    public function getEnableConfidentialCompute()
+    {
+        return isset($this->enable_confidential_compute) ? $this->enable_confidential_compute : false;
+    }
+
+    public function hasEnableConfidentialCompute()
+    {
+        return isset($this->enable_confidential_compute);
+    }
+
+    public function clearEnableConfidentialCompute()
+    {
+        unset($this->enable_confidential_compute);
+    }
+
+    /**
+     * Whether this disk is using confidential compute mode.
+     *
+     * Generated from protobuf field <code>optional bool enable_confidential_compute = 102135228;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setEnableConfidentialCompute($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->enable_confidential_compute = $var;
 
         return $this;
     }
@@ -1094,7 +1218,7 @@ class Disk extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Indicates how much throughput to provision for the disk. This sets the number of throughput mb per second that the disk can handle. Values must be between 1 and 7,124.
+     * Indicates how much throughput to provision for the disk. This sets the number of throughput mb per second that the disk can handle. Values must be greater than or equal to 1.
      *
      * Generated from protobuf field <code>optional int64 provisioned_throughput = 526524181;</code>
      * @return int|string
@@ -1115,7 +1239,7 @@ class Disk extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Indicates how much throughput to provision for the disk. This sets the number of throughput mb per second that the disk can handle. Values must be between 1 and 7,124.
+     * Indicates how much throughput to provision for the disk. This sets the number of throughput mb per second that the disk can handle. Values must be greater than or equal to 1.
      *
      * Generated from protobuf field <code>optional int64 provisioned_throughput = 526524181;</code>
      * @param int|string $var
@@ -1249,6 +1373,42 @@ class Disk extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\Compute\V1\DiskResourceStatus::class);
         $this->resource_status = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Reserved for future use.
+     *
+     * Generated from protobuf field <code>optional bool satisfies_pzi = 480964257;</code>
+     * @return bool
+     */
+    public function getSatisfiesPzi()
+    {
+        return isset($this->satisfies_pzi) ? $this->satisfies_pzi : false;
+    }
+
+    public function hasSatisfiesPzi()
+    {
+        return isset($this->satisfies_pzi);
+    }
+
+    public function clearSatisfiesPzi()
+    {
+        unset($this->satisfies_pzi);
+    }
+
+    /**
+     * Output only. Reserved for future use.
+     *
+     * Generated from protobuf field <code>optional bool satisfies_pzi = 480964257;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setSatisfiesPzi($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->satisfies_pzi = $var;
 
         return $this;
     }
@@ -1614,6 +1774,78 @@ class Disk extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * The source instant snapshot used to create this disk. You can provide this as a partial or full URL to the resource. For example, the following are valid values: - https://www.googleapis.com/compute/v1/projects/project/zones/zone /instantSnapshots/instantSnapshot - projects/project/zones/zone/instantSnapshots/instantSnapshot - zones/zone/instantSnapshots/instantSnapshot 
+     *
+     * Generated from protobuf field <code>optional string source_instant_snapshot = 219202054;</code>
+     * @return string
+     */
+    public function getSourceInstantSnapshot()
+    {
+        return isset($this->source_instant_snapshot) ? $this->source_instant_snapshot : '';
+    }
+
+    public function hasSourceInstantSnapshot()
+    {
+        return isset($this->source_instant_snapshot);
+    }
+
+    public function clearSourceInstantSnapshot()
+    {
+        unset($this->source_instant_snapshot);
+    }
+
+    /**
+     * The source instant snapshot used to create this disk. You can provide this as a partial or full URL to the resource. For example, the following are valid values: - https://www.googleapis.com/compute/v1/projects/project/zones/zone /instantSnapshots/instantSnapshot - projects/project/zones/zone/instantSnapshots/instantSnapshot - zones/zone/instantSnapshots/instantSnapshot 
+     *
+     * Generated from protobuf field <code>optional string source_instant_snapshot = 219202054;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setSourceInstantSnapshot($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->source_instant_snapshot = $var;
+
+        return $this;
+    }
+
+    /**
+     * [Output Only] The unique ID of the instant snapshot used to create this disk. This value identifies the exact instant snapshot that was used to create this persistent disk. For example, if you created the persistent disk from an instant snapshot that was later deleted and recreated under the same name, the source instant snapshot ID would identify the exact version of the instant snapshot that was used.
+     *
+     * Generated from protobuf field <code>optional string source_instant_snapshot_id = 287582708;</code>
+     * @return string
+     */
+    public function getSourceInstantSnapshotId()
+    {
+        return isset($this->source_instant_snapshot_id) ? $this->source_instant_snapshot_id : '';
+    }
+
+    public function hasSourceInstantSnapshotId()
+    {
+        return isset($this->source_instant_snapshot_id);
+    }
+
+    public function clearSourceInstantSnapshotId()
+    {
+        unset($this->source_instant_snapshot_id);
+    }
+
+    /**
+     * [Output Only] The unique ID of the instant snapshot used to create this disk. This value identifies the exact instant snapshot that was used to create this persistent disk. For example, if you created the persistent disk from an instant snapshot that was later deleted and recreated under the same name, the source instant snapshot ID would identify the exact version of the instant snapshot that was used.
+     *
+     * Generated from protobuf field <code>optional string source_instant_snapshot_id = 287582708;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setSourceInstantSnapshotId($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->source_instant_snapshot_id = $var;
+
+        return $this;
+    }
+
+    /**
      * The source snapshot used to create this disk. You can provide this as a partial or full URL to the resource. For example, the following are valid values: - https://www.googleapis.com/compute/v1/projects/project /global/snapshots/snapshot - projects/project/global/snapshots/snapshot - global/snapshots/snapshot 
      *
      * Generated from protobuf field <code>optional string source_snapshot = 126061928;</code>
@@ -1791,6 +2023,42 @@ class Disk extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->status = $var;
+
+        return $this;
+    }
+
+    /**
+     * The storage pool in which the new disk is created. You can provide this as a partial or full URL to the resource. For example, the following are valid values: - https://www.googleapis.com/compute/v1/projects/project/zones/zone /storagePools/storagePool - projects/project/zones/zone/storagePools/storagePool - zones/zone/storagePools/storagePool 
+     *
+     * Generated from protobuf field <code>optional string storage_pool = 360473440;</code>
+     * @return string
+     */
+    public function getStoragePool()
+    {
+        return isset($this->storage_pool) ? $this->storage_pool : '';
+    }
+
+    public function hasStoragePool()
+    {
+        return isset($this->storage_pool);
+    }
+
+    public function clearStoragePool()
+    {
+        unset($this->storage_pool);
+    }
+
+    /**
+     * The storage pool in which the new disk is created. You can provide this as a partial or full URL to the resource. For example, the following are valid values: - https://www.googleapis.com/compute/v1/projects/project/zones/zone /storagePools/storagePool - projects/project/zones/zone/storagePools/storagePool - zones/zone/storagePools/storagePool 
+     *
+     * Generated from protobuf field <code>optional string storage_pool = 360473440;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setStoragePool($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->storage_pool = $var;
 
         return $this;
     }

@@ -16,6 +16,17 @@ use Google\Protobuf\Internal\GPBUtil;
 class CustomJobSpec extends \Google\Protobuf\Internal\Message
 {
     /**
+     * Optional. The ID of the PersistentResource in the same Project and Location
+     * which to run
+     * If this is specified, the job will be run on existing machines held by the
+     * PersistentResource instead of on-demand short-live machines.
+     * The network and CMEK configs on the job should be consistent with those on
+     * the PersistentResource, otherwise, the job will be rejected.
+     *
+     * Generated from protobuf field <code>string persistent_resource_id = 14 [(.google.api.field_behavior) = OPTIONAL, (.google.api.resource_reference) = {</code>
+     */
+    protected $persistent_resource_id = '';
+    /**
      * Required. The spec of the worker pools including machine type and Docker
      * image. All worker pools except the first one are optional and can be
      * skipped by providing an empty value.
@@ -28,7 +39,7 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.aiplatform.v1.Scheduling scheduling = 3;</code>
      */
-    private $scheduling = null;
+    protected $scheduling = null;
     /**
      * Specifies the service account for workload run-as account.
      * Users submitting jobs must have act-as permission on this run-as account.
@@ -38,12 +49,12 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string service_account = 4;</code>
      */
-    private $service_account = '';
+    protected $service_account = '';
     /**
      * Optional. The full name of the Compute Engine
-     * [network](https://cloud.google.com/compute/docs/networks-and-firewalls#networks) to which the Job
+     * [network](/compute/docs/networks-and-firewalls#networks) to which the Job
      * should be peered. For example, `projects/12345/global/networks/myVPC`.
-     * [Format](https://cloud.google.com/compute/docs/reference/rest/v1/networks/insert)
+     * [Format](/compute/docs/reference/rest/v1/networks/insert)
      * is of the form `projects/{project}/global/networks/{network}`.
      * Where {project} is a project number, as in `12345`, and {network} is a
      * network name.
@@ -54,7 +65,7 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string network = 5 [(.google.api.field_behavior) = OPTIONAL, (.google.api.resource_reference) = {</code>
      */
-    private $network = '';
+    protected $network = '';
     /**
      * Optional. A list of names for the reserved ip ranges under the VPC network
      * that can be used for this job.
@@ -86,7 +97,7 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.aiplatform.v1.GcsDestination base_output_directory = 6;</code>
      */
-    private $base_output_directory = null;
+    protected $base_output_directory = null;
     /**
      * The ID of the location to store protected artifacts. e.g. us-central1.
      * Populate only when the location is different than CustomJob location.
@@ -95,7 +106,7 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string protected_artifact_location_id = 19;</code>
      */
-    private $protected_artifact_location_id = '';
+    protected $protected_artifact_location_id = '';
     /**
      * Optional. The name of a Vertex AI
      * [Tensorboard][google.cloud.aiplatform.v1.Tensorboard] resource to which
@@ -104,7 +115,7 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string tensorboard = 7 [(.google.api.field_behavior) = OPTIONAL, (.google.api.resource_reference) = {</code>
      */
-    private $tensorboard = '';
+    protected $tensorboard = '';
     /**
      * Optional. Whether you want Vertex AI to enable [interactive shell
      * access](https://cloud.google.com/vertex-ai/docs/training/monitor-debug-interactive-shell)
@@ -119,7 +130,7 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>bool enable_web_access = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $enable_web_access = false;
+    protected $enable_web_access = false;
     /**
      * Optional. Whether you want Vertex AI to enable access to the customized
      * dashboard in training chief container.
@@ -133,7 +144,7 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>bool enable_dashboard_access = 16 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $enable_dashboard_access = false;
+    protected $enable_dashboard_access = false;
     /**
      * Optional. The Experiment associated with this job.
      * Format:
@@ -141,7 +152,7 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string experiment = 17 [(.google.api.field_behavior) = OPTIONAL, (.google.api.resource_reference) = {</code>
      */
-    private $experiment = '';
+    protected $experiment = '';
     /**
      * Optional. The Experiment Run associated with this job.
      * Format:
@@ -149,7 +160,24 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string experiment_run = 18 [(.google.api.field_behavior) = OPTIONAL, (.google.api.resource_reference) = {</code>
      */
-    private $experiment_run = '';
+    protected $experiment_run = '';
+    /**
+     * Optional. The name of the Model resources for which to generate a mapping
+     * to artifact URIs. Applicable only to some of the Google-provided custom
+     * jobs. Format: `projects/{project}/locations/{location}/models/{model}`
+     * In order to retrieve a specific version of the model, also provide
+     * the version ID or version alias.
+     *   Example: `projects/{project}/locations/{location}/models/{model}&#64;2`
+     *              or
+     *            `projects/{project}/locations/{location}/models/{model}&#64;golden`
+     * If no version ID or alias is specified, the "default" version will be
+     * returned. The "default" version alias is created for the first version of
+     * the model, and can be moved to other versions later on. There will be
+     * exactly one default version.
+     *
+     * Generated from protobuf field <code>repeated string models = 20 [(.google.api.field_behavior) = OPTIONAL, (.google.api.resource_reference) = {</code>
+     */
+    private $models;
 
     /**
      * Constructor.
@@ -157,6 +185,13 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
+     *     @type string $persistent_resource_id
+     *           Optional. The ID of the PersistentResource in the same Project and Location
+     *           which to run
+     *           If this is specified, the job will be run on existing machines held by the
+     *           PersistentResource instead of on-demand short-live machines.
+     *           The network and CMEK configs on the job should be consistent with those on
+     *           the PersistentResource, otherwise, the job will be rejected.
      *     @type array<\Google\Cloud\AIPlatform\V1\WorkerPoolSpec>|\Google\Protobuf\Internal\RepeatedField $worker_pool_specs
      *           Required. The spec of the worker pools including machine type and Docker
      *           image. All worker pools except the first one are optional and can be
@@ -171,9 +206,9 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
      *           for the CustomJob's project is used.
      *     @type string $network
      *           Optional. The full name of the Compute Engine
-     *           [network](https://cloud.google.com/compute/docs/networks-and-firewalls#networks) to which the Job
+     *           [network](/compute/docs/networks-and-firewalls#networks) to which the Job
      *           should be peered. For example, `projects/12345/global/networks/myVPC`.
-     *           [Format](https://cloud.google.com/compute/docs/reference/rest/v1/networks/insert)
+     *           [Format](/compute/docs/reference/rest/v1/networks/insert)
      *           is of the form `projects/{project}/global/networks/{network}`.
      *           Where {project} is a project number, as in `12345`, and {network} is a
      *           network name.
@@ -244,11 +279,60 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
      *           Optional. The Experiment Run associated with this job.
      *           Format:
      *           `projects/{project}/locations/{location}/metadataStores/{metadataStores}/contexts/{experiment-name}-{experiment-run-name}`
+     *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $models
+     *           Optional. The name of the Model resources for which to generate a mapping
+     *           to artifact URIs. Applicable only to some of the Google-provided custom
+     *           jobs. Format: `projects/{project}/locations/{location}/models/{model}`
+     *           In order to retrieve a specific version of the model, also provide
+     *           the version ID or version alias.
+     *             Example: `projects/{project}/locations/{location}/models/{model}&#64;2`
+     *                        or
+     *                      `projects/{project}/locations/{location}/models/{model}&#64;golden`
+     *           If no version ID or alias is specified, the "default" version will be
+     *           returned. The "default" version alias is created for the first version of
+     *           the model, and can be moved to other versions later on. There will be
+     *           exactly one default version.
      * }
      */
     public function __construct($data = NULL) {
         \GPBMetadata\Google\Cloud\Aiplatform\V1\CustomJob::initOnce();
         parent::__construct($data);
+    }
+
+    /**
+     * Optional. The ID of the PersistentResource in the same Project and Location
+     * which to run
+     * If this is specified, the job will be run on existing machines held by the
+     * PersistentResource instead of on-demand short-live machines.
+     * The network and CMEK configs on the job should be consistent with those on
+     * the PersistentResource, otherwise, the job will be rejected.
+     *
+     * Generated from protobuf field <code>string persistent_resource_id = 14 [(.google.api.field_behavior) = OPTIONAL, (.google.api.resource_reference) = {</code>
+     * @return string
+     */
+    public function getPersistentResourceId()
+    {
+        return $this->persistent_resource_id;
+    }
+
+    /**
+     * Optional. The ID of the PersistentResource in the same Project and Location
+     * which to run
+     * If this is specified, the job will be run on existing machines held by the
+     * PersistentResource instead of on-demand short-live machines.
+     * The network and CMEK configs on the job should be consistent with those on
+     * the PersistentResource, otherwise, the job will be rejected.
+     *
+     * Generated from protobuf field <code>string persistent_resource_id = 14 [(.google.api.field_behavior) = OPTIONAL, (.google.api.resource_reference) = {</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setPersistentResourceId($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->persistent_resource_id = $var;
+
+        return $this;
     }
 
     /**
@@ -353,9 +437,9 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
 
     /**
      * Optional. The full name of the Compute Engine
-     * [network](https://cloud.google.com/compute/docs/networks-and-firewalls#networks) to which the Job
+     * [network](/compute/docs/networks-and-firewalls#networks) to which the Job
      * should be peered. For example, `projects/12345/global/networks/myVPC`.
-     * [Format](https://cloud.google.com/compute/docs/reference/rest/v1/networks/insert)
+     * [Format](/compute/docs/reference/rest/v1/networks/insert)
      * is of the form `projects/{project}/global/networks/{network}`.
      * Where {project} is a project number, as in `12345`, and {network} is a
      * network name.
@@ -374,9 +458,9 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
 
     /**
      * Optional. The full name of the Compute Engine
-     * [network](https://cloud.google.com/compute/docs/networks-and-firewalls#networks) to which the Job
+     * [network](/compute/docs/networks-and-firewalls#networks) to which the Job
      * should be peered. For example, `projects/12345/global/networks/myVPC`.
-     * [Format](https://cloud.google.com/compute/docs/reference/rest/v1/networks/insert)
+     * [Format](/compute/docs/reference/rest/v1/networks/insert)
      * is of the form `projects/{project}/global/networks/{network}`.
      * Where {project} is a project number, as in `12345`, and {network} is a
      * network name.
@@ -705,6 +789,54 @@ class CustomJobSpec extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->experiment_run = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. The name of the Model resources for which to generate a mapping
+     * to artifact URIs. Applicable only to some of the Google-provided custom
+     * jobs. Format: `projects/{project}/locations/{location}/models/{model}`
+     * In order to retrieve a specific version of the model, also provide
+     * the version ID or version alias.
+     *   Example: `projects/{project}/locations/{location}/models/{model}&#64;2`
+     *              or
+     *            `projects/{project}/locations/{location}/models/{model}&#64;golden`
+     * If no version ID or alias is specified, the "default" version will be
+     * returned. The "default" version alias is created for the first version of
+     * the model, and can be moved to other versions later on. There will be
+     * exactly one default version.
+     *
+     * Generated from protobuf field <code>repeated string models = 20 [(.google.api.field_behavior) = OPTIONAL, (.google.api.resource_reference) = {</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getModels()
+    {
+        return $this->models;
+    }
+
+    /**
+     * Optional. The name of the Model resources for which to generate a mapping
+     * to artifact URIs. Applicable only to some of the Google-provided custom
+     * jobs. Format: `projects/{project}/locations/{location}/models/{model}`
+     * In order to retrieve a specific version of the model, also provide
+     * the version ID or version alias.
+     *   Example: `projects/{project}/locations/{location}/models/{model}&#64;2`
+     *              or
+     *            `projects/{project}/locations/{location}/models/{model}&#64;golden`
+     * If no version ID or alias is specified, the "default" version will be
+     * returned. The "default" version alias is created for the first version of
+     * the model, and can be moved to other versions later on. There will be
+     * exactly one default version.
+     *
+     * Generated from protobuf field <code>repeated string models = 20 [(.google.api.field_behavior) = OPTIONAL, (.google.api.resource_reference) = {</code>
+     * @param array<string>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setModels($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
+        $this->models = $arr;
 
         return $this;
     }

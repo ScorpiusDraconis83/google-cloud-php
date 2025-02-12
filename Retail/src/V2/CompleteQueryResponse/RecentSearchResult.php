@@ -9,8 +9,9 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Recent search of this user.
+ * Deprecated: Recent search of this user.
  *
+ * @deprecated
  * Generated from protobuf message <code>google.cloud.retail.v2.CompleteQueryResponse.RecentSearchResult</code>
  */
 class RecentSearchResult extends \Google\Protobuf\Internal\Message
@@ -20,7 +21,7 @@ class RecentSearchResult extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string recent_search = 1;</code>
      */
-    private $recent_search = '';
+    protected $recent_search = '';
 
     /**
      * Constructor.

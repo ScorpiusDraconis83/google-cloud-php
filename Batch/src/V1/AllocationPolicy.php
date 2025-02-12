@@ -21,7 +21,7 @@ class AllocationPolicy extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.batch.v1.AllocationPolicy.LocationPolicy location = 1;</code>
      */
-    private $location = null;
+    protected $location = null;
     /**
      * Describe instances that can be created by this AllocationPolicy.
      * Only instances[0] is supported now.
@@ -30,38 +30,59 @@ class AllocationPolicy extends \Google\Protobuf\Internal\Message
      */
     private $instances;
     /**
-     * Service account that VMs will run as.
+     * Defines the service account for Batch-created VMs. If omitted, the [default
+     * Compute Engine service
+     * account](https://cloud.google.com/compute/docs/access/service-accounts#default_service_account)
+     * is used. Must match the service account specified in any used instance
+     * template configured in the Batch job.
+     * Includes the following fields:
+     *  * email: The service account's email address. If not set, the default
+     *  Compute Engine service account is used.
+     *  * scopes: Additional OAuth scopes to grant the service account, beyond the
+     *  default cloud-platform scope. (list of strings)
      *
      * Generated from protobuf field <code>.google.cloud.batch.v1.ServiceAccount service_account = 9;</code>
      */
-    private $service_account = null;
+    protected $service_account = null;
     /**
-     * Labels applied to all VM instances and other resources
-     * created by AllocationPolicy.
-     * Labels could be user provided or system generated.
-     * You can assign up to 64 labels. [Google Compute Engine label
-     * restrictions](https://cloud.google.com/compute/docs/labeling-resources#restrictions)
-     * apply.
-     * Label names that start with "goog-" or "google-" are reserved.
+     * Custom labels to apply to the job and all the Compute Engine resources
+     * that both are created by this allocation policy and support labels.
+     * Use labels to group and describe the resources they are applied to. Batch
+     * automatically applies predefined labels and supports multiple `labels`
+     * fields for each job, which each let you apply custom labels to various
+     * resources. Label names that start with "goog-" or "google-" are
+     * reserved for predefined labels. For more information about labels with
+     * Batch, see
+     * [Organize resources using
+     * labels](https://cloud.google.com/batch/docs/organize-resources-using-labels).
      *
      * Generated from protobuf field <code>map<string, string> labels = 6;</code>
      */
     private $labels;
     /**
      * The network policy.
-     * If you define an instance template in the InstancePolicyOrTemplate field,
+     * If you define an instance template in the `InstancePolicyOrTemplate` field,
      * Batch will use the network settings in the instance template instead of
      * this field.
      *
      * Generated from protobuf field <code>.google.cloud.batch.v1.AllocationPolicy.NetworkPolicy network = 7;</code>
      */
-    private $network = null;
+    protected $network = null;
     /**
      * The placement policy.
      *
      * Generated from protobuf field <code>.google.cloud.batch.v1.AllocationPolicy.PlacementPolicy placement = 10;</code>
      */
-    private $placement = null;
+    protected $placement = null;
+    /**
+     * Optional. Tags applied to the VM instances.
+     * The tags identify valid sources or targets for network firewalls.
+     * Each tag must be 1-63 characters long, and comply with
+     * [RFC1035](https://www.ietf.org/rfc/rfc1035.txt).
+     *
+     * Generated from protobuf field <code>repeated string tags = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    private $tags;
 
     /**
      * Constructor.
@@ -75,22 +96,39 @@ class AllocationPolicy extends \Google\Protobuf\Internal\Message
      *           Describe instances that can be created by this AllocationPolicy.
      *           Only instances[0] is supported now.
      *     @type \Google\Cloud\Batch\V1\ServiceAccount $service_account
-     *           Service account that VMs will run as.
+     *           Defines the service account for Batch-created VMs. If omitted, the [default
+     *           Compute Engine service
+     *           account](https://cloud.google.com/compute/docs/access/service-accounts#default_service_account)
+     *           is used. Must match the service account specified in any used instance
+     *           template configured in the Batch job.
+     *           Includes the following fields:
+     *            * email: The service account's email address. If not set, the default
+     *            Compute Engine service account is used.
+     *            * scopes: Additional OAuth scopes to grant the service account, beyond the
+     *            default cloud-platform scope. (list of strings)
      *     @type array|\Google\Protobuf\Internal\MapField $labels
-     *           Labels applied to all VM instances and other resources
-     *           created by AllocationPolicy.
-     *           Labels could be user provided or system generated.
-     *           You can assign up to 64 labels. [Google Compute Engine label
-     *           restrictions](https://cloud.google.com/compute/docs/labeling-resources#restrictions)
-     *           apply.
-     *           Label names that start with "goog-" or "google-" are reserved.
+     *           Custom labels to apply to the job and all the Compute Engine resources
+     *           that both are created by this allocation policy and support labels.
+     *           Use labels to group and describe the resources they are applied to. Batch
+     *           automatically applies predefined labels and supports multiple `labels`
+     *           fields for each job, which each let you apply custom labels to various
+     *           resources. Label names that start with "goog-" or "google-" are
+     *           reserved for predefined labels. For more information about labels with
+     *           Batch, see
+     *           [Organize resources using
+     *           labels](https://cloud.google.com/batch/docs/organize-resources-using-labels).
      *     @type \Google\Cloud\Batch\V1\AllocationPolicy\NetworkPolicy $network
      *           The network policy.
-     *           If you define an instance template in the InstancePolicyOrTemplate field,
+     *           If you define an instance template in the `InstancePolicyOrTemplate` field,
      *           Batch will use the network settings in the instance template instead of
      *           this field.
      *     @type \Google\Cloud\Batch\V1\AllocationPolicy\PlacementPolicy $placement
      *           The placement policy.
+     *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $tags
+     *           Optional. Tags applied to the VM instances.
+     *           The tags identify valid sources or targets for network firewalls.
+     *           Each tag must be 1-63 characters long, and comply with
+     *           [RFC1035](https://www.ietf.org/rfc/rfc1035.txt).
      * }
      */
     public function __construct($data = NULL) {
@@ -163,7 +201,16 @@ class AllocationPolicy extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Service account that VMs will run as.
+     * Defines the service account for Batch-created VMs. If omitted, the [default
+     * Compute Engine service
+     * account](https://cloud.google.com/compute/docs/access/service-accounts#default_service_account)
+     * is used. Must match the service account specified in any used instance
+     * template configured in the Batch job.
+     * Includes the following fields:
+     *  * email: The service account's email address. If not set, the default
+     *  Compute Engine service account is used.
+     *  * scopes: Additional OAuth scopes to grant the service account, beyond the
+     *  default cloud-platform scope. (list of strings)
      *
      * Generated from protobuf field <code>.google.cloud.batch.v1.ServiceAccount service_account = 9;</code>
      * @return \Google\Cloud\Batch\V1\ServiceAccount|null
@@ -184,7 +231,16 @@ class AllocationPolicy extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Service account that VMs will run as.
+     * Defines the service account for Batch-created VMs. If omitted, the [default
+     * Compute Engine service
+     * account](https://cloud.google.com/compute/docs/access/service-accounts#default_service_account)
+     * is used. Must match the service account specified in any used instance
+     * template configured in the Batch job.
+     * Includes the following fields:
+     *  * email: The service account's email address. If not set, the default
+     *  Compute Engine service account is used.
+     *  * scopes: Additional OAuth scopes to grant the service account, beyond the
+     *  default cloud-platform scope. (list of strings)
      *
      * Generated from protobuf field <code>.google.cloud.batch.v1.ServiceAccount service_account = 9;</code>
      * @param \Google\Cloud\Batch\V1\ServiceAccount $var
@@ -199,13 +255,16 @@ class AllocationPolicy extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Labels applied to all VM instances and other resources
-     * created by AllocationPolicy.
-     * Labels could be user provided or system generated.
-     * You can assign up to 64 labels. [Google Compute Engine label
-     * restrictions](https://cloud.google.com/compute/docs/labeling-resources#restrictions)
-     * apply.
-     * Label names that start with "goog-" or "google-" are reserved.
+     * Custom labels to apply to the job and all the Compute Engine resources
+     * that both are created by this allocation policy and support labels.
+     * Use labels to group and describe the resources they are applied to. Batch
+     * automatically applies predefined labels and supports multiple `labels`
+     * fields for each job, which each let you apply custom labels to various
+     * resources. Label names that start with "goog-" or "google-" are
+     * reserved for predefined labels. For more information about labels with
+     * Batch, see
+     * [Organize resources using
+     * labels](https://cloud.google.com/batch/docs/organize-resources-using-labels).
      *
      * Generated from protobuf field <code>map<string, string> labels = 6;</code>
      * @return \Google\Protobuf\Internal\MapField
@@ -216,13 +275,16 @@ class AllocationPolicy extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Labels applied to all VM instances and other resources
-     * created by AllocationPolicy.
-     * Labels could be user provided or system generated.
-     * You can assign up to 64 labels. [Google Compute Engine label
-     * restrictions](https://cloud.google.com/compute/docs/labeling-resources#restrictions)
-     * apply.
-     * Label names that start with "goog-" or "google-" are reserved.
+     * Custom labels to apply to the job and all the Compute Engine resources
+     * that both are created by this allocation policy and support labels.
+     * Use labels to group and describe the resources they are applied to. Batch
+     * automatically applies predefined labels and supports multiple `labels`
+     * fields for each job, which each let you apply custom labels to various
+     * resources. Label names that start with "goog-" or "google-" are
+     * reserved for predefined labels. For more information about labels with
+     * Batch, see
+     * [Organize resources using
+     * labels](https://cloud.google.com/batch/docs/organize-resources-using-labels).
      *
      * Generated from protobuf field <code>map<string, string> labels = 6;</code>
      * @param array|\Google\Protobuf\Internal\MapField $var
@@ -238,7 +300,7 @@ class AllocationPolicy extends \Google\Protobuf\Internal\Message
 
     /**
      * The network policy.
-     * If you define an instance template in the InstancePolicyOrTemplate field,
+     * If you define an instance template in the `InstancePolicyOrTemplate` field,
      * Batch will use the network settings in the instance template instead of
      * this field.
      *
@@ -262,7 +324,7 @@ class AllocationPolicy extends \Google\Protobuf\Internal\Message
 
     /**
      * The network policy.
-     * If you define an instance template in the InstancePolicyOrTemplate field,
+     * If you define an instance template in the `InstancePolicyOrTemplate` field,
      * Batch will use the network settings in the instance template instead of
      * this field.
      *
@@ -310,6 +372,38 @@ class AllocationPolicy extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\Batch\V1\AllocationPolicy\PlacementPolicy::class);
         $this->placement = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Tags applied to the VM instances.
+     * The tags identify valid sources or targets for network firewalls.
+     * Each tag must be 1-63 characters long, and comply with
+     * [RFC1035](https://www.ietf.org/rfc/rfc1035.txt).
+     *
+     * Generated from protobuf field <code>repeated string tags = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    /**
+     * Optional. Tags applied to the VM instances.
+     * The tags identify valid sources or targets for network firewalls.
+     * Each tag must be 1-63 characters long, and comply with
+     * [RFC1035](https://www.ietf.org/rfc/rfc1035.txt).
+     *
+     * Generated from protobuf field <code>repeated string tags = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param array<string>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setTags($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
+        $this->tags = $arr;
 
         return $this;
     }

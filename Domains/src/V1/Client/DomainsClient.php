@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\Domains\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -55,8 +54,10 @@ use Google\Cloud\Domains\V1\SearchDomainsRequest;
 use Google\Cloud\Domains\V1\SearchDomainsResponse;
 use Google\Cloud\Domains\V1\TransferDomainRequest;
 use Google\Cloud\Domains\V1\UpdateRegistrationRequest;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The Cloud Domains API enables management and configuration of domain names.
@@ -69,21 +70,21 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface configureContactSettingsAsync(ConfigureContactSettingsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface configureDnsSettingsAsync(ConfigureDnsSettingsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface configureManagementSettingsAsync(ConfigureManagementSettingsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteRegistrationAsync(DeleteRegistrationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface exportRegistrationAsync(ExportRegistrationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getRegistrationAsync(GetRegistrationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listRegistrationsAsync(ListRegistrationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface registerDomainAsync(RegisterDomainRequest $request, array $optionalArgs = [])
- * @method PromiseInterface resetAuthorizationCodeAsync(ResetAuthorizationCodeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface retrieveAuthorizationCodeAsync(RetrieveAuthorizationCodeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface retrieveRegisterParametersAsync(RetrieveRegisterParametersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface retrieveTransferParametersAsync(RetrieveTransferParametersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface searchDomainsAsync(SearchDomainsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface transferDomainAsync(TransferDomainRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateRegistrationAsync(UpdateRegistrationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> configureContactSettingsAsync(ConfigureContactSettingsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> configureDnsSettingsAsync(ConfigureDnsSettingsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> configureManagementSettingsAsync(ConfigureManagementSettingsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteRegistrationAsync(DeleteRegistrationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> exportRegistrationAsync(ExportRegistrationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Registration> getRegistrationAsync(GetRegistrationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listRegistrationsAsync(ListRegistrationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> registerDomainAsync(RegisterDomainRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AuthorizationCode> resetAuthorizationCodeAsync(ResetAuthorizationCodeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AuthorizationCode> retrieveAuthorizationCodeAsync(RetrieveAuthorizationCodeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<RetrieveRegisterParametersResponse> retrieveRegisterParametersAsync(RetrieveRegisterParametersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<RetrieveTransferParametersResponse> retrieveTransferParametersAsync(RetrieveTransferParametersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<SearchDomainsResponse> searchDomainsAsync(SearchDomainsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> transferDomainAsync(TransferDomainRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateRegistrationAsync(UpdateRegistrationRequest $request, array $optionalArgs = [])
  */
 final class DomainsClient
 {
@@ -110,9 +111,7 @@ final class DomainsClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private $operationsClient;
 
@@ -158,10 +157,31 @@ final class DomainsClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -213,14 +233,14 @@ final class DomainsClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -242,6 +262,12 @@ final class DomainsClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -275,6 +301,9 @@ final class DomainsClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -319,8 +348,10 @@ final class DomainsClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function configureContactSettings(ConfigureContactSettingsRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function configureContactSettings(
+        ConfigureContactSettingsRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('ConfigureContactSettings', $request, $callOptions)->wait();
     }
 
@@ -345,8 +376,10 @@ final class DomainsClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function configureDnsSettings(ConfigureDnsSettingsRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function configureDnsSettings(
+        ConfigureDnsSettingsRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('ConfigureDnsSettings', $request, $callOptions)->wait();
     }
 
@@ -371,8 +404,10 @@ final class DomainsClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function configureManagementSettings(ConfigureManagementSettingsRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function configureManagementSettings(
+        ConfigureManagementSettingsRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('ConfigureManagementSettings', $request, $callOptions)->wait();
     }
 
@@ -380,11 +415,11 @@ final class DomainsClient
      * Deletes a `Registration` resource.
      *
      * This method works on any `Registration` resource using [Subscription or
-     * Commitment billing](https://cloud.google.com/domains/pricing#billing-models), provided that the
+     * Commitment billing](/domains/pricing#billing-models), provided that the
      * resource was created at least 1 day in the past.
      *
      * For `Registration` resources using
-     * [Monthly billing](https://cloud.google.com/domains/pricing#billing-models), this method works if:
+     * [Monthly billing](/domains/pricing#billing-models), this method works if:
      *
      * * `state` is `EXPORTED` with `expire_time` in the past
      * * `state` is `REGISTRATION_FAILED`
@@ -568,8 +603,10 @@ final class DomainsClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function resetAuthorizationCode(ResetAuthorizationCodeRequest $request, array $callOptions = []): AuthorizationCode
-    {
+    public function resetAuthorizationCode(
+        ResetAuthorizationCodeRequest $request,
+        array $callOptions = []
+    ): AuthorizationCode {
         return $this->startApiCall('ResetAuthorizationCode', $request, $callOptions)->wait();
     }
 
@@ -598,8 +635,10 @@ final class DomainsClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function retrieveAuthorizationCode(RetrieveAuthorizationCodeRequest $request, array $callOptions = []): AuthorizationCode
-    {
+    public function retrieveAuthorizationCode(
+        RetrieveAuthorizationCodeRequest $request,
+        array $callOptions = []
+    ): AuthorizationCode {
         return $this->startApiCall('RetrieveAuthorizationCode', $request, $callOptions)->wait();
     }
 
@@ -625,8 +664,10 @@ final class DomainsClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function retrieveRegisterParameters(RetrieveRegisterParametersRequest $request, array $callOptions = []): RetrieveRegisterParametersResponse
-    {
+    public function retrieveRegisterParameters(
+        RetrieveRegisterParametersRequest $request,
+        array $callOptions = []
+    ): RetrieveRegisterParametersResponse {
         return $this->startApiCall('RetrieveRegisterParameters', $request, $callOptions)->wait();
     }
 
@@ -656,8 +697,10 @@ final class DomainsClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function retrieveTransferParameters(RetrieveTransferParametersRequest $request, array $callOptions = []): RetrieveTransferParametersResponse
-    {
+    public function retrieveTransferParameters(
+        RetrieveTransferParametersRequest $request,
+        array $callOptions = []
+    ): RetrieveTransferParametersResponse {
         return $this->startApiCall('RetrieveTransferParameters', $request, $callOptions)->wait();
     }
 

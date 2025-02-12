@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\VmwareEngine\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -45,54 +44,99 @@ use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\Location;
 use Google\Cloud\VmwareEngine\V1\Cluster;
 use Google\Cloud\VmwareEngine\V1\CreateClusterRequest;
+use Google\Cloud\VmwareEngine\V1\CreateExternalAccessRuleRequest;
+use Google\Cloud\VmwareEngine\V1\CreateExternalAddressRequest;
 use Google\Cloud\VmwareEngine\V1\CreateHcxActivationKeyRequest;
+use Google\Cloud\VmwareEngine\V1\CreateLoggingServerRequest;
+use Google\Cloud\VmwareEngine\V1\CreateManagementDnsZoneBindingRequest;
+use Google\Cloud\VmwareEngine\V1\CreateNetworkPeeringRequest;
 use Google\Cloud\VmwareEngine\V1\CreateNetworkPolicyRequest;
 use Google\Cloud\VmwareEngine\V1\CreatePrivateCloudRequest;
 use Google\Cloud\VmwareEngine\V1\CreatePrivateConnectionRequest;
 use Google\Cloud\VmwareEngine\V1\CreateVmwareEngineNetworkRequest;
 use Google\Cloud\VmwareEngine\V1\Credentials;
 use Google\Cloud\VmwareEngine\V1\DeleteClusterRequest;
+use Google\Cloud\VmwareEngine\V1\DeleteExternalAccessRuleRequest;
+use Google\Cloud\VmwareEngine\V1\DeleteExternalAddressRequest;
+use Google\Cloud\VmwareEngine\V1\DeleteLoggingServerRequest;
+use Google\Cloud\VmwareEngine\V1\DeleteManagementDnsZoneBindingRequest;
+use Google\Cloud\VmwareEngine\V1\DeleteNetworkPeeringRequest;
 use Google\Cloud\VmwareEngine\V1\DeleteNetworkPolicyRequest;
 use Google\Cloud\VmwareEngine\V1\DeletePrivateCloudRequest;
 use Google\Cloud\VmwareEngine\V1\DeletePrivateConnectionRequest;
 use Google\Cloud\VmwareEngine\V1\DeleteVmwareEngineNetworkRequest;
+use Google\Cloud\VmwareEngine\V1\DnsBindPermission;
+use Google\Cloud\VmwareEngine\V1\DnsForwarding;
+use Google\Cloud\VmwareEngine\V1\ExternalAccessRule;
+use Google\Cloud\VmwareEngine\V1\ExternalAddress;
+use Google\Cloud\VmwareEngine\V1\FetchNetworkPolicyExternalAddressesRequest;
 use Google\Cloud\VmwareEngine\V1\GetClusterRequest;
+use Google\Cloud\VmwareEngine\V1\GetDnsBindPermissionRequest;
+use Google\Cloud\VmwareEngine\V1\GetDnsForwardingRequest;
+use Google\Cloud\VmwareEngine\V1\GetExternalAccessRuleRequest;
+use Google\Cloud\VmwareEngine\V1\GetExternalAddressRequest;
 use Google\Cloud\VmwareEngine\V1\GetHcxActivationKeyRequest;
+use Google\Cloud\VmwareEngine\V1\GetLoggingServerRequest;
+use Google\Cloud\VmwareEngine\V1\GetManagementDnsZoneBindingRequest;
+use Google\Cloud\VmwareEngine\V1\GetNetworkPeeringRequest;
 use Google\Cloud\VmwareEngine\V1\GetNetworkPolicyRequest;
+use Google\Cloud\VmwareEngine\V1\GetNodeRequest;
 use Google\Cloud\VmwareEngine\V1\GetNodeTypeRequest;
 use Google\Cloud\VmwareEngine\V1\GetPrivateCloudRequest;
 use Google\Cloud\VmwareEngine\V1\GetPrivateConnectionRequest;
 use Google\Cloud\VmwareEngine\V1\GetSubnetRequest;
 use Google\Cloud\VmwareEngine\V1\GetVmwareEngineNetworkRequest;
+use Google\Cloud\VmwareEngine\V1\GrantDnsBindPermissionRequest;
 use Google\Cloud\VmwareEngine\V1\HcxActivationKey;
 use Google\Cloud\VmwareEngine\V1\ListClustersRequest;
+use Google\Cloud\VmwareEngine\V1\ListExternalAccessRulesRequest;
+use Google\Cloud\VmwareEngine\V1\ListExternalAddressesRequest;
 use Google\Cloud\VmwareEngine\V1\ListHcxActivationKeysRequest;
+use Google\Cloud\VmwareEngine\V1\ListLoggingServersRequest;
+use Google\Cloud\VmwareEngine\V1\ListManagementDnsZoneBindingsRequest;
+use Google\Cloud\VmwareEngine\V1\ListNetworkPeeringsRequest;
 use Google\Cloud\VmwareEngine\V1\ListNetworkPoliciesRequest;
 use Google\Cloud\VmwareEngine\V1\ListNodeTypesRequest;
+use Google\Cloud\VmwareEngine\V1\ListNodesRequest;
+use Google\Cloud\VmwareEngine\V1\ListPeeringRoutesRequest;
 use Google\Cloud\VmwareEngine\V1\ListPrivateCloudsRequest;
 use Google\Cloud\VmwareEngine\V1\ListPrivateConnectionPeeringRoutesRequest;
 use Google\Cloud\VmwareEngine\V1\ListPrivateConnectionsRequest;
 use Google\Cloud\VmwareEngine\V1\ListSubnetsRequest;
 use Google\Cloud\VmwareEngine\V1\ListVmwareEngineNetworksRequest;
+use Google\Cloud\VmwareEngine\V1\LoggingServer;
+use Google\Cloud\VmwareEngine\V1\ManagementDnsZoneBinding;
+use Google\Cloud\VmwareEngine\V1\NetworkPeering;
 use Google\Cloud\VmwareEngine\V1\NetworkPolicy;
+use Google\Cloud\VmwareEngine\V1\Node;
 use Google\Cloud\VmwareEngine\V1\NodeType;
 use Google\Cloud\VmwareEngine\V1\PrivateCloud;
 use Google\Cloud\VmwareEngine\V1\PrivateConnection;
+use Google\Cloud\VmwareEngine\V1\RepairManagementDnsZoneBindingRequest;
 use Google\Cloud\VmwareEngine\V1\ResetNsxCredentialsRequest;
 use Google\Cloud\VmwareEngine\V1\ResetVcenterCredentialsRequest;
+use Google\Cloud\VmwareEngine\V1\RevokeDnsBindPermissionRequest;
 use Google\Cloud\VmwareEngine\V1\ShowNsxCredentialsRequest;
 use Google\Cloud\VmwareEngine\V1\ShowVcenterCredentialsRequest;
 use Google\Cloud\VmwareEngine\V1\Subnet;
 use Google\Cloud\VmwareEngine\V1\UndeletePrivateCloudRequest;
 use Google\Cloud\VmwareEngine\V1\UpdateClusterRequest;
+use Google\Cloud\VmwareEngine\V1\UpdateDnsForwardingRequest;
+use Google\Cloud\VmwareEngine\V1\UpdateExternalAccessRuleRequest;
+use Google\Cloud\VmwareEngine\V1\UpdateExternalAddressRequest;
+use Google\Cloud\VmwareEngine\V1\UpdateLoggingServerRequest;
+use Google\Cloud\VmwareEngine\V1\UpdateManagementDnsZoneBindingRequest;
+use Google\Cloud\VmwareEngine\V1\UpdateNetworkPeeringRequest;
 use Google\Cloud\VmwareEngine\V1\UpdateNetworkPolicyRequest;
 use Google\Cloud\VmwareEngine\V1\UpdatePrivateCloudRequest;
 use Google\Cloud\VmwareEngine\V1\UpdatePrivateConnectionRequest;
 use Google\Cloud\VmwareEngine\V1\UpdateSubnetRequest;
 use Google\Cloud\VmwareEngine\V1\UpdateVmwareEngineNetworkRequest;
 use Google\Cloud\VmwareEngine\V1\VmwareEngineNetwork;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: VMwareEngine manages VMware's private clusters in the Cloud.
@@ -105,50 +149,85 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createClusterAsync(CreateClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createHcxActivationKeyAsync(CreateHcxActivationKeyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createNetworkPolicyAsync(CreateNetworkPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createPrivateCloudAsync(CreatePrivateCloudRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createPrivateConnectionAsync(CreatePrivateConnectionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createVmwareEngineNetworkAsync(CreateVmwareEngineNetworkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteClusterAsync(DeleteClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteNetworkPolicyAsync(DeleteNetworkPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deletePrivateCloudAsync(DeletePrivateCloudRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deletePrivateConnectionAsync(DeletePrivateConnectionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteVmwareEngineNetworkAsync(DeleteVmwareEngineNetworkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getClusterAsync(GetClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getHcxActivationKeyAsync(GetHcxActivationKeyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getNetworkPolicyAsync(GetNetworkPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getNodeTypeAsync(GetNodeTypeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getPrivateCloudAsync(GetPrivateCloudRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getPrivateConnectionAsync(GetPrivateConnectionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getSubnetAsync(GetSubnetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getVmwareEngineNetworkAsync(GetVmwareEngineNetworkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listClustersAsync(ListClustersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listHcxActivationKeysAsync(ListHcxActivationKeysRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listNetworkPoliciesAsync(ListNetworkPoliciesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listNodeTypesAsync(ListNodeTypesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listPrivateCloudsAsync(ListPrivateCloudsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listPrivateConnectionPeeringRoutesAsync(ListPrivateConnectionPeeringRoutesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listPrivateConnectionsAsync(ListPrivateConnectionsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listSubnetsAsync(ListSubnetsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listVmwareEngineNetworksAsync(ListVmwareEngineNetworksRequest $request, array $optionalArgs = [])
- * @method PromiseInterface resetNsxCredentialsAsync(ResetNsxCredentialsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface resetVcenterCredentialsAsync(ResetVcenterCredentialsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface showNsxCredentialsAsync(ShowNsxCredentialsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface showVcenterCredentialsAsync(ShowVcenterCredentialsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface undeletePrivateCloudAsync(UndeletePrivateCloudRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateClusterAsync(UpdateClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateNetworkPolicyAsync(UpdateNetworkPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updatePrivateCloudAsync(UpdatePrivateCloudRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updatePrivateConnectionAsync(UpdatePrivateConnectionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateSubnetAsync(UpdateSubnetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateVmwareEngineNetworkAsync(UpdateVmwareEngineNetworkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createClusterAsync(CreateClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createExternalAccessRuleAsync(CreateExternalAccessRuleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createExternalAddressAsync(CreateExternalAddressRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createHcxActivationKeyAsync(CreateHcxActivationKeyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createLoggingServerAsync(CreateLoggingServerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createManagementDnsZoneBindingAsync(CreateManagementDnsZoneBindingRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createNetworkPeeringAsync(CreateNetworkPeeringRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createNetworkPolicyAsync(CreateNetworkPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createPrivateCloudAsync(CreatePrivateCloudRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createPrivateConnectionAsync(CreatePrivateConnectionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createVmwareEngineNetworkAsync(CreateVmwareEngineNetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteClusterAsync(DeleteClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteExternalAccessRuleAsync(DeleteExternalAccessRuleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteExternalAddressAsync(DeleteExternalAddressRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteLoggingServerAsync(DeleteLoggingServerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteManagementDnsZoneBindingAsync(DeleteManagementDnsZoneBindingRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteNetworkPeeringAsync(DeleteNetworkPeeringRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteNetworkPolicyAsync(DeleteNetworkPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deletePrivateCloudAsync(DeletePrivateCloudRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deletePrivateConnectionAsync(DeletePrivateConnectionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteVmwareEngineNetworkAsync(DeleteVmwareEngineNetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> fetchNetworkPolicyExternalAddressesAsync(FetchNetworkPolicyExternalAddressesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Cluster> getClusterAsync(GetClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DnsBindPermission> getDnsBindPermissionAsync(GetDnsBindPermissionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DnsForwarding> getDnsForwardingAsync(GetDnsForwardingRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ExternalAccessRule> getExternalAccessRuleAsync(GetExternalAccessRuleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ExternalAddress> getExternalAddressAsync(GetExternalAddressRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<HcxActivationKey> getHcxActivationKeyAsync(GetHcxActivationKeyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<LoggingServer> getLoggingServerAsync(GetLoggingServerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ManagementDnsZoneBinding> getManagementDnsZoneBindingAsync(GetManagementDnsZoneBindingRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<NetworkPeering> getNetworkPeeringAsync(GetNetworkPeeringRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<NetworkPolicy> getNetworkPolicyAsync(GetNetworkPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Node> getNodeAsync(GetNodeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<NodeType> getNodeTypeAsync(GetNodeTypeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PrivateCloud> getPrivateCloudAsync(GetPrivateCloudRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PrivateConnection> getPrivateConnectionAsync(GetPrivateConnectionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Subnet> getSubnetAsync(GetSubnetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<VmwareEngineNetwork> getVmwareEngineNetworkAsync(GetVmwareEngineNetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> grantDnsBindPermissionAsync(GrantDnsBindPermissionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listClustersAsync(ListClustersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listExternalAccessRulesAsync(ListExternalAccessRulesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listExternalAddressesAsync(ListExternalAddressesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listHcxActivationKeysAsync(ListHcxActivationKeysRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLoggingServersAsync(ListLoggingServersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listManagementDnsZoneBindingsAsync(ListManagementDnsZoneBindingsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listNetworkPeeringsAsync(ListNetworkPeeringsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listNetworkPoliciesAsync(ListNetworkPoliciesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listNodeTypesAsync(ListNodeTypesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listNodesAsync(ListNodesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listPeeringRoutesAsync(ListPeeringRoutesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listPrivateCloudsAsync(ListPrivateCloudsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listPrivateConnectionPeeringRoutesAsync(ListPrivateConnectionPeeringRoutesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listPrivateConnectionsAsync(ListPrivateConnectionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listSubnetsAsync(ListSubnetsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listVmwareEngineNetworksAsync(ListVmwareEngineNetworksRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> repairManagementDnsZoneBindingAsync(RepairManagementDnsZoneBindingRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> resetNsxCredentialsAsync(ResetNsxCredentialsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> resetVcenterCredentialsAsync(ResetVcenterCredentialsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> revokeDnsBindPermissionAsync(RevokeDnsBindPermissionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Credentials> showNsxCredentialsAsync(ShowNsxCredentialsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Credentials> showVcenterCredentialsAsync(ShowVcenterCredentialsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> undeletePrivateCloudAsync(UndeletePrivateCloudRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateClusterAsync(UpdateClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateDnsForwardingAsync(UpdateDnsForwardingRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateExternalAccessRuleAsync(UpdateExternalAccessRuleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateExternalAddressAsync(UpdateExternalAddressRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateLoggingServerAsync(UpdateLoggingServerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateManagementDnsZoneBindingAsync(UpdateManagementDnsZoneBindingRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateNetworkPeeringAsync(UpdateNetworkPeeringRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateNetworkPolicyAsync(UpdateNetworkPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updatePrivateCloudAsync(UpdatePrivateCloudRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updatePrivateConnectionAsync(UpdatePrivateConnectionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateSubnetAsync(UpdateSubnetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateVmwareEngineNetworkAsync(UpdateVmwareEngineNetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
  */
 final class VmwareEngineClient
 {
@@ -175,9 +254,7 @@ final class VmwareEngineClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private $operationsClient;
 
@@ -223,10 +300,31 @@ final class VmwareEngineClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -252,6 +350,92 @@ final class VmwareEngineClient
 
     /**
      * Formats a string containing the fully-qualified path to represent a
+     * dns_bind_permission resource.
+     *
+     * @param string $project
+     * @param string $location
+     *
+     * @return string The formatted dns_bind_permission resource.
+     */
+    public static function dnsBindPermissionName(string $project, string $location): string
+    {
+        return self::getPathTemplate('dnsBindPermission')->render([
+            'project' => $project,
+            'location' => $location,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * dns_forwarding resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $privateCloud
+     *
+     * @return string The formatted dns_forwarding resource.
+     */
+    public static function dnsForwardingName(string $project, string $location, string $privateCloud): string
+    {
+        return self::getPathTemplate('dnsForwarding')->render([
+            'project' => $project,
+            'location' => $location,
+            'private_cloud' => $privateCloud,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * external_access_rule resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $networkPolicy
+     * @param string $externalAccessRule
+     *
+     * @return string The formatted external_access_rule resource.
+     */
+    public static function externalAccessRuleName(
+        string $project,
+        string $location,
+        string $networkPolicy,
+        string $externalAccessRule
+    ): string {
+        return self::getPathTemplate('externalAccessRule')->render([
+            'project' => $project,
+            'location' => $location,
+            'network_policy' => $networkPolicy,
+            'external_access_rule' => $externalAccessRule,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * external_address resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $privateCloud
+     * @param string $externalAddress
+     *
+     * @return string The formatted external_address resource.
+     */
+    public static function externalAddressName(
+        string $project,
+        string $location,
+        string $privateCloud,
+        string $externalAddress
+    ): string {
+        return self::getPathTemplate('externalAddress')->render([
+            'project' => $project,
+            'location' => $location,
+            'private_cloud' => $privateCloud,
+            'external_address' => $externalAddress,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
      * hcx_activation_key resource.
      *
      * @param string $project
@@ -261,8 +445,12 @@ final class VmwareEngineClient
      *
      * @return string The formatted hcx_activation_key resource.
      */
-    public static function hcxActivationKeyName(string $project, string $location, string $privateCloud, string $hcxActivationKey): string
-    {
+    public static function hcxActivationKeyName(
+        string $project,
+        string $location,
+        string $privateCloud,
+        string $hcxActivationKey
+    ): string {
         return self::getPathTemplate('hcxActivationKey')->render([
             'project' => $project,
             'location' => $location,
@@ -289,6 +477,56 @@ final class VmwareEngineClient
     }
 
     /**
+     * Formats a string containing the fully-qualified path to represent a
+     * logging_server resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $privateCloud
+     * @param string $loggingServer
+     *
+     * @return string The formatted logging_server resource.
+     */
+    public static function loggingServerName(
+        string $project,
+        string $location,
+        string $privateCloud,
+        string $loggingServer
+    ): string {
+        return self::getPathTemplate('loggingServer')->render([
+            'project' => $project,
+            'location' => $location,
+            'private_cloud' => $privateCloud,
+            'logging_server' => $loggingServer,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * management_dns_zone_binding resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $privateCloud
+     * @param string $managementDnsZoneBinding
+     *
+     * @return string The formatted management_dns_zone_binding resource.
+     */
+    public static function managementDnsZoneBindingName(
+        string $project,
+        string $location,
+        string $privateCloud,
+        string $managementDnsZoneBinding
+    ): string {
+        return self::getPathTemplate('managementDnsZoneBinding')->render([
+            'project' => $project,
+            'location' => $location,
+            'private_cloud' => $privateCloud,
+            'management_dns_zone_binding' => $managementDnsZoneBinding,
+        ]);
+    }
+
+    /**
      * Formats a string containing the fully-qualified path to represent a network
      * resource.
      *
@@ -302,6 +540,25 @@ final class VmwareEngineClient
         return self::getPathTemplate('network')->render([
             'project' => $project,
             'network' => $network,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * network_peering resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $networkPeering
+     *
+     * @return string The formatted network_peering resource.
+     */
+    public static function networkPeeringName(string $project, string $location, string $networkPeering): string
+    {
+        return self::getPathTemplate('networkPeering')->render([
+            'project' => $project,
+            'location' => $location,
+            'network_peering' => $networkPeering,
         ]);
     }
 
@@ -321,6 +578,34 @@ final class VmwareEngineClient
             'project' => $project,
             'location' => $location,
             'network_policy' => $networkPolicy,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a node
+     * resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $privateCloud
+     * @param string $cluster
+     * @param string $node
+     *
+     * @return string The formatted node resource.
+     */
+    public static function nodeName(
+        string $project,
+        string $location,
+        string $privateCloud,
+        string $cluster,
+        string $node
+    ): string {
+        return self::getPathTemplate('node')->render([
+            'project' => $project,
+            'location' => $location,
+            'private_cloud' => $privateCloud,
+            'cluster' => $cluster,
+            'node' => $node,
         ]);
     }
 
@@ -412,8 +697,11 @@ final class VmwareEngineClient
      *
      * @return string The formatted vmware_engine_network resource.
      */
-    public static function vmwareEngineNetworkName(string $project, string $location, string $vmwareEngineNetwork): string
-    {
+    public static function vmwareEngineNetworkName(
+        string $project,
+        string $location,
+        string $vmwareEngineNetwork
+    ): string {
         return self::getPathTemplate('vmwareEngineNetwork')->render([
             'project' => $project,
             'location' => $location,
@@ -426,10 +714,18 @@ final class VmwareEngineClient
      * The following name formats are supported:
      * Template: Pattern
      * - cluster: projects/{project}/locations/{location}/privateClouds/{private_cloud}/clusters/{cluster}
+     * - dnsBindPermission: projects/{project}/locations/{location}/dnsBindPermission
+     * - dnsForwarding: projects/{project}/locations/{location}/privateClouds/{private_cloud}/dnsForwarding
+     * - externalAccessRule: projects/{project}/locations/{location}/networkPolicies/{network_policy}/externalAccessRules/{external_access_rule}
+     * - externalAddress: projects/{project}/locations/{location}/privateClouds/{private_cloud}/externalAddresses/{external_address}
      * - hcxActivationKey: projects/{project}/locations/{location}/privateClouds/{private_cloud}/hcxActivationKeys/{hcx_activation_key}
      * - location: projects/{project}/locations/{location}
+     * - loggingServer: projects/{project}/locations/{location}/privateClouds/{private_cloud}/loggingServers/{logging_server}
+     * - managementDnsZoneBinding: projects/{project}/locations/{location}/privateClouds/{private_cloud}/managementDnsZoneBindings/{management_dns_zone_binding}
      * - network: projects/{project}/global/networks/{network}
+     * - networkPeering: projects/{project}/locations/{location}/networkPeerings/{network_peering}
      * - networkPolicy: projects/{project}/locations/{location}/networkPolicies/{network_policy}
+     * - node: projects/{project}/locations/{location}/privateClouds/{private_cloud}/clusters/{cluster}/nodes/{node}
      * - nodeType: projects/{project}/locations/{location}/nodeTypes/{node_type}
      * - privateCloud: projects/{project}/locations/{location}/privateClouds/{private_cloud}
      * - privateConnection: projects/{project}/locations/{location}/privateConnections/{private_connection}
@@ -442,14 +738,14 @@ final class VmwareEngineClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -471,6 +767,12 @@ final class VmwareEngineClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -504,6 +806,9 @@ final class VmwareEngineClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -556,6 +861,65 @@ final class VmwareEngineClient
     }
 
     /**
+     * Creates a new external access rule in a given network policy.
+     *
+     * The async variant is {@see VmwareEngineClient::createExternalAccessRuleAsync()}
+     * .
+     *
+     * @example samples/V1/VmwareEngineClient/create_external_access_rule.php
+     *
+     * @param CreateExternalAccessRuleRequest $request     A request to house fields associated with the call.
+     * @param array                           $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function createExternalAccessRule(
+        CreateExternalAccessRuleRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('CreateExternalAccessRule', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Creates a new `ExternalAddress` resource in a given private cloud. The
+     * network policy that corresponds to the private cloud must have the external
+     * IP address network service enabled (`NetworkPolicy.external_ip`).
+     *
+     * The async variant is {@see VmwareEngineClient::createExternalAddressAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/create_external_address.php
+     *
+     * @param CreateExternalAddressRequest $request     A request to house fields associated with the call.
+     * @param array                        $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function createExternalAddress(
+        CreateExternalAddressRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('CreateExternalAddress', $request, $callOptions)->wait();
+    }
+
+    /**
      * Creates a new HCX activation key in a given private cloud.
      *
      * The async variant is {@see VmwareEngineClient::createHcxActivationKeyAsync()} .
@@ -576,9 +940,102 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createHcxActivationKey(CreateHcxActivationKeyRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function createHcxActivationKey(
+        CreateHcxActivationKeyRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('CreateHcxActivationKey', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Create a new logging server for a given private cloud.
+     *
+     * The async variant is {@see VmwareEngineClient::createLoggingServerAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/create_logging_server.php
+     *
+     * @param CreateLoggingServerRequest $request     A request to house fields associated with the call.
+     * @param array                      $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function createLoggingServer(CreateLoggingServerRequest $request, array $callOptions = []): OperationResponse
+    {
+        return $this->startApiCall('CreateLoggingServer', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Creates a new `ManagementDnsZoneBinding` resource in a private cloud.
+     * This RPC creates the DNS binding and the resource that represents the
+     * DNS binding of the consumer VPC network to the management DNS zone. A
+     * management DNS zone is the Cloud DNS cross-project binding zone that
+     * VMware Engine creates for each private cloud. It contains FQDNs and
+     * corresponding IP addresses for the private cloud's ESXi hosts and
+     * management VM appliances like vCenter and NSX Manager.
+     *
+     * The async variant is
+     * {@see VmwareEngineClient::createManagementDnsZoneBindingAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/create_management_dns_zone_binding.php
+     *
+     * @param CreateManagementDnsZoneBindingRequest $request     A request to house fields associated with the call.
+     * @param array                                 $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function createManagementDnsZoneBinding(
+        CreateManagementDnsZoneBindingRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('CreateManagementDnsZoneBinding', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Creates a new network peering between the peer network and VMware Engine
+     * network provided in a `NetworkPeering` resource. NetworkPeering is a
+     * global resource and location can only be global.
+     *
+     * The async variant is {@see VmwareEngineClient::createNetworkPeeringAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/create_network_peering.php
+     *
+     * @param CreateNetworkPeeringRequest $request     A request to house fields associated with the call.
+     * @param array                       $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function createNetworkPeering(
+        CreateNetworkPeeringRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('CreateNetworkPeering', $request, $callOptions)->wait();
     }
 
     /**
@@ -611,9 +1068,9 @@ final class VmwareEngineClient
 
     /**
      * Creates a new `PrivateCloud` resource in a given project and location.
-     * Private clouds can only be created in zones, regional private clouds are
-     * not supported.
-     *
+     * Private clouds of type `STANDARD` and
+     * `TIME_LIMITED` are zonal resources, `STRETCHED` private clouds are
+     * regional.
      * Creating a private cloud also creates a [management
      * cluster](https://cloud.google.com/vmware-engine/docs/concepts-vmware-components)
      * for that private cloud.
@@ -663,8 +1120,10 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createPrivateConnection(CreatePrivateConnectionRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function createPrivateConnection(
+        CreatePrivateConnectionRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('CreatePrivateConnection', $request, $callOptions)->wait();
     }
 
@@ -690,8 +1149,10 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createVmwareEngineNetwork(CreateVmwareEngineNetworkRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function createVmwareEngineNetwork(
+        CreateVmwareEngineNetworkRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('CreateVmwareEngineNetwork', $request, $callOptions)->wait();
     }
 
@@ -722,6 +1183,153 @@ final class VmwareEngineClient
     public function deleteCluster(DeleteClusterRequest $request, array $callOptions = []): OperationResponse
     {
         return $this->startApiCall('DeleteCluster', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Deletes a single external access rule.
+     *
+     * The async variant is {@see VmwareEngineClient::deleteExternalAccessRuleAsync()}
+     * .
+     *
+     * @example samples/V1/VmwareEngineClient/delete_external_access_rule.php
+     *
+     * @param DeleteExternalAccessRuleRequest $request     A request to house fields associated with the call.
+     * @param array                           $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function deleteExternalAccessRule(
+        DeleteExternalAccessRuleRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('DeleteExternalAccessRule', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Deletes a single external IP address. When you delete an external IP
+     * address, connectivity between the external IP address and the corresponding
+     * internal IP address is lost.
+     *
+     * The async variant is {@see VmwareEngineClient::deleteExternalAddressAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/delete_external_address.php
+     *
+     * @param DeleteExternalAddressRequest $request     A request to house fields associated with the call.
+     * @param array                        $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function deleteExternalAddress(
+        DeleteExternalAddressRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('DeleteExternalAddress', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Deletes a single logging server.
+     *
+     * The async variant is {@see VmwareEngineClient::deleteLoggingServerAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/delete_logging_server.php
+     *
+     * @param DeleteLoggingServerRequest $request     A request to house fields associated with the call.
+     * @param array                      $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function deleteLoggingServer(DeleteLoggingServerRequest $request, array $callOptions = []): OperationResponse
+    {
+        return $this->startApiCall('DeleteLoggingServer', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Deletes a `ManagementDnsZoneBinding` resource. When a management DNS zone
+     * binding is deleted, the corresponding consumer VPC network is no longer
+     * bound to the management DNS zone.
+     *
+     * The async variant is
+     * {@see VmwareEngineClient::deleteManagementDnsZoneBindingAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/delete_management_dns_zone_binding.php
+     *
+     * @param DeleteManagementDnsZoneBindingRequest $request     A request to house fields associated with the call.
+     * @param array                                 $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function deleteManagementDnsZoneBinding(
+        DeleteManagementDnsZoneBindingRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('DeleteManagementDnsZoneBinding', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Deletes a `NetworkPeering` resource. When a network peering is deleted for
+     * a VMware Engine network, the peer network becomes inaccessible to that
+     * VMware Engine network. NetworkPeering is a global resource and location can
+     * only be global.
+     *
+     * The async variant is {@see VmwareEngineClient::deleteNetworkPeeringAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/delete_network_peering.php
+     *
+     * @param DeleteNetworkPeeringRequest $request     A request to house fields associated with the call.
+     * @param array                       $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function deleteNetworkPeering(
+        DeleteNetworkPeeringRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('DeleteNetworkPeering', $request, $callOptions)->wait();
     }
 
     /**
@@ -815,8 +1423,10 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function deletePrivateConnection(DeletePrivateConnectionRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function deletePrivateConnection(
+        DeletePrivateConnectionRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('DeletePrivateConnection', $request, $callOptions)->wait();
     }
 
@@ -845,9 +1455,41 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function deleteVmwareEngineNetwork(DeleteVmwareEngineNetworkRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function deleteVmwareEngineNetwork(
+        DeleteVmwareEngineNetworkRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('DeleteVmwareEngineNetwork', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Lists external IP addresses assigned to VMware workload VMs within the
+     * scope of the given network policy.
+     *
+     * The async variant is
+     * {@see VmwareEngineClient::fetchNetworkPolicyExternalAddressesAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/fetch_network_policy_external_addresses.php
+     *
+     * @param FetchNetworkPolicyExternalAddressesRequest $request     A request to house fields associated with the call.
+     * @param array                                      $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function fetchNetworkPolicyExternalAddresses(
+        FetchNetworkPolicyExternalAddressesRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
+        return $this->startApiCall('FetchNetworkPolicyExternalAddresses', $request, $callOptions);
     }
 
     /**
@@ -877,6 +1519,116 @@ final class VmwareEngineClient
     }
 
     /**
+     * Gets all the principals having bind permission on the intranet VPC
+     * associated with the consumer project granted by the Grant API.
+     * DnsBindPermission is a global resource and location can only be global.
+     *
+     * The async variant is {@see VmwareEngineClient::getDnsBindPermissionAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/get_dns_bind_permission.php
+     *
+     * @param GetDnsBindPermissionRequest $request     A request to house fields associated with the call.
+     * @param array                       $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return DnsBindPermission
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getDnsBindPermission(
+        GetDnsBindPermissionRequest $request,
+        array $callOptions = []
+    ): DnsBindPermission {
+        return $this->startApiCall('GetDnsBindPermission', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Gets details of the `DnsForwarding` config.
+     *
+     * The async variant is {@see VmwareEngineClient::getDnsForwardingAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/get_dns_forwarding.php
+     *
+     * @param GetDnsForwardingRequest $request     A request to house fields associated with the call.
+     * @param array                   $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return DnsForwarding
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getDnsForwarding(GetDnsForwardingRequest $request, array $callOptions = []): DnsForwarding
+    {
+        return $this->startApiCall('GetDnsForwarding', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Gets details of a single external access rule.
+     *
+     * The async variant is {@see VmwareEngineClient::getExternalAccessRuleAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/get_external_access_rule.php
+     *
+     * @param GetExternalAccessRuleRequest $request     A request to house fields associated with the call.
+     * @param array                        $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return ExternalAccessRule
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getExternalAccessRule(
+        GetExternalAccessRuleRequest $request,
+        array $callOptions = []
+    ): ExternalAccessRule {
+        return $this->startApiCall('GetExternalAccessRule', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Gets details of a single external IP address.
+     *
+     * The async variant is {@see VmwareEngineClient::getExternalAddressAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/get_external_address.php
+     *
+     * @param GetExternalAddressRequest $request     A request to house fields associated with the call.
+     * @param array                     $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return ExternalAddress
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getExternalAddress(GetExternalAddressRequest $request, array $callOptions = []): ExternalAddress
+    {
+        return $this->startApiCall('GetExternalAddress', $request, $callOptions)->wait();
+    }
+
+    /**
      * Retrieves a `HcxActivationKey` resource by its resource name.
      *
      * The async variant is {@see VmwareEngineClient::getHcxActivationKeyAsync()} .
@@ -903,6 +1655,90 @@ final class VmwareEngineClient
     }
 
     /**
+     * Gets details of a logging server.
+     *
+     * The async variant is {@see VmwareEngineClient::getLoggingServerAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/get_logging_server.php
+     *
+     * @param GetLoggingServerRequest $request     A request to house fields associated with the call.
+     * @param array                   $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return LoggingServer
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getLoggingServer(GetLoggingServerRequest $request, array $callOptions = []): LoggingServer
+    {
+        return $this->startApiCall('GetLoggingServer', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Retrieves a 'ManagementDnsZoneBinding' resource by its resource name.
+     *
+     * The async variant is
+     * {@see VmwareEngineClient::getManagementDnsZoneBindingAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/get_management_dns_zone_binding.php
+     *
+     * @param GetManagementDnsZoneBindingRequest $request     A request to house fields associated with the call.
+     * @param array                              $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return ManagementDnsZoneBinding
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getManagementDnsZoneBinding(
+        GetManagementDnsZoneBindingRequest $request,
+        array $callOptions = []
+    ): ManagementDnsZoneBinding {
+        return $this->startApiCall('GetManagementDnsZoneBinding', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Retrieves a `NetworkPeering` resource by its resource name. The resource
+     * contains details of the network peering, such as peered
+     * networks, import and export custom route configurations, and peering state.
+     * NetworkPeering is a global resource and location can only be global.
+     *
+     * The async variant is {@see VmwareEngineClient::getNetworkPeeringAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/get_network_peering.php
+     *
+     * @param GetNetworkPeeringRequest $request     A request to house fields associated with the call.
+     * @param array                    $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return NetworkPeering
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getNetworkPeering(GetNetworkPeeringRequest $request, array $callOptions = []): NetworkPeering
+    {
+        return $this->startApiCall('GetNetworkPeering', $request, $callOptions)->wait();
+    }
+
+    /**
      * Retrieves a `NetworkPolicy` resource by its resource name.
      *
      * The async variant is {@see VmwareEngineClient::getNetworkPolicyAsync()} .
@@ -926,6 +1762,32 @@ final class VmwareEngineClient
     public function getNetworkPolicy(GetNetworkPolicyRequest $request, array $callOptions = []): NetworkPolicy
     {
         return $this->startApiCall('GetNetworkPolicy', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Gets details of a single node.
+     *
+     * The async variant is {@see VmwareEngineClient::getNodeAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/get_node.php
+     *
+     * @param GetNodeRequest $request     A request to house fields associated with the call.
+     * @param array          $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return Node
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getNode(GetNodeRequest $request, array $callOptions = []): Node
+    {
+        return $this->startApiCall('GetNode', $request, $callOptions)->wait();
     }
 
     /**
@@ -1003,8 +1865,10 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getPrivateConnection(GetPrivateConnectionRequest $request, array $callOptions = []): PrivateConnection
-    {
+    public function getPrivateConnection(
+        GetPrivateConnectionRequest $request,
+        array $callOptions = []
+    ): PrivateConnection {
         return $this->startApiCall('GetPrivateConnection', $request, $callOptions)->wait();
     }
 
@@ -1058,9 +1922,42 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getVmwareEngineNetwork(GetVmwareEngineNetworkRequest $request, array $callOptions = []): VmwareEngineNetwork
-    {
+    public function getVmwareEngineNetwork(
+        GetVmwareEngineNetworkRequest $request,
+        array $callOptions = []
+    ): VmwareEngineNetwork {
         return $this->startApiCall('GetVmwareEngineNetwork', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Grants the bind permission to the customer provided principal(user /
+     * service account) to bind their DNS zone with the intranet VPC associated
+     * with the project. DnsBindPermission is a global resource and location can
+     * only be global.
+     *
+     * The async variant is {@see VmwareEngineClient::grantDnsBindPermissionAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/grant_dns_bind_permission.php
+     *
+     * @param GrantDnsBindPermissionRequest $request     A request to house fields associated with the call.
+     * @param array                         $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function grantDnsBindPermission(
+        GrantDnsBindPermissionRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('GrantDnsBindPermission', $request, $callOptions)->wait();
     }
 
     /**
@@ -1090,6 +1987,63 @@ final class VmwareEngineClient
     }
 
     /**
+     * Lists `ExternalAccessRule` resources in the specified network policy.
+     *
+     * The async variant is {@see VmwareEngineClient::listExternalAccessRulesAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/list_external_access_rules.php
+     *
+     * @param ListExternalAccessRulesRequest $request     A request to house fields associated with the call.
+     * @param array                          $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listExternalAccessRules(
+        ListExternalAccessRulesRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
+        return $this->startApiCall('ListExternalAccessRules', $request, $callOptions);
+    }
+
+    /**
+     * Lists external IP addresses assigned to VMware workload VMs in a given
+     * private cloud.
+     *
+     * The async variant is {@see VmwareEngineClient::listExternalAddressesAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/list_external_addresses.php
+     *
+     * @param ListExternalAddressesRequest $request     A request to house fields associated with the call.
+     * @param array                        $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listExternalAddresses(
+        ListExternalAddressesRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
+        return $this->startApiCall('ListExternalAddresses', $request, $callOptions);
+    }
+
+    /**
      * Lists `HcxActivationKey` resources in a given private cloud.
      *
      * The async variant is {@see VmwareEngineClient::listHcxActivationKeysAsync()} .
@@ -1110,9 +2064,94 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listHcxActivationKeys(ListHcxActivationKeysRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listHcxActivationKeys(
+        ListHcxActivationKeysRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListHcxActivationKeys', $request, $callOptions);
+    }
+
+    /**
+     * Lists logging servers configured for a given private
+     * cloud.
+     *
+     * The async variant is {@see VmwareEngineClient::listLoggingServersAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/list_logging_servers.php
+     *
+     * @param ListLoggingServersRequest $request     A request to house fields associated with the call.
+     * @param array                     $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listLoggingServers(ListLoggingServersRequest $request, array $callOptions = []): PagedListResponse
+    {
+        return $this->startApiCall('ListLoggingServers', $request, $callOptions);
+    }
+
+    /**
+     * Lists Consumer VPCs bound to Management DNS Zone of a given private cloud.
+     *
+     * The async variant is
+     * {@see VmwareEngineClient::listManagementDnsZoneBindingsAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/list_management_dns_zone_bindings.php
+     *
+     * @param ListManagementDnsZoneBindingsRequest $request     A request to house fields associated with the call.
+     * @param array                                $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listManagementDnsZoneBindings(
+        ListManagementDnsZoneBindingsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
+        return $this->startApiCall('ListManagementDnsZoneBindings', $request, $callOptions);
+    }
+
+    /**
+     * Lists `NetworkPeering` resources in a given project. NetworkPeering is a
+     * global resource and location can only be global.
+     *
+     * The async variant is {@see VmwareEngineClient::listNetworkPeeringsAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/list_network_peerings.php
+     *
+     * @param ListNetworkPeeringsRequest $request     A request to house fields associated with the call.
+     * @param array                      $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listNetworkPeerings(ListNetworkPeeringsRequest $request, array $callOptions = []): PagedListResponse
+    {
+        return $this->startApiCall('ListNetworkPeerings', $request, $callOptions);
     }
 
     /**
@@ -1168,6 +2207,59 @@ final class VmwareEngineClient
     }
 
     /**
+     * Lists nodes in a given cluster.
+     *
+     * The async variant is {@see VmwareEngineClient::listNodesAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/list_nodes.php
+     *
+     * @param ListNodesRequest $request     A request to house fields associated with the call.
+     * @param array            $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listNodes(ListNodesRequest $request, array $callOptions = []): PagedListResponse
+    {
+        return $this->startApiCall('ListNodes', $request, $callOptions);
+    }
+
+    /**
+     * Lists the network peering routes exchanged over a peering connection.
+     * NetworkPeering is a global resource and location can only be global.
+     *
+     * The async variant is {@see VmwareEngineClient::listPeeringRoutesAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/list_peering_routes.php
+     *
+     * @param ListPeeringRoutesRequest $request     A request to house fields associated with the call.
+     * @param array                    $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listPeeringRoutes(ListPeeringRoutesRequest $request, array $callOptions = []): PagedListResponse
+    {
+        return $this->startApiCall('ListPeeringRoutes', $request, $callOptions);
+    }
+
+    /**
      * Lists `PrivateCloud` resources in a given project and location.
      *
      * The async variant is {@see VmwareEngineClient::listPrivateCloudsAsync()} .
@@ -1215,8 +2307,10 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listPrivateConnectionPeeringRoutes(ListPrivateConnectionPeeringRoutesRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listPrivateConnectionPeeringRoutes(
+        ListPrivateConnectionPeeringRoutesRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListPrivateConnectionPeeringRoutes', $request, $callOptions);
     }
 
@@ -1241,8 +2335,10 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listPrivateConnections(ListPrivateConnectionsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listPrivateConnections(
+        ListPrivateConnectionsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListPrivateConnections', $request, $callOptions);
     }
 
@@ -1294,9 +2390,41 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listVmwareEngineNetworks(ListVmwareEngineNetworksRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listVmwareEngineNetworks(
+        ListVmwareEngineNetworksRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListVmwareEngineNetworks', $request, $callOptions);
+    }
+
+    /**
+     * Retries to create a `ManagementDnsZoneBinding` resource that is
+     * in failed state.
+     *
+     * The async variant is
+     * {@see VmwareEngineClient::repairManagementDnsZoneBindingAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/repair_management_dns_zone_binding.php
+     *
+     * @param RepairManagementDnsZoneBindingRequest $request     A request to house fields associated with the call.
+     * @param array                                 $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function repairManagementDnsZoneBinding(
+        RepairManagementDnsZoneBindingRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('RepairManagementDnsZoneBinding', $request, $callOptions)->wait();
     }
 
     /**
@@ -1346,9 +2474,41 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function resetVcenterCredentials(ResetVcenterCredentialsRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function resetVcenterCredentials(
+        ResetVcenterCredentialsRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('ResetVcenterCredentials', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Revokes the bind permission from the customer provided principal(user /
+     * service account) on the intranet VPC associated with the consumer project.
+     * DnsBindPermission is a global resource and location can only be global.
+     *
+     * The async variant is {@see VmwareEngineClient::revokeDnsBindPermissionAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/revoke_dns_bind_permission.php
+     *
+     * @param RevokeDnsBindPermissionRequest $request     A request to house fields associated with the call.
+     * @param array                          $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function revokeDnsBindPermission(
+        RevokeDnsBindPermissionRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('RevokeDnsBindPermission', $request, $callOptions)->wait();
     }
 
     /**
@@ -1427,14 +2587,15 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function undeletePrivateCloud(UndeletePrivateCloudRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function undeletePrivateCloud(
+        UndeletePrivateCloudRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('UndeletePrivateCloud', $request, $callOptions)->wait();
     }
 
     /**
-     * Modifies a `Cluster` resource. Only the following fields can be updated:
-     * `node_type_configs.*.node_count`. Only fields specified in `updateMask` are
+     * Modifies a `Cluster` resource. Only fields specified in `updateMask` are
      * applied.
      *
      * During operation processing, the resource is temporarily in the `ACTIVE`
@@ -1463,6 +2624,184 @@ final class VmwareEngineClient
     public function updateCluster(UpdateClusterRequest $request, array $callOptions = []): OperationResponse
     {
         return $this->startApiCall('UpdateCluster', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Updates the parameters of the `DnsForwarding` config, like associated
+     * domains. Only fields specified in `update_mask` are applied.
+     *
+     * The async variant is {@see VmwareEngineClient::updateDnsForwardingAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/update_dns_forwarding.php
+     *
+     * @param UpdateDnsForwardingRequest $request     A request to house fields associated with the call.
+     * @param array                      $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function updateDnsForwarding(UpdateDnsForwardingRequest $request, array $callOptions = []): OperationResponse
+    {
+        return $this->startApiCall('UpdateDnsForwarding', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Updates the parameters of a single external access rule.
+     * Only fields specified in `update_mask` are applied.
+     *
+     * The async variant is {@see VmwareEngineClient::updateExternalAccessRuleAsync()}
+     * .
+     *
+     * @example samples/V1/VmwareEngineClient/update_external_access_rule.php
+     *
+     * @param UpdateExternalAccessRuleRequest $request     A request to house fields associated with the call.
+     * @param array                           $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function updateExternalAccessRule(
+        UpdateExternalAccessRuleRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('UpdateExternalAccessRule', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Updates the parameters of a single external IP address.
+     * Only fields specified in `update_mask` are applied.
+     *
+     * During operation processing, the resource is temporarily in the `ACTIVE`
+     * state before the operation fully completes. For that period of time, you
+     * can't update the resource. Use the operation status to determine when the
+     * processing fully completes.
+     *
+     * The async variant is {@see VmwareEngineClient::updateExternalAddressAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/update_external_address.php
+     *
+     * @param UpdateExternalAddressRequest $request     A request to house fields associated with the call.
+     * @param array                        $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function updateExternalAddress(
+        UpdateExternalAddressRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('UpdateExternalAddress', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Updates the parameters of a single logging server.
+     * Only fields specified in `update_mask` are applied.
+     *
+     * The async variant is {@see VmwareEngineClient::updateLoggingServerAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/update_logging_server.php
+     *
+     * @param UpdateLoggingServerRequest $request     A request to house fields associated with the call.
+     * @param array                      $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function updateLoggingServer(UpdateLoggingServerRequest $request, array $callOptions = []): OperationResponse
+    {
+        return $this->startApiCall('UpdateLoggingServer', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Updates a `ManagementDnsZoneBinding` resource.
+     * Only fields specified in `update_mask` are applied.
+     *
+     * The async variant is
+     * {@see VmwareEngineClient::updateManagementDnsZoneBindingAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/update_management_dns_zone_binding.php
+     *
+     * @param UpdateManagementDnsZoneBindingRequest $request     A request to house fields associated with the call.
+     * @param array                                 $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function updateManagementDnsZoneBinding(
+        UpdateManagementDnsZoneBindingRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('UpdateManagementDnsZoneBinding', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Modifies a `NetworkPeering` resource. Only the `description` field can be
+     * updated. Only fields specified in `updateMask` are applied. NetworkPeering
+     * is a global resource and location can only be global.
+     *
+     * The async variant is {@see VmwareEngineClient::updateNetworkPeeringAsync()} .
+     *
+     * @example samples/V1/VmwareEngineClient/update_network_peering.php
+     *
+     * @param UpdateNetworkPeeringRequest $request     A request to house fields associated with the call.
+     * @param array                       $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function updateNetworkPeering(
+        UpdateNetworkPeeringRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('UpdateNetworkPeering', $request, $callOptions)->wait();
     }
 
     /**
@@ -1558,8 +2897,10 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updatePrivateConnection(UpdatePrivateConnectionRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function updatePrivateConnection(
+        UpdatePrivateConnectionRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('UpdatePrivateConnection', $request, $callOptions)->wait();
     }
 
@@ -1618,8 +2959,10 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateVmwareEngineNetwork(UpdateVmwareEngineNetworkRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function updateVmwareEngineNetwork(
+        UpdateVmwareEngineNetworkRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('UpdateVmwareEngineNetwork', $request, $callOptions)->wait();
     }
 
@@ -1759,8 +3102,10 @@ final class VmwareEngineClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function testIamPermissions(TestIamPermissionsRequest $request, array $callOptions = []): TestIamPermissionsResponse
-    {
+    public function testIamPermissions(
+        TestIamPermissionsRequest $request,
+        array $callOptions = []
+    ): TestIamPermissionsResponse {
         return $this->startApiCall('TestIamPermissions', $request, $callOptions)->wait();
     }
 }

@@ -25,8 +25,9 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // [START securitycenter_v1_generated_SecurityCenter_ListEffectiveSecurityHealthAnalyticsCustomModules_sync]
 use Google\ApiCore\ApiException;
 use Google\ApiCore\PagedListResponse;
+use Google\Cloud\SecurityCenter\V1\Client\SecurityCenterClient;
 use Google\Cloud\SecurityCenter\V1\EffectiveSecurityHealthAnalyticsCustomModule;
-use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\ListEffectiveSecurityHealthAnalyticsCustomModulesRequest;
 
 /**
  * Returns a list of all EffectiveSecurityHealthAnalyticsCustomModules for the
@@ -34,9 +35,9 @@ use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
  * parent, and inherited modules, inherited from CRM ancestors.
  *
  * @param string $formattedParent Name of parent to list effective custom modules. Its format is
- *                                "organizations/{organization}/securityHealthAnalyticsSettings",
- *                                "folders/{folder}/securityHealthAnalyticsSettings", or
- *                                "projects/{project}/securityHealthAnalyticsSettings"
+ *                                `organizations/{organization}/securityHealthAnalyticsSettings`,
+ *                                `folders/{folder}/securityHealthAnalyticsSettings`, or
+ *                                `projects/{project}/securityHealthAnalyticsSettings`
  *                                Please see {@see SecurityCenterClient::securityHealthAnalyticsSettingsName()} for help formatting this field.
  */
 function list_effective_security_health_analytics_custom_modules_sample(
@@ -45,12 +46,14 @@ function list_effective_security_health_analytics_custom_modules_sample(
     // Create a client.
     $securityCenterClient = new SecurityCenterClient();
 
+    // Prepare the request message.
+    $request = (new ListEffectiveSecurityHealthAnalyticsCustomModulesRequest())
+        ->setParent($formattedParent);
+
     // Call the API and handle any network failures.
     try {
         /** @var PagedListResponse $response */
-        $response = $securityCenterClient->listEffectiveSecurityHealthAnalyticsCustomModules(
-            $formattedParent
-        );
+        $response = $securityCenterClient->listEffectiveSecurityHealthAnalyticsCustomModules($request);
 
         /** @var EffectiveSecurityHealthAnalyticsCustomModule $element */
         foreach ($response as $element) {

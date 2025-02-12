@@ -25,15 +25,16 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // [START securitycenter_v1_generated_SecurityCenter_GetBigQueryExport_sync]
 use Google\ApiCore\ApiException;
 use Google\Cloud\SecurityCenter\V1\BigQueryExport;
-use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\Client\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\GetBigQueryExportRequest;
 
 /**
  * Gets a BigQuery export.
  *
  * @param string $formattedName Name of the BigQuery export to retrieve. Its format is
- *                              organizations/{organization}/bigQueryExports/{export_id},
- *                              folders/{folder}/bigQueryExports/{export_id}, or
- *                              projects/{project}/bigQueryExports/{export_id}
+ *                              `organizations/{organization}/bigQueryExports/{export_id}`,
+ *                              `folders/{folder}/bigQueryExports/{export_id}`, or
+ *                              `projects/{project}/bigQueryExports/{export_id}`
  *                              Please see {@see SecurityCenterClient::bigQueryExportName()} for help formatting this field.
  */
 function get_big_query_export_sample(string $formattedName): void
@@ -41,10 +42,14 @@ function get_big_query_export_sample(string $formattedName): void
     // Create a client.
     $securityCenterClient = new SecurityCenterClient();
 
+    // Prepare the request message.
+    $request = (new GetBigQueryExportRequest())
+        ->setName($formattedName);
+
     // Call the API and handle any network failures.
     try {
         /** @var BigQueryExport $response */
-        $response = $securityCenterClient->getBigQueryExport($formattedName);
+        $response = $securityCenterClient->getBigQueryExport($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\ArtifactRegistry\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -35,15 +34,22 @@ use Google\ApiCore\RetrySettings;
 use Google\ApiCore\Transport\TransportInterface;
 use Google\ApiCore\ValidationException;
 use Google\Auth\FetchAuthTokenInterface;
+use Google\Cloud\ArtifactRegistry\V1\Attachment;
 use Google\Cloud\ArtifactRegistry\V1\BatchDeleteVersionsRequest;
+use Google\Cloud\ArtifactRegistry\V1\CreateAttachmentRequest;
 use Google\Cloud\ArtifactRegistry\V1\CreateRepositoryRequest;
+use Google\Cloud\ArtifactRegistry\V1\CreateRuleRequest;
 use Google\Cloud\ArtifactRegistry\V1\CreateTagRequest;
+use Google\Cloud\ArtifactRegistry\V1\DeleteAttachmentRequest;
+use Google\Cloud\ArtifactRegistry\V1\DeleteFileRequest;
 use Google\Cloud\ArtifactRegistry\V1\DeletePackageRequest;
 use Google\Cloud\ArtifactRegistry\V1\DeleteRepositoryRequest;
+use Google\Cloud\ArtifactRegistry\V1\DeleteRuleRequest;
 use Google\Cloud\ArtifactRegistry\V1\DeleteTagRequest;
 use Google\Cloud\ArtifactRegistry\V1\DeleteVersionRequest;
 use Google\Cloud\ArtifactRegistry\V1\DockerImage;
 use Google\Cloud\ArtifactRegistry\V1\File;
+use Google\Cloud\ArtifactRegistry\V1\GetAttachmentRequest;
 use Google\Cloud\ArtifactRegistry\V1\GetDockerImageRequest;
 use Google\Cloud\ArtifactRegistry\V1\GetFileRequest;
 use Google\Cloud\ArtifactRegistry\V1\GetMavenArtifactRequest;
@@ -52,11 +58,13 @@ use Google\Cloud\ArtifactRegistry\V1\GetPackageRequest;
 use Google\Cloud\ArtifactRegistry\V1\GetProjectSettingsRequest;
 use Google\Cloud\ArtifactRegistry\V1\GetPythonPackageRequest;
 use Google\Cloud\ArtifactRegistry\V1\GetRepositoryRequest;
+use Google\Cloud\ArtifactRegistry\V1\GetRuleRequest;
 use Google\Cloud\ArtifactRegistry\V1\GetTagRequest;
 use Google\Cloud\ArtifactRegistry\V1\GetVPCSCConfigRequest;
 use Google\Cloud\ArtifactRegistry\V1\GetVersionRequest;
 use Google\Cloud\ArtifactRegistry\V1\ImportAptArtifactsRequest;
 use Google\Cloud\ArtifactRegistry\V1\ImportYumArtifactsRequest;
+use Google\Cloud\ArtifactRegistry\V1\ListAttachmentsRequest;
 use Google\Cloud\ArtifactRegistry\V1\ListDockerImagesRequest;
 use Google\Cloud\ArtifactRegistry\V1\ListFilesRequest;
 use Google\Cloud\ArtifactRegistry\V1\ListMavenArtifactsRequest;
@@ -64,6 +72,7 @@ use Google\Cloud\ArtifactRegistry\V1\ListNpmPackagesRequest;
 use Google\Cloud\ArtifactRegistry\V1\ListPackagesRequest;
 use Google\Cloud\ArtifactRegistry\V1\ListPythonPackagesRequest;
 use Google\Cloud\ArtifactRegistry\V1\ListRepositoriesRequest;
+use Google\Cloud\ArtifactRegistry\V1\ListRulesRequest;
 use Google\Cloud\ArtifactRegistry\V1\ListTagsRequest;
 use Google\Cloud\ArtifactRegistry\V1\ListVersionsRequest;
 use Google\Cloud\ArtifactRegistry\V1\MavenArtifact;
@@ -72,11 +81,16 @@ use Google\Cloud\ArtifactRegistry\V1\Package;
 use Google\Cloud\ArtifactRegistry\V1\ProjectSettings;
 use Google\Cloud\ArtifactRegistry\V1\PythonPackage;
 use Google\Cloud\ArtifactRegistry\V1\Repository;
+use Google\Cloud\ArtifactRegistry\V1\Rule;
 use Google\Cloud\ArtifactRegistry\V1\Tag;
+use Google\Cloud\ArtifactRegistry\V1\UpdateFileRequest;
+use Google\Cloud\ArtifactRegistry\V1\UpdatePackageRequest;
 use Google\Cloud\ArtifactRegistry\V1\UpdateProjectSettingsRequest;
 use Google\Cloud\ArtifactRegistry\V1\UpdateRepositoryRequest;
+use Google\Cloud\ArtifactRegistry\V1\UpdateRuleRequest;
 use Google\Cloud\ArtifactRegistry\V1\UpdateTagRequest;
 use Google\Cloud\ArtifactRegistry\V1\UpdateVPCSCConfigRequest;
+use Google\Cloud\ArtifactRegistry\V1\UpdateVersionRequest;
 use Google\Cloud\ArtifactRegistry\V1\VPCSCConfig;
 use Google\Cloud\ArtifactRegistry\V1\Version;
 use Google\Cloud\Iam\V1\GetIamPolicyRequest;
@@ -87,8 +101,10 @@ use Google\Cloud\Iam\V1\TestIamPermissionsResponse;
 use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\Location;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The Artifact Registry API service.
@@ -113,44 +129,57 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface batchDeleteVersionsAsync(BatchDeleteVersionsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createRepositoryAsync(CreateRepositoryRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createTagAsync(CreateTagRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deletePackageAsync(DeletePackageRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteRepositoryAsync(DeleteRepositoryRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteTagAsync(DeleteTagRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteVersionAsync(DeleteVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getDockerImageAsync(GetDockerImageRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getFileAsync(GetFileRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getMavenArtifactAsync(GetMavenArtifactRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getNpmPackageAsync(GetNpmPackageRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getPackageAsync(GetPackageRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getProjectSettingsAsync(GetProjectSettingsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getPythonPackageAsync(GetPythonPackageRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getRepositoryAsync(GetRepositoryRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getTagAsync(GetTagRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getVPCSCConfigAsync(GetVPCSCConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getVersionAsync(GetVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface importAptArtifactsAsync(ImportAptArtifactsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface importYumArtifactsAsync(ImportYumArtifactsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listDockerImagesAsync(ListDockerImagesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listFilesAsync(ListFilesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listMavenArtifactsAsync(ListMavenArtifactsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listNpmPackagesAsync(ListNpmPackagesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listPackagesAsync(ListPackagesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listPythonPackagesAsync(ListPythonPackagesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listRepositoriesAsync(ListRepositoriesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listTagsAsync(ListTagsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listVersionsAsync(ListVersionsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateProjectSettingsAsync(UpdateProjectSettingsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateRepositoryAsync(UpdateRepositoryRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateTagAsync(UpdateTagRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateVPCSCConfigAsync(UpdateVPCSCConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> batchDeleteVersionsAsync(BatchDeleteVersionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createAttachmentAsync(CreateAttachmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createRepositoryAsync(CreateRepositoryRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Rule> createRuleAsync(CreateRuleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Tag> createTagAsync(CreateTagRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteAttachmentAsync(DeleteAttachmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteFileAsync(DeleteFileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deletePackageAsync(DeletePackageRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteRepositoryAsync(DeleteRepositoryRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteRuleAsync(DeleteRuleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteTagAsync(DeleteTagRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteVersionAsync(DeleteVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Attachment> getAttachmentAsync(GetAttachmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DockerImage> getDockerImageAsync(GetDockerImageRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<File> getFileAsync(GetFileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<MavenArtifact> getMavenArtifactAsync(GetMavenArtifactRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<NpmPackage> getNpmPackageAsync(GetNpmPackageRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Package> getPackageAsync(GetPackageRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ProjectSettings> getProjectSettingsAsync(GetProjectSettingsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PythonPackage> getPythonPackageAsync(GetPythonPackageRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Repository> getRepositoryAsync(GetRepositoryRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Rule> getRuleAsync(GetRuleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Tag> getTagAsync(GetTagRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<VPCSCConfig> getVPCSCConfigAsync(GetVPCSCConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Version> getVersionAsync(GetVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> importAptArtifactsAsync(ImportAptArtifactsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> importYumArtifactsAsync(ImportYumArtifactsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAttachmentsAsync(ListAttachmentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listDockerImagesAsync(ListDockerImagesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listFilesAsync(ListFilesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listMavenArtifactsAsync(ListMavenArtifactsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listNpmPackagesAsync(ListNpmPackagesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listPackagesAsync(ListPackagesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listPythonPackagesAsync(ListPythonPackagesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listRepositoriesAsync(ListRepositoriesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listRulesAsync(ListRulesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listTagsAsync(ListTagsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listVersionsAsync(ListVersionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<File> updateFileAsync(UpdateFileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Package> updatePackageAsync(UpdatePackageRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ProjectSettings> updateProjectSettingsAsync(UpdateProjectSettingsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Repository> updateRepositoryAsync(UpdateRepositoryRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Rule> updateRuleAsync(UpdateRuleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Tag> updateTagAsync(UpdateTagRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<VPCSCConfig> updateVPCSCConfigAsync(UpdateVPCSCConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Version> updateVersionAsync(UpdateVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
  */
 final class ArtifactRegistryClient
 {
@@ -226,10 +255,56 @@ final class ArtifactRegistryClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a attachment
+     * resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $repository
+     * @param string $attachment
+     *
+     * @return string The formatted attachment resource.
+     */
+    public static function attachmentName(
+        string $project,
+        string $location,
+        string $repository,
+        string $attachment
+    ): string {
+        return self::getPathTemplate('attachment')->render([
+            'project' => $project,
+            'location' => $location,
+            'repository' => $repository,
+            'attachment' => $attachment,
+        ]);
     }
 
     /**
@@ -243,8 +318,12 @@ final class ArtifactRegistryClient
      *
      * @return string The formatted docker_image resource.
      */
-    public static function dockerImageName(string $project, string $location, string $repository, string $dockerImage): string
-    {
+    public static function dockerImageName(
+        string $project,
+        string $location,
+        string $repository,
+        string $dockerImage
+    ): string {
         return self::getPathTemplate('dockerImage')->render([
             'project' => $project,
             'location' => $location,
@@ -302,8 +381,12 @@ final class ArtifactRegistryClient
      *
      * @return string The formatted maven_artifact resource.
      */
-    public static function mavenArtifactName(string $project, string $location, string $repository, string $mavenArtifact): string
-    {
+    public static function mavenArtifactName(
+        string $project,
+        string $location,
+        string $repository,
+        string $mavenArtifact
+    ): string {
         return self::getPathTemplate('mavenArtifact')->render([
             'project' => $project,
             'location' => $location,
@@ -323,8 +406,12 @@ final class ArtifactRegistryClient
      *
      * @return string The formatted npm_package resource.
      */
-    public static function npmPackageName(string $project, string $location, string $repository, string $npmPackage): string
-    {
+    public static function npmPackageName(
+        string $project,
+        string $location,
+        string $repository,
+        string $npmPackage
+    ): string {
         return self::getPathTemplate('npmPackage')->render([
             'project' => $project,
             'location' => $location,
@@ -380,8 +467,12 @@ final class ArtifactRegistryClient
      *
      * @return string The formatted python_package resource.
      */
-    public static function pythonPackageName(string $project, string $location, string $repository, string $pythonPackage): string
-    {
+    public static function pythonPackageName(
+        string $project,
+        string $location,
+        string $repository,
+        string $pythonPackage
+    ): string {
         return self::getPathTemplate('pythonPackage')->render([
             'project' => $project,
             'location' => $location,
@@ -406,6 +497,27 @@ final class ArtifactRegistryClient
             'project' => $project,
             'location' => $location,
             'repository' => $repository,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a rule
+     * resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $repository
+     * @param string $rule
+     *
+     * @return string The formatted rule resource.
+     */
+    public static function ruleName(string $project, string $location, string $repository, string $rule): string
+    {
+        return self::getPathTemplate('rule')->render([
+            'project' => $project,
+            'location' => $location,
+            'repository' => $repository,
+            'rule' => $rule,
         ]);
     }
 
@@ -440,8 +552,13 @@ final class ArtifactRegistryClient
      *
      * @return string The formatted tag resource.
      */
-    public static function tagName(string $project, string $location, string $repository, string $package, string $tag): string
-    {
+    public static function tagName(
+        string $project,
+        string $location,
+        string $repository,
+        string $package,
+        string $tag
+    ): string {
         return self::getPathTemplate('tag')->render([
             'project' => $project,
             'location' => $location,
@@ -463,8 +580,13 @@ final class ArtifactRegistryClient
      *
      * @return string The formatted version resource.
      */
-    public static function versionName(string $project, string $location, string $repository, string $package, string $version): string
-    {
+    public static function versionName(
+        string $project,
+        string $location,
+        string $repository,
+        string $package,
+        string $version
+    ): string {
         return self::getPathTemplate('version')->render([
             'project' => $project,
             'location' => $location,
@@ -495,6 +617,7 @@ final class ArtifactRegistryClient
      * Parses a formatted name string and returns an associative array of the components in the name.
      * The following name formats are supported:
      * Template: Pattern
+     * - attachment: projects/{project}/locations/{location}/repositories/{repository}/attachments/{attachment}
      * - dockerImage: projects/{project}/locations/{location}/repositories/{repository}/dockerImages/{docker_image}
      * - file: projects/{project}/locations/{location}/repositories/{repository}/files/{file}
      * - location: projects/{project}/locations/{location}
@@ -504,6 +627,7 @@ final class ArtifactRegistryClient
      * - projectSettings: projects/{project}/projectSettings
      * - pythonPackage: projects/{project}/locations/{location}/repositories/{repository}/pythonPackages/{python_package}
      * - repository: projects/{project}/locations/{location}/repositories/{repository}
+     * - rule: projects/{project}/locations/{location}/repositories/{repository}/rules/{rule}
      * - secretVersion: projects/{project}/secrets/{secret}/versions/{secret_version}
      * - tag: projects/{project}/locations/{location}/repositories/{repository}/packages/{package}/tags/{tag}
      * - version: projects/{project}/locations/{location}/repositories/{repository}/packages/{package}/versions/{version}
@@ -515,14 +639,14 @@ final class ArtifactRegistryClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -544,6 +668,12 @@ final class ArtifactRegistryClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -577,6 +707,9 @@ final class ArtifactRegistryClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -627,6 +760,33 @@ final class ArtifactRegistryClient
     }
 
     /**
+     * Creates an attachment. The returned Operation will finish once the
+     * attachment has been created. Its response will be the created attachment.
+     *
+     * The async variant is {@see ArtifactRegistryClient::createAttachmentAsync()} .
+     *
+     * @example samples/V1/ArtifactRegistryClient/create_attachment.php
+     *
+     * @param CreateAttachmentRequest $request     A request to house fields associated with the call.
+     * @param array                   $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function createAttachment(CreateAttachmentRequest $request, array $callOptions = []): OperationResponse
+    {
+        return $this->startApiCall('CreateAttachment', $request, $callOptions)->wait();
+    }
+
+    /**
      * Creates a repository. The returned Operation will finish once the
      * repository has been created. Its response will be the created Repository.
      *
@@ -654,6 +814,32 @@ final class ArtifactRegistryClient
     }
 
     /**
+     * Creates a rule.
+     *
+     * The async variant is {@see ArtifactRegistryClient::createRuleAsync()} .
+     *
+     * @example samples/V1/ArtifactRegistryClient/create_rule.php
+     *
+     * @param CreateRuleRequest $request     A request to house fields associated with the call.
+     * @param array             $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return Rule
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function createRule(CreateRuleRequest $request, array $callOptions = []): Rule
+    {
+        return $this->startApiCall('CreateRule', $request, $callOptions)->wait();
+    }
+
+    /**
      * Creates a tag.
      *
      * The async variant is {@see ArtifactRegistryClient::createTagAsync()} .
@@ -677,6 +863,62 @@ final class ArtifactRegistryClient
     public function createTag(CreateTagRequest $request, array $callOptions = []): Tag
     {
         return $this->startApiCall('CreateTag', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Deletes an attachment. The returned Operation will
+     * finish once the attachments has been deleted. It will not have any
+     * Operation metadata and will return a `google.protobuf.Empty` response.
+     *
+     * The async variant is {@see ArtifactRegistryClient::deleteAttachmentAsync()} .
+     *
+     * @example samples/V1/ArtifactRegistryClient/delete_attachment.php
+     *
+     * @param DeleteAttachmentRequest $request     A request to house fields associated with the call.
+     * @param array                   $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function deleteAttachment(DeleteAttachmentRequest $request, array $callOptions = []): OperationResponse
+    {
+        return $this->startApiCall('DeleteAttachment', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Deletes a file and all of its content. It is only allowed on generic
+     * repositories. The returned operation will complete once the file has been
+     * deleted.
+     *
+     * The async variant is {@see ArtifactRegistryClient::deleteFileAsync()} .
+     *
+     * @example samples/V1/ArtifactRegistryClient/delete_file.php
+     *
+     * @param DeleteFileRequest $request     A request to house fields associated with the call.
+     * @param array             $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function deleteFile(DeleteFileRequest $request, array $callOptions = []): OperationResponse
+    {
+        return $this->startApiCall('DeleteFile', $request, $callOptions)->wait();
     }
 
     /**
@@ -735,6 +977,30 @@ final class ArtifactRegistryClient
     }
 
     /**
+     * Deletes a rule.
+     *
+     * The async variant is {@see ArtifactRegistryClient::deleteRuleAsync()} .
+     *
+     * @example samples/V1/ArtifactRegistryClient/delete_rule.php
+     *
+     * @param DeleteRuleRequest $request     A request to house fields associated with the call.
+     * @param array             $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function deleteRule(DeleteRuleRequest $request, array $callOptions = []): void
+    {
+        $this->startApiCall('DeleteRule', $request, $callOptions)->wait();
+    }
+
+    /**
      * Deletes a tag.
      *
      * The async variant is {@see ArtifactRegistryClient::deleteTagAsync()} .
@@ -783,6 +1049,32 @@ final class ArtifactRegistryClient
     public function deleteVersion(DeleteVersionRequest $request, array $callOptions = []): OperationResponse
     {
         return $this->startApiCall('DeleteVersion', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Gets an attachment.
+     *
+     * The async variant is {@see ArtifactRegistryClient::getAttachmentAsync()} .
+     *
+     * @example samples/V1/ArtifactRegistryClient/get_attachment.php
+     *
+     * @param GetAttachmentRequest $request     A request to house fields associated with the call.
+     * @param array                $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return Attachment
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getAttachment(GetAttachmentRequest $request, array $callOptions = []): Attachment
+    {
+        return $this->startApiCall('GetAttachment', $request, $callOptions)->wait();
     }
 
     /**
@@ -1020,6 +1312,32 @@ final class ArtifactRegistryClient
     }
 
     /**
+     * Gets a rule.
+     *
+     * The async variant is {@see ArtifactRegistryClient::getRuleAsync()} .
+     *
+     * @example samples/V1/ArtifactRegistryClient/get_rule.php
+     *
+     * @param GetRuleRequest $request     A request to house fields associated with the call.
+     * @param array          $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return Rule
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getRule(GetRuleRequest $request, array $callOptions = []): Rule
+    {
+        return $this->startApiCall('GetRule', $request, $callOptions)->wait();
+    }
+
+    /**
      * Gets a tag.
      *
      * The async variant is {@see ArtifactRegistryClient::getTagAsync()} .
@@ -1153,6 +1471,32 @@ final class ArtifactRegistryClient
     public function importYumArtifacts(ImportYumArtifactsRequest $request, array $callOptions = []): OperationResponse
     {
         return $this->startApiCall('ImportYumArtifacts', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Lists attachments.
+     *
+     * The async variant is {@see ArtifactRegistryClient::listAttachmentsAsync()} .
+     *
+     * @example samples/V1/ArtifactRegistryClient/list_attachments.php
+     *
+     * @param ListAttachmentsRequest $request     A request to house fields associated with the call.
+     * @param array                  $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listAttachments(ListAttachmentsRequest $request, array $callOptions = []): PagedListResponse
+    {
+        return $this->startApiCall('ListAttachments', $request, $callOptions);
     }
 
     /**
@@ -1338,6 +1682,32 @@ final class ArtifactRegistryClient
     }
 
     /**
+     * Lists rules.
+     *
+     * The async variant is {@see ArtifactRegistryClient::listRulesAsync()} .
+     *
+     * @example samples/V1/ArtifactRegistryClient/list_rules.php
+     *
+     * @param ListRulesRequest $request     A request to house fields associated with the call.
+     * @param array            $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listRules(ListRulesRequest $request, array $callOptions = []): PagedListResponse
+    {
+        return $this->startApiCall('ListRules', $request, $callOptions);
+    }
+
+    /**
      * Lists tags.
      *
      * The async variant is {@see ArtifactRegistryClient::listTagsAsync()} .
@@ -1436,9 +1806,63 @@ final class ArtifactRegistryClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function testIamPermissions(TestIamPermissionsRequest $request, array $callOptions = []): TestIamPermissionsResponse
-    {
+    public function testIamPermissions(
+        TestIamPermissionsRequest $request,
+        array $callOptions = []
+    ): TestIamPermissionsResponse {
         return $this->startApiCall('TestIamPermissions', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Updates a file.
+     *
+     * The async variant is {@see ArtifactRegistryClient::updateFileAsync()} .
+     *
+     * @example samples/V1/ArtifactRegistryClient/update_file.php
+     *
+     * @param UpdateFileRequest $request     A request to house fields associated with the call.
+     * @param array             $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return File
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function updateFile(UpdateFileRequest $request, array $callOptions = []): File
+    {
+        return $this->startApiCall('UpdateFile', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Updates a package.
+     *
+     * The async variant is {@see ArtifactRegistryClient::updatePackageAsync()} .
+     *
+     * @example samples/V1/ArtifactRegistryClient/update_package.php
+     *
+     * @param UpdatePackageRequest $request     A request to house fields associated with the call.
+     * @param array                $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return Package
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function updatePackage(UpdatePackageRequest $request, array $callOptions = []): Package
+    {
+        return $this->startApiCall('UpdatePackage', $request, $callOptions)->wait();
     }
 
     /**
@@ -1463,8 +1887,10 @@ final class ArtifactRegistryClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateProjectSettings(UpdateProjectSettingsRequest $request, array $callOptions = []): ProjectSettings
-    {
+    public function updateProjectSettings(
+        UpdateProjectSettingsRequest $request,
+        array $callOptions = []
+    ): ProjectSettings {
         return $this->startApiCall('UpdateProjectSettings', $request, $callOptions)->wait();
     }
 
@@ -1492,6 +1918,32 @@ final class ArtifactRegistryClient
     public function updateRepository(UpdateRepositoryRequest $request, array $callOptions = []): Repository
     {
         return $this->startApiCall('UpdateRepository', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Updates a rule.
+     *
+     * The async variant is {@see ArtifactRegistryClient::updateRuleAsync()} .
+     *
+     * @example samples/V1/ArtifactRegistryClient/update_rule.php
+     *
+     * @param UpdateRuleRequest $request     A request to house fields associated with the call.
+     * @param array             $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return Rule
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function updateRule(UpdateRuleRequest $request, array $callOptions = []): Rule
+    {
+        return $this->startApiCall('UpdateRule', $request, $callOptions)->wait();
     }
 
     /**
@@ -1544,6 +1996,32 @@ final class ArtifactRegistryClient
     public function updateVPCSCConfig(UpdateVPCSCConfigRequest $request, array $callOptions = []): VPCSCConfig
     {
         return $this->startApiCall('UpdateVPCSCConfig', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Updates a version.
+     *
+     * The async variant is {@see ArtifactRegistryClient::updateVersionAsync()} .
+     *
+     * @example samples/V1/ArtifactRegistryClient/update_version.php
+     *
+     * @param UpdateVersionRequest $request     A request to house fields associated with the call.
+     * @param array                $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return Version
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function updateVersion(UpdateVersionRequest $request, array $callOptions = []): Version
+    {
+        return $this->startApiCall('UpdateVersion', $request, $callOptions)->wait();
     }
 
     /**

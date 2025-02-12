@@ -18,7 +18,6 @@
 namespace Google\Cloud\Spanner;
 
 use Google\Cloud\Spanner\Session\Session;
-use Google\Cloud\Spanner\Session\SessionPoolInterface;
 
 /**
  * Read-only snapshot Transaction.
@@ -49,6 +48,10 @@ class Snapshot implements TransactionalReadInterface
      *     @type string $id The Transaction ID. If no ID is provided,
      *           the Transaction will be a Single-Use Transaction.
      *     @type Timestamp $readTimestamp The read timestamp.
+     *     @type array $directedReadOptions Directed read options.
+     *           {@see \Google\Cloud\Spanner\V1\DirectedReadOptions}
+     *           If using the `replicaSelection::type` setting, utilize the constants available in
+     *           {@see \Google\Cloud\Spanner\V1\DirectedReadOptions\ReplicaSelection\Type} to set a value.
      * }
      * @throws \InvalidArgumentException if a tag is specified as this is a read-only transaction.
      */
@@ -56,7 +59,7 @@ class Snapshot implements TransactionalReadInterface
     {
         if (isset($options['tag'])) {
             throw new \InvalidArgumentException(
-                "Cannot set a transaction tag on a read-only transaction."
+                'Cannot set a transaction tag on a read-only transaction.'
             );
         }
         $this->initialize($operation, $session, $options);

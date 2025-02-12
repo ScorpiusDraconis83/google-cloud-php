@@ -79,6 +79,24 @@ class Component
      * Generated from protobuf enum <code>STATEFULSET = 12;</code>
      */
     const STATEFULSET = 12;
+    /**
+     * CADVISOR
+     *
+     * Generated from protobuf enum <code>CADVISOR = 13;</code>
+     */
+    const CADVISOR = 13;
+    /**
+     * KUBELET
+     *
+     * Generated from protobuf enum <code>KUBELET = 14;</code>
+     */
+    const KUBELET = 14;
+    /**
+     * NVIDIA Data Center GPU Manager (DCGM)
+     *
+     * Generated from protobuf enum <code>DCGM = 15;</code>
+     */
+    const DCGM = 15;
 
     private static $valueToName = [
         self::COMPONENT_UNSPECIFIED => 'COMPONENT_UNSPECIFIED',
@@ -92,6 +110,9 @@ class Component
         self::DAEMONSET => 'DAEMONSET',
         self::DEPLOYMENT => 'DEPLOYMENT',
         self::STATEFULSET => 'STATEFULSET',
+        self::CADVISOR => 'CADVISOR',
+        self::KUBELET => 'KUBELET',
+        self::DCGM => 'DCGM',
     ];
 
     public static function name($value)
@@ -115,6 +136,4 @@ class Component
     }
 }
 
-// Adding a class alias for backwards compatibility with the previous class name.
-class_alias(Component::class, \Google\Cloud\Container\V1\MonitoringComponentConfig_Component::class);
 

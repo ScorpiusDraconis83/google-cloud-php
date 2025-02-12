@@ -25,7 +25,7 @@ class DeleteAzureClusterRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * If set to true, and the
      * [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource is not
@@ -35,13 +35,13 @@ class DeleteAzureClusterRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>bool allow_missing = 2;</code>
      */
-    private $allow_missing = false;
+    protected $allow_missing = false;
     /**
      * If set, only validate the request, but do not actually delete the resource.
      *
      * Generated from protobuf field <code>bool validate_only = 3;</code>
      */
-    private $validate_only = false;
+    protected $validate_only = false;
     /**
      * The current etag of the
      * [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster].
@@ -51,7 +51,16 @@ class DeleteAzureClusterRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string etag = 4;</code>
      */
-    private $etag = '';
+    protected $etag = '';
+    /**
+     * Optional. If set to true, the deletion of
+     * [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource will
+     * succeed even if errors occur during deleting in cluster resources. Using
+     * this parameter may result in orphaned resources in the cluster.
+     *
+     * Generated from protobuf field <code>bool ignore_errors = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $ignore_errors = false;
 
     /**
      * @param string $name Required. The resource name the
@@ -101,6 +110,11 @@ class DeleteAzureClusterRequest extends \Google\Protobuf\Internal\Message
      *           Allows clients to perform deletions through optimistic concurrency control.
      *           If the provided etag does not match the current etag of the cluster,
      *           the request will fail and an ABORTED error will be returned.
+     *     @type bool $ignore_errors
+     *           Optional. If set to true, the deletion of
+     *           [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource will
+     *           succeed even if errors occur during deleting in cluster resources. Using
+     *           this parameter may result in orphaned resources in the cluster.
      * }
      */
     public function __construct($data = NULL) {
@@ -234,6 +248,38 @@ class DeleteAzureClusterRequest extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->etag = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. If set to true, the deletion of
+     * [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource will
+     * succeed even if errors occur during deleting in cluster resources. Using
+     * this parameter may result in orphaned resources in the cluster.
+     *
+     * Generated from protobuf field <code>bool ignore_errors = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return bool
+     */
+    public function getIgnoreErrors()
+    {
+        return $this->ignore_errors;
+    }
+
+    /**
+     * Optional. If set to true, the deletion of
+     * [AzureCluster][google.cloud.gkemulticloud.v1.AzureCluster] resource will
+     * succeed even if errors occur during deleting in cluster resources. Using
+     * this parameter may result in orphaned resources in the cluster.
+     *
+     * Generated from protobuf field <code>bool ignore_errors = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setIgnoreErrors($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->ignore_errors = $var;
 
         return $this;
     }

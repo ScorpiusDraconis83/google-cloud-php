@@ -17,17 +17,35 @@ class CreateFirebaseLinkRequest extends \Google\Protobuf\Internal\Message
 {
     /**
      * Required. Format: properties/{property_id}
-     * Example: properties/1234
+     * Example: `properties/1234`
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * Required. The Firebase link to create.
      *
      * Generated from protobuf field <code>.google.analytics.admin.v1alpha.FirebaseLink firebase_link = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $firebase_link = null;
+    protected $firebase_link = null;
+
+    /**
+     * @param string                                       $parent       Required. Format: properties/{property_id}
+     *
+     *                                                                   Example: `properties/1234`
+     *                                                                   Please see {@see AnalyticsAdminServiceClient::propertyName()} for help formatting this field.
+     * @param \Google\Analytics\Admin\V1alpha\FirebaseLink $firebaseLink Required. The Firebase link to create.
+     *
+     * @return \Google\Analytics\Admin\V1alpha\CreateFirebaseLinkRequest
+     *
+     * @experimental
+     */
+    public static function build(string $parent, \Google\Analytics\Admin\V1alpha\FirebaseLink $firebaseLink): self
+    {
+        return (new self())
+            ->setParent($parent)
+            ->setFirebaseLink($firebaseLink);
+    }
 
     /**
      * Constructor.
@@ -37,7 +55,7 @@ class CreateFirebaseLinkRequest extends \Google\Protobuf\Internal\Message
      *
      *     @type string $parent
      *           Required. Format: properties/{property_id}
-     *           Example: properties/1234
+     *           Example: `properties/1234`
      *     @type \Google\Analytics\Admin\V1alpha\FirebaseLink $firebase_link
      *           Required. The Firebase link to create.
      * }
@@ -49,7 +67,7 @@ class CreateFirebaseLinkRequest extends \Google\Protobuf\Internal\Message
 
     /**
      * Required. Format: properties/{property_id}
-     * Example: properties/1234
+     * Example: `properties/1234`
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      * @return string
@@ -61,7 +79,7 @@ class CreateFirebaseLinkRequest extends \Google\Protobuf\Internal\Message
 
     /**
      * Required. Format: properties/{property_id}
-     * Example: properties/1234
+     * Example: `properties/1234`
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      * @param string $var

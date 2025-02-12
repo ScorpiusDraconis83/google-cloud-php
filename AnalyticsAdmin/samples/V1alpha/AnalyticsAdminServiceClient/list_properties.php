@@ -23,7 +23,8 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListProperties_sync]
-use Google\Analytics\Admin\V1alpha\AnalyticsAdminServiceClient;
+use Google\Analytics\Admin\V1alpha\Client\AnalyticsAdminServiceClient;
+use Google\Analytics\Admin\V1alpha\ListPropertiesRequest;
 use Google\Analytics\Admin\V1alpha\Property;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\PagedListResponse;
@@ -31,7 +32,6 @@ use Google\ApiCore\PagedListResponse;
 /**
  * Returns child Properties under the specified parent Account.
  *
- * Only "GA4" properties will be returned.
  * Properties will be excluded if the caller does not have access.
  * Soft-deleted (ie: "trashed") properties are excluded by default.
  * Returns an empty list if no relevant properties are found.
@@ -58,10 +58,14 @@ function list_properties_sample(string $filter): void
     // Create a client.
     $analyticsAdminServiceClient = new AnalyticsAdminServiceClient();
 
+    // Prepare the request message.
+    $request = (new ListPropertiesRequest())
+        ->setFilter($filter);
+
     // Call the API and handle any network failures.
     try {
         /** @var PagedListResponse $response */
-        $response = $analyticsAdminServiceClient->listProperties($filter);
+        $response = $analyticsAdminServiceClient->listProperties($request);
 
         /** @var Property $element */
         foreach ($response as $element) {

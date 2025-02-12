@@ -17,7 +17,7 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.9'
-    - run: pip install --require-hashes -r .kokoro/docs/docker/requirements.txt
+    - run: pip install --no-deps --require-hashes -r .kokoro/docs/docker/requirements.txt
     - name: Setup PHP
       uses: shivammathur/setup-php@verbose
       with:
@@ -26,12 +26,12 @@ jobs:
       id: extract
       uses: shrink/actions-docker-extract@v2
       with:
-        image: "phpdoc/phpdoc:20230522201300af6fb5"
+        image: "phpdoc/phpdoc:3.5.3"
         path: "/opt/phpdoc/."
     - name: Symlink phpDocumentor
       run: ln -s $(pwd)/${{ steps.extract.outputs.destination }}/bin/phpdoc /usr/local/bin/phpdoc
     - name: Install Dependencies
-      uses: nick-invision/retry@v2
+      uses: nick-invision/retry@v3
       with:
         timeout_minutes: 10
         max_attempts: 3

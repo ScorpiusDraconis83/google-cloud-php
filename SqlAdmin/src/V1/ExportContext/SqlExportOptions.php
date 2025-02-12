@@ -26,11 +26,29 @@ class SqlExportOptions extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.BoolValue schema_only = 2;</code>
      */
-    private $schema_only = null;
+    protected $schema_only = null;
     /**
      * Generated from protobuf field <code>.google.cloud.sql.v1.ExportContext.SqlExportOptions.MysqlExportOptions mysql_export_options = 3;</code>
      */
-    private $mysql_export_options = null;
+    protected $mysql_export_options = null;
+    /**
+     * Optional. The number of threads to use for parallel export.
+     *
+     * Generated from protobuf field <code>.google.protobuf.Int32Value threads = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $threads = null;
+    /**
+     * Optional. Whether or not the export should be parallel.
+     *
+     * Generated from protobuf field <code>.google.protobuf.BoolValue parallel = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $parallel = null;
+    /**
+     * Optional. Options for exporting from a Cloud SQL for PostgreSQL instance.
+     *
+     * Generated from protobuf field <code>.google.cloud.sql.v1.ExportContext.SqlExportOptions.PostgresExportOptions postgres_export_options = 6 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $postgres_export_options = null;
 
     /**
      * Constructor.
@@ -45,6 +63,12 @@ class SqlExportOptions extends \Google\Protobuf\Internal\Message
      *     @type \Google\Protobuf\BoolValue $schema_only
      *           Export only schemas.
      *     @type \Google\Cloud\Sql\V1\ExportContext\SqlExportOptions\MysqlExportOptions $mysql_export_options
+     *     @type \Google\Protobuf\Int32Value $threads
+     *           Optional. The number of threads to use for parallel export.
+     *     @type \Google\Protobuf\BoolValue $parallel
+     *           Optional. Whether or not the export should be parallel.
+     *     @type \Google\Cloud\Sql\V1\ExportContext\SqlExportOptions\PostgresExportOptions $postgres_export_options
+     *           Optional. Options for exporting from a Cloud SQL for PostgreSQL instance.
      * }
      */
     public function __construct($data = NULL) {
@@ -111,7 +135,7 @@ class SqlExportOptions extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.google.protobuf.BoolValue schema_only = 2;</code>
      * @return bool|null
      */
-    public function getSchemaOnlyValue()
+    public function getSchemaOnlyUnwrapped()
     {
         return $this->readWrapperValue("schema_only");
     }
@@ -140,7 +164,7 @@ class SqlExportOptions extends \Google\Protobuf\Internal\Message
      * @param bool|null $var
      * @return $this
      */
-    public function setSchemaOnlyValue($var)
+    public function setSchemaOnlyUnwrapped($var)
     {
         $this->writeWrapperValue("schema_only", $var);
         return $this;}
@@ -173,6 +197,168 @@ class SqlExportOptions extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\Sql\V1\ExportContext\SqlExportOptions\MysqlExportOptions::class);
         $this->mysql_export_options = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. The number of threads to use for parallel export.
+     *
+     * Generated from protobuf field <code>.google.protobuf.Int32Value threads = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Protobuf\Int32Value|null
+     */
+    public function getThreads()
+    {
+        return $this->threads;
+    }
+
+    public function hasThreads()
+    {
+        return isset($this->threads);
+    }
+
+    public function clearThreads()
+    {
+        unset($this->threads);
+    }
+
+    /**
+     * Returns the unboxed value from <code>getThreads()</code>
+
+     * Optional. The number of threads to use for parallel export.
+     *
+     * Generated from protobuf field <code>.google.protobuf.Int32Value threads = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return int|null
+     */
+    public function getThreadsUnwrapped()
+    {
+        return $this->readWrapperValue("threads");
+    }
+
+    /**
+     * Optional. The number of threads to use for parallel export.
+     *
+     * Generated from protobuf field <code>.google.protobuf.Int32Value threads = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Protobuf\Int32Value $var
+     * @return $this
+     */
+    public function setThreads($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Protobuf\Int32Value::class);
+        $this->threads = $var;
+
+        return $this;
+    }
+
+    /**
+     * Sets the field by wrapping a primitive type in a Google\Protobuf\Int32Value object.
+
+     * Optional. The number of threads to use for parallel export.
+     *
+     * Generated from protobuf field <code>.google.protobuf.Int32Value threads = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param int|null $var
+     * @return $this
+     */
+    public function setThreadsUnwrapped($var)
+    {
+        $this->writeWrapperValue("threads", $var);
+        return $this;}
+
+    /**
+     * Optional. Whether or not the export should be parallel.
+     *
+     * Generated from protobuf field <code>.google.protobuf.BoolValue parallel = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Protobuf\BoolValue|null
+     */
+    public function getParallel()
+    {
+        return $this->parallel;
+    }
+
+    public function hasParallel()
+    {
+        return isset($this->parallel);
+    }
+
+    public function clearParallel()
+    {
+        unset($this->parallel);
+    }
+
+    /**
+     * Returns the unboxed value from <code>getParallel()</code>
+
+     * Optional. Whether or not the export should be parallel.
+     *
+     * Generated from protobuf field <code>.google.protobuf.BoolValue parallel = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return bool|null
+     */
+    public function getParallelUnwrapped()
+    {
+        return $this->readWrapperValue("parallel");
+    }
+
+    /**
+     * Optional. Whether or not the export should be parallel.
+     *
+     * Generated from protobuf field <code>.google.protobuf.BoolValue parallel = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Protobuf\BoolValue $var
+     * @return $this
+     */
+    public function setParallel($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Protobuf\BoolValue::class);
+        $this->parallel = $var;
+
+        return $this;
+    }
+
+    /**
+     * Sets the field by wrapping a primitive type in a Google\Protobuf\BoolValue object.
+
+     * Optional. Whether or not the export should be parallel.
+     *
+     * Generated from protobuf field <code>.google.protobuf.BoolValue parallel = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param bool|null $var
+     * @return $this
+     */
+    public function setParallelUnwrapped($var)
+    {
+        $this->writeWrapperValue("parallel", $var);
+        return $this;}
+
+    /**
+     * Optional. Options for exporting from a Cloud SQL for PostgreSQL instance.
+     *
+     * Generated from protobuf field <code>.google.cloud.sql.v1.ExportContext.SqlExportOptions.PostgresExportOptions postgres_export_options = 6 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\Sql\V1\ExportContext\SqlExportOptions\PostgresExportOptions|null
+     */
+    public function getPostgresExportOptions()
+    {
+        return $this->postgres_export_options;
+    }
+
+    public function hasPostgresExportOptions()
+    {
+        return isset($this->postgres_export_options);
+    }
+
+    public function clearPostgresExportOptions()
+    {
+        unset($this->postgres_export_options);
+    }
+
+    /**
+     * Optional. Options for exporting from a Cloud SQL for PostgreSQL instance.
+     *
+     * Generated from protobuf field <code>.google.cloud.sql.v1.ExportContext.SqlExportOptions.PostgresExportOptions postgres_export_options = 6 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\Sql\V1\ExportContext\SqlExportOptions\PostgresExportOptions $var
+     * @return $this
+     */
+    public function setPostgresExportOptions($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Sql\V1\ExportContext\SqlExportOptions\PostgresExportOptions::class);
+        $this->postgres_export_options = $var;
 
         return $this;
     }

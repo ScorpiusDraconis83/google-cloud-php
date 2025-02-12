@@ -26,22 +26,22 @@ class Secret extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
-     * Required. Immutable. The replication policy of the secret data attached to
+     * Optional. Immutable. The replication policy of the secret data attached to
      * the [Secret][google.cloud.secretmanager.v1.Secret].
      * The replication policy cannot be changed after the Secret has been created.
      *
-     * Generated from protobuf field <code>.google.cloud.secretmanager.v1.Replication replication = 2 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = REQUIRED];</code>
+     * Generated from protobuf field <code>.google.cloud.secretmanager.v1.Replication replication = 2 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $replication = null;
+    protected $replication = null;
     /**
      * Output only. The time at which the
      * [Secret][google.cloud.secretmanager.v1.Secret] was created.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp create_time = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $create_time = null;
+    protected $create_time = null;
     /**
      * The labels assigned to this Secret.
      * Label keys must be between 1 and 63 characters long, have a UTF-8 encoding
@@ -68,7 +68,7 @@ class Secret extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string etag = 8 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $etag = '';
+    protected $etag = '';
     /**
      * Optional. Rotation policy attached to the
      * [Secret][google.cloud.secretmanager.v1.Secret]. May be excluded if there is
@@ -76,7 +76,7 @@ class Secret extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.secretmanager.v1.Rotation rotation = 9 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $rotation = null;
+    protected $rotation = null;
     /**
      * Optional. Mapping from version alias to version name.
      * A version alias is a string with a maximum length of 63 characters and can
@@ -85,7 +85,7 @@ class Secret extends \Google\Protobuf\Internal\Message
      * letter and cannot be the string 'latest' or 'NEW'.
      * No more than 50 aliases can be assigned to a given secret.
      * Version-Alias pairs will be viewable via GetSecret and modifiable via
-     * UpdateSecret. At launch access by alias will only be supported on
+     * UpdateSecret. Access by alias is only be supported on
      * GetSecretVersion and AccessSecretVersion.
      *
      * Generated from protobuf field <code>map<string, int64> version_aliases = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
@@ -105,6 +105,29 @@ class Secret extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>map<string, string> annotations = 13 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
     private $annotations;
+    /**
+     * Optional. Secret Version TTL after destruction request
+     * This is a part of the Delayed secret version destroy feature.
+     * For secret with TTL>0, version destruction doesn't happen immediately
+     * on calling destroy instead the version goes to a disabled state and
+     * destruction happens after the TTL expires.
+     *
+     * Generated from protobuf field <code>.google.protobuf.Duration version_destroy_ttl = 14 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $version_destroy_ttl = null;
+    /**
+     * Optional. The customer-managed encryption configuration of the regionalized
+     * secrets. If no configuration is provided, Google-managed default encryption
+     * is used.
+     * Updates to the [Secret][google.cloud.secretmanager.v1.Secret] encryption
+     * configuration only apply to
+     * [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] added
+     * afterwards. They do not apply retroactively to existing
+     * [SecretVersions][google.cloud.secretmanager.v1.SecretVersion].
+     *
+     * Generated from protobuf field <code>.google.cloud.secretmanager.v1.CustomerManagedEncryption customer_managed_encryption = 15 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $customer_managed_encryption = null;
     protected $expiration;
 
     /**
@@ -118,7 +141,7 @@ class Secret extends \Google\Protobuf\Internal\Message
      *           [Secret][google.cloud.secretmanager.v1.Secret] in the format
      *           `projects/&#42;&#47;secrets/&#42;`.
      *     @type \Google\Cloud\SecretManager\V1\Replication $replication
-     *           Required. Immutable. The replication policy of the secret data attached to
+     *           Optional. Immutable. The replication policy of the secret data attached to
      *           the [Secret][google.cloud.secretmanager.v1.Secret].
      *           The replication policy cannot be changed after the Secret has been created.
      *     @type \Google\Protobuf\Timestamp $create_time
@@ -158,7 +181,7 @@ class Secret extends \Google\Protobuf\Internal\Message
      *           letter and cannot be the string 'latest' or 'NEW'.
      *           No more than 50 aliases can be assigned to a given secret.
      *           Version-Alias pairs will be viewable via GetSecret and modifiable via
-     *           UpdateSecret. At launch access by alias will only be supported on
+     *           UpdateSecret. Access by alias is only be supported on
      *           GetSecretVersion and AccessSecretVersion.
      *     @type array|\Google\Protobuf\Internal\MapField $annotations
      *           Optional. Custom metadata about the secret.
@@ -170,6 +193,21 @@ class Secret extends \Google\Protobuf\Internal\Message
      *           ([a-z0-9A-Z]), and may have dashes (-), underscores (_), dots (.), and
      *           alphanumerics in between these symbols.
      *           The total size of annotation keys and values must be less than 16KiB.
+     *     @type \Google\Protobuf\Duration $version_destroy_ttl
+     *           Optional. Secret Version TTL after destruction request
+     *           This is a part of the Delayed secret version destroy feature.
+     *           For secret with TTL>0, version destruction doesn't happen immediately
+     *           on calling destroy instead the version goes to a disabled state and
+     *           destruction happens after the TTL expires.
+     *     @type \Google\Cloud\SecretManager\V1\CustomerManagedEncryption $customer_managed_encryption
+     *           Optional. The customer-managed encryption configuration of the regionalized
+     *           secrets. If no configuration is provided, Google-managed default encryption
+     *           is used.
+     *           Updates to the [Secret][google.cloud.secretmanager.v1.Secret] encryption
+     *           configuration only apply to
+     *           [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] added
+     *           afterwards. They do not apply retroactively to existing
+     *           [SecretVersions][google.cloud.secretmanager.v1.SecretVersion].
      * }
      */
     public function __construct($data = NULL) {
@@ -208,11 +246,11 @@ class Secret extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. Immutable. The replication policy of the secret data attached to
+     * Optional. Immutable. The replication policy of the secret data attached to
      * the [Secret][google.cloud.secretmanager.v1.Secret].
      * The replication policy cannot be changed after the Secret has been created.
      *
-     * Generated from protobuf field <code>.google.cloud.secretmanager.v1.Replication replication = 2 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = REQUIRED];</code>
+     * Generated from protobuf field <code>.google.cloud.secretmanager.v1.Replication replication = 2 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OPTIONAL];</code>
      * @return \Google\Cloud\SecretManager\V1\Replication|null
      */
     public function getReplication()
@@ -231,11 +269,11 @@ class Secret extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. Immutable. The replication policy of the secret data attached to
+     * Optional. Immutable. The replication policy of the secret data attached to
      * the [Secret][google.cloud.secretmanager.v1.Secret].
      * The replication policy cannot be changed after the Secret has been created.
      *
-     * Generated from protobuf field <code>.google.cloud.secretmanager.v1.Replication replication = 2 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = REQUIRED];</code>
+     * Generated from protobuf field <code>.google.cloud.secretmanager.v1.Replication replication = 2 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OPTIONAL];</code>
      * @param \Google\Cloud\SecretManager\V1\Replication $var
      * @return $this
      */
@@ -497,7 +535,7 @@ class Secret extends \Google\Protobuf\Internal\Message
      * letter and cannot be the string 'latest' or 'NEW'.
      * No more than 50 aliases can be assigned to a given secret.
      * Version-Alias pairs will be viewable via GetSecret and modifiable via
-     * UpdateSecret. At launch access by alias will only be supported on
+     * UpdateSecret. Access by alias is only be supported on
      * GetSecretVersion and AccessSecretVersion.
      *
      * Generated from protobuf field <code>map<string, int64> version_aliases = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
@@ -516,7 +554,7 @@ class Secret extends \Google\Protobuf\Internal\Message
      * letter and cannot be the string 'latest' or 'NEW'.
      * No more than 50 aliases can be assigned to a given secret.
      * Version-Alias pairs will be viewable via GetSecret and modifiable via
-     * UpdateSecret. At launch access by alias will only be supported on
+     * UpdateSecret. Access by alias is only be supported on
      * GetSecretVersion and AccessSecretVersion.
      *
      * Generated from protobuf field <code>map<string, int64> version_aliases = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
@@ -569,6 +607,100 @@ class Secret extends \Google\Protobuf\Internal\Message
     {
         $arr = GPBUtil::checkMapField($var, \Google\Protobuf\Internal\GPBType::STRING, \Google\Protobuf\Internal\GPBType::STRING);
         $this->annotations = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Secret Version TTL after destruction request
+     * This is a part of the Delayed secret version destroy feature.
+     * For secret with TTL>0, version destruction doesn't happen immediately
+     * on calling destroy instead the version goes to a disabled state and
+     * destruction happens after the TTL expires.
+     *
+     * Generated from protobuf field <code>.google.protobuf.Duration version_destroy_ttl = 14 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Protobuf\Duration|null
+     */
+    public function getVersionDestroyTtl()
+    {
+        return $this->version_destroy_ttl;
+    }
+
+    public function hasVersionDestroyTtl()
+    {
+        return isset($this->version_destroy_ttl);
+    }
+
+    public function clearVersionDestroyTtl()
+    {
+        unset($this->version_destroy_ttl);
+    }
+
+    /**
+     * Optional. Secret Version TTL after destruction request
+     * This is a part of the Delayed secret version destroy feature.
+     * For secret with TTL>0, version destruction doesn't happen immediately
+     * on calling destroy instead the version goes to a disabled state and
+     * destruction happens after the TTL expires.
+     *
+     * Generated from protobuf field <code>.google.protobuf.Duration version_destroy_ttl = 14 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Protobuf\Duration $var
+     * @return $this
+     */
+    public function setVersionDestroyTtl($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Protobuf\Duration::class);
+        $this->version_destroy_ttl = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. The customer-managed encryption configuration of the regionalized
+     * secrets. If no configuration is provided, Google-managed default encryption
+     * is used.
+     * Updates to the [Secret][google.cloud.secretmanager.v1.Secret] encryption
+     * configuration only apply to
+     * [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] added
+     * afterwards. They do not apply retroactively to existing
+     * [SecretVersions][google.cloud.secretmanager.v1.SecretVersion].
+     *
+     * Generated from protobuf field <code>.google.cloud.secretmanager.v1.CustomerManagedEncryption customer_managed_encryption = 15 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\SecretManager\V1\CustomerManagedEncryption|null
+     */
+    public function getCustomerManagedEncryption()
+    {
+        return $this->customer_managed_encryption;
+    }
+
+    public function hasCustomerManagedEncryption()
+    {
+        return isset($this->customer_managed_encryption);
+    }
+
+    public function clearCustomerManagedEncryption()
+    {
+        unset($this->customer_managed_encryption);
+    }
+
+    /**
+     * Optional. The customer-managed encryption configuration of the regionalized
+     * secrets. If no configuration is provided, Google-managed default encryption
+     * is used.
+     * Updates to the [Secret][google.cloud.secretmanager.v1.Secret] encryption
+     * configuration only apply to
+     * [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] added
+     * afterwards. They do not apply retroactively to existing
+     * [SecretVersions][google.cloud.secretmanager.v1.SecretVersion].
+     *
+     * Generated from protobuf field <code>.google.cloud.secretmanager.v1.CustomerManagedEncryption customer_managed_encryption = 15 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\SecretManager\V1\CustomerManagedEncryption $var
+     * @return $this
+     */
+    public function setCustomerManagedEncryption($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\SecretManager\V1\CustomerManagedEncryption::class);
+        $this->customer_managed_encryption = $var;
 
         return $this;
     }

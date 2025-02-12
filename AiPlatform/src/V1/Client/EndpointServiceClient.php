@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\AIPlatform\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -43,6 +42,7 @@ use Google\Cloud\AIPlatform\V1\GetEndpointRequest;
 use Google\Cloud\AIPlatform\V1\ListEndpointsRequest;
 use Google\Cloud\AIPlatform\V1\MutateDeployedModelRequest;
 use Google\Cloud\AIPlatform\V1\UndeployModelRequest;
+use Google\Cloud\AIPlatform\V1\UpdateEndpointLongRunningRequest;
 use Google\Cloud\AIPlatform\V1\UpdateEndpointRequest;
 use Google\Cloud\Iam\V1\GetIamPolicyRequest;
 use Google\Cloud\Iam\V1\Policy;
@@ -52,8 +52,10 @@ use Google\Cloud\Iam\V1\TestIamPermissionsResponse;
 use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\Location;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: A service for managing Vertex AI's Endpoints.
@@ -66,19 +68,20 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createEndpointAsync(CreateEndpointRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteEndpointAsync(DeleteEndpointRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deployModelAsync(DeployModelRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getEndpointAsync(GetEndpointRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listEndpointsAsync(ListEndpointsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface mutateDeployedModelAsync(MutateDeployedModelRequest $request, array $optionalArgs = [])
- * @method PromiseInterface undeployModelAsync(UndeployModelRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateEndpointAsync(UpdateEndpointRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createEndpointAsync(CreateEndpointRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteEndpointAsync(DeleteEndpointRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deployModelAsync(DeployModelRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Endpoint> getEndpointAsync(GetEndpointRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listEndpointsAsync(ListEndpointsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> mutateDeployedModelAsync(MutateDeployedModelRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> undeployModelAsync(UndeployModelRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Endpoint> updateEndpointAsync(UpdateEndpointRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateEndpointLongRunningAsync(UpdateEndpointLongRunningRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
  */
 final class EndpointServiceClient
 {
@@ -105,9 +108,7 @@ final class EndpointServiceClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private $operationsClient;
 
@@ -153,10 +154,31 @@ final class EndpointServiceClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -169,8 +191,11 @@ final class EndpointServiceClient
      *
      * @return string The formatted deployment_resource_pool resource.
      */
-    public static function deploymentResourcePoolName(string $project, string $location, string $deploymentResourcePool): string
-    {
+    public static function deploymentResourcePoolName(
+        string $project,
+        string $location,
+        string $deploymentResourcePool
+    ): string {
         return self::getPathTemplate('deploymentResourcePool')->render([
             'project' => $project,
             'location' => $location,
@@ -243,8 +268,11 @@ final class EndpointServiceClient
      *
      * @return string The formatted model_deployment_monitoring_job resource.
      */
-    public static function modelDeploymentMonitoringJobName(string $project, string $location, string $modelDeploymentMonitoringJob): string
-    {
+    public static function modelDeploymentMonitoringJobName(
+        string $project,
+        string $location,
+        string $modelDeploymentMonitoringJob
+    ): string {
         return self::getPathTemplate('modelDeploymentMonitoringJob')->render([
             'project' => $project,
             'location' => $location,
@@ -299,13 +327,36 @@ final class EndpointServiceClient
      *
      * @return string The formatted project_location_publisher_model resource.
      */
-    public static function projectLocationPublisherModelName(string $project, string $location, string $publisher, string $model): string
-    {
+    public static function projectLocationPublisherModelName(
+        string $project,
+        string $location,
+        string $publisher,
+        string $model
+    ): string {
         return self::getPathTemplate('projectLocationPublisherModel')->render([
             'project' => $project,
             'location' => $location,
             'publisher' => $publisher,
             'model' => $model,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a reservation
+     * resource.
+     *
+     * @param string $projectIdOrNumber
+     * @param string $zone
+     * @param string $reservationName
+     *
+     * @return string The formatted reservation resource.
+     */
+    public static function reservationName(string $projectIdOrNumber, string $zone, string $reservationName): string
+    {
+        return self::getPathTemplate('reservation')->render([
+            'project_id_or_number' => $projectIdOrNumber,
+            'zone' => $zone,
+            'reservation_name' => $reservationName,
         ]);
     }
 
@@ -321,6 +372,7 @@ final class EndpointServiceClient
      * - network: projects/{project}/global/networks/{network}
      * - projectLocationEndpoint: projects/{project}/locations/{location}/endpoints/{endpoint}
      * - projectLocationPublisherModel: projects/{project}/locations/{location}/publishers/{publisher}/models/{model}
+     * - reservation: projects/{project_id_or_number}/zones/{zone}/reservations/{reservation_name}
      *
      * The optional $template argument can be supplied to specify a particular pattern,
      * and must match one of the templates listed above. If no $template argument is
@@ -328,14 +380,14 @@ final class EndpointServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -357,6 +409,12 @@ final class EndpointServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -390,6 +448,9 @@ final class EndpointServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -625,6 +686,35 @@ final class EndpointServiceClient
     }
 
     /**
+     * Updates an Endpoint with a long running operation.
+     *
+     * The async variant is
+     * {@see EndpointServiceClient::updateEndpointLongRunningAsync()} .
+     *
+     * @example samples/V1/EndpointServiceClient/update_endpoint_long_running.php
+     *
+     * @param UpdateEndpointLongRunningRequest $request     A request to house fields associated with the call.
+     * @param array                            $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function updateEndpointLongRunning(
+        UpdateEndpointLongRunningRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
+        return $this->startApiCall('UpdateEndpointLongRunning', $request, $callOptions)->wait();
+    }
+
+    /**
      * Gets information about a location.
      *
      * The async variant is {@see EndpointServiceClient::getLocationAsync()} .
@@ -760,8 +850,10 @@ final class EndpointServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function testIamPermissions(TestIamPermissionsRequest $request, array $callOptions = []): TestIamPermissionsResponse
-    {
+    public function testIamPermissions(
+        TestIamPermissionsRequest $request,
+        array $callOptions = []
+    ): TestIamPermissionsResponse {
         return $this->startApiCall('TestIamPermissions', $request, $callOptions)->wait();
     }
 }

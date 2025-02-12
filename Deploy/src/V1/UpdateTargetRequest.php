@@ -16,26 +16,26 @@ use Google\Protobuf\Internal\GPBUtil;
 class UpdateTargetRequest extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Required. Field mask is used to specify the fields to be overwritten in the
-     * Target resource by the update.
-     * The fields specified in the update_mask are relative to the resource, not
-     * the full request. A field will be overwritten if it is in the mask. If the
-     * user does not provide a mask then all fields will be overwritten.
+     * Required. Field mask is used to specify the fields to be overwritten by the
+     * update in the `Target` resource. The fields specified in the update_mask
+     * are relative to the resource, not the full request. A field will be
+     * overwritten if it's in the mask. If the user doesn't provide a mask then
+     * all fields are overwritten.
      *
      * Generated from protobuf field <code>.google.protobuf.FieldMask update_mask = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $update_mask = null;
+    protected $update_mask = null;
     /**
      * Required. The `Target` to update.
      *
      * Generated from protobuf field <code>.google.cloud.deploy.v1.Target target = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $target = null;
+    protected $target = null;
     /**
      * Optional. A request ID to identify requests. Specify a unique request ID
-     * so that if you must retry your request, the server will know to ignore
-     * the request if it has already been completed. The server will guarantee
-     * that for at least 60 minutes since the first request.
+     * so that if you must retry your request, the server knows to ignore the
+     * request if it has already been completed. The server guarantees that for
+     * at least 60 minutes after the first request.
      * For example, consider a situation where you make an initial request and the
      * request times out. If you make the request again with the same request ID,
      * the server can check if original operation with the same request ID was
@@ -46,29 +46,29 @@ class UpdateTargetRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string request_id = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $request_id = '';
+    protected $request_id = '';
     /**
      * Optional. If set to true, updating a `Target` that does not exist will
      * result in the creation of a new `Target`.
      *
      * Generated from protobuf field <code>bool allow_missing = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $allow_missing = false;
+    protected $allow_missing = false;
     /**
      * Optional. If set to true, the request is validated and the user is provided
      * with an expected result, but no actual change is made.
      *
      * Generated from protobuf field <code>bool validate_only = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $validate_only = false;
+    protected $validate_only = false;
 
     /**
      * @param \Google\Cloud\Deploy\V1\Target $target     Required. The `Target` to update.
-     * @param \Google\Protobuf\FieldMask     $updateMask Required. Field mask is used to specify the fields to be overwritten in the
-     *                                                   Target resource by the update.
-     *                                                   The fields specified in the update_mask are relative to the resource, not
-     *                                                   the full request. A field will be overwritten if it is in the mask. If the
-     *                                                   user does not provide a mask then all fields will be overwritten.
+     * @param \Google\Protobuf\FieldMask     $updateMask Required. Field mask is used to specify the fields to be overwritten by the
+     *                                                   update in the `Target` resource. The fields specified in the update_mask
+     *                                                   are relative to the resource, not the full request. A field will be
+     *                                                   overwritten if it's in the mask. If the user doesn't provide a mask then
+     *                                                   all fields are overwritten.
      *
      * @return \Google\Cloud\Deploy\V1\UpdateTargetRequest
      *
@@ -88,18 +88,18 @@ class UpdateTargetRequest extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type \Google\Protobuf\FieldMask $update_mask
-     *           Required. Field mask is used to specify the fields to be overwritten in the
-     *           Target resource by the update.
-     *           The fields specified in the update_mask are relative to the resource, not
-     *           the full request. A field will be overwritten if it is in the mask. If the
-     *           user does not provide a mask then all fields will be overwritten.
+     *           Required. Field mask is used to specify the fields to be overwritten by the
+     *           update in the `Target` resource. The fields specified in the update_mask
+     *           are relative to the resource, not the full request. A field will be
+     *           overwritten if it's in the mask. If the user doesn't provide a mask then
+     *           all fields are overwritten.
      *     @type \Google\Cloud\Deploy\V1\Target $target
      *           Required. The `Target` to update.
      *     @type string $request_id
      *           Optional. A request ID to identify requests. Specify a unique request ID
-     *           so that if you must retry your request, the server will know to ignore
-     *           the request if it has already been completed. The server will guarantee
-     *           that for at least 60 minutes since the first request.
+     *           so that if you must retry your request, the server knows to ignore the
+     *           request if it has already been completed. The server guarantees that for
+     *           at least 60 minutes after the first request.
      *           For example, consider a situation where you make an initial request and the
      *           request times out. If you make the request again with the same request ID,
      *           the server can check if original operation with the same request ID was
@@ -121,11 +121,11 @@ class UpdateTargetRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. Field mask is used to specify the fields to be overwritten in the
-     * Target resource by the update.
-     * The fields specified in the update_mask are relative to the resource, not
-     * the full request. A field will be overwritten if it is in the mask. If the
-     * user does not provide a mask then all fields will be overwritten.
+     * Required. Field mask is used to specify the fields to be overwritten by the
+     * update in the `Target` resource. The fields specified in the update_mask
+     * are relative to the resource, not the full request. A field will be
+     * overwritten if it's in the mask. If the user doesn't provide a mask then
+     * all fields are overwritten.
      *
      * Generated from protobuf field <code>.google.protobuf.FieldMask update_mask = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      * @return \Google\Protobuf\FieldMask|null
@@ -146,11 +146,11 @@ class UpdateTargetRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. Field mask is used to specify the fields to be overwritten in the
-     * Target resource by the update.
-     * The fields specified in the update_mask are relative to the resource, not
-     * the full request. A field will be overwritten if it is in the mask. If the
-     * user does not provide a mask then all fields will be overwritten.
+     * Required. Field mask is used to specify the fields to be overwritten by the
+     * update in the `Target` resource. The fields specified in the update_mask
+     * are relative to the resource, not the full request. A field will be
+     * overwritten if it's in the mask. If the user doesn't provide a mask then
+     * all fields are overwritten.
      *
      * Generated from protobuf field <code>.google.protobuf.FieldMask update_mask = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      * @param \Google\Protobuf\FieldMask $var
@@ -202,9 +202,9 @@ class UpdateTargetRequest extends \Google\Protobuf\Internal\Message
 
     /**
      * Optional. A request ID to identify requests. Specify a unique request ID
-     * so that if you must retry your request, the server will know to ignore
-     * the request if it has already been completed. The server will guarantee
-     * that for at least 60 minutes since the first request.
+     * so that if you must retry your request, the server knows to ignore the
+     * request if it has already been completed. The server guarantees that for
+     * at least 60 minutes after the first request.
      * For example, consider a situation where you make an initial request and the
      * request times out. If you make the request again with the same request ID,
      * the server can check if original operation with the same request ID was
@@ -223,9 +223,9 @@ class UpdateTargetRequest extends \Google\Protobuf\Internal\Message
 
     /**
      * Optional. A request ID to identify requests. Specify a unique request ID
-     * so that if you must retry your request, the server will know to ignore
-     * the request if it has already been completed. The server will guarantee
-     * that for at least 60 minutes since the first request.
+     * so that if you must retry your request, the server knows to ignore the
+     * request if it has already been completed. The server guarantees that for
+     * at least 60 minutes after the first request.
      * For example, consider a situation where you make an initial request and the
      * request times out. If you make the request again with the same request ID,
      * the server can check if original operation with the same request ID was

@@ -25,8 +25,9 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // [START securitycenter_v1_generated_SecurityCenter_ListAssets_sync]
 use Google\ApiCore\ApiException;
 use Google\ApiCore\PagedListResponse;
+use Google\Cloud\SecurityCenter\V1\Client\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\ListAssetsRequest;
 use Google\Cloud\SecurityCenter\V1\ListAssetsResponse\ListAssetsResult;
-use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
 
 /**
  * Lists an organization's assets.
@@ -34,8 +35,8 @@ use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
  * @param string $formattedParent The name of the parent resource that contains the assets. The
  *                                value that you can specify on parent depends on the method in which you
  *                                specify parent. You can specify one of the following values:
- *                                "organizations/[organization_id]", "folders/[folder_id]", or
- *                                "projects/[project_id]". Please see
+ *                                `organizations/[organization_id]`, `folders/[folder_id]`, or
+ *                                `projects/[project_id]`. Please see
  *                                {@see SecurityCenterClient::projectName()} for help formatting this field.
  */
 function list_assets_sample(string $formattedParent): void
@@ -43,10 +44,14 @@ function list_assets_sample(string $formattedParent): void
     // Create a client.
     $securityCenterClient = new SecurityCenterClient();
 
+    // Prepare the request message.
+    $request = (new ListAssetsRequest())
+        ->setParent($formattedParent);
+
     // Call the API and handle any network failures.
     try {
         /** @var PagedListResponse $response */
-        $response = $securityCenterClient->listAssets($formattedParent);
+        $response = $securityCenterClient->listAssets($request);
 
         /** @var ListAssetsResult $element */
         foreach ($response as $element) {

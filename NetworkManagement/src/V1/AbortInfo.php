@@ -20,17 +20,22 @@ class AbortInfo extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.networkmanagement.v1.AbortInfo.Cause cause = 1;</code>
      */
-    private $cause = 0;
+    protected $cause = 0;
     /**
      * URI of the resource that caused the abort.
      *
      * Generated from protobuf field <code>string resource_uri = 2;</code>
      */
-    private $resource_uri = '';
+    protected $resource_uri = '';
     /**
-     * List of project IDs that the user has specified in the request but does
-     * not have permission to access network configs. Analysis is aborted in this
-     * case with the PERMISSION_DENIED cause.
+     * IP address that caused the abort.
+     *
+     * Generated from protobuf field <code>string ip_address = 4 [(.google.api.field_info) = {</code>
+     */
+    protected $ip_address = '';
+    /**
+     * List of project IDs the user specified in the request but lacks access to.
+     * In this case, analysis is aborted with the PERMISSION_DENIED cause.
      *
      * Generated from protobuf field <code>repeated string projects_missing_permission = 3;</code>
      */
@@ -46,10 +51,11 @@ class AbortInfo extends \Google\Protobuf\Internal\Message
      *           Causes that the analysis is aborted.
      *     @type string $resource_uri
      *           URI of the resource that caused the abort.
+     *     @type string $ip_address
+     *           IP address that caused the abort.
      *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $projects_missing_permission
-     *           List of project IDs that the user has specified in the request but does
-     *           not have permission to access network configs. Analysis is aborted in this
-     *           case with the PERMISSION_DENIED cause.
+     *           List of project IDs the user specified in the request but lacks access to.
+     *           In this case, analysis is aborted with the PERMISSION_DENIED cause.
      * }
      */
     public function __construct($data = NULL) {
@@ -110,9 +116,34 @@ class AbortInfo extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * List of project IDs that the user has specified in the request but does
-     * not have permission to access network configs. Analysis is aborted in this
-     * case with the PERMISSION_DENIED cause.
+     * IP address that caused the abort.
+     *
+     * Generated from protobuf field <code>string ip_address = 4 [(.google.api.field_info) = {</code>
+     * @return string
+     */
+    public function getIpAddress()
+    {
+        return $this->ip_address;
+    }
+
+    /**
+     * IP address that caused the abort.
+     *
+     * Generated from protobuf field <code>string ip_address = 4 [(.google.api.field_info) = {</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setIpAddress($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->ip_address = $var;
+
+        return $this;
+    }
+
+    /**
+     * List of project IDs the user specified in the request but lacks access to.
+     * In this case, analysis is aborted with the PERMISSION_DENIED cause.
      *
      * Generated from protobuf field <code>repeated string projects_missing_permission = 3;</code>
      * @return \Google\Protobuf\Internal\RepeatedField
@@ -123,9 +154,8 @@ class AbortInfo extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * List of project IDs that the user has specified in the request but does
-     * not have permission to access network configs. Analysis is aborted in this
-     * case with the PERMISSION_DENIED cause.
+     * List of project IDs the user specified in the request but lacks access to.
+     * In this case, analysis is aborted with the PERMISSION_DENIED cause.
      *
      * Generated from protobuf field <code>repeated string projects_missing_permission = 3;</code>
      * @param array<string>|\Google\Protobuf\Internal\RepeatedField $var

@@ -26,13 +26,9 @@ class EventType
      */
     const NEW_PROFILE = 1;
     /**
-     * Changed one of the following profile metrics:
-     * * Table data risk score
-     * * Table sensitivity score
-     * * Table resource visibility
-     * * Table encryption type
-     * * Table predicted infoTypes
-     * * Table other infoTypes
+     * One of the following profile metrics changed: Data risk score,
+     * Sensitivity score, Resource visibility, Encryption type, Predicted
+     * infoTypes, Other infoTypes
      *
      * Generated from protobuf enum <code>CHANGED_PROFILE = 2;</code>
      */
@@ -79,6 +75,4 @@ class EventType
     }
 }
 
-// Adding a class alias for backwards compatibility with the previous class name.
-class_alias(EventType::class, \Google\Cloud\Dlp\V2\DataProfileAction_EventType::class);
 

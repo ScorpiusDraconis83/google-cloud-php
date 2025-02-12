@@ -25,14 +25,15 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // [START resourcesettings_v1_generated_ResourceSettingsService_ListSettings_sync]
 use Google\ApiCore\ApiException;
 use Google\ApiCore\PagedListResponse;
-use Google\Cloud\ResourceSettings\V1\ResourceSettingsServiceClient;
+use Google\Cloud\ResourceSettings\V1\Client\ResourceSettingsServiceClient;
+use Google\Cloud\ResourceSettings\V1\ListSettingsRequest;
 use Google\Cloud\ResourceSettings\V1\Setting;
 
 /**
  * Lists all the settings that are available on the Cloud resource `parent`.
  *
- * @param string $parent The Cloud resource that parents the setting. Must be in one of the
- *                       following forms:
+ * @param string $parent The Cloud resource that parents the setting. Must be in one of
+ *                       the following forms:
  *
  *                       * `projects/{project_number}`
  *                       * `projects/{project_id}`
@@ -44,10 +45,14 @@ function list_settings_sample(string $parent): void
     // Create a client.
     $resourceSettingsServiceClient = new ResourceSettingsServiceClient();
 
+    // Prepare the request message.
+    $request = (new ListSettingsRequest())
+        ->setParent($parent);
+
     // Call the API and handle any network failures.
     try {
         /** @var PagedListResponse $response */
-        $response = $resourceSettingsServiceClient->listSettings($parent);
+        $response = $resourceSettingsServiceClient->listSettings($request);
 
         /** @var Setting $element */
         foreach ($response as $element) {

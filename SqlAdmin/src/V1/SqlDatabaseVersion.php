@@ -8,7 +8,6 @@ use UnexpectedValueException;
 
 /**
  * The database engine type and version.
- * The next tag is 325.
  *
  * Protobuf type <code>google.cloud.sql.v1.SqlDatabaseVersion</code>
  */
@@ -111,6 +110,12 @@ class SqlDatabaseVersion
      */
     const POSTGRES_15 = 172;
     /**
+     * The database version is PostgreSQL 16.
+     *
+     * Generated from protobuf enum <code>POSTGRES_16 = 272;</code>
+     */
+    const POSTGRES_16 = 272;
+    /**
      * The database version is MySQL 8.
      *
      * Generated from protobuf enum <code>MYSQL_8_0 = 20;</code>
@@ -189,6 +194,42 @@ class SqlDatabaseVersion
      */
     const MYSQL_8_0_36 = 241;
     /**
+     * The database major version is MySQL 8.0 and the minor version is 37.
+     *
+     * Generated from protobuf enum <code>MYSQL_8_0_37 = 355;</code>
+     */
+    const MYSQL_8_0_37 = 355;
+    /**
+     * The database major version is MySQL 8.0 and the minor version is 38.
+     *
+     * Generated from protobuf enum <code>MYSQL_8_0_38 = 356;</code>
+     */
+    const MYSQL_8_0_38 = 356;
+    /**
+     * The database major version is MySQL 8.0 and the minor version is 39.
+     *
+     * Generated from protobuf enum <code>MYSQL_8_0_39 = 357;</code>
+     */
+    const MYSQL_8_0_39 = 357;
+    /**
+     * The database major version is MySQL 8.0 and the minor version is 40.
+     *
+     * Generated from protobuf enum <code>MYSQL_8_0_40 = 358;</code>
+     */
+    const MYSQL_8_0_40 = 358;
+    /**
+     * The database version is MySQL 8.4.
+     *
+     * Generated from protobuf enum <code>MYSQL_8_4 = 398;</code>
+     */
+    const MYSQL_8_4 = 398;
+    /**
+     * The database version is MySQL 8.4 and the patch version is 0.
+     *
+     * Generated from protobuf enum <code>MYSQL_8_4_0 = 399;</code>
+     */
+    const MYSQL_8_4_0 = 399;
+    /**
      * The database version is SQL Server 2019 Standard.
      *
      * Generated from protobuf enum <code>SQLSERVER_2019_STANDARD = 26;</code>
@@ -254,6 +295,7 @@ class SqlDatabaseVersion
         self::POSTGRES_13 => 'POSTGRES_13',
         self::POSTGRES_14 => 'POSTGRES_14',
         self::POSTGRES_15 => 'POSTGRES_15',
+        self::POSTGRES_16 => 'POSTGRES_16',
         self::MYSQL_8_0 => 'MYSQL_8_0',
         self::MYSQL_8_0_18 => 'MYSQL_8_0_18',
         self::MYSQL_8_0_26 => 'MYSQL_8_0_26',
@@ -267,6 +309,12 @@ class SqlDatabaseVersion
         self::MYSQL_8_0_34 => 'MYSQL_8_0_34',
         self::MYSQL_8_0_35 => 'MYSQL_8_0_35',
         self::MYSQL_8_0_36 => 'MYSQL_8_0_36',
+        self::MYSQL_8_0_37 => 'MYSQL_8_0_37',
+        self::MYSQL_8_0_38 => 'MYSQL_8_0_38',
+        self::MYSQL_8_0_39 => 'MYSQL_8_0_39',
+        self::MYSQL_8_0_40 => 'MYSQL_8_0_40',
+        self::MYSQL_8_4 => 'MYSQL_8_4',
+        self::MYSQL_8_4_0 => 'MYSQL_8_4_0',
         self::SQLSERVER_2019_STANDARD => 'SQLSERVER_2019_STANDARD',
         self::SQLSERVER_2019_ENTERPRISE => 'SQLSERVER_2019_ENTERPRISE',
         self::SQLSERVER_2019_EXPRESS => 'SQLSERVER_2019_EXPRESS',

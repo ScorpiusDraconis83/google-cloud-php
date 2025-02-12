@@ -28,7 +28,7 @@ class Model extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Required. The display name of the model.
      * Should be human readable, used to display Recommendation Models in the
@@ -37,7 +37,7 @@ class Model extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string display_name = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $display_name = '';
+    protected $display_name = '';
     /**
      * Optional. The training state that the model is in (e.g.
      * `TRAINING` or `PAUSED`).
@@ -49,19 +49,19 @@ class Model extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.retail.v2.Model.TrainingState training_state = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $training_state = 0;
+    protected $training_state = 0;
     /**
      * Output only. The serving state of the model: `ACTIVE`, `NOT_ACTIVE`.
      *
      * Generated from protobuf field <code>.google.cloud.retail.v2.Model.ServingState serving_state = 4 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $serving_state = 0;
+    protected $serving_state = 0;
     /**
      * Output only. Timestamp the Recommendation Model was created at.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp create_time = 5 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $create_time = null;
+    protected $create_time = null;
     /**
      * Output only. Timestamp the Recommendation Model was last updated. E.g.
      * if a Recommendation Model was paused - this would be the time the pause was
@@ -69,7 +69,7 @@ class Model extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp update_time = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $update_time = null;
+    protected $update_time = null;
     /**
      * Required. The type of model e.g. `home-page`.
      * Currently supported values: `recommended-for-you`, `others-you-may-like`,
@@ -87,7 +87,7 @@ class Model extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string type = 7 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $type = '';
+    protected $type = '';
     /**
      * Optional. The optimization objective e.g. `cvr`.
      * Currently supported
@@ -109,7 +109,7 @@ class Model extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string optimization_objective = 8 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $optimization_objective = '';
+    protected $optimization_objective = '';
     /**
      * Optional. The state of periodic tuning.
      * The period we use is 3 months - to do a
@@ -118,13 +118,13 @@ class Model extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.retail.v2.Model.PeriodicTuningState periodic_tuning_state = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $periodic_tuning_state = 0;
+    protected $periodic_tuning_state = 0;
     /**
      * Output only. The timestamp when the latest successful tune finished.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp last_tune_time = 12 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $last_tune_time = null;
+    protected $last_tune_time = null;
     /**
      * Output only. The tune operation associated with the model.
      * Can be used to determine if there is an ongoing tune for this
@@ -132,7 +132,7 @@ class Model extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string tuning_operation = 15 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $tuning_operation = '';
+    protected $tuning_operation = '';
     /**
      * Output only. The state of data requirements for this model: `DATA_OK` and
      * `DATA_ERROR`.
@@ -144,14 +144,14 @@ class Model extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.retail.v2.Model.DataState data_state = 16 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $data_state = 0;
+    protected $data_state = 0;
     /**
      * Optional. If `RECOMMENDATIONS_FILTERING_ENABLED`, recommendation filtering
      * by attributes is enabled for the model.
      *
      * Generated from protobuf field <code>.google.cloud.retail.v2.RecommendationsFilteringOption filtering_option = 18 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $filtering_option = 0;
+    protected $filtering_option = 0;
     /**
      * Output only. The list of valid serving configs associated with the
      * PageOptimizationConfig.
@@ -159,6 +159,12 @@ class Model extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>repeated .google.cloud.retail.v2.Model.ServingConfigList serving_config_lists = 19 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
     private $serving_config_lists;
+    /**
+     * Optional. Additional model features config.
+     *
+     * Generated from protobuf field <code>.google.cloud.retail.v2.Model.ModelFeaturesConfig model_features_config = 22 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $model_features_config = null;
 
     /**
      * Constructor.
@@ -250,6 +256,8 @@ class Model extends \Google\Protobuf\Internal\Message
      *     @type array<\Google\Cloud\Retail\V2\Model\ServingConfigList>|\Google\Protobuf\Internal\RepeatedField $serving_config_lists
      *           Output only. The list of valid serving configs associated with the
      *           PageOptimizationConfig.
+     *     @type \Google\Cloud\Retail\V2\Model\ModelFeaturesConfig $model_features_config
+     *           Optional. Additional model features config.
      * }
      */
     public function __construct($data = NULL) {
@@ -759,6 +767,42 @@ class Model extends \Google\Protobuf\Internal\Message
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Google\Cloud\Retail\V2\Model\ServingConfigList::class);
         $this->serving_config_lists = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Additional model features config.
+     *
+     * Generated from protobuf field <code>.google.cloud.retail.v2.Model.ModelFeaturesConfig model_features_config = 22 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\Retail\V2\Model\ModelFeaturesConfig|null
+     */
+    public function getModelFeaturesConfig()
+    {
+        return $this->model_features_config;
+    }
+
+    public function hasModelFeaturesConfig()
+    {
+        return isset($this->model_features_config);
+    }
+
+    public function clearModelFeaturesConfig()
+    {
+        unset($this->model_features_config);
+    }
+
+    /**
+     * Optional. Additional model features config.
+     *
+     * Generated from protobuf field <code>.google.cloud.retail.v2.Model.ModelFeaturesConfig model_features_config = 22 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\Retail\V2\Model\ModelFeaturesConfig $var
+     * @return $this
+     */
+    public function setModelFeaturesConfig($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Retail\V2\Model\ModelFeaturesConfig::class);
+        $this->model_features_config = $var;
 
         return $this;
     }

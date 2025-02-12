@@ -22,7 +22,7 @@ class Processor extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * The processor type, such as: `OCR_PROCESSOR`, `INVOICE_PROCESSOR`.
      * To get a list of processor types, see
@@ -30,25 +30,25 @@ class Processor extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string type = 2;</code>
      */
-    private $type = '';
+    protected $type = '';
     /**
      * The display name of the processor.
      *
      * Generated from protobuf field <code>string display_name = 3;</code>
      */
-    private $display_name = '';
+    protected $display_name = '';
     /**
      * Output only. The state of the processor.
      *
      * Generated from protobuf field <code>.google.cloud.documentai.v1.Processor.State state = 4 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $state = 0;
+    protected $state = 0;
     /**
      * The default processor version.
      *
      * Generated from protobuf field <code>string default_processor_version = 9 [(.google.api.resource_reference) = {</code>
      */
-    private $default_processor_version = '';
+    protected $default_processor_version = '';
     /**
      * Output only. The processor version aliases.
      *
@@ -61,20 +61,32 @@ class Processor extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string process_endpoint = 6 [(.google.api.field_behavior) = OUTPUT_ONLY, (.google.api.field_behavior) = IMMUTABLE];</code>
      */
-    private $process_endpoint = '';
+    protected $process_endpoint = '';
     /**
      * The time the processor was created.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp create_time = 7;</code>
      */
-    private $create_time = null;
+    protected $create_time = null;
     /**
      * The [KMS key](https://cloud.google.com/security-key-management) used for
      * encryption and decryption in CMEK scenarios.
      *
      * Generated from protobuf field <code>string kms_key_name = 8;</code>
      */
-    private $kms_key_name = '';
+    protected $kms_key_name = '';
+    /**
+     * Output only. Reserved for future use.
+     *
+     * Generated from protobuf field <code>bool satisfies_pzs = 12 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $satisfies_pzs = false;
+    /**
+     * Output only. Reserved for future use.
+     *
+     * Generated from protobuf field <code>bool satisfies_pzi = 13 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $satisfies_pzi = false;
 
     /**
      * Constructor.
@@ -105,6 +117,10 @@ class Processor extends \Google\Protobuf\Internal\Message
      *     @type string $kms_key_name
      *           The [KMS key](https://cloud.google.com/security-key-management) used for
      *           encryption and decryption in CMEK scenarios.
+     *     @type bool $satisfies_pzs
+     *           Output only. Reserved for future use.
+     *     @type bool $satisfies_pzi
+     *           Output only. Reserved for future use.
      * }
      */
     public function __construct($data = NULL) {
@@ -362,6 +378,58 @@ class Processor extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->kms_key_name = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Reserved for future use.
+     *
+     * Generated from protobuf field <code>bool satisfies_pzs = 12 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return bool
+     */
+    public function getSatisfiesPzs()
+    {
+        return $this->satisfies_pzs;
+    }
+
+    /**
+     * Output only. Reserved for future use.
+     *
+     * Generated from protobuf field <code>bool satisfies_pzs = 12 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setSatisfiesPzs($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->satisfies_pzs = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Reserved for future use.
+     *
+     * Generated from protobuf field <code>bool satisfies_pzi = 13 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return bool
+     */
+    public function getSatisfiesPzi()
+    {
+        return $this->satisfies_pzi;
+    }
+
+    /**
+     * Output only. Reserved for future use.
+     *
+     * Generated from protobuf field <code>bool satisfies_pzi = 13 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setSatisfiesPzi($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->satisfies_pzi = $var;
 
         return $this;
     }

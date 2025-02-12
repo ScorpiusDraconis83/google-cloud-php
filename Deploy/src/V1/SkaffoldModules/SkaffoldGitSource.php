@@ -20,19 +20,19 @@ class SkaffoldGitSource extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string repo = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $repo = '';
+    protected $repo = '';
     /**
      * Optional. Relative path from the repository root to the Skaffold file.
      *
      * Generated from protobuf field <code>string path = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $path = '';
+    protected $path = '';
     /**
-     * Optional. Git ref the package should be cloned from.
+     * Optional. Git branch or tag to use when cloning the repository.
      *
      * Generated from protobuf field <code>string ref = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $ref = '';
+    protected $ref = '';
 
     /**
      * Constructor.
@@ -45,7 +45,7 @@ class SkaffoldGitSource extends \Google\Protobuf\Internal\Message
      *     @type string $path
      *           Optional. Relative path from the repository root to the Skaffold file.
      *     @type string $ref
-     *           Optional. Git ref the package should be cloned from.
+     *           Optional. Git branch or tag to use when cloning the repository.
      * }
      */
     public function __construct($data = NULL) {
@@ -106,7 +106,7 @@ class SkaffoldGitSource extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Optional. Git ref the package should be cloned from.
+     * Optional. Git branch or tag to use when cloning the repository.
      *
      * Generated from protobuf field <code>string ref = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @return string
@@ -117,7 +117,7 @@ class SkaffoldGitSource extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Optional. Git ref the package should be cloned from.
+     * Optional. Git branch or tag to use when cloning the repository.
      *
      * Generated from protobuf field <code>string ref = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @param string $var

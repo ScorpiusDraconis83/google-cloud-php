@@ -23,7 +23,8 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteProperty_sync]
-use Google\Analytics\Admin\V1alpha\AnalyticsAdminServiceClient;
+use Google\Analytics\Admin\V1alpha\Client\AnalyticsAdminServiceClient;
+use Google\Analytics\Admin\V1alpha\DeletePropertyRequest;
 use Google\Analytics\Admin\V1alpha\Property;
 use Google\ApiCore\ApiException;
 
@@ -38,7 +39,7 @@ use Google\ApiCore\ApiException;
  * will be permanently purged.
  * https://support.google.com/analytics/answer/6154772
  *
- * Returns an error if the target is not found, or is not a GA4 Property.
+ * Returns an error if the target is not found.
  *
  * @param string $formattedName The name of the Property to soft-delete.
  *                              Format: properties/{property_id}
@@ -50,10 +51,14 @@ function delete_property_sample(string $formattedName): void
     // Create a client.
     $analyticsAdminServiceClient = new AnalyticsAdminServiceClient();
 
+    // Prepare the request message.
+    $request = (new DeletePropertyRequest())
+        ->setName($formattedName);
+
     // Call the API and handle any network failures.
     try {
         /** @var Property $response */
-        $response = $analyticsAdminServiceClient->deleteProperty($formattedName);
+        $response = $analyticsAdminServiceClient->deleteProperty($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

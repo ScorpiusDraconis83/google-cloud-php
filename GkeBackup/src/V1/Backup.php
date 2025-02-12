@@ -13,7 +13,6 @@ use Google\Protobuf\Internal\GPBUtil;
  * some portion of the state of a GKE cluster, the record of the backup
  * operation itself, and an anchor for the underlying artifacts that
  * comprise the Backup (the config backup and VolumeBackups).
- * Next id: 28
  *
  * Generated from protobuf message <code>google.cloud.gkebackup.v1.Backup</code>
  */
@@ -25,26 +24,26 @@ class Backup extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Output only. Server generated global unique identifier of
      * [UUID4](https://en.wikipedia.org/wiki/Universally_unique_identifier)
      *
      * Generated from protobuf field <code>string uid = 2 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $uid = '';
+    protected $uid = '';
     /**
      * Output only. The timestamp when this Backup resource was created.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp create_time = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $create_time = null;
+    protected $create_time = null;
     /**
      * Output only. The timestamp when this Backup resource was last updated.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp update_time = 4 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $update_time = null;
+    protected $update_time = null;
     /**
      * Output only. This flag indicates whether this Backup resource was created
      * manually by a user or via a schedule in the BackupPlan. A value of True
@@ -52,17 +51,17 @@ class Backup extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>bool manual = 5 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $manual = false;
+    protected $manual = false;
     /**
-     * A set of custom labels supplied by user.
+     * Optional. A set of custom labels supplied by user.
      *
-     * Generated from protobuf field <code>map<string, string> labels = 6;</code>
+     * Generated from protobuf field <code>map<string, string> labels = 6 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
     private $labels;
     /**
-     * Minimum age for this Backup (in days). If this field is set to a non-zero
-     * value, the Backup will be "locked" against deletion (either manual or
-     * automatic deletion) for the number of days provided (measured from the
+     * Optional. Minimum age for this Backup (in days). If this field is set to a
+     * non-zero value, the Backup will be "locked" against deletion (either manual
+     * or automatic deletion) for the number of days provided (measured from the
      * creation time of the Backup).  MUST be an integer value between 0-90
      * (inclusive).
      * Defaults to parent BackupPlan's
@@ -70,9 +69,9 @@ class Backup extends \Google\Protobuf\Internal\Message
      * setting and may only be increased
      * (either at creation time or in a subsequent update).
      *
-     * Generated from protobuf field <code>int32 delete_lock_days = 7;</code>
+     * Generated from protobuf field <code>int32 delete_lock_days = 7 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $delete_lock_days = 0;
+    protected $delete_lock_days = 0;
     /**
      * Output only. The time at which an existing delete lock will expire for this
      * backup (calculated from create_time +
@@ -80,10 +79,10 @@ class Backup extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp delete_lock_expire_time = 8 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $delete_lock_expire_time = null;
+    protected $delete_lock_expire_time = null;
     /**
-     * The age (in days) after which this Backup will be automatically deleted.
-     * Must be an integer value >= 0:
+     * Optional. The age (in days) after which this Backup will be automatically
+     * deleted. Must be an integer value >= 0:
      * - If 0, no automatic deletion will occur for this Backup.
      * - If not 0, this must be >=
      * [delete_lock_days][google.cloud.gkebackup.v1.Backup.delete_lock_days] and
@@ -93,9 +92,9 @@ class Backup extends \Google\Protobuf\Internal\Message
      * [backup_retain_days][google.cloud.gkebackup.v1.BackupPlan.RetentionPolicy.backup_retain_days]
      * value.
      *
-     * Generated from protobuf field <code>int32 retain_days = 9;</code>
+     * Generated from protobuf field <code>int32 retain_days = 9 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $retain_days = 0;
+    protected $retain_days = 0;
     /**
      * Output only. The time at which this Backup will be automatically deleted
      * (calculated from create_time +
@@ -103,7 +102,7 @@ class Backup extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp retain_expire_time = 10 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $retain_expire_time = null;
+    protected $retain_expire_time = null;
     /**
      * Output only. The customer managed encryption key that was used to encrypt
      * the Backup's artifacts.  Inherited from the parent BackupPlan's
@@ -112,7 +111,7 @@ class Backup extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.gkebackup.v1.EncryptionKey encryption_key = 11 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $encryption_key = null;
+    protected $encryption_key = null;
     /**
      * Output only. Whether or not the Backup contains volume data.  Controlled by
      * the parent BackupPlan's
@@ -121,7 +120,7 @@ class Backup extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>bool contains_volume_data = 15 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $contains_volume_data = false;
+    protected $contains_volume_data = false;
     /**
      * Output only. Whether or not the Backup contains Kubernetes Secrets.
      * Controlled by the parent BackupPlan's
@@ -130,53 +129,53 @@ class Backup extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>bool contains_secrets = 16 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $contains_secrets = false;
+    protected $contains_secrets = false;
     /**
      * Output only. Information about the GKE cluster from which this Backup was
      * created.
      *
      * Generated from protobuf field <code>.google.cloud.gkebackup.v1.Backup.ClusterMetadata cluster_metadata = 17 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $cluster_metadata = null;
+    protected $cluster_metadata = null;
     /**
      * Output only. Current state of the Backup
      *
      * Generated from protobuf field <code>.google.cloud.gkebackup.v1.Backup.State state = 18 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $state = 0;
+    protected $state = 0;
     /**
      * Output only. Human-readable description of why the backup is in the current
      * `state`.
      *
      * Generated from protobuf field <code>string state_reason = 19 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $state_reason = '';
+    protected $state_reason = '';
     /**
      * Output only. Completion time of the Backup
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp complete_time = 20 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $complete_time = null;
+    protected $complete_time = null;
     /**
      * Output only. The total number of Kubernetes resources included in the
      * Backup.
      *
      * Generated from protobuf field <code>int32 resource_count = 21 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $resource_count = 0;
+    protected $resource_count = 0;
     /**
      * Output only. The total number of volume backups contained in the Backup.
      *
      * Generated from protobuf field <code>int32 volume_count = 22 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $volume_count = 0;
+    protected $volume_count = 0;
     /**
      * Output only. The total size of the Backup in bytes = config backup size +
      * sum(volume backup sizes)
      *
      * Generated from protobuf field <code>int64 size_bytes = 23 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $size_bytes = 0;
+    protected $size_bytes = 0;
     /**
      * Output only. `etag` is used for optimistic concurrency control as a way to
      * help prevent simultaneous updates of a backup from overwriting each other.
@@ -189,25 +188,36 @@ class Backup extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string etag = 24 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $etag = '';
+    protected $etag = '';
     /**
-     * User specified descriptive string for this Backup.
+     * Optional. User specified descriptive string for this Backup.
      *
-     * Generated from protobuf field <code>string description = 25;</code>
+     * Generated from protobuf field <code>string description = 25 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $description = '';
+    protected $description = '';
     /**
      * Output only. The total number of Kubernetes Pods contained in the Backup.
      *
      * Generated from protobuf field <code>int32 pod_count = 26 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $pod_count = 0;
+    protected $pod_count = 0;
     /**
      * Output only. The size of the config backup in bytes.
      *
      * Generated from protobuf field <code>int64 config_backup_size_bytes = 27 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $config_backup_size_bytes = 0;
+    protected $config_backup_size_bytes = 0;
+    /**
+     * Output only. If false, Backup will fail when Backup for GKE detects
+     * Kubernetes configuration that is non-standard or
+     * requires additional setup to restore.
+     * Inherited from the parent BackupPlan's
+     * [permissive_mode][google.cloud.gkebackup.v1.BackupPlan.BackupConfig.permissive_mode]
+     * value.
+     *
+     * Generated from protobuf field <code>bool permissive_mode = 28 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $permissive_mode = false;
     protected $backup_scope;
 
     /**
@@ -231,11 +241,11 @@ class Backup extends \Google\Protobuf\Internal\Message
      *           manually by a user or via a schedule in the BackupPlan. A value of True
      *           means that the Backup was created manually.
      *     @type array|\Google\Protobuf\Internal\MapField $labels
-     *           A set of custom labels supplied by user.
+     *           Optional. A set of custom labels supplied by user.
      *     @type int $delete_lock_days
-     *           Minimum age for this Backup (in days). If this field is set to a non-zero
-     *           value, the Backup will be "locked" against deletion (either manual or
-     *           automatic deletion) for the number of days provided (measured from the
+     *           Optional. Minimum age for this Backup (in days). If this field is set to a
+     *           non-zero value, the Backup will be "locked" against deletion (either manual
+     *           or automatic deletion) for the number of days provided (measured from the
      *           creation time of the Backup).  MUST be an integer value between 0-90
      *           (inclusive).
      *           Defaults to parent BackupPlan's
@@ -247,8 +257,8 @@ class Backup extends \Google\Protobuf\Internal\Message
      *           backup (calculated from create_time +
      *           [delete_lock_days][google.cloud.gkebackup.v1.Backup.delete_lock_days]).
      *     @type int $retain_days
-     *           The age (in days) after which this Backup will be automatically deleted.
-     *           Must be an integer value >= 0:
+     *           Optional. The age (in days) after which this Backup will be automatically
+     *           deleted. Must be an integer value >= 0:
      *           - If 0, no automatic deletion will occur for this Backup.
      *           - If not 0, this must be >=
      *           [delete_lock_days][google.cloud.gkebackup.v1.Backup.delete_lock_days] and
@@ -312,11 +322,18 @@ class Backup extends \Google\Protobuf\Internal\Message
      *           `UpdateBackup` or `DeleteBackup` to ensure that their change will be
      *           applied to the same version of the resource.
      *     @type string $description
-     *           User specified descriptive string for this Backup.
+     *           Optional. User specified descriptive string for this Backup.
      *     @type int $pod_count
      *           Output only. The total number of Kubernetes Pods contained in the Backup.
      *     @type int|string $config_backup_size_bytes
      *           Output only. The size of the config backup in bytes.
+     *     @type bool $permissive_mode
+     *           Output only. If false, Backup will fail when Backup for GKE detects
+     *           Kubernetes configuration that is non-standard or
+     *           requires additional setup to restore.
+     *           Inherited from the parent BackupPlan's
+     *           [permissive_mode][google.cloud.gkebackup.v1.BackupPlan.BackupConfig.permissive_mode]
+     *           value.
      * }
      */
     public function __construct($data = NULL) {
@@ -483,9 +500,9 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * A set of custom labels supplied by user.
+     * Optional. A set of custom labels supplied by user.
      *
-     * Generated from protobuf field <code>map<string, string> labels = 6;</code>
+     * Generated from protobuf field <code>map<string, string> labels = 6 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @return \Google\Protobuf\Internal\MapField
      */
     public function getLabels()
@@ -494,9 +511,9 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * A set of custom labels supplied by user.
+     * Optional. A set of custom labels supplied by user.
      *
-     * Generated from protobuf field <code>map<string, string> labels = 6;</code>
+     * Generated from protobuf field <code>map<string, string> labels = 6 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @param array|\Google\Protobuf\Internal\MapField $var
      * @return $this
      */
@@ -509,9 +526,9 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Minimum age for this Backup (in days). If this field is set to a non-zero
-     * value, the Backup will be "locked" against deletion (either manual or
-     * automatic deletion) for the number of days provided (measured from the
+     * Optional. Minimum age for this Backup (in days). If this field is set to a
+     * non-zero value, the Backup will be "locked" against deletion (either manual
+     * or automatic deletion) for the number of days provided (measured from the
      * creation time of the Backup).  MUST be an integer value between 0-90
      * (inclusive).
      * Defaults to parent BackupPlan's
@@ -519,7 +536,7 @@ class Backup extends \Google\Protobuf\Internal\Message
      * setting and may only be increased
      * (either at creation time or in a subsequent update).
      *
-     * Generated from protobuf field <code>int32 delete_lock_days = 7;</code>
+     * Generated from protobuf field <code>int32 delete_lock_days = 7 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @return int
      */
     public function getDeleteLockDays()
@@ -528,9 +545,9 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Minimum age for this Backup (in days). If this field is set to a non-zero
-     * value, the Backup will be "locked" against deletion (either manual or
-     * automatic deletion) for the number of days provided (measured from the
+     * Optional. Minimum age for this Backup (in days). If this field is set to a
+     * non-zero value, the Backup will be "locked" against deletion (either manual
+     * or automatic deletion) for the number of days provided (measured from the
      * creation time of the Backup).  MUST be an integer value between 0-90
      * (inclusive).
      * Defaults to parent BackupPlan's
@@ -538,7 +555,7 @@ class Backup extends \Google\Protobuf\Internal\Message
      * setting and may only be increased
      * (either at creation time or in a subsequent update).
      *
-     * Generated from protobuf field <code>int32 delete_lock_days = 7;</code>
+     * Generated from protobuf field <code>int32 delete_lock_days = 7 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @param int $var
      * @return $this
      */
@@ -591,8 +608,8 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The age (in days) after which this Backup will be automatically deleted.
-     * Must be an integer value >= 0:
+     * Optional. The age (in days) after which this Backup will be automatically
+     * deleted. Must be an integer value >= 0:
      * - If 0, no automatic deletion will occur for this Backup.
      * - If not 0, this must be >=
      * [delete_lock_days][google.cloud.gkebackup.v1.Backup.delete_lock_days] and
@@ -602,7 +619,7 @@ class Backup extends \Google\Protobuf\Internal\Message
      * [backup_retain_days][google.cloud.gkebackup.v1.BackupPlan.RetentionPolicy.backup_retain_days]
      * value.
      *
-     * Generated from protobuf field <code>int32 retain_days = 9;</code>
+     * Generated from protobuf field <code>int32 retain_days = 9 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @return int
      */
     public function getRetainDays()
@@ -611,8 +628,8 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The age (in days) after which this Backup will be automatically deleted.
-     * Must be an integer value >= 0:
+     * Optional. The age (in days) after which this Backup will be automatically
+     * deleted. Must be an integer value >= 0:
      * - If 0, no automatic deletion will occur for this Backup.
      * - If not 0, this must be >=
      * [delete_lock_days][google.cloud.gkebackup.v1.Backup.delete_lock_days] and
@@ -622,7 +639,7 @@ class Backup extends \Google\Protobuf\Internal\Message
      * [backup_retain_days][google.cloud.gkebackup.v1.BackupPlan.RetentionPolicy.backup_retain_days]
      * value.
      *
-     * Generated from protobuf field <code>int32 retain_days = 9;</code>
+     * Generated from protobuf field <code>int32 retain_days = 9 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @param int $var
      * @return $this
      */
@@ -1128,9 +1145,9 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * User specified descriptive string for this Backup.
+     * Optional. User specified descriptive string for this Backup.
      *
-     * Generated from protobuf field <code>string description = 25;</code>
+     * Generated from protobuf field <code>string description = 25 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @return string
      */
     public function getDescription()
@@ -1139,9 +1156,9 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * User specified descriptive string for this Backup.
+     * Optional. User specified descriptive string for this Backup.
      *
-     * Generated from protobuf field <code>string description = 25;</code>
+     * Generated from protobuf field <code>string description = 25 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @param string $var
      * @return $this
      */
@@ -1201,6 +1218,42 @@ class Backup extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkInt64($var);
         $this->config_backup_size_bytes = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. If false, Backup will fail when Backup for GKE detects
+     * Kubernetes configuration that is non-standard or
+     * requires additional setup to restore.
+     * Inherited from the parent BackupPlan's
+     * [permissive_mode][google.cloud.gkebackup.v1.BackupPlan.BackupConfig.permissive_mode]
+     * value.
+     *
+     * Generated from protobuf field <code>bool permissive_mode = 28 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return bool
+     */
+    public function getPermissiveMode()
+    {
+        return $this->permissive_mode;
+    }
+
+    /**
+     * Output only. If false, Backup will fail when Backup for GKE detects
+     * Kubernetes configuration that is non-standard or
+     * requires additional setup to restore.
+     * Inherited from the parent BackupPlan's
+     * [permissive_mode][google.cloud.gkebackup.v1.BackupPlan.BackupConfig.permissive_mode]
+     * value.
+     *
+     * Generated from protobuf field <code>bool permissive_mode = 28 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setPermissiveMode($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->permissive_mode = $var;
 
         return $this;
     }

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\Vision\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -59,23 +58,27 @@ use Google\Cloud\Vision\V1\ReferenceImage;
 use Google\Cloud\Vision\V1\RemoveProductFromProductSetRequest;
 use Google\Cloud\Vision\V1\UpdateProductRequest;
 use Google\Cloud\Vision\V1\UpdateProductSetRequest;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Manages Products and ProductSets of reference images for use in product
  * search. It uses the following resource model:
  *
- * - The API has a collection of [ProductSet][google.cloud.vision.v1.ProductSet] resources, named
- * `projects/&#42;/locations/&#42;/productSets/*`, which acts as a way to put different
- * products into groups to limit identification.
+ * - The API has a collection of [ProductSet][google.cloud.vision.v1.ProductSet]
+ * resources, named `projects/&#42;/locations/&#42;/productSets/*`, which acts as a way
+ * to put different products into groups to limit identification.
  *
  * In parallel,
  *
- * - The API has a collection of [Product][google.cloud.vision.v1.Product] resources, named
+ * - The API has a collection of [Product][google.cloud.vision.v1.Product]
+ * resources, named
  * `projects/&#42;/locations/&#42;/products/*`
  *
- * - Each [Product][google.cloud.vision.v1.Product] has a collection of [ReferenceImage][google.cloud.vision.v1.ReferenceImage] resources, named
+ * - Each [Product][google.cloud.vision.v1.Product] has a collection of
+ * [ReferenceImage][google.cloud.vision.v1.ReferenceImage] resources, named
  * `projects/&#42;/locations/&#42;/products/&#42;/referenceImages/*`
  *
  * This class provides the ability to make remote calls to the backing service through method
@@ -86,25 +89,25 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface addProductToProductSetAsync(AddProductToProductSetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createProductAsync(CreateProductRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createProductSetAsync(CreateProductSetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createReferenceImageAsync(CreateReferenceImageRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteProductAsync(DeleteProductRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteProductSetAsync(DeleteProductSetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteReferenceImageAsync(DeleteReferenceImageRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getProductAsync(GetProductRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getProductSetAsync(GetProductSetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getReferenceImageAsync(GetReferenceImageRequest $request, array $optionalArgs = [])
- * @method PromiseInterface importProductSetsAsync(ImportProductSetsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listProductSetsAsync(ListProductSetsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listProductsAsync(ListProductsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listProductsInProductSetAsync(ListProductsInProductSetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listReferenceImagesAsync(ListReferenceImagesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface purgeProductsAsync(PurgeProductsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface removeProductFromProductSetAsync(RemoveProductFromProductSetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateProductAsync(UpdateProductRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateProductSetAsync(UpdateProductSetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> addProductToProductSetAsync(AddProductToProductSetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Product> createProductAsync(CreateProductRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ProductSet> createProductSetAsync(CreateProductSetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ReferenceImage> createReferenceImageAsync(CreateReferenceImageRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteProductAsync(DeleteProductRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteProductSetAsync(DeleteProductSetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteReferenceImageAsync(DeleteReferenceImageRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Product> getProductAsync(GetProductRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ProductSet> getProductSetAsync(GetProductSetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ReferenceImage> getReferenceImageAsync(GetReferenceImageRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> importProductSetsAsync(ImportProductSetsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listProductSetsAsync(ListProductSetsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listProductsAsync(ListProductsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listProductsInProductSetAsync(ListProductsInProductSetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listReferenceImagesAsync(ListReferenceImagesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> purgeProductsAsync(PurgeProductsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> removeProductFromProductSetAsync(RemoveProductFromProductSetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Product> updateProductAsync(UpdateProductRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ProductSet> updateProductSetAsync(UpdateProductSetRequest $request, array $optionalArgs = [])
  */
 final class ProductSearchClient
 {
@@ -180,10 +183,31 @@ final class ProductSearchClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -252,8 +276,12 @@ final class ProductSearchClient
      *
      * @return string The formatted reference_image resource.
      */
-    public static function referenceImageName(string $project, string $location, string $product, string $referenceImage): string
-    {
+    public static function referenceImageName(
+        string $project,
+        string $location,
+        string $product,
+        string $referenceImage
+    ): string {
         return self::getPathTemplate('referenceImage')->render([
             'project' => $project,
             'location' => $location,
@@ -277,14 +305,14 @@ final class ProductSearchClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -306,6 +334,12 @@ final class ProductSearchClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -339,6 +373,9 @@ final class ProductSearchClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -373,6 +410,8 @@ final class ProductSearchClient
      *
      * The async variant is {@see ProductSearchClient::addProductToProductSetAsync()} .
      *
+     * @example samples/V1/ProductSearchClient/add_product_to_product_set.php
+     *
      * @param AddProductToProductSetRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -402,6 +441,8 @@ final class ProductSearchClient
      *
      * The async variant is {@see ProductSearchClient::createProductAsync()} .
      *
+     * @example samples/V1/ProductSearchClient/create_product.php
+     *
      * @param CreateProductRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -430,6 +471,8 @@ final class ProductSearchClient
      * 4096 characters.
      *
      * The async variant is {@see ProductSearchClient::createProductSetAsync()} .
+     *
+     * @example samples/V1/ProductSearchClient/create_product_set.php
      *
      * @param CreateProductSetRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -473,6 +516,8 @@ final class ProductSearchClient
      *
      * The async variant is {@see ProductSearchClient::createReferenceImageAsync()} .
      *
+     * @example samples/V1/ProductSearchClient/create_reference_image.php
+     *
      * @param CreateReferenceImageRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -501,6 +546,8 @@ final class ProductSearchClient
      *
      * The async variant is {@see ProductSearchClient::deleteProductAsync()} .
      *
+     * @example samples/V1/ProductSearchClient/delete_product.php
+     *
      * @param DeleteProductRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -525,6 +572,8 @@ final class ProductSearchClient
      * The actual image files are not deleted from Google Cloud Storage.
      *
      * The async variant is {@see ProductSearchClient::deleteProductSetAsync()} .
+     *
+     * @example samples/V1/ProductSearchClient/delete_product_set.php
      *
      * @param DeleteProductSetRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -554,6 +603,8 @@ final class ProductSearchClient
      *
      * The async variant is {@see ProductSearchClient::deleteReferenceImageAsync()} .
      *
+     * @example samples/V1/ProductSearchClient/delete_reference_image.php
+     *
      * @param DeleteReferenceImageRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -579,6 +630,8 @@ final class ProductSearchClient
      * * Returns NOT_FOUND if the Product does not exist.
      *
      * The async variant is {@see ProductSearchClient::getProductAsync()} .
+     *
+     * @example samples/V1/ProductSearchClient/get_product.php
      *
      * @param GetProductRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -608,6 +661,8 @@ final class ProductSearchClient
      *
      * The async variant is {@see ProductSearchClient::getProductSetAsync()} .
      *
+     * @example samples/V1/ProductSearchClient/get_product_set.php
+     *
      * @param GetProductSetRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -636,6 +691,8 @@ final class ProductSearchClient
      *
      * The async variant is {@see ProductSearchClient::getReferenceImageAsync()} .
      *
+     * @example samples/V1/ProductSearchClient/get_reference_image.php
+     *
      * @param GetReferenceImageRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -659,8 +716,8 @@ final class ProductSearchClient
      * Asynchronous API that imports a list of reference images to specified
      * product sets based on a list of image information.
      *
-     * The [google.longrunning.Operation][google.longrunning.Operation] API can be used to keep track of the
-     * progress and results of the request.
+     * The [google.longrunning.Operation][google.longrunning.Operation] API can be
+     * used to keep track of the progress and results of the request.
      * `Operation.metadata` contains `BatchOperationMetadata`. (progress)
      * `Operation.response` contains `ImportProductSetsResponse`. (results)
      *
@@ -669,6 +726,8 @@ final class ProductSearchClient
      * [ImportProductSetsGcsSource.csv_file_uri][google.cloud.vision.v1.ImportProductSetsGcsSource.csv_file_uri].
      *
      * The async variant is {@see ProductSearchClient::importProductSetsAsync()} .
+     *
+     * @example samples/V1/ProductSearchClient/import_product_sets.php
      *
      * @param ImportProductSetsRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -699,6 +758,8 @@ final class ProductSearchClient
      *
      * The async variant is {@see ProductSearchClient::listProductSetsAsync()} .
      *
+     * @example samples/V1/ProductSearchClient/list_product_sets.php
+     *
      * @param ListProductSetsRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -726,6 +787,8 @@ final class ProductSearchClient
      * * Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
      *
      * The async variant is {@see ProductSearchClient::listProductsAsync()} .
+     *
+     * @example samples/V1/ProductSearchClient/list_products.php
      *
      * @param ListProductsRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -758,6 +821,8 @@ final class ProductSearchClient
      * The async variant is {@see ProductSearchClient::listProductsInProductSetAsync()}
      * .
      *
+     * @example samples/V1/ProductSearchClient/list_products_in_product_set.php
+     *
      * @param ListProductsInProductSetRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
      *     Optional.
@@ -772,8 +837,10 @@ final class ProductSearchClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listProductsInProductSet(ListProductsInProductSetRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listProductsInProductSet(
+        ListProductsInProductSetRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListProductsInProductSet', $request, $callOptions);
     }
 
@@ -787,6 +854,8 @@ final class ProductSearchClient
      * than 1.
      *
      * The async variant is {@see ProductSearchClient::listReferenceImagesAsync()} .
+     *
+     * @example samples/V1/ProductSearchClient/list_reference_images.php
      *
      * @param ListReferenceImagesRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -829,11 +898,13 @@ final class ProductSearchClient
      * ProductSet, you must wait until the PurgeProducts operation has finished
      * for that ProductSet.
      *
-     * The [google.longrunning.Operation][google.longrunning.Operation] API can be used to keep track of the
-     * progress and results of the request.
+     * The [google.longrunning.Operation][google.longrunning.Operation] API can be
+     * used to keep track of the progress and results of the request.
      * `Operation.metadata` contains `BatchOperationMetadata`. (progress)
      *
      * The async variant is {@see ProductSearchClient::purgeProductsAsync()} .
+     *
+     * @example samples/V1/ProductSearchClient/purge_products.php
      *
      * @param PurgeProductsRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -860,6 +931,8 @@ final class ProductSearchClient
      * The async variant is
      * {@see ProductSearchClient::removeProductFromProductSetAsync()} .
      *
+     * @example samples/V1/ProductSearchClient/remove_product_from_product_set.php
+     *
      * @param RemoveProductFromProductSetRequest $request     A request to house fields associated with the call.
      * @param array                              $callOptions {
      *     Optional.
@@ -872,8 +945,10 @@ final class ProductSearchClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function removeProductFromProductSet(RemoveProductFromProductSetRequest $request, array $callOptions = []): void
-    {
+    public function removeProductFromProductSet(
+        RemoveProductFromProductSetRequest $request,
+        array $callOptions = []
+    ): void {
         $this->startApiCall('RemoveProductFromProductSet', $request, $callOptions)->wait();
     }
 
@@ -895,6 +970,8 @@ final class ProductSearchClient
      * * Returns INVALID_ARGUMENT if product_category is present in update_mask.
      *
      * The async variant is {@see ProductSearchClient::updateProductAsync()} .
+     *
+     * @example samples/V1/ProductSearchClient/update_product.php
      *
      * @param UpdateProductRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -926,6 +1003,8 @@ final class ProductSearchClient
      * missing from the request or longer than 4096 characters.
      *
      * The async variant is {@see ProductSearchClient::updateProductSetAsync()} .
+     *
+     * @example samples/V1/ProductSearchClient/update_product_set.php
      *
      * @param UpdateProductSetRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {

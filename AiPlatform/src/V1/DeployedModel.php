@@ -22,7 +22,7 @@ class DeployedModel extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string id = 1 [(.google.api.field_behavior) = IMMUTABLE];</code>
      */
-    private $id = '';
+    protected $id = '';
     /**
      * Required. The resource name of the Model that this is the deployment of.
      * Note that the Model may be in a different location than the DeployedModel's
@@ -36,26 +36,26 @@ class DeployedModel extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string model = 2 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $model = '';
+    protected $model = '';
     /**
      * Output only. The version ID of the model that is deployed.
      *
      * Generated from protobuf field <code>string model_version_id = 18 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $model_version_id = '';
+    protected $model_version_id = '';
     /**
      * The display name of the DeployedModel. If not provided upon creation,
      * the Model's display_name is used.
      *
      * Generated from protobuf field <code>string display_name = 3;</code>
      */
-    private $display_name = '';
+    protected $display_name = '';
     /**
      * Output only. Timestamp when the DeployedModel was created.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp create_time = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $create_time = null;
+    protected $create_time = null;
     /**
      * Explanation configuration for this DeployedModel.
      * When deploying a Model using
@@ -76,7 +76,17 @@ class DeployedModel extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.aiplatform.v1.ExplanationSpec explanation_spec = 9;</code>
      */
-    private $explanation_spec = null;
+    protected $explanation_spec = null;
+    /**
+     * If true, deploy the model without explainable feature, regardless the
+     * existence of
+     * [Model.explanation_spec][google.cloud.aiplatform.v1.Model.explanation_spec]
+     * or
+     * [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec].
+     *
+     * Generated from protobuf field <code>bool disable_explanations = 19;</code>
+     */
+    protected $disable_explanations = false;
     /**
      * The service account that the DeployedModel's container runs as. Specify the
      * email address of the service account. If this service account is not
@@ -87,7 +97,7 @@ class DeployedModel extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string service_account = 11;</code>
      */
-    private $service_account = '';
+    protected $service_account = '';
     /**
      * For custom-trained Models and AutoML Tabular Models, the container of the
      * DeployedModel instances will send `stderr` and `stdout` streams to
@@ -98,7 +108,7 @@ class DeployedModel extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>bool disable_container_logging = 15;</code>
      */
-    private $disable_container_logging = false;
+    protected $disable_container_logging = false;
     /**
      * If true, online prediction access logs are sent to Cloud
      * Logging.
@@ -110,7 +120,7 @@ class DeployedModel extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>bool enable_access_logging = 13;</code>
      */
-    private $enable_access_logging = false;
+    protected $enable_access_logging = false;
     /**
      * Output only. Provide paths for users to send predict/explain/health
      * requests directly to the deployed model services running on Cloud via
@@ -119,7 +129,32 @@ class DeployedModel extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.aiplatform.v1.PrivateEndpoints private_endpoints = 14 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $private_endpoints = null;
+    protected $private_endpoints = null;
+    /**
+     * Configuration for faster model deployment.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.FasterDeploymentConfig faster_deployment_config = 23;</code>
+     */
+    protected $faster_deployment_config = null;
+    /**
+     * Output only. Runtime status of the deployed model.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.DeployedModel.Status status = 26 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $status = null;
+    /**
+     * System labels to apply to Model Garden deployments.
+     * System labels are managed by Google for internal use only.
+     *
+     * Generated from protobuf field <code>map<string, string> system_labels = 28;</code>
+     */
+    private $system_labels;
+    /**
+     * Optional. Spec for configuring speculative decoding.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.SpeculativeDecodingSpec speculative_decoding_spec = 30 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $speculative_decoding_spec = null;
     protected $prediction_resources;
 
     /**
@@ -176,6 +211,12 @@ class DeployedModel extends \Google\Protobuf\Internal\Message
      *           is not populated, all fields of the
      *           [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
      *           will be used for the explanation configuration.
+     *     @type bool $disable_explanations
+     *           If true, deploy the model without explainable feature, regardless the
+     *           existence of
+     *           [Model.explanation_spec][google.cloud.aiplatform.v1.Model.explanation_spec]
+     *           or
+     *           [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec].
      *     @type string $service_account
      *           The service account that the DeployedModel's container runs as. Specify the
      *           email address of the service account. If this service account is not
@@ -203,6 +244,15 @@ class DeployedModel extends \Google\Protobuf\Internal\Message
      *           requests directly to the deployed model services running on Cloud via
      *           private services access. This field is populated if
      *           [network][google.cloud.aiplatform.v1.Endpoint.network] is configured.
+     *     @type \Google\Cloud\AIPlatform\V1\FasterDeploymentConfig $faster_deployment_config
+     *           Configuration for faster model deployment.
+     *     @type \Google\Cloud\AIPlatform\V1\DeployedModel\Status $status
+     *           Output only. Runtime status of the deployed model.
+     *     @type array|\Google\Protobuf\Internal\MapField $system_labels
+     *           System labels to apply to Model Garden deployments.
+     *           System labels are managed by Google for internal use only.
+     *     @type \Google\Cloud\AIPlatform\V1\SpeculativeDecodingSpec $speculative_decoding_spec
+     *           Optional. Spec for configuring speculative decoding.
      * }
      */
     public function __construct($data = NULL) {
@@ -540,6 +590,40 @@ class DeployedModel extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * If true, deploy the model without explainable feature, regardless the
+     * existence of
+     * [Model.explanation_spec][google.cloud.aiplatform.v1.Model.explanation_spec]
+     * or
+     * [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec].
+     *
+     * Generated from protobuf field <code>bool disable_explanations = 19;</code>
+     * @return bool
+     */
+    public function getDisableExplanations()
+    {
+        return $this->disable_explanations;
+    }
+
+    /**
+     * If true, deploy the model without explainable feature, regardless the
+     * existence of
+     * [Model.explanation_spec][google.cloud.aiplatform.v1.Model.explanation_spec]
+     * or
+     * [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec].
+     *
+     * Generated from protobuf field <code>bool disable_explanations = 19;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setDisableExplanations($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->disable_explanations = $var;
+
+        return $this;
+    }
+
+    /**
      * The service account that the DeployedModel's container runs as. Specify the
      * email address of the service account. If this service account is not
      * specified, the container runs as a service account that doesn't have access
@@ -687,6 +771,142 @@ class DeployedModel extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\AIPlatform\V1\PrivateEndpoints::class);
         $this->private_endpoints = $var;
+
+        return $this;
+    }
+
+    /**
+     * Configuration for faster model deployment.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.FasterDeploymentConfig faster_deployment_config = 23;</code>
+     * @return \Google\Cloud\AIPlatform\V1\FasterDeploymentConfig|null
+     */
+    public function getFasterDeploymentConfig()
+    {
+        return $this->faster_deployment_config;
+    }
+
+    public function hasFasterDeploymentConfig()
+    {
+        return isset($this->faster_deployment_config);
+    }
+
+    public function clearFasterDeploymentConfig()
+    {
+        unset($this->faster_deployment_config);
+    }
+
+    /**
+     * Configuration for faster model deployment.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.FasterDeploymentConfig faster_deployment_config = 23;</code>
+     * @param \Google\Cloud\AIPlatform\V1\FasterDeploymentConfig $var
+     * @return $this
+     */
+    public function setFasterDeploymentConfig($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\AIPlatform\V1\FasterDeploymentConfig::class);
+        $this->faster_deployment_config = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Runtime status of the deployed model.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.DeployedModel.Status status = 26 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return \Google\Cloud\AIPlatform\V1\DeployedModel\Status|null
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    public function hasStatus()
+    {
+        return isset($this->status);
+    }
+
+    public function clearStatus()
+    {
+        unset($this->status);
+    }
+
+    /**
+     * Output only. Runtime status of the deployed model.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.DeployedModel.Status status = 26 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param \Google\Cloud\AIPlatform\V1\DeployedModel\Status $var
+     * @return $this
+     */
+    public function setStatus($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\AIPlatform\V1\DeployedModel\Status::class);
+        $this->status = $var;
+
+        return $this;
+    }
+
+    /**
+     * System labels to apply to Model Garden deployments.
+     * System labels are managed by Google for internal use only.
+     *
+     * Generated from protobuf field <code>map<string, string> system_labels = 28;</code>
+     * @return \Google\Protobuf\Internal\MapField
+     */
+    public function getSystemLabels()
+    {
+        return $this->system_labels;
+    }
+
+    /**
+     * System labels to apply to Model Garden deployments.
+     * System labels are managed by Google for internal use only.
+     *
+     * Generated from protobuf field <code>map<string, string> system_labels = 28;</code>
+     * @param array|\Google\Protobuf\Internal\MapField $var
+     * @return $this
+     */
+    public function setSystemLabels($var)
+    {
+        $arr = GPBUtil::checkMapField($var, \Google\Protobuf\Internal\GPBType::STRING, \Google\Protobuf\Internal\GPBType::STRING);
+        $this->system_labels = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Spec for configuring speculative decoding.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.SpeculativeDecodingSpec speculative_decoding_spec = 30 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\AIPlatform\V1\SpeculativeDecodingSpec|null
+     */
+    public function getSpeculativeDecodingSpec()
+    {
+        return $this->speculative_decoding_spec;
+    }
+
+    public function hasSpeculativeDecodingSpec()
+    {
+        return isset($this->speculative_decoding_spec);
+    }
+
+    public function clearSpeculativeDecodingSpec()
+    {
+        unset($this->speculative_decoding_spec);
+    }
+
+    /**
+     * Optional. Spec for configuring speculative decoding.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.SpeculativeDecodingSpec speculative_decoding_spec = 30 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\AIPlatform\V1\SpeculativeDecodingSpec $var
+     * @return $this
+     */
+    public function setSpeculativeDecodingSpec($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\AIPlatform\V1\SpeculativeDecodingSpec::class);
+        $this->speculative_decoding_spec = $var;
 
         return $this;
     }

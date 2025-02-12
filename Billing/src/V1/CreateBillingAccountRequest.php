@@ -23,18 +23,16 @@ class CreateBillingAccountRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.billing.v1.BillingAccount billing_account = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $billing_account = null;
+    protected $billing_account = null;
     /**
      * Optional. The parent to create a billing account from.
      * Format:
-     *   - `organizations/{organization_id}`, for example,
-     *     `organizations/12345678`
      *   - `billingAccounts/{billing_account_id}`, for example,
      *      `billingAccounts/012345-567890-ABCDEF`
      *
      * Generated from protobuf field <code>string parent = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $parent = '';
+    protected $parent = '';
 
     /**
      * @param \Google\Cloud\Billing\V1\BillingAccount $billingAccount Required. The billing account resource to create.
@@ -59,8 +57,6 @@ class CreateBillingAccountRequest extends \Google\Protobuf\Internal\Message
      *                                                                account.
      * @param string                                  $parent         Optional. The parent to create a billing account from.
      *                                                                Format:
-     *                                                                - `organizations/{organization_id}`, for example,
-     *                                                                `organizations/12345678`
      *                                                                - `billingAccounts/{billing_account_id}`, for example,
      *                                                                `billingAccounts/012345-567890-ABCDEF`
      *
@@ -89,8 +85,6 @@ class CreateBillingAccountRequest extends \Google\Protobuf\Internal\Message
      *     @type string $parent
      *           Optional. The parent to create a billing account from.
      *           Format:
-     *             - `organizations/{organization_id}`, for example,
-     *               `organizations/12345678`
      *             - `billingAccounts/{billing_account_id}`, for example,
      *                `billingAccounts/012345-567890-ABCDEF`
      * }
@@ -145,8 +139,6 @@ class CreateBillingAccountRequest extends \Google\Protobuf\Internal\Message
     /**
      * Optional. The parent to create a billing account from.
      * Format:
-     *   - `organizations/{organization_id}`, for example,
-     *     `organizations/12345678`
      *   - `billingAccounts/{billing_account_id}`, for example,
      *      `billingAccounts/012345-567890-ABCDEF`
      *
@@ -161,8 +153,6 @@ class CreateBillingAccountRequest extends \Google\Protobuf\Internal\Message
     /**
      * Optional. The parent to create a billing account from.
      * Format:
-     *   - `organizations/{organization_id}`, for example,
-     *     `organizations/12345678`
      *   - `billingAccounts/{billing_account_id}`, for example,
      *      `billingAccounts/012345-567890-ABCDEF`
      *

@@ -23,8 +23,9 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListFirebaseLinks_sync]
-use Google\Analytics\Admin\V1alpha\AnalyticsAdminServiceClient;
+use Google\Analytics\Admin\V1alpha\Client\AnalyticsAdminServiceClient;
 use Google\Analytics\Admin\V1alpha\FirebaseLink;
+use Google\Analytics\Admin\V1alpha\ListFirebaseLinksRequest;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\PagedListResponse;
 
@@ -33,7 +34,8 @@ use Google\ApiCore\PagedListResponse;
  * Properties can have at most one FirebaseLink.
  *
  * @param string $formattedParent Format: properties/{property_id}
- *                                Example: properties/1234
+ *
+ *                                Example: `properties/1234`
  *                                Please see {@see AnalyticsAdminServiceClient::propertyName()} for help formatting this field.
  */
 function list_firebase_links_sample(string $formattedParent): void
@@ -41,10 +43,14 @@ function list_firebase_links_sample(string $formattedParent): void
     // Create a client.
     $analyticsAdminServiceClient = new AnalyticsAdminServiceClient();
 
+    // Prepare the request message.
+    $request = (new ListFirebaseLinksRequest())
+        ->setParent($formattedParent);
+
     // Call the API and handle any network failures.
     try {
         /** @var PagedListResponse $response */
-        $response = $analyticsAdminServiceClient->listFirebaseLinks($formattedParent);
+        $response = $analyticsAdminServiceClient->listFirebaseLinks($request);
 
         /** @var FirebaseLink $element */
         foreach ($response as $element) {

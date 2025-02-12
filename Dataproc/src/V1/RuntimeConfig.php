@@ -20,14 +20,14 @@ class RuntimeConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string version = 1 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $version = '';
+    protected $version = '';
     /**
      * Optional. Optional custom container image for the job runtime environment.
      * If not specified, a default container image will be used.
      *
      * Generated from protobuf field <code>string container_image = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $container_image = '';
+    protected $container_image = '';
     /**
      * Optional. A mapping of property names to values, which are used to
      * configure workload execution.
@@ -35,6 +35,25 @@ class RuntimeConfig extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>map<string, string> properties = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
     private $properties;
+    /**
+     * Optional. Dependency repository configuration.
+     *
+     * Generated from protobuf field <code>.google.cloud.dataproc.v1.RepositoryConfig repository_config = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $repository_config = null;
+    /**
+     * Optional. Autotuning configuration of the workload.
+     *
+     * Generated from protobuf field <code>.google.cloud.dataproc.v1.AutotuningConfig autotuning_config = 6 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $autotuning_config = null;
+    /**
+     * Optional. Cohort identifier. Identifies families of the workloads having
+     * the same shape, e.g. daily ETL jobs.
+     *
+     * Generated from protobuf field <code>string cohort = 7 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $cohort = '';
 
     /**
      * Constructor.
@@ -50,6 +69,13 @@ class RuntimeConfig extends \Google\Protobuf\Internal\Message
      *     @type array|\Google\Protobuf\Internal\MapField $properties
      *           Optional. A mapping of property names to values, which are used to
      *           configure workload execution.
+     *     @type \Google\Cloud\Dataproc\V1\RepositoryConfig $repository_config
+     *           Optional. Dependency repository configuration.
+     *     @type \Google\Cloud\Dataproc\V1\AutotuningConfig $autotuning_config
+     *           Optional. Autotuning configuration of the workload.
+     *     @type string $cohort
+     *           Optional. Cohort identifier. Identifies families of the workloads having
+     *           the same shape, e.g. daily ETL jobs.
      * }
      */
     public function __construct($data = NULL) {
@@ -135,6 +161,106 @@ class RuntimeConfig extends \Google\Protobuf\Internal\Message
     {
         $arr = GPBUtil::checkMapField($var, \Google\Protobuf\Internal\GPBType::STRING, \Google\Protobuf\Internal\GPBType::STRING);
         $this->properties = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Dependency repository configuration.
+     *
+     * Generated from protobuf field <code>.google.cloud.dataproc.v1.RepositoryConfig repository_config = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\Dataproc\V1\RepositoryConfig|null
+     */
+    public function getRepositoryConfig()
+    {
+        return $this->repository_config;
+    }
+
+    public function hasRepositoryConfig()
+    {
+        return isset($this->repository_config);
+    }
+
+    public function clearRepositoryConfig()
+    {
+        unset($this->repository_config);
+    }
+
+    /**
+     * Optional. Dependency repository configuration.
+     *
+     * Generated from protobuf field <code>.google.cloud.dataproc.v1.RepositoryConfig repository_config = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\Dataproc\V1\RepositoryConfig $var
+     * @return $this
+     */
+    public function setRepositoryConfig($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Dataproc\V1\RepositoryConfig::class);
+        $this->repository_config = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Autotuning configuration of the workload.
+     *
+     * Generated from protobuf field <code>.google.cloud.dataproc.v1.AutotuningConfig autotuning_config = 6 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\Dataproc\V1\AutotuningConfig|null
+     */
+    public function getAutotuningConfig()
+    {
+        return $this->autotuning_config;
+    }
+
+    public function hasAutotuningConfig()
+    {
+        return isset($this->autotuning_config);
+    }
+
+    public function clearAutotuningConfig()
+    {
+        unset($this->autotuning_config);
+    }
+
+    /**
+     * Optional. Autotuning configuration of the workload.
+     *
+     * Generated from protobuf field <code>.google.cloud.dataproc.v1.AutotuningConfig autotuning_config = 6 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\Dataproc\V1\AutotuningConfig $var
+     * @return $this
+     */
+    public function setAutotuningConfig($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Dataproc\V1\AutotuningConfig::class);
+        $this->autotuning_config = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Cohort identifier. Identifies families of the workloads having
+     * the same shape, e.g. daily ETL jobs.
+     *
+     * Generated from protobuf field <code>string cohort = 7 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return string
+     */
+    public function getCohort()
+    {
+        return $this->cohort;
+    }
+
+    /**
+     * Optional. Cohort identifier. Identifies families of the workloads having
+     * the same shape, e.g. daily ETL jobs.
+     *
+     * Generated from protobuf field <code>string cohort = 7 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setCohort($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->cohort = $var;
 
         return $this;
     }

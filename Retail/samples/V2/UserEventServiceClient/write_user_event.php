@@ -24,8 +24,9 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START retail_v2_generated_UserEventService_WriteUserEvent_sync]
 use Google\ApiCore\ApiException;
+use Google\Cloud\Retail\V2\Client\UserEventServiceClient;
 use Google\Cloud\Retail\V2\UserEvent;
-use Google\Cloud\Retail\V2\UserEventServiceClient;
+use Google\Cloud\Retail\V2\WriteUserEventRequest;
 
 /**
  * Writes a single user event.
@@ -35,6 +36,7 @@ use Google\Cloud\Retail\V2\UserEventServiceClient;
  * @param string $userEventEventType User event type. Allowed values are:
  *
  *                                   * `add-to-cart`: Products being added to cart.
+ *                                   * `remove-from-cart`: Products being removed from cart.
  *                                   * `category-page-view`: Special pages such as sale or promotion pages
  *                                   viewed.
  *                                   * `detail-page-view`: Products detail page viewed.
@@ -70,15 +72,18 @@ function write_user_event_sample(
     // Create a client.
     $userEventServiceClient = new UserEventServiceClient();
 
-    // Prepare any non-scalar elements to be passed along with the request.
+    // Prepare the request message.
     $userEvent = (new UserEvent())
         ->setEventType($userEventEventType)
         ->setVisitorId($userEventVisitorId);
+    $request = (new WriteUserEventRequest())
+        ->setParent($parent)
+        ->setUserEvent($userEvent);
 
     // Call the API and handle any network failures.
     try {
         /** @var UserEvent $response */
-        $response = $userEventServiceClient->writeUserEvent($parent, $userEvent);
+        $response = $userEventServiceClient->writeUserEvent($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

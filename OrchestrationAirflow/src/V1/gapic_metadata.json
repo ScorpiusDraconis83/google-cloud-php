@@ -10,9 +10,24 @@
                 "grpc": {
                     "libraryClient": "EnvironmentsGapicClient",
                     "rpcs": {
+                        "CheckUpgrade": {
+                            "methods": [
+                                "checkUpgrade"
+                            ]
+                        },
                         "CreateEnvironment": {
                             "methods": [
                                 "createEnvironment"
+                            ]
+                        },
+                        "CreateUserWorkloadsConfigMap": {
+                            "methods": [
+                                "createUserWorkloadsConfigMap"
+                            ]
+                        },
+                        "CreateUserWorkloadsSecret": {
+                            "methods": [
+                                "createUserWorkloadsSecret"
                             ]
                         },
                         "DatabaseFailover": {
@@ -23,6 +38,16 @@
                         "DeleteEnvironment": {
                             "methods": [
                                 "deleteEnvironment"
+                            ]
+                        },
+                        "DeleteUserWorkloadsConfigMap": {
+                            "methods": [
+                                "deleteUserWorkloadsConfigMap"
+                            ]
+                        },
+                        "DeleteUserWorkloadsSecret": {
+                            "methods": [
+                                "deleteUserWorkloadsSecret"
                             ]
                         },
                         "ExecuteAirflowCommand": {
@@ -40,9 +65,34 @@
                                 "getEnvironment"
                             ]
                         },
+                        "GetUserWorkloadsConfigMap": {
+                            "methods": [
+                                "getUserWorkloadsConfigMap"
+                            ]
+                        },
+                        "GetUserWorkloadsSecret": {
+                            "methods": [
+                                "getUserWorkloadsSecret"
+                            ]
+                        },
                         "ListEnvironments": {
                             "methods": [
                                 "listEnvironments"
+                            ]
+                        },
+                        "ListUserWorkloadsConfigMaps": {
+                            "methods": [
+                                "listUserWorkloadsConfigMaps"
+                            ]
+                        },
+                        "ListUserWorkloadsSecrets": {
+                            "methods": [
+                                "listUserWorkloadsSecrets"
+                            ]
+                        },
+                        "ListWorkloads": {
+                            "methods": [
+                                "listWorkloads"
                             ]
                         },
                         "LoadSnapshot": {
@@ -68,6 +118,16 @@
                         "UpdateEnvironment": {
                             "methods": [
                                 "updateEnvironment"
+                            ]
+                        },
+                        "UpdateUserWorkloadsConfigMap": {
+                            "methods": [
+                                "updateUserWorkloadsConfigMap"
+                            ]
+                        },
+                        "UpdateUserWorkloadsSecret": {
+                            "methods": [
+                                "updateUserWorkloadsSecret"
                             ]
                         }
                     }

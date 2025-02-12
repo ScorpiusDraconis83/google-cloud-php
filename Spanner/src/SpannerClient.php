@@ -17,6 +17,7 @@
 
 namespace Google\Cloud\Spanner;
 
+use Google\ApiCore\ValidationException;
 use Google\Auth\FetchAuthTokenInterface;
 use Google\Cloud\Core\ArrayTrait;
 use Google\Cloud\Core\ClientTrait;
@@ -29,18 +30,14 @@ use Google\Cloud\Core\LongRunning\LROTrait;
 use Google\Cloud\Core\ValidateTrait;
 use Google\Cloud\Spanner\Admin\Database\V1\DatabaseAdminClient;
 use Google\Cloud\Spanner\Admin\Instance\V1\InstanceAdminClient;
+use Google\Cloud\Spanner\Admin\Instance\V1\ReplicaInfo;
 use Google\Cloud\Spanner\Batch\BatchClient;
 use Google\Cloud\Spanner\Connection\Grpc;
 use Google\Cloud\Spanner\Connection\LongRunningConnection;
 use Google\Cloud\Spanner\Session\SessionPoolInterface;
-use Google\Cloud\Spanner\Numeric;
-use Google\Cloud\Spanner\Timestamp;
-use Google\Cloud\Spanner\Admin\Instance\V1\InstanceConfig;
-use Google\Cloud\Spanner\Admin\Instance\V1\ReplicaInfo;
 use Google\Cloud\Spanner\V1\SpannerClient as GapicSpannerClient;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\StreamInterface;
-use Google\ApiCore\ValidationException;
 
 /**
  * Cloud Spanner is a highly scalable, transactional, managed, NewSQL
@@ -73,6 +70,33 @@ use Google\ApiCore\ValidationException;
  * $spanner = new SpannerClient();
  * ```
  *
+ * ```
+ * use Google\Cloud\Spanner\SpannerClient;
+ * use Google\Cloud\Spanner\V1\DirectedReadOptions\ReplicaSelection\Type as ReplicaType;
+ *
+ * $directedOptions = [
+ *     'directedReadOptions' => [
+ *         'includeReplicas' => [
+ *             'replicaSelections' => [
+ *                 [
+ *                     'location' => 'us-central1',
+ *                     'type' => ReplicaType::READ_WRITE
+ *                 ]
+ *             ],
+ *             'autoFailoverDisabled' => false
+ *         ]
+ *     ]
+ * ];
+ * $spanner = new SpannerClient($directedOptions);
+ * ```
+ *
+ * ```
+ * use Google\Cloud\Spanner\SpannerClient;
+ *
+ * $config = ['routeToLeader' => false];
+ * $spanner = new SpannerClient($config);
+ * ```
+ *
  * @method resumeOperation() {
  *     Resume a Long Running Operation
  *
@@ -93,7 +117,7 @@ class SpannerClient
     use LROTrait;
     use ValidateTrait;
 
-    const VERSION = '1.67.0';
+    const VERSION = '1.93.1';
 
     const FULL_CONTROL_SCOPE = 'https://www.googleapis.com/auth/spanner.data';
     const ADMIN_SCOPE = 'https://www.googleapis.com/auth/spanner.admin';
@@ -108,6 +132,11 @@ class SpannerClient
      * @var bool
      */
     private $returnInt64AsObject;
+
+    /**
+     * @var array
+     */
+    private $directedReadOptions;
 
     /**
      * Create a Spanner client. Please note that this client requires
@@ -164,6 +193,12 @@ class SpannerClient
      *           (retry every failed request up to `retries` times).
      *           `true`: use discrete backoff settings based on called method name.
      *           **Defaults to** `false`.
+     *     @type array $directedReadOptions Directed read options.
+     *           {@see \Google\Cloud\Spanner\V1\DirectedReadOptions}
+     *           If using the `replicaSelection::type` setting, utilize the constants available in
+     *           {@see \Google\Cloud\Spanner\V1\DirectedReadOptions\ReplicaSelection\Type} to set a value.
+     *     @type bool $routeToLeader Enable/disable Leader Aware Routing.
+     *           **Defaults to** `true` (enabled).
      * }
      * @throws GoogleException If the gRPC extension is not enabled.
      */
@@ -223,7 +258,7 @@ class SpannerClient
                     $instance = $this->instance($instanceName);
                     return $instance->database($databaseName);
                 }
-            ],[
+            ], [
                 'typeUrl' => 'type.googleapis.com/google.spanner.admin.instance.v1.CreateInstanceMetadata',
                 'callable' => function ($instance) {
                     $name = InstanceAdminClient::parseName($instance['name'])['instance'];
@@ -240,6 +275,8 @@ class SpannerClient
                 }
             ]
         ]);
+
+        $this->directedReadOptions = $config['directedReadOptions'] ?? [];
     }
 
     /**
@@ -518,7 +555,8 @@ class SpannerClient
             $this->projectId,
             $name,
             $this->returnInt64AsObject,
-            $instance
+            $instance,
+            ['directedReadOptions' => $this->directedReadOptions]
         );
     }
 
@@ -783,6 +821,21 @@ class SpannerClient
     }
 
     /**
+     * Represents a value with a data type of
+     * [PG OID](https://cloud.google.com/spanner/docs/reference/postgresql/data-types) for the
+     * Postgres Dialect database.
+     *
+     * Example:
+     * ```
+     * $pgOid = $spanner->pgOid('123');
+     * ```
+     */
+    public function pgOid($value)
+    {
+        return new PgOid($value);
+    }
+
+    /**
      * Create an Int64 object. This can be used to work with 64 bit integers as
      * a string value while on a 32 bit platform.
      *
@@ -833,6 +886,6 @@ class SpannerClient
      */
     public function commitTimestamp()
     {
-        return new CommitTimestamp;
+        return new CommitTimestamp();
     }
 }

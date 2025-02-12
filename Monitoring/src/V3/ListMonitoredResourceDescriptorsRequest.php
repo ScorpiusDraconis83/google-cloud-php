@@ -16,13 +16,14 @@ use Google\Protobuf\Internal\GPBUtil;
 class ListMonitoredResourceDescriptorsRequest extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Required. The [project](https://cloud.google.com/monitoring/api/v3#project_name) on
-     * which to execute the request. The format is:
+     * Required. The
+     * [project](https://cloud.google.com/monitoring/api/v3#project_name) on which
+     * to execute the request. The format is:
      *     projects/[PROJECT_ID_OR_NUMBER]
      *
      * Generated from protobuf field <code>string name = 5 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * An optional [filter](https://cloud.google.com/monitoring/api/v3/filters)
      * describing the descriptors to be returned.  The filter can reference the
@@ -32,13 +33,13 @@ class ListMonitoredResourceDescriptorsRequest extends \Google\Protobuf\Internal\
      *
      * Generated from protobuf field <code>string filter = 2;</code>
      */
-    private $filter = '';
+    protected $filter = '';
     /**
      * A positive number that is the maximum number of results to return.
      *
      * Generated from protobuf field <code>int32 page_size = 3;</code>
      */
-    private $page_size = 0;
+    protected $page_size = 0;
     /**
      * If this field is not empty then it must contain the `nextPageToken` value
      * returned by a previous call to this method.  Using this field causes the
@@ -46,11 +47,12 @@ class ListMonitoredResourceDescriptorsRequest extends \Google\Protobuf\Internal\
      *
      * Generated from protobuf field <code>string page_token = 4;</code>
      */
-    private $page_token = '';
+    protected $page_token = '';
 
     /**
-     * @param string $name Required. The [project](https://cloud.google.com/monitoring/api/v3#project_name) on
-     *                     which to execute the request. The format is:
+     * @param string $name Required. The
+     *                     [project](https://cloud.google.com/monitoring/api/v3#project_name) on which
+     *                     to execute the request. The format is:
      *
      *                     projects/[PROJECT_ID_OR_NUMBER]
      *
@@ -71,8 +73,9 @@ class ListMonitoredResourceDescriptorsRequest extends \Google\Protobuf\Internal\
      *     Optional. Data for populating the Message object.
      *
      *     @type string $name
-     *           Required. The [project](https://cloud.google.com/monitoring/api/v3#project_name) on
-     *           which to execute the request. The format is:
+     *           Required. The
+     *           [project](https://cloud.google.com/monitoring/api/v3#project_name) on which
+     *           to execute the request. The format is:
      *               projects/[PROJECT_ID_OR_NUMBER]
      *     @type string $filter
      *           An optional [filter](https://cloud.google.com/monitoring/api/v3/filters)
@@ -94,8 +97,9 @@ class ListMonitoredResourceDescriptorsRequest extends \Google\Protobuf\Internal\
     }
 
     /**
-     * Required. The [project](https://cloud.google.com/monitoring/api/v3#project_name) on
-     * which to execute the request. The format is:
+     * Required. The
+     * [project](https://cloud.google.com/monitoring/api/v3#project_name) on which
+     * to execute the request. The format is:
      *     projects/[PROJECT_ID_OR_NUMBER]
      *
      * Generated from protobuf field <code>string name = 5 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
@@ -107,8 +111,9 @@ class ListMonitoredResourceDescriptorsRequest extends \Google\Protobuf\Internal\
     }
 
     /**
-     * Required. The [project](https://cloud.google.com/monitoring/api/v3#project_name) on
-     * which to execute the request. The format is:
+     * Required. The
+     * [project](https://cloud.google.com/monitoring/api/v3#project_name) on which
+     * to execute the request. The format is:
      *     projects/[PROJECT_ID_OR_NUMBER]
      *
      * Generated from protobuf field <code>string name = 5 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>

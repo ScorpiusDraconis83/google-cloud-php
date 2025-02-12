@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\Config\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -36,24 +35,34 @@ use Google\ApiCore\Transport\TransportInterface;
 use Google\ApiCore\ValidationException;
 use Google\Auth\FetchAuthTokenInterface;
 use Google\Cloud\Config\V1\CreateDeploymentRequest;
+use Google\Cloud\Config\V1\CreatePreviewRequest;
 use Google\Cloud\Config\V1\DeleteDeploymentRequest;
+use Google\Cloud\Config\V1\DeletePreviewRequest;
 use Google\Cloud\Config\V1\DeleteStatefileRequest;
 use Google\Cloud\Config\V1\Deployment;
 use Google\Cloud\Config\V1\ExportDeploymentStatefileRequest;
 use Google\Cloud\Config\V1\ExportLockInfoRequest;
+use Google\Cloud\Config\V1\ExportPreviewResultRequest;
+use Google\Cloud\Config\V1\ExportPreviewResultResponse;
 use Google\Cloud\Config\V1\ExportRevisionStatefileRequest;
 use Google\Cloud\Config\V1\GetDeploymentRequest;
+use Google\Cloud\Config\V1\GetPreviewRequest;
 use Google\Cloud\Config\V1\GetResourceRequest;
 use Google\Cloud\Config\V1\GetRevisionRequest;
+use Google\Cloud\Config\V1\GetTerraformVersionRequest;
 use Google\Cloud\Config\V1\ImportStatefileRequest;
 use Google\Cloud\Config\V1\ListDeploymentsRequest;
+use Google\Cloud\Config\V1\ListPreviewsRequest;
 use Google\Cloud\Config\V1\ListResourcesRequest;
 use Google\Cloud\Config\V1\ListRevisionsRequest;
+use Google\Cloud\Config\V1\ListTerraformVersionsRequest;
 use Google\Cloud\Config\V1\LockDeploymentRequest;
 use Google\Cloud\Config\V1\LockInfo;
+use Google\Cloud\Config\V1\Preview;
 use Google\Cloud\Config\V1\Resource;
 use Google\Cloud\Config\V1\Revision;
 use Google\Cloud\Config\V1\Statefile;
+use Google\Cloud\Config\V1\TerraformVersion;
 use Google\Cloud\Config\V1\UnlockDeploymentRequest;
 use Google\Cloud\Config\V1\UpdateDeploymentRequest;
 use Google\Cloud\Iam\V1\GetIamPolicyRequest;
@@ -64,8 +73,10 @@ use Google\Cloud\Iam\V1\TestIamPermissionsResponse;
 use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\Location;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Infrastructure Manager is a managed service that automates the deployment and
@@ -79,27 +90,34 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createDeploymentAsync(CreateDeploymentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteDeploymentAsync(DeleteDeploymentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteStatefileAsync(DeleteStatefileRequest $request, array $optionalArgs = [])
- * @method PromiseInterface exportDeploymentStatefileAsync(ExportDeploymentStatefileRequest $request, array $optionalArgs = [])
- * @method PromiseInterface exportLockInfoAsync(ExportLockInfoRequest $request, array $optionalArgs = [])
- * @method PromiseInterface exportRevisionStatefileAsync(ExportRevisionStatefileRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getDeploymentAsync(GetDeploymentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getResourceAsync(GetResourceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getRevisionAsync(GetRevisionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface importStatefileAsync(ImportStatefileRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listDeploymentsAsync(ListDeploymentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listResourcesAsync(ListResourcesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listRevisionsAsync(ListRevisionsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface lockDeploymentAsync(LockDeploymentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface unlockDeploymentAsync(UnlockDeploymentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateDeploymentAsync(UpdateDeploymentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createDeploymentAsync(CreateDeploymentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createPreviewAsync(CreatePreviewRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteDeploymentAsync(DeleteDeploymentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deletePreviewAsync(DeletePreviewRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteStatefileAsync(DeleteStatefileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Statefile> exportDeploymentStatefileAsync(ExportDeploymentStatefileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<LockInfo> exportLockInfoAsync(ExportLockInfoRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ExportPreviewResultResponse> exportPreviewResultAsync(ExportPreviewResultRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Statefile> exportRevisionStatefileAsync(ExportRevisionStatefileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Deployment> getDeploymentAsync(GetDeploymentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Preview> getPreviewAsync(GetPreviewRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Resource> getResourceAsync(GetResourceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Revision> getRevisionAsync(GetRevisionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TerraformVersion> getTerraformVersionAsync(GetTerraformVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Statefile> importStatefileAsync(ImportStatefileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listDeploymentsAsync(ListDeploymentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listPreviewsAsync(ListPreviewsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listResourcesAsync(ListResourcesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listRevisionsAsync(ListRevisionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listTerraformVersionsAsync(ListTerraformVersionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> lockDeploymentAsync(LockDeploymentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> unlockDeploymentAsync(UnlockDeploymentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateDeploymentAsync(UpdateDeploymentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
  */
 final class ConfigClient
 {
@@ -181,6 +199,25 @@ final class ConfigClient
     }
 
     /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
+    }
+
+    /**
      * Formats a string containing the fully-qualified path to represent a deployment
      * resource.
      *
@@ -213,6 +250,25 @@ final class ConfigClient
         return self::getPathTemplate('location')->render([
             'project' => $project,
             'location' => $location,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a preview
+     * resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $preview
+     *
+     * @return string The formatted preview resource.
+     */
+    public static function previewName(string $project, string $location, string $preview): string
+    {
+        return self::getPathTemplate('preview')->render([
+            'project' => $project,
+            'location' => $location,
+            'preview' => $preview,
         ]);
     }
 
@@ -283,6 +339,25 @@ final class ConfigClient
     }
 
     /**
+     * Formats a string containing the fully-qualified path to represent a
+     * terraform_version resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $terraformVersion
+     *
+     * @return string The formatted terraform_version resource.
+     */
+    public static function terraformVersionName(string $project, string $location, string $terraformVersion): string
+    {
+        return self::getPathTemplate('terraformVersion')->render([
+            'project' => $project,
+            'location' => $location,
+            'terraform_version' => $terraformVersion,
+        ]);
+    }
+
+    /**
      * Formats a string containing the fully-qualified path to represent a worker_pool
      * resource.
      *
@@ -307,9 +382,11 @@ final class ConfigClient
      * Template: Pattern
      * - deployment: projects/{project}/locations/{location}/deployments/{deployment}
      * - location: projects/{project}/locations/{location}
+     * - preview: projects/{project}/locations/{location}/previews/{preview}
      * - resource: projects/{project}/locations/{location}/deployments/{deployment}/revisions/{revision}/resources/{resource}
      * - revision: projects/{project}/locations/{location}/deployments/{deployment}/revisions/{revision}
      * - serviceAccount: projects/{project}/serviceAccounts/{service_account}
+     * - terraformVersion: projects/{project}/locations/{location}/terraformVersions/{terraform_version}
      * - workerPool: projects/{project}/locations/{location}/workerPools/{worker_pool}
      *
      * The optional $template argument can be supplied to specify a particular pattern,
@@ -318,14 +395,14 @@ final class ConfigClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -347,6 +424,12 @@ final class ConfigClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -380,6 +463,9 @@ final class ConfigClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -429,6 +515,32 @@ final class ConfigClient
     }
 
     /**
+     * Creates a [Preview][google.cloud.config.v1.Preview].
+     *
+     * The async variant is {@see ConfigClient::createPreviewAsync()} .
+     *
+     * @example samples/V1/ConfigClient/create_preview.php
+     *
+     * @param CreatePreviewRequest $request     A request to house fields associated with the call.
+     * @param array                $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function createPreview(CreatePreviewRequest $request, array $callOptions = []): OperationResponse
+    {
+        return $this->startApiCall('CreatePreview', $request, $callOptions)->wait();
+    }
+
+    /**
      * Deletes a [Deployment][google.cloud.config.v1.Deployment].
      *
      * The async variant is {@see ConfigClient::deleteDeploymentAsync()} .
@@ -452,6 +564,32 @@ final class ConfigClient
     public function deleteDeployment(DeleteDeploymentRequest $request, array $callOptions = []): OperationResponse
     {
         return $this->startApiCall('DeleteDeployment', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Deletes a [Preview][google.cloud.config.v1.Preview].
+     *
+     * The async variant is {@see ConfigClient::deletePreviewAsync()} .
+     *
+     * @example samples/V1/ConfigClient/delete_preview.php
+     *
+     * @param DeletePreviewRequest $request     A request to house fields associated with the call.
+     * @param array                $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function deletePreview(DeletePreviewRequest $request, array $callOptions = []): OperationResponse
+    {
+        return $this->startApiCall('DeletePreview', $request, $callOptions)->wait();
     }
 
     /**
@@ -533,6 +671,34 @@ final class ConfigClient
     }
 
     /**
+     * Export [Preview][google.cloud.config.v1.Preview] results.
+     *
+     * The async variant is {@see ConfigClient::exportPreviewResultAsync()} .
+     *
+     * @example samples/V1/ConfigClient/export_preview_result.php
+     *
+     * @param ExportPreviewResultRequest $request     A request to house fields associated with the call.
+     * @param array                      $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return ExportPreviewResultResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function exportPreviewResult(
+        ExportPreviewResultRequest $request,
+        array $callOptions = []
+    ): ExportPreviewResultResponse {
+        return $this->startApiCall('ExportPreviewResult', $request, $callOptions)->wait();
+    }
+
+    /**
      * Exports Terraform state file from a given revision.
      *
      * The async variant is {@see ConfigClient::exportRevisionStatefileAsync()} .
@@ -582,6 +748,32 @@ final class ConfigClient
     public function getDeployment(GetDeploymentRequest $request, array $callOptions = []): Deployment
     {
         return $this->startApiCall('GetDeployment', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Gets details about a [Preview][google.cloud.config.v1.Preview].
+     *
+     * The async variant is {@see ConfigClient::getPreviewAsync()} .
+     *
+     * @example samples/V1/ConfigClient/get_preview.php
+     *
+     * @param GetPreviewRequest $request     A request to house fields associated with the call.
+     * @param array             $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return Preview
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getPreview(GetPreviewRequest $request, array $callOptions = []): Preview
+    {
+        return $this->startApiCall('GetPreview', $request, $callOptions)->wait();
     }
 
     /**
@@ -635,6 +827,33 @@ final class ConfigClient
     public function getRevision(GetRevisionRequest $request, array $callOptions = []): Revision
     {
         return $this->startApiCall('GetRevision', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Gets details about a
+     * [TerraformVersion][google.cloud.config.v1.TerraformVersion].
+     *
+     * The async variant is {@see ConfigClient::getTerraformVersionAsync()} .
+     *
+     * @example samples/V1/ConfigClient/get_terraform_version.php
+     *
+     * @param GetTerraformVersionRequest $request     A request to house fields associated with the call.
+     * @param array                      $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return TerraformVersion
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getTerraformVersion(GetTerraformVersionRequest $request, array $callOptions = []): TerraformVersion
+    {
+        return $this->startApiCall('GetTerraformVersion', $request, $callOptions)->wait();
     }
 
     /**
@@ -692,7 +911,34 @@ final class ConfigClient
     }
 
     /**
-     * Lists [Resource][google.cloud.config.v1.Resource]s in a given revision.
+     * Lists [Preview][google.cloud.config.v1.Preview]s in a given project and
+     * location.
+     *
+     * The async variant is {@see ConfigClient::listPreviewsAsync()} .
+     *
+     * @example samples/V1/ConfigClient/list_previews.php
+     *
+     * @param ListPreviewsRequest $request     A request to house fields associated with the call.
+     * @param array               $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listPreviews(ListPreviewsRequest $request, array $callOptions = []): PagedListResponse
+    {
+        return $this->startApiCall('ListPreviews', $request, $callOptions);
+    }
+
+    /**
+     * Lists [Resources][google.cloud.config.v1.Resource] in a given revision.
      *
      * The async variant is {@see ConfigClient::listResourcesAsync()} .
      *
@@ -741,6 +987,35 @@ final class ConfigClient
     public function listRevisions(ListRevisionsRequest $request, array $callOptions = []): PagedListResponse
     {
         return $this->startApiCall('ListRevisions', $request, $callOptions);
+    }
+
+    /**
+     * Lists [TerraformVersion][google.cloud.config.v1.TerraformVersion]s in a
+     * given project and location.
+     *
+     * The async variant is {@see ConfigClient::listTerraformVersionsAsync()} .
+     *
+     * @example samples/V1/ConfigClient/list_terraform_versions.php
+     *
+     * @param ListTerraformVersionsRequest $request     A request to house fields associated with the call.
+     * @param array                        $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listTerraformVersions(
+        ListTerraformVersionsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
+        return $this->startApiCall('ListTerraformVersions', $request, $callOptions);
     }
 
     /**

@@ -24,17 +24,18 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START securitycenter_v1_generated_SecurityCenter_GetEffectiveSecurityHealthAnalyticsCustomModule_sync]
 use Google\ApiCore\ApiException;
+use Google\Cloud\SecurityCenter\V1\Client\SecurityCenterClient;
 use Google\Cloud\SecurityCenter\V1\EffectiveSecurityHealthAnalyticsCustomModule;
-use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\GetEffectiveSecurityHealthAnalyticsCustomModuleRequest;
 
 /**
  * Retrieves an EffectiveSecurityHealthAnalyticsCustomModule.
  *
  * @param string $formattedName Name of the effective custom module to get. Its format is
- *                              "organizations/{organization}/securityHealthAnalyticsSettings/effectiveCustomModules/{customModule}",
- *                              "folders/{folder}/securityHealthAnalyticsSettings/effectiveCustomModules/{customModule}",
+ *                              `organizations/{organization}/securityHealthAnalyticsSettings/effectiveCustomModules/{customModule}`,
+ *                              `folders/{folder}/securityHealthAnalyticsSettings/effectiveCustomModules/{customModule}`,
  *                              or
- *                              "projects/{project}/securityHealthAnalyticsSettings/effectiveCustomModules/{customModule}"
+ *                              `projects/{project}/securityHealthAnalyticsSettings/effectiveCustomModules/{customModule}`
  *                              Please see {@see SecurityCenterClient::effectiveSecurityHealthAnalyticsCustomModuleName()} for help formatting this field.
  */
 function get_effective_security_health_analytics_custom_module_sample(string $formattedName): void
@@ -42,10 +43,14 @@ function get_effective_security_health_analytics_custom_module_sample(string $fo
     // Create a client.
     $securityCenterClient = new SecurityCenterClient();
 
+    // Prepare the request message.
+    $request = (new GetEffectiveSecurityHealthAnalyticsCustomModuleRequest())
+        ->setName($formattedName);
+
     // Call the API and handle any network failures.
     try {
         /** @var EffectiveSecurityHealthAnalyticsCustomModule $response */
-        $response = $securityCenterClient->getEffectiveSecurityHealthAnalyticsCustomModule($formattedName);
+        $response = $securityCenterClient->getEffectiveSecurityHealthAnalyticsCustomModule($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

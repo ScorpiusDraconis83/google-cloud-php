@@ -22,7 +22,23 @@ class DeletePropertyRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $name = '';
+    protected $name = '';
+
+    /**
+     * @param string $name Required. The name of the Property to soft-delete.
+     *                     Format: properties/{property_id}
+     *                     Example: "properties/1000"
+     *                     Please see {@see AnalyticsAdminServiceClient::propertyName()} for help formatting this field.
+     *
+     * @return \Google\Analytics\Admin\V1alpha\DeletePropertyRequest
+     *
+     * @experimental
+     */
+    public static function build(string $name): self
+    {
+        return (new self())
+            ->setName($name);
+    }
 
     /**
      * Constructor.

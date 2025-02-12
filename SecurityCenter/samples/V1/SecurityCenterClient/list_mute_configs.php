@@ -25,26 +25,31 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // [START securitycenter_v1_generated_SecurityCenter_ListMuteConfigs_sync]
 use Google\ApiCore\ApiException;
 use Google\ApiCore\PagedListResponse;
+use Google\Cloud\SecurityCenter\V1\Client\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\ListMuteConfigsRequest;
 use Google\Cloud\SecurityCenter\V1\MuteConfig;
-use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
 
 /**
  * Lists mute configs.
  *
  * @param string $formattedParent The parent, which owns the collection of mute configs. Its format
- *                                is "organizations/[organization_id]", "folders/[folder_id]",
- *                                "projects/[project_id]". Please see
- *                                {@see SecurityCenterClient::projectName()} for help formatting this field.
+ *                                is `organizations/[organization_id]`, `folders/[folder_id]`,
+ *                                `projects/[project_id]`. Please see
+ *                                {@see SecurityCenterClient::organizationLocationName()} for help formatting this field.
  */
 function list_mute_configs_sample(string $formattedParent): void
 {
     // Create a client.
     $securityCenterClient = new SecurityCenterClient();
 
+    // Prepare the request message.
+    $request = (new ListMuteConfigsRequest())
+        ->setParent($formattedParent);
+
     // Call the API and handle any network failures.
     try {
         /** @var PagedListResponse $response */
-        $response = $securityCenterClient->listMuteConfigs($formattedParent);
+        $response = $securityCenterClient->listMuteConfigs($request);
 
         /** @var MuteConfig $element */
         foreach ($response as $element) {
@@ -66,7 +71,7 @@ function list_mute_configs_sample(string $formattedParent): void
  */
 function callSample(): void
 {
-    $formattedParent = SecurityCenterClient::projectName('[PROJECT]');
+    $formattedParent = SecurityCenterClient::organizationLocationName('[ORGANIZATION]', '[LOCATION]');
 
     list_mute_configs_sample($formattedParent);
 }

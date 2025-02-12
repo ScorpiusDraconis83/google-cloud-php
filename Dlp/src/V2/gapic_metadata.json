@@ -20,6 +20,11 @@
                                 "cancelDlpJob"
                             ]
                         },
+                        "CreateConnection": {
+                            "methods": [
+                                "createConnection"
+                            ]
+                        },
                         "CreateDeidentifyTemplate": {
                             "methods": [
                                 "createDeidentifyTemplate"
@@ -55,6 +60,11 @@
                                 "deidentifyContent"
                             ]
                         },
+                        "DeleteConnection": {
+                            "methods": [
+                                "deleteConnection"
+                            ]
+                        },
                         "DeleteDeidentifyTemplate": {
                             "methods": [
                                 "deleteDeidentifyTemplate"
@@ -68,6 +78,11 @@
                         "DeleteDlpJob": {
                             "methods": [
                                 "deleteDlpJob"
+                            ]
+                        },
+                        "DeleteFileStoreDataProfile": {
+                            "methods": [
+                                "deleteFileStoreDataProfile"
                             ]
                         },
                         "DeleteInspectTemplate": {
@@ -85,9 +100,24 @@
                                 "deleteStoredInfoType"
                             ]
                         },
+                        "DeleteTableDataProfile": {
+                            "methods": [
+                                "deleteTableDataProfile"
+                            ]
+                        },
                         "FinishDlpJob": {
                             "methods": [
                                 "finishDlpJob"
+                            ]
+                        },
+                        "GetColumnDataProfile": {
+                            "methods": [
+                                "getColumnDataProfile"
+                            ]
+                        },
+                        "GetConnection": {
+                            "methods": [
+                                "getConnection"
                             ]
                         },
                         "GetDeidentifyTemplate": {
@@ -105,6 +135,11 @@
                                 "getDlpJob"
                             ]
                         },
+                        "GetFileStoreDataProfile": {
+                            "methods": [
+                                "getFileStoreDataProfile"
+                            ]
+                        },
                         "GetInspectTemplate": {
                             "methods": [
                                 "getInspectTemplate"
@@ -115,9 +150,19 @@
                                 "getJobTrigger"
                             ]
                         },
+                        "GetProjectDataProfile": {
+                            "methods": [
+                                "getProjectDataProfile"
+                            ]
+                        },
                         "GetStoredInfoType": {
                             "methods": [
                                 "getStoredInfoType"
+                            ]
+                        },
+                        "GetTableDataProfile": {
+                            "methods": [
+                                "getTableDataProfile"
                             ]
                         },
                         "HybridInspectDlpJob": {
@@ -135,6 +180,16 @@
                                 "inspectContent"
                             ]
                         },
+                        "ListColumnDataProfiles": {
+                            "methods": [
+                                "listColumnDataProfiles"
+                            ]
+                        },
+                        "ListConnections": {
+                            "methods": [
+                                "listConnections"
+                            ]
+                        },
                         "ListDeidentifyTemplates": {
                             "methods": [
                                 "listDeidentifyTemplates"
@@ -148,6 +203,11 @@
                         "ListDlpJobs": {
                             "methods": [
                                 "listDlpJobs"
+                            ]
+                        },
+                        "ListFileStoreDataProfiles": {
+                            "methods": [
+                                "listFileStoreDataProfiles"
                             ]
                         },
                         "ListInfoTypes": {
@@ -165,9 +225,19 @@
                                 "listJobTriggers"
                             ]
                         },
+                        "ListProjectDataProfiles": {
+                            "methods": [
+                                "listProjectDataProfiles"
+                            ]
+                        },
                         "ListStoredInfoTypes": {
                             "methods": [
                                 "listStoredInfoTypes"
+                            ]
+                        },
+                        "ListTableDataProfiles": {
+                            "methods": [
+                                "listTableDataProfiles"
                             ]
                         },
                         "RedactImage": {
@@ -178,6 +248,16 @@
                         "ReidentifyContent": {
                             "methods": [
                                 "reidentifyContent"
+                            ]
+                        },
+                        "SearchConnections": {
+                            "methods": [
+                                "searchConnections"
+                            ]
+                        },
+                        "UpdateConnection": {
+                            "methods": [
+                                "updateConnection"
                             ]
                         },
                         "UpdateDeidentifyTemplate": {

@@ -25,12 +25,13 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // [START compute_v1_generated_TargetSslProxies_SetSslPolicy_sync]
 use Google\ApiCore\ApiException;
 use Google\ApiCore\OperationResponse;
+use Google\Cloud\Compute\V1\Client\TargetSslProxiesClient;
+use Google\Cloud\Compute\V1\SetSslPolicyTargetSslProxyRequest;
 use Google\Cloud\Compute\V1\SslPolicyReference;
-use Google\Cloud\Compute\V1\TargetSslProxiesClient;
 use Google\Rpc\Status;
 
 /**
- * Sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the SSL proxy load balancer. They do not affect the connection between the load balancer and the backends.
+ * Sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the load balancer. They do not affect the connection between the load balancer and the backends.
  *
  * @param string $project        Project ID for this request.
  * @param string $targetSslProxy Name of the TargetSslProxy resource whose SSL policy is to be set. The name must be 1-63 characters long, and comply with RFC1035.
@@ -40,17 +41,17 @@ function set_ssl_policy_sample(string $project, string $targetSslProxy): void
     // Create a client.
     $targetSslProxiesClient = new TargetSslProxiesClient();
 
-    // Prepare any non-scalar elements to be passed along with the request.
+    // Prepare the request message.
     $sslPolicyReferenceResource = new SslPolicyReference();
+    $request = (new SetSslPolicyTargetSslProxyRequest())
+        ->setProject($project)
+        ->setSslPolicyReferenceResource($sslPolicyReferenceResource)
+        ->setTargetSslProxy($targetSslProxy);
 
     // Call the API and handle any network failures.
     try {
         /** @var OperationResponse $response */
-        $response = $targetSslProxiesClient->setSslPolicy(
-            $project,
-            $sslPolicyReferenceResource,
-            $targetSslProxy
-        );
+        $response = $targetSslProxiesClient->setSslPolicy($request);
         $response->pollUntilComplete();
 
         if ($response->operationSucceeded()) {

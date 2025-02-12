@@ -20,9 +20,10 @@ class AcceleratorType
      */
     const ACCELERATOR_TYPE_UNSPECIFIED = 0;
     /**
-     * Nvidia Tesla K80 GPU.
+     * Deprecated: Nvidia Tesla K80 GPU has reached end of support,
+     * see https://cloud.google.com/compute/docs/eol/k80-eol.
      *
-     * Generated from protobuf enum <code>NVIDIA_TESLA_K80 = 1;</code>
+     * Generated from protobuf enum <code>NVIDIA_TESLA_K80 = 1 [deprecated = true];</code>
      */
     const NVIDIA_TESLA_K80 = 1;
     /**
@@ -68,6 +69,18 @@ class AcceleratorType
      */
     const NVIDIA_L4 = 11;
     /**
+     * Nvidia H100 80Gb GPU.
+     *
+     * Generated from protobuf enum <code>NVIDIA_H100_80GB = 13;</code>
+     */
+    const NVIDIA_H100_80GB = 13;
+    /**
+     * Nvidia H100 Mega 80Gb GPU.
+     *
+     * Generated from protobuf enum <code>NVIDIA_H100_MEGA_80GB = 14;</code>
+     */
+    const NVIDIA_H100_MEGA_80GB = 14;
+    /**
      * TPU v2.
      *
      * Generated from protobuf enum <code>TPU_V2 = 6;</code>
@@ -85,6 +98,12 @@ class AcceleratorType
      * Generated from protobuf enum <code>TPU_V4_POD = 10;</code>
      */
     const TPU_V4_POD = 10;
+    /**
+     * TPU v5.
+     *
+     * Generated from protobuf enum <code>TPU_V5_LITEPOD = 12;</code>
+     */
+    const TPU_V5_LITEPOD = 12;
 
     private static $valueToName = [
         self::ACCELERATOR_TYPE_UNSPECIFIED => 'ACCELERATOR_TYPE_UNSPECIFIED',
@@ -96,9 +115,12 @@ class AcceleratorType
         self::NVIDIA_TESLA_A100 => 'NVIDIA_TESLA_A100',
         self::NVIDIA_A100_80GB => 'NVIDIA_A100_80GB',
         self::NVIDIA_L4 => 'NVIDIA_L4',
+        self::NVIDIA_H100_80GB => 'NVIDIA_H100_80GB',
+        self::NVIDIA_H100_MEGA_80GB => 'NVIDIA_H100_MEGA_80GB',
         self::TPU_V2 => 'TPU_V2',
         self::TPU_V3 => 'TPU_V3',
         self::TPU_V4_POD => 'TPU_V4_POD',
+        self::TPU_V5_LITEPOD => 'TPU_V5_LITEPOD',
     ];
 
     public static function name($value)

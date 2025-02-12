@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ use Google\Cloud\BigQuery\Reservation\V1\CreateReservationRequest;
 use Google\Cloud\BigQuery\Reservation\V1\DeleteAssignmentRequest;
 use Google\Cloud\BigQuery\Reservation\V1\DeleteCapacityCommitmentRequest;
 use Google\Cloud\BigQuery\Reservation\V1\DeleteReservationRequest;
+use Google\Cloud\BigQuery\Reservation\V1\FailoverReservationRequest;
 use Google\Cloud\BigQuery\Reservation\V1\GetBiReservationRequest;
 use Google\Cloud\BigQuery\Reservation\V1\GetCapacityCommitmentRequest;
 use Google\Cloud\BigQuery\Reservation\V1\GetReservationRequest;
@@ -60,6 +61,7 @@ use Google\Cloud\BigQuery\Reservation\V1\UpdateBiReservationRequest;
 use Google\Cloud\BigQuery\Reservation\V1\UpdateCapacityCommitmentRequest;
 use Google\Cloud\BigQuery\Reservation\V1\UpdateReservationRequest;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: This API allows users to manage their BigQuery reservations.
@@ -86,27 +88,28 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createAssignmentAsync(CreateAssignmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createCapacityCommitmentAsync(CreateCapacityCommitmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createReservationAsync(CreateReservationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAssignmentAsync(DeleteAssignmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteCapacityCommitmentAsync(DeleteCapacityCommitmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteReservationAsync(DeleteReservationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getBiReservationAsync(GetBiReservationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getCapacityCommitmentAsync(GetCapacityCommitmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getReservationAsync(GetReservationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAssignmentsAsync(ListAssignmentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listCapacityCommitmentsAsync(ListCapacityCommitmentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listReservationsAsync(ListReservationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface mergeCapacityCommitmentsAsync(MergeCapacityCommitmentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface moveAssignmentAsync(MoveAssignmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface searchAllAssignmentsAsync(SearchAllAssignmentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface searchAssignmentsAsync(SearchAssignmentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface splitCapacityCommitmentAsync(SplitCapacityCommitmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateAssignmentAsync(UpdateAssignmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateBiReservationAsync(UpdateBiReservationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateCapacityCommitmentAsync(UpdateCapacityCommitmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateReservationAsync(UpdateReservationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Assignment> createAssignmentAsync(CreateAssignmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CapacityCommitment> createCapacityCommitmentAsync(CreateCapacityCommitmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Reservation> createReservationAsync(CreateReservationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteAssignmentAsync(DeleteAssignmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteCapacityCommitmentAsync(DeleteCapacityCommitmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteReservationAsync(DeleteReservationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Reservation> failoverReservationAsync(FailoverReservationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<BiReservation> getBiReservationAsync(GetBiReservationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CapacityCommitment> getCapacityCommitmentAsync(GetCapacityCommitmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Reservation> getReservationAsync(GetReservationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAssignmentsAsync(ListAssignmentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listCapacityCommitmentsAsync(ListCapacityCommitmentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listReservationsAsync(ListReservationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CapacityCommitment> mergeCapacityCommitmentsAsync(MergeCapacityCommitmentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Assignment> moveAssignmentAsync(MoveAssignmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> searchAllAssignmentsAsync(SearchAllAssignmentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> searchAssignmentsAsync(SearchAssignmentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<SplitCapacityCommitmentResponse> splitCapacityCommitmentAsync(SplitCapacityCommitmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Assignment> updateAssignmentAsync(UpdateAssignmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<BiReservation> updateBiReservationAsync(UpdateBiReservationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CapacityCommitment> updateCapacityCommitmentAsync(UpdateCapacityCommitmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Reservation> updateReservationAsync(UpdateReservationRequest $request, array $optionalArgs = [])
  */
 final class ReservationServiceClient
 {
@@ -168,8 +171,12 @@ final class ReservationServiceClient
      *
      * @return string The formatted assignment resource.
      */
-    public static function assignmentName(string $project, string $location, string $reservation, string $assignment): string
-    {
+    public static function assignmentName(
+        string $project,
+        string $location,
+        string $reservation,
+        string $assignment
+    ): string {
         return self::getPathTemplate('assignment')->render([
             'project' => $project,
             'location' => $location,
@@ -266,14 +273,14 @@ final class ReservationServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -295,6 +302,12 @@ final class ReservationServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -328,6 +341,9 @@ final class ReservationServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -388,6 +404,8 @@ final class ReservationServiceClient
      *
      * The async variant is {@see ReservationServiceClient::createAssignmentAsync()} .
      *
+     * @example samples/V1/ReservationServiceClient/create_assignment.php
+     *
      * @param CreateAssignmentRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
      *     Optional.
@@ -413,6 +431,8 @@ final class ReservationServiceClient
      * The async variant is
      * {@see ReservationServiceClient::createCapacityCommitmentAsync()} .
      *
+     * @example samples/V1/ReservationServiceClient/create_capacity_commitment.php
+     *
      * @param CreateCapacityCommitmentRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
      *     Optional.
@@ -427,8 +447,10 @@ final class ReservationServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createCapacityCommitment(CreateCapacityCommitmentRequest $request, array $callOptions = []): CapacityCommitment
-    {
+    public function createCapacityCommitment(
+        CreateCapacityCommitmentRequest $request,
+        array $callOptions = []
+    ): CapacityCommitment {
         return $this->startApiCall('CreateCapacityCommitment', $request, $callOptions)->wait();
     }
 
@@ -436,6 +458,8 @@ final class ReservationServiceClient
      * Creates a new reservation resource.
      *
      * The async variant is {@see ReservationServiceClient::createReservationAsync()} .
+     *
+     * @example samples/V1/ReservationServiceClient/create_reservation.php
      *
      * @param CreateReservationRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -475,6 +499,8 @@ final class ReservationServiceClient
      *
      * The async variant is {@see ReservationServiceClient::deleteAssignmentAsync()} .
      *
+     * @example samples/V1/ReservationServiceClient/delete_assignment.php
+     *
      * @param DeleteAssignmentRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
      *     Optional.
@@ -500,6 +526,8 @@ final class ReservationServiceClient
      * The async variant is
      * {@see ReservationServiceClient::deleteCapacityCommitmentAsync()} .
      *
+     * @example samples/V1/ReservationServiceClient/delete_capacity_commitment.php
+     *
      * @param DeleteCapacityCommitmentRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
      *     Optional.
@@ -524,6 +552,8 @@ final class ReservationServiceClient
      *
      * The async variant is {@see ReservationServiceClient::deleteReservationAsync()} .
      *
+     * @example samples/V1/ReservationServiceClient/delete_reservation.php
+     *
      * @param DeleteReservationRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -542,9 +572,42 @@ final class ReservationServiceClient
     }
 
     /**
+     * Fail over a reservation to the secondary location. The operation should be
+     * done in the current secondary location, which will be promoted to the
+     * new primary location for the reservation.
+     * Attempting to failover a reservation in the current primary location will
+     * fail with the error code `google.rpc.Code.FAILED_PRECONDITION`.
+     *
+     * The async variant is {@see ReservationServiceClient::failoverReservationAsync()}
+     * .
+     *
+     * @example samples/V1/ReservationServiceClient/failover_reservation.php
+     *
+     * @param FailoverReservationRequest $request     A request to house fields associated with the call.
+     * @param array                      $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return Reservation
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function failoverReservation(FailoverReservationRequest $request, array $callOptions = []): Reservation
+    {
+        return $this->startApiCall('FailoverReservation', $request, $callOptions)->wait();
+    }
+
+    /**
      * Retrieves a BI reservation.
      *
      * The async variant is {@see ReservationServiceClient::getBiReservationAsync()} .
+     *
+     * @example samples/V1/ReservationServiceClient/get_bi_reservation.php
      *
      * @param GetBiReservationRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -571,6 +634,8 @@ final class ReservationServiceClient
      * The async variant is
      * {@see ReservationServiceClient::getCapacityCommitmentAsync()} .
      *
+     * @example samples/V1/ReservationServiceClient/get_capacity_commitment.php
+     *
      * @param GetCapacityCommitmentRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -585,8 +650,10 @@ final class ReservationServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getCapacityCommitment(GetCapacityCommitmentRequest $request, array $callOptions = []): CapacityCommitment
-    {
+    public function getCapacityCommitment(
+        GetCapacityCommitmentRequest $request,
+        array $callOptions = []
+    ): CapacityCommitment {
         return $this->startApiCall('GetCapacityCommitment', $request, $callOptions)->wait();
     }
 
@@ -594,6 +661,8 @@ final class ReservationServiceClient
      * Returns information about the reservation.
      *
      * The async variant is {@see ReservationServiceClient::getReservationAsync()} .
+     *
+     * @example samples/V1/ReservationServiceClient/get_reservation.php
      *
      * @param GetReservationRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -639,6 +708,8 @@ final class ReservationServiceClient
      *
      * The async variant is {@see ReservationServiceClient::listAssignmentsAsync()} .
      *
+     * @example samples/V1/ReservationServiceClient/list_assignments.php
+     *
      * @param ListAssignmentsRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -664,6 +735,8 @@ final class ReservationServiceClient
      * The async variant is
      * {@see ReservationServiceClient::listCapacityCommitmentsAsync()} .
      *
+     * @example samples/V1/ReservationServiceClient/list_capacity_commitments.php
+     *
      * @param ListCapacityCommitmentsRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
      *     Optional.
@@ -678,8 +751,10 @@ final class ReservationServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listCapacityCommitments(ListCapacityCommitmentsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listCapacityCommitments(
+        ListCapacityCommitmentsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListCapacityCommitments', $request, $callOptions);
     }
 
@@ -687,6 +762,8 @@ final class ReservationServiceClient
      * Lists all the reservations for the project in the specified location.
      *
      * The async variant is {@see ReservationServiceClient::listReservationsAsync()} .
+     *
+     * @example samples/V1/ReservationServiceClient/list_reservations.php
      *
      * @param ListReservationsRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -719,6 +796,8 @@ final class ReservationServiceClient
      * The async variant is
      * {@see ReservationServiceClient::mergeCapacityCommitmentsAsync()} .
      *
+     * @example samples/V1/ReservationServiceClient/merge_capacity_commitments.php
+     *
      * @param MergeCapacityCommitmentsRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
      *     Optional.
@@ -733,8 +812,10 @@ final class ReservationServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function mergeCapacityCommitments(MergeCapacityCommitmentsRequest $request, array $callOptions = []): CapacityCommitment
-    {
+    public function mergeCapacityCommitments(
+        MergeCapacityCommitmentsRequest $request,
+        array $callOptions = []
+    ): CapacityCommitment {
         return $this->startApiCall('MergeCapacityCommitments', $request, $callOptions)->wait();
     }
 
@@ -746,6 +827,8 @@ final class ReservationServiceClient
      * associated reservation.
      *
      * The async variant is {@see ReservationServiceClient::moveAssignmentAsync()} .
+     *
+     * @example samples/V1/ReservationServiceClient/move_assignment.php
      *
      * @param MoveAssignmentRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -791,6 +874,8 @@ final class ReservationServiceClient
      * The async variant is
      * {@see ReservationServiceClient::searchAllAssignmentsAsync()} .
      *
+     * @example samples/V1/ReservationServiceClient/search_all_assignments.php
+     *
      * @param SearchAllAssignmentsRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -805,8 +890,10 @@ final class ReservationServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function searchAllAssignments(SearchAllAssignmentsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function searchAllAssignments(
+        SearchAllAssignmentsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('SearchAllAssignments', $request, $callOptions);
     }
 
@@ -836,6 +923,8 @@ final class ReservationServiceClient
      * nor locations.
      *
      * The async variant is {@see ReservationServiceClient::searchAssignmentsAsync()} .
+     *
+     * @example samples/V1/ReservationServiceClient/search_assignments.php
      *
      * @param SearchAssignmentsRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -871,6 +960,8 @@ final class ReservationServiceClient
      * The async variant is
      * {@see ReservationServiceClient::splitCapacityCommitmentAsync()} .
      *
+     * @example samples/V1/ReservationServiceClient/split_capacity_commitment.php
+     *
      * @param SplitCapacityCommitmentRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
      *     Optional.
@@ -885,8 +976,10 @@ final class ReservationServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function splitCapacityCommitment(SplitCapacityCommitmentRequest $request, array $callOptions = []): SplitCapacityCommitmentResponse
-    {
+    public function splitCapacityCommitment(
+        SplitCapacityCommitmentRequest $request,
+        array $callOptions = []
+    ): SplitCapacityCommitmentResponse {
         return $this->startApiCall('SplitCapacityCommitment', $request, $callOptions)->wait();
     }
 
@@ -896,6 +989,8 @@ final class ReservationServiceClient
      * Only the `priority` field can be updated.
      *
      * The async variant is {@see ReservationServiceClient::updateAssignmentAsync()} .
+     *
+     * @example samples/V1/ReservationServiceClient/update_assignment.php
      *
      * @param UpdateAssignmentRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -929,6 +1024,8 @@ final class ReservationServiceClient
      * The async variant is {@see ReservationServiceClient::updateBiReservationAsync()}
      * .
      *
+     * @example samples/V1/ReservationServiceClient/update_bi_reservation.php
+     *
      * @param UpdateBiReservationRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
      *     Optional.
@@ -960,6 +1057,8 @@ final class ReservationServiceClient
      * The async variant is
      * {@see ReservationServiceClient::updateCapacityCommitmentAsync()} .
      *
+     * @example samples/V1/ReservationServiceClient/update_capacity_commitment.php
+     *
      * @param UpdateCapacityCommitmentRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
      *     Optional.
@@ -974,8 +1073,10 @@ final class ReservationServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateCapacityCommitment(UpdateCapacityCommitmentRequest $request, array $callOptions = []): CapacityCommitment
-    {
+    public function updateCapacityCommitment(
+        UpdateCapacityCommitmentRequest $request,
+        array $callOptions = []
+    ): CapacityCommitment {
         return $this->startApiCall('UpdateCapacityCommitment', $request, $callOptions)->wait();
     }
 
@@ -983,6 +1084,8 @@ final class ReservationServiceClient
      * Updates an existing reservation resource.
      *
      * The async variant is {@see ReservationServiceClient::updateReservationAsync()} .
+     *
+     * @example samples/V1/ReservationServiceClient/update_reservation.php
      *
      * @param UpdateReservationRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {

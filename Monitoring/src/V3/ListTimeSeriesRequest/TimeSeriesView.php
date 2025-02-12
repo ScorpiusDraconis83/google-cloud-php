@@ -7,7 +7,7 @@ namespace Google\Cloud\Monitoring\V3\ListTimeSeriesRequest;
 use UnexpectedValueException;
 
 /**
- * Controls which fields are returned by `ListTimeSeries`.
+ * Controls which fields are returned by `ListTimeSeries*`.
  *
  * Protobuf type <code>google.monitoring.v3.ListTimeSeriesRequest.TimeSeriesView</code>
  */
@@ -54,6 +54,4 @@ class TimeSeriesView
     }
 }
 
-// Adding a class alias for backwards compatibility with the previous class name.
-class_alias(TimeSeriesView::class, \Google\Cloud\Monitoring\V3\ListTimeSeriesRequest_TimeSeriesView::class);
 

@@ -20,7 +20,7 @@ class UpdateGoogleAdsLinkRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.analytics.admin.v1alpha.GoogleAdsLink google_ads_link = 1;</code>
      */
-    private $google_ads_link = null;
+    protected $google_ads_link = null;
     /**
      * Required. The list of fields to be updated. Field names must be in snake
      * case (e.g., "field_to_update"). Omitted fields will not be updated. To
@@ -29,7 +29,25 @@ class UpdateGoogleAdsLinkRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.FieldMask update_mask = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $update_mask = null;
+    protected $update_mask = null;
+
+    /**
+     * @param \Google\Analytics\Admin\V1alpha\GoogleAdsLink $googleAdsLink The GoogleAdsLink to update
+     * @param \Google\Protobuf\FieldMask                    $updateMask    Required. The list of fields to be updated. Field names must be in snake
+     *                                                                     case (e.g., "field_to_update"). Omitted fields will not be updated. To
+     *                                                                     replace the entire entity, use one path with the string "*" to match all
+     *                                                                     fields.
+     *
+     * @return \Google\Analytics\Admin\V1alpha\UpdateGoogleAdsLinkRequest
+     *
+     * @experimental
+     */
+    public static function build(\Google\Analytics\Admin\V1alpha\GoogleAdsLink $googleAdsLink, \Google\Protobuf\FieldMask $updateMask): self
+    {
+        return (new self())
+            ->setGoogleAdsLink($googleAdsLink)
+            ->setUpdateMask($updateMask);
+    }
 
     /**
      * Constructor.

@@ -20,14 +20,31 @@ class CreateConversionEventRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.analytics.admin.v1alpha.ConversionEvent conversion_event = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $conversion_event = null;
+    protected $conversion_event = null;
     /**
      * Required. The resource name of the parent property where this conversion
      * event will be created. Format: properties/123
      *
      * Generated from protobuf field <code>string parent = 2 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
+
+    /**
+     * @param string                                          $parent          Required. The resource name of the parent property where this conversion
+     *                                                                         event will be created. Format: properties/123
+     *                                                                         Please see {@see AnalyticsAdminServiceClient::propertyName()} for help formatting this field.
+     * @param \Google\Analytics\Admin\V1alpha\ConversionEvent $conversionEvent Required. The conversion event to create.
+     *
+     * @return \Google\Analytics\Admin\V1alpha\CreateConversionEventRequest
+     *
+     * @experimental
+     */
+    public static function build(string $parent, \Google\Analytics\Admin\V1alpha\ConversionEvent $conversionEvent): self
+    {
+        return (new self())
+            ->setParent($parent)
+            ->setConversionEvent($conversionEvent);
+    }
 
     /**
      * Constructor.

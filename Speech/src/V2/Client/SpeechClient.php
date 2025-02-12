@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ use Google\ApiCore\ApiException;
 use Google\ApiCore\BidiStream;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -66,8 +65,10 @@ use Google\Cloud\Speech\V2\UpdateConfigRequest;
 use Google\Cloud\Speech\V2\UpdateCustomClassRequest;
 use Google\Cloud\Speech\V2\UpdatePhraseSetRequest;
 use Google\Cloud\Speech\V2\UpdateRecognizerRequest;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Enables speech transcription and resource management.
@@ -80,30 +81,30 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface batchRecognizeAsync(BatchRecognizeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createCustomClassAsync(CreateCustomClassRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createPhraseSetAsync(CreatePhraseSetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createRecognizerAsync(CreateRecognizerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteCustomClassAsync(DeleteCustomClassRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deletePhraseSetAsync(DeletePhraseSetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteRecognizerAsync(DeleteRecognizerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getConfigAsync(GetConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getCustomClassAsync(GetCustomClassRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getPhraseSetAsync(GetPhraseSetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getRecognizerAsync(GetRecognizerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listCustomClassesAsync(ListCustomClassesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listPhraseSetsAsync(ListPhraseSetsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listRecognizersAsync(ListRecognizersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface recognizeAsync(RecognizeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface undeleteCustomClassAsync(UndeleteCustomClassRequest $request, array $optionalArgs = [])
- * @method PromiseInterface undeletePhraseSetAsync(UndeletePhraseSetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface undeleteRecognizerAsync(UndeleteRecognizerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateConfigAsync(UpdateConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateCustomClassAsync(UpdateCustomClassRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updatePhraseSetAsync(UpdatePhraseSetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateRecognizerAsync(UpdateRecognizerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> batchRecognizeAsync(BatchRecognizeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createCustomClassAsync(CreateCustomClassRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createPhraseSetAsync(CreatePhraseSetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createRecognizerAsync(CreateRecognizerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteCustomClassAsync(DeleteCustomClassRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deletePhraseSetAsync(DeletePhraseSetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteRecognizerAsync(DeleteRecognizerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Config> getConfigAsync(GetConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CustomClass> getCustomClassAsync(GetCustomClassRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PhraseSet> getPhraseSetAsync(GetPhraseSetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Recognizer> getRecognizerAsync(GetRecognizerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listCustomClassesAsync(ListCustomClassesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listPhraseSetsAsync(ListPhraseSetsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listRecognizersAsync(ListRecognizersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<RecognizeResponse> recognizeAsync(RecognizeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> undeleteCustomClassAsync(UndeleteCustomClassRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> undeletePhraseSetAsync(UndeletePhraseSetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> undeleteRecognizerAsync(UndeleteRecognizerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Config> updateConfigAsync(UpdateConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateCustomClassAsync(UpdateCustomClassRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updatePhraseSetAsync(UpdatePhraseSetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateRecognizerAsync(UpdateRecognizerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
  */
 final class SpeechClient
 {
@@ -130,9 +131,7 @@ final class SpeechClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private $operationsClient;
 
@@ -178,10 +177,31 @@ final class SpeechClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -234,8 +254,13 @@ final class SpeechClient
      *
      * @return string The formatted crypto_key_version resource.
      */
-    public static function cryptoKeyVersionName(string $project, string $location, string $keyRing, string $cryptoKey, string $cryptoKeyVersion): string
-    {
+    public static function cryptoKeyVersionName(
+        string $project,
+        string $location,
+        string $keyRing,
+        string $cryptoKey,
+        string $cryptoKeyVersion
+    ): string {
         return self::getPathTemplate('cryptoKeyVersion')->render([
             'project' => $project,
             'location' => $location,
@@ -337,14 +362,14 @@ final class SpeechClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -366,6 +391,12 @@ final class SpeechClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -399,6 +430,9 @@ final class SpeechClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -428,6 +462,8 @@ final class SpeechClient
      *
      * The async variant is {@see SpeechClient::batchRecognizeAsync()} .
      *
+     * @example samples/V2/SpeechClient/batch_recognize.php
+     *
      * @param BatchRecognizeRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -451,6 +487,8 @@ final class SpeechClient
      * Creates a [CustomClass][google.cloud.speech.v2.CustomClass].
      *
      * The async variant is {@see SpeechClient::createCustomClassAsync()} .
+     *
+     * @example samples/V2/SpeechClient/create_custom_class.php
      *
      * @param CreateCustomClassRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -476,6 +514,8 @@ final class SpeechClient
      *
      * The async variant is {@see SpeechClient::createPhraseSetAsync()} .
      *
+     * @example samples/V2/SpeechClient/create_phrase_set.php
+     *
      * @param CreatePhraseSetRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -499,6 +539,8 @@ final class SpeechClient
      * Creates a [Recognizer][google.cloud.speech.v2.Recognizer].
      *
      * The async variant is {@see SpeechClient::createRecognizerAsync()} .
+     *
+     * @example samples/V2/SpeechClient/create_recognizer.php
      *
      * @param CreateRecognizerRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -524,6 +566,8 @@ final class SpeechClient
      *
      * The async variant is {@see SpeechClient::deleteCustomClassAsync()} .
      *
+     * @example samples/V2/SpeechClient/delete_custom_class.php
+     *
      * @param DeleteCustomClassRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -547,6 +591,8 @@ final class SpeechClient
      * Deletes the [PhraseSet][google.cloud.speech.v2.PhraseSet].
      *
      * The async variant is {@see SpeechClient::deletePhraseSetAsync()} .
+     *
+     * @example samples/V2/SpeechClient/delete_phrase_set.php
      *
      * @param DeletePhraseSetRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -572,6 +618,8 @@ final class SpeechClient
      *
      * The async variant is {@see SpeechClient::deleteRecognizerAsync()} .
      *
+     * @example samples/V2/SpeechClient/delete_recognizer.php
+     *
      * @param DeleteRecognizerRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
      *     Optional.
@@ -595,6 +643,8 @@ final class SpeechClient
      * Returns the requested [Config][google.cloud.speech.v2.Config].
      *
      * The async variant is {@see SpeechClient::getConfigAsync()} .
+     *
+     * @example samples/V2/SpeechClient/get_config.php
      *
      * @param GetConfigRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
@@ -621,6 +671,8 @@ final class SpeechClient
      *
      * The async variant is {@see SpeechClient::getCustomClassAsync()} .
      *
+     * @example samples/V2/SpeechClient/get_custom_class.php
+     *
      * @param GetCustomClassRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -645,6 +697,8 @@ final class SpeechClient
      * [PhraseSet][google.cloud.speech.v2.PhraseSet].
      *
      * The async variant is {@see SpeechClient::getPhraseSetAsync()} .
+     *
+     * @example samples/V2/SpeechClient/get_phrase_set.php
      *
      * @param GetPhraseSetRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -673,6 +727,8 @@ final class SpeechClient
      *
      * The async variant is {@see SpeechClient::getRecognizerAsync()} .
      *
+     * @example samples/V2/SpeechClient/get_recognizer.php
+     *
      * @param GetRecognizerRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -696,6 +752,8 @@ final class SpeechClient
      * Lists CustomClasses.
      *
      * The async variant is {@see SpeechClient::listCustomClassesAsync()} .
+     *
+     * @example samples/V2/SpeechClient/list_custom_classes.php
      *
      * @param ListCustomClassesRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -721,6 +779,8 @@ final class SpeechClient
      *
      * The async variant is {@see SpeechClient::listPhraseSetsAsync()} .
      *
+     * @example samples/V2/SpeechClient/list_phrase_sets.php
+     *
      * @param ListPhraseSetsRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -744,6 +804,8 @@ final class SpeechClient
      * Lists Recognizers.
      *
      * The async variant is {@see SpeechClient::listRecognizersAsync()} .
+     *
+     * @example samples/V2/SpeechClient/list_recognizers.php
      *
      * @param ListRecognizersRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -770,6 +832,8 @@ final class SpeechClient
      *
      * The async variant is {@see SpeechClient::recognizeAsync()} .
      *
+     * @example samples/V2/SpeechClient/recognize.php
+     *
      * @param RecognizeRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
      *     Optional.
@@ -793,6 +857,8 @@ final class SpeechClient
      * Performs bidirectional streaming speech recognition: receive results while
      * sending audio. This method is only available via the gRPC API (not REST).
      *
+     * @example samples/V2/SpeechClient/streaming_recognize.php
+     *
      * @param array $callOptions {
      *     Optional.
      *
@@ -813,6 +879,8 @@ final class SpeechClient
      * Undeletes the [CustomClass][google.cloud.speech.v2.CustomClass].
      *
      * The async variant is {@see SpeechClient::undeleteCustomClassAsync()} .
+     *
+     * @example samples/V2/SpeechClient/undelete_custom_class.php
      *
      * @param UndeleteCustomClassRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -838,6 +906,8 @@ final class SpeechClient
      *
      * The async variant is {@see SpeechClient::undeletePhraseSetAsync()} .
      *
+     * @example samples/V2/SpeechClient/undelete_phrase_set.php
+     *
      * @param UndeletePhraseSetRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -861,6 +931,8 @@ final class SpeechClient
      * Undeletes the [Recognizer][google.cloud.speech.v2.Recognizer].
      *
      * The async variant is {@see SpeechClient::undeleteRecognizerAsync()} .
+     *
+     * @example samples/V2/SpeechClient/undelete_recognizer.php
      *
      * @param UndeleteRecognizerRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
@@ -886,6 +958,8 @@ final class SpeechClient
      *
      * The async variant is {@see SpeechClient::updateConfigAsync()} .
      *
+     * @example samples/V2/SpeechClient/update_config.php
+     *
      * @param UpdateConfigRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -909,6 +983,8 @@ final class SpeechClient
      * Updates the [CustomClass][google.cloud.speech.v2.CustomClass].
      *
      * The async variant is {@see SpeechClient::updateCustomClassAsync()} .
+     *
+     * @example samples/V2/SpeechClient/update_custom_class.php
      *
      * @param UpdateCustomClassRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -934,6 +1010,8 @@ final class SpeechClient
      *
      * The async variant is {@see SpeechClient::updatePhraseSetAsync()} .
      *
+     * @example samples/V2/SpeechClient/update_phrase_set.php
+     *
      * @param UpdatePhraseSetRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -957,6 +1035,8 @@ final class SpeechClient
      * Updates the [Recognizer][google.cloud.speech.v2.Recognizer].
      *
      * The async variant is {@see SpeechClient::updateRecognizerAsync()} .
+     *
+     * @example samples/V2/SpeechClient/update_recognizer.php
      *
      * @param UpdateRecognizerRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -982,6 +1062,8 @@ final class SpeechClient
      *
      * The async variant is {@see SpeechClient::getLocationAsync()} .
      *
+     * @example samples/V2/SpeechClient/get_location.php
+     *
      * @param GetLocationRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -1005,6 +1087,8 @@ final class SpeechClient
      * Lists information about the supported locations for this service.
      *
      * The async variant is {@see SpeechClient::listLocationsAsync()} .
+     *
+     * @example samples/V2/SpeechClient/list_locations.php
      *
      * @param ListLocationsRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {

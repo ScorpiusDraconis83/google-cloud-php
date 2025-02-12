@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\Location;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Google Cloud Key Management EKM Service
@@ -68,18 +69,18 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createEkmConnectionAsync(CreateEkmConnectionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getEkmConfigAsync(GetEkmConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getEkmConnectionAsync(GetEkmConnectionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listEkmConnectionsAsync(ListEkmConnectionsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateEkmConfigAsync(UpdateEkmConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateEkmConnectionAsync(UpdateEkmConnectionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface verifyConnectivityAsync(VerifyConnectivityRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<EkmConnection> createEkmConnectionAsync(CreateEkmConnectionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<EkmConfig> getEkmConfigAsync(GetEkmConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<EkmConnection> getEkmConnectionAsync(GetEkmConnectionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listEkmConnectionsAsync(ListEkmConnectionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<EkmConfig> updateEkmConfigAsync(UpdateEkmConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<EkmConnection> updateEkmConnectionAsync(UpdateEkmConnectionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<VerifyConnectivityResponse> verifyConnectivityAsync(VerifyConnectivityRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
  */
 final class EkmServiceClient
 {
@@ -219,14 +220,14 @@ final class EkmServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -248,6 +249,12 @@ final class EkmServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -281,6 +288,9 @@ final class EkmServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -308,6 +318,8 @@ final class EkmServiceClient
      *
      * The async variant is {@see EkmServiceClient::createEkmConnectionAsync()} .
      *
+     * @example samples/V1/EkmServiceClient/create_ekm_connection.php
+     *
      * @param CreateEkmConnectionRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
      *     Optional.
@@ -332,6 +344,8 @@ final class EkmServiceClient
      * for a given project and location.
      *
      * The async variant is {@see EkmServiceClient::getEkmConfigAsync()} .
+     *
+     * @example samples/V1/EkmServiceClient/get_ekm_config.php
      *
      * @param GetEkmConfigRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -358,6 +372,8 @@ final class EkmServiceClient
      *
      * The async variant is {@see EkmServiceClient::getEkmConnectionAsync()} .
      *
+     * @example samples/V1/EkmServiceClient/get_ekm_connection.php
+     *
      * @param GetEkmConnectionRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
      *     Optional.
@@ -381,6 +397,8 @@ final class EkmServiceClient
      * Lists [EkmConnections][google.cloud.kms.v1.EkmConnection].
      *
      * The async variant is {@see EkmServiceClient::listEkmConnectionsAsync()} .
+     *
+     * @example samples/V1/EkmServiceClient/list_ekm_connections.php
      *
      * @param ListEkmConnectionsRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
@@ -407,6 +425,8 @@ final class EkmServiceClient
      *
      * The async variant is {@see EkmServiceClient::updateEkmConfigAsync()} .
      *
+     * @example samples/V1/EkmServiceClient/update_ekm_config.php
+     *
      * @param UpdateEkmConfigRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -430,6 +450,8 @@ final class EkmServiceClient
      * Updates an [EkmConnection][google.cloud.kms.v1.EkmConnection]'s metadata.
      *
      * The async variant is {@see EkmServiceClient::updateEkmConnectionAsync()} .
+     *
+     * @example samples/V1/EkmServiceClient/update_ekm_connection.php
      *
      * @param UpdateEkmConnectionRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -459,6 +481,8 @@ final class EkmServiceClient
      *
      * The async variant is {@see EkmServiceClient::verifyConnectivityAsync()} .
      *
+     * @example samples/V1/EkmServiceClient/verify_connectivity.php
+     *
      * @param VerifyConnectivityRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -473,8 +497,10 @@ final class EkmServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function verifyConnectivity(VerifyConnectivityRequest $request, array $callOptions = []): VerifyConnectivityResponse
-    {
+    public function verifyConnectivity(
+        VerifyConnectivityRequest $request,
+        array $callOptions = []
+    ): VerifyConnectivityResponse {
         return $this->startApiCall('VerifyConnectivity', $request, $callOptions)->wait();
     }
 
@@ -482,6 +508,8 @@ final class EkmServiceClient
      * Gets information about a location.
      *
      * The async variant is {@see EkmServiceClient::getLocationAsync()} .
+     *
+     * @example samples/V1/EkmServiceClient/get_location.php
      *
      * @param GetLocationRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -507,6 +535,8 @@ final class EkmServiceClient
      *
      * The async variant is {@see EkmServiceClient::listLocationsAsync()} .
      *
+     * @example samples/V1/EkmServiceClient/list_locations.php
+     *
      * @param ListLocationsRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -531,6 +561,8 @@ final class EkmServiceClient
     if the resource exists and does not have a policy set.
      *
      * The async variant is {@see EkmServiceClient::getIamPolicyAsync()} .
+     *
+     * @example samples/V1/EkmServiceClient/get_iam_policy.php
      *
      * @param GetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -559,6 +591,8 @@ final class EkmServiceClient
     errors.
      *
      * The async variant is {@see EkmServiceClient::setIamPolicyAsync()} .
+     *
+     * @example samples/V1/EkmServiceClient/set_iam_policy.php
      *
      * @param SetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -590,6 +624,8 @@ final class EkmServiceClient
      *
      * The async variant is {@see EkmServiceClient::testIamPermissionsAsync()} .
      *
+     * @example samples/V1/EkmServiceClient/test_iam_permissions.php
+     *
      * @param TestIamPermissionsRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -604,8 +640,10 @@ final class EkmServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function testIamPermissions(TestIamPermissionsRequest $request, array $callOptions = []): TestIamPermissionsResponse
-    {
+    public function testIamPermissions(
+        TestIamPermissionsRequest $request,
+        array $callOptions = []
+    ): TestIamPermissionsResponse {
         return $this->startApiCall('TestIamPermissions', $request, $callOptions)->wait();
     }
 }

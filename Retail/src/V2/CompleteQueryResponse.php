@@ -30,11 +30,11 @@ class CompleteQueryResponse extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string attribution_token = 2;</code>
      */
-    private $attribution_token = '';
+    protected $attribution_token = '';
     /**
-     * Matched recent searches of this user. The maximum number of recent searches
-     * is 10. This field is a restricted feature. Contact Retail Search support
-     * team if you are interested in enabling it.
+     * Deprecated. Matched recent searches of this user. The maximum number of
+     * recent searches is 10. This field is a restricted feature. If you want to
+     * enable it, contact Retail Search support.
      * This feature is only available when
      * [CompleteQueryRequest.visitor_id][google.cloud.retail.v2.CompleteQueryRequest.visitor_id]
      * field is set and [UserEvent][google.cloud.retail.v2.UserEvent] is imported.
@@ -48,9 +48,20 @@ class CompleteQueryResponse extends \Google\Protobuf\Internal\Message
      * Recent searches are deduplicated. More recent searches will be reserved
      * when duplication happens.
      *
-     * Generated from protobuf field <code>repeated .google.cloud.retail.v2.CompleteQueryResponse.RecentSearchResult recent_search_results = 3;</code>
+     * Generated from protobuf field <code>repeated .google.cloud.retail.v2.CompleteQueryResponse.RecentSearchResult recent_search_results = 3 [deprecated = true];</code>
+     * @deprecated
      */
     private $recent_search_results;
+    /**
+     * A map of matched attribute suggestions. This field is only available for
+     * "cloud-retail" dataset.
+     * Current supported keys:
+     * * `brands`
+     * * `categories`
+     *
+     * Generated from protobuf field <code>map<string, .google.cloud.retail.v2.CompleteQueryResponse.AttributeResult> attribute_results = 4;</code>
+     */
+    private $attribute_results;
 
     /**
      * Constructor.
@@ -67,9 +78,9 @@ class CompleteQueryResponse extends \Google\Protobuf\Internal\Message
      *           for search events resulting from this completion, which enables accurate
      *           attribution of complete model performance.
      *     @type array<\Google\Cloud\Retail\V2\CompleteQueryResponse\RecentSearchResult>|\Google\Protobuf\Internal\RepeatedField $recent_search_results
-     *           Matched recent searches of this user. The maximum number of recent searches
-     *           is 10. This field is a restricted feature. Contact Retail Search support
-     *           team if you are interested in enabling it.
+     *           Deprecated. Matched recent searches of this user. The maximum number of
+     *           recent searches is 10. This field is a restricted feature. If you want to
+     *           enable it, contact Retail Search support.
      *           This feature is only available when
      *           [CompleteQueryRequest.visitor_id][google.cloud.retail.v2.CompleteQueryRequest.visitor_id]
      *           field is set and [UserEvent][google.cloud.retail.v2.UserEvent] is imported.
@@ -82,6 +93,12 @@ class CompleteQueryResponse extends \Google\Protobuf\Internal\Message
      *            * They are UTF-8 safe.
      *           Recent searches are deduplicated. More recent searches will be reserved
      *           when duplication happens.
+     *     @type array|\Google\Protobuf\Internal\MapField $attribute_results
+     *           A map of matched attribute suggestions. This field is only available for
+     *           "cloud-retail" dataset.
+     *           Current supported keys:
+     *           * `brands`
+     *           * `categories`
      * }
      */
     public function __construct($data = NULL) {
@@ -150,9 +167,9 @@ class CompleteQueryResponse extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Matched recent searches of this user. The maximum number of recent searches
-     * is 10. This field is a restricted feature. Contact Retail Search support
-     * team if you are interested in enabling it.
+     * Deprecated. Matched recent searches of this user. The maximum number of
+     * recent searches is 10. This field is a restricted feature. If you want to
+     * enable it, contact Retail Search support.
      * This feature is only available when
      * [CompleteQueryRequest.visitor_id][google.cloud.retail.v2.CompleteQueryRequest.visitor_id]
      * field is set and [UserEvent][google.cloud.retail.v2.UserEvent] is imported.
@@ -166,18 +183,20 @@ class CompleteQueryResponse extends \Google\Protobuf\Internal\Message
      * Recent searches are deduplicated. More recent searches will be reserved
      * when duplication happens.
      *
-     * Generated from protobuf field <code>repeated .google.cloud.retail.v2.CompleteQueryResponse.RecentSearchResult recent_search_results = 3;</code>
+     * Generated from protobuf field <code>repeated .google.cloud.retail.v2.CompleteQueryResponse.RecentSearchResult recent_search_results = 3 [deprecated = true];</code>
      * @return \Google\Protobuf\Internal\RepeatedField
+     * @deprecated
      */
     public function getRecentSearchResults()
     {
+        @trigger_error('recent_search_results is deprecated.', E_USER_DEPRECATED);
         return $this->recent_search_results;
     }
 
     /**
-     * Matched recent searches of this user. The maximum number of recent searches
-     * is 10. This field is a restricted feature. Contact Retail Search support
-     * team if you are interested in enabling it.
+     * Deprecated. Matched recent searches of this user. The maximum number of
+     * recent searches is 10. This field is a restricted feature. If you want to
+     * enable it, contact Retail Search support.
      * This feature is only available when
      * [CompleteQueryRequest.visitor_id][google.cloud.retail.v2.CompleteQueryRequest.visitor_id]
      * field is set and [UserEvent][google.cloud.retail.v2.UserEvent] is imported.
@@ -191,14 +210,50 @@ class CompleteQueryResponse extends \Google\Protobuf\Internal\Message
      * Recent searches are deduplicated. More recent searches will be reserved
      * when duplication happens.
      *
-     * Generated from protobuf field <code>repeated .google.cloud.retail.v2.CompleteQueryResponse.RecentSearchResult recent_search_results = 3;</code>
+     * Generated from protobuf field <code>repeated .google.cloud.retail.v2.CompleteQueryResponse.RecentSearchResult recent_search_results = 3 [deprecated = true];</code>
      * @param array<\Google\Cloud\Retail\V2\CompleteQueryResponse\RecentSearchResult>|\Google\Protobuf\Internal\RepeatedField $var
      * @return $this
+     * @deprecated
      */
     public function setRecentSearchResults($var)
     {
+        @trigger_error('recent_search_results is deprecated.', E_USER_DEPRECATED);
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Google\Cloud\Retail\V2\CompleteQueryResponse\RecentSearchResult::class);
         $this->recent_search_results = $arr;
+
+        return $this;
+    }
+
+    /**
+     * A map of matched attribute suggestions. This field is only available for
+     * "cloud-retail" dataset.
+     * Current supported keys:
+     * * `brands`
+     * * `categories`
+     *
+     * Generated from protobuf field <code>map<string, .google.cloud.retail.v2.CompleteQueryResponse.AttributeResult> attribute_results = 4;</code>
+     * @return \Google\Protobuf\Internal\MapField
+     */
+    public function getAttributeResults()
+    {
+        return $this->attribute_results;
+    }
+
+    /**
+     * A map of matched attribute suggestions. This field is only available for
+     * "cloud-retail" dataset.
+     * Current supported keys:
+     * * `brands`
+     * * `categories`
+     *
+     * Generated from protobuf field <code>map<string, .google.cloud.retail.v2.CompleteQueryResponse.AttributeResult> attribute_results = 4;</code>
+     * @param array|\Google\Protobuf\Internal\MapField $var
+     * @return $this
+     */
+    public function setAttributeResults($var)
+    {
+        $arr = GPBUtil::checkMapField($var, \Google\Protobuf\Internal\GPBType::STRING, \Google\Protobuf\Internal\GPBType::MESSAGE, \Google\Cloud\Retail\V2\CompleteQueryResponse\AttributeResult::class);
+        $this->attribute_results = $arr;
 
         return $this;
     }

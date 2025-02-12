@@ -23,26 +23,26 @@ class FeatureOnlineStore extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = IDENTIFIER];</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Output only. Timestamp when this FeatureOnlineStore was created.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp create_time = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $create_time = null;
+    protected $create_time = null;
     /**
      * Output only. Timestamp when this FeatureOnlineStore was last updated.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp update_time = 4 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $update_time = null;
+    protected $update_time = null;
     /**
      * Optional. Used to perform consistent read-modify-write updates. If not set,
      * a blind "overwrite" update happens.
      *
      * Generated from protobuf field <code>string etag = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $etag = '';
+    protected $etag = '';
     /**
      * Optional. The labels with user-defined metadata to organize your
      * FeatureOnlineStore.
@@ -62,7 +62,33 @@ class FeatureOnlineStore extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.aiplatform.v1.FeatureOnlineStore.State state = 7 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $state = 0;
+    protected $state = 0;
+    /**
+     * Optional. The dedicated serving endpoint for this FeatureOnlineStore, which
+     * is different from common Vertex service endpoint.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.FeatureOnlineStore.DedicatedServingEndpoint dedicated_serving_endpoint = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $dedicated_serving_endpoint = null;
+    /**
+     * Optional. Customer-managed encryption key spec for data storage. If set,
+     * online store will be secured by this key.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.EncryptionSpec encryption_spec = 13 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $encryption_spec = null;
+    /**
+     * Output only. Reserved for future use.
+     *
+     * Generated from protobuf field <code>bool satisfies_pzs = 15 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $satisfies_pzs = false;
+    /**
+     * Output only. Reserved for future use.
+     *
+     * Generated from protobuf field <code>bool satisfies_pzi = 16 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $satisfies_pzi = false;
     protected $storage_type;
 
     /**
@@ -75,6 +101,12 @@ class FeatureOnlineStore extends \Google\Protobuf\Internal\Message
      *           Contains settings for the Cloud Bigtable instance that will be created
      *           to serve featureValues for all FeatureViews under this
      *           FeatureOnlineStore.
+     *     @type \Google\Cloud\AIPlatform\V1\FeatureOnlineStore\Optimized $optimized
+     *           Contains settings for the Optimized store that will be created
+     *           to serve featureValues for all FeatureViews under this
+     *           FeatureOnlineStore. When choose Optimized storage type, need to set
+     *           [PrivateServiceConnectConfig.enable_private_service_connect][google.cloud.aiplatform.v1.PrivateServiceConnectConfig.enable_private_service_connect]
+     *           to use private endpoint. Otherwise will use public endpoint by default.
      *     @type string $name
      *           Identifier. Name of the FeatureOnlineStore. Format:
      *           `projects/{project}/locations/{location}/featureOnlineStores/{featureOnlineStore}`
@@ -97,6 +129,16 @@ class FeatureOnlineStore extends \Google\Protobuf\Internal\Message
      *           are prefixed with "aiplatform.googleapis.com/" and are immutable.
      *     @type int $state
      *           Output only. State of the featureOnlineStore.
+     *     @type \Google\Cloud\AIPlatform\V1\FeatureOnlineStore\DedicatedServingEndpoint $dedicated_serving_endpoint
+     *           Optional. The dedicated serving endpoint for this FeatureOnlineStore, which
+     *           is different from common Vertex service endpoint.
+     *     @type \Google\Cloud\AIPlatform\V1\EncryptionSpec $encryption_spec
+     *           Optional. Customer-managed encryption key spec for data storage. If set,
+     *           online store will be secured by this key.
+     *     @type bool $satisfies_pzs
+     *           Output only. Reserved for future use.
+     *     @type bool $satisfies_pzi
+     *           Output only. Reserved for future use.
      * }
      */
     public function __construct($data = NULL) {
@@ -135,6 +177,45 @@ class FeatureOnlineStore extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\AIPlatform\V1\FeatureOnlineStore\Bigtable::class);
         $this->writeOneof(8, $var);
+
+        return $this;
+    }
+
+    /**
+     * Contains settings for the Optimized store that will be created
+     * to serve featureValues for all FeatureViews under this
+     * FeatureOnlineStore. When choose Optimized storage type, need to set
+     * [PrivateServiceConnectConfig.enable_private_service_connect][google.cloud.aiplatform.v1.PrivateServiceConnectConfig.enable_private_service_connect]
+     * to use private endpoint. Otherwise will use public endpoint by default.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.FeatureOnlineStore.Optimized optimized = 12;</code>
+     * @return \Google\Cloud\AIPlatform\V1\FeatureOnlineStore\Optimized|null
+     */
+    public function getOptimized()
+    {
+        return $this->readOneof(12);
+    }
+
+    public function hasOptimized()
+    {
+        return $this->hasOneof(12);
+    }
+
+    /**
+     * Contains settings for the Optimized store that will be created
+     * to serve featureValues for all FeatureViews under this
+     * FeatureOnlineStore. When choose Optimized storage type, need to set
+     * [PrivateServiceConnectConfig.enable_private_service_connect][google.cloud.aiplatform.v1.PrivateServiceConnectConfig.enable_private_service_connect]
+     * to use private endpoint. Otherwise will use public endpoint by default.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.FeatureOnlineStore.Optimized optimized = 12;</code>
+     * @param \Google\Cloud\AIPlatform\V1\FeatureOnlineStore\Optimized $var
+     * @return $this
+     */
+    public function setOptimized($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\AIPlatform\V1\FeatureOnlineStore\Optimized::class);
+        $this->writeOneof(12, $var);
 
         return $this;
     }
@@ -331,6 +412,134 @@ class FeatureOnlineStore extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkEnum($var, \Google\Cloud\AIPlatform\V1\FeatureOnlineStore\State::class);
         $this->state = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. The dedicated serving endpoint for this FeatureOnlineStore, which
+     * is different from common Vertex service endpoint.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.FeatureOnlineStore.DedicatedServingEndpoint dedicated_serving_endpoint = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\AIPlatform\V1\FeatureOnlineStore\DedicatedServingEndpoint|null
+     */
+    public function getDedicatedServingEndpoint()
+    {
+        return $this->dedicated_serving_endpoint;
+    }
+
+    public function hasDedicatedServingEndpoint()
+    {
+        return isset($this->dedicated_serving_endpoint);
+    }
+
+    public function clearDedicatedServingEndpoint()
+    {
+        unset($this->dedicated_serving_endpoint);
+    }
+
+    /**
+     * Optional. The dedicated serving endpoint for this FeatureOnlineStore, which
+     * is different from common Vertex service endpoint.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.FeatureOnlineStore.DedicatedServingEndpoint dedicated_serving_endpoint = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\AIPlatform\V1\FeatureOnlineStore\DedicatedServingEndpoint $var
+     * @return $this
+     */
+    public function setDedicatedServingEndpoint($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\AIPlatform\V1\FeatureOnlineStore\DedicatedServingEndpoint::class);
+        $this->dedicated_serving_endpoint = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Customer-managed encryption key spec for data storage. If set,
+     * online store will be secured by this key.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.EncryptionSpec encryption_spec = 13 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\AIPlatform\V1\EncryptionSpec|null
+     */
+    public function getEncryptionSpec()
+    {
+        return $this->encryption_spec;
+    }
+
+    public function hasEncryptionSpec()
+    {
+        return isset($this->encryption_spec);
+    }
+
+    public function clearEncryptionSpec()
+    {
+        unset($this->encryption_spec);
+    }
+
+    /**
+     * Optional. Customer-managed encryption key spec for data storage. If set,
+     * online store will be secured by this key.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.EncryptionSpec encryption_spec = 13 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\AIPlatform\V1\EncryptionSpec $var
+     * @return $this
+     */
+    public function setEncryptionSpec($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\AIPlatform\V1\EncryptionSpec::class);
+        $this->encryption_spec = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Reserved for future use.
+     *
+     * Generated from protobuf field <code>bool satisfies_pzs = 15 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return bool
+     */
+    public function getSatisfiesPzs()
+    {
+        return $this->satisfies_pzs;
+    }
+
+    /**
+     * Output only. Reserved for future use.
+     *
+     * Generated from protobuf field <code>bool satisfies_pzs = 15 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setSatisfiesPzs($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->satisfies_pzs = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Reserved for future use.
+     *
+     * Generated from protobuf field <code>bool satisfies_pzi = 16 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return bool
+     */
+    public function getSatisfiesPzi()
+    {
+        return $this->satisfies_pzi;
+    }
+
+    /**
+     * Output only. Reserved for future use.
+     *
+     * Generated from protobuf field <code>bool satisfies_pzi = 16 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setSatisfiesPzi($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->satisfies_pzi = $var;
 
         return $this;
     }

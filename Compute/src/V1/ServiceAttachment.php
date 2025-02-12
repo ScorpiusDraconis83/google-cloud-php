@@ -29,13 +29,13 @@ class ServiceAttachment extends \Google\Protobuf\Internal\Message
      */
     private $connection_preference = null;
     /**
-     * Projects that are allowed to connect to this service attachment.
+     * Specifies which consumer projects or networks are allowed to connect to the service attachment. Each project or network has a connection limit. A given service attachment can manage connections at either the project or network level. Therefore, both the accept and reject lists for a given service attachment must contain either only projects or only networks.
      *
      * Generated from protobuf field <code>repeated .google.cloud.compute.v1.ServiceAttachmentConsumerProjectLimit consumer_accept_lists = 402725703;</code>
      */
     private $consumer_accept_lists;
     /**
-     * Projects that are not allowed to connect to this service attachment. The project can be specified using its id or number.
+     * Specifies a list of projects or networks that are not allowed to connect to this service attachment. The project can be specified using its project ID or project number and the network can be specified using its URL. A given service attachment can manage connections at either the project or network level. Therefore, both the reject and accept lists for a given service attachment must contain either only projects or only networks.
      *
      * Generated from protobuf field <code>repeated string consumer_reject_lists = 204033182;</code>
      */
@@ -101,6 +101,12 @@ class ServiceAttachment extends \Google\Protobuf\Internal\Message
      */
     private $producer_forwarding_rule = null;
     /**
+     * The number of consumer spokes that connected Private Service Connect endpoints can be propagated to through Network Connectivity Center. This limit lets the service producer limit how many propagated Private Service Connect connections can be established to this service attachment from a single consumer. If the connection preference of the service attachment is ACCEPT_MANUAL, the limit applies to each project or network that is listed in the consumer accept list. If the connection preference of the service attachment is ACCEPT_AUTOMATIC, the limit applies to each project that contains a connected endpoint. If unspecified, the default propagated connection limit is 250.
+     *
+     * Generated from protobuf field <code>optional uint32 propagated_connection_limit = 332719230;</code>
+     */
+    private $propagated_connection_limit = null;
+    /**
      * [Output Only] An 128-bit global unique ID of the PSC service attachment.
      *
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.Uint128 psc_service_attachment_id = 527695214;</code>
@@ -143,9 +149,9 @@ class ServiceAttachment extends \Google\Protobuf\Internal\Message
      *           The connection preference of service attachment. The value can be set to ACCEPT_AUTOMATIC. An ACCEPT_AUTOMATIC service attachment is one that always accepts the connection from consumer forwarding rules.
      *           Check the ConnectionPreference enum for the list of possible values.
      *     @type array<\Google\Cloud\Compute\V1\ServiceAttachmentConsumerProjectLimit>|\Google\Protobuf\Internal\RepeatedField $consumer_accept_lists
-     *           Projects that are allowed to connect to this service attachment.
+     *           Specifies which consumer projects or networks are allowed to connect to the service attachment. Each project or network has a connection limit. A given service attachment can manage connections at either the project or network level. Therefore, both the accept and reject lists for a given service attachment must contain either only projects or only networks.
      *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $consumer_reject_lists
-     *           Projects that are not allowed to connect to this service attachment. The project can be specified using its id or number.
+     *           Specifies a list of projects or networks that are not allowed to connect to this service attachment. The project can be specified using its project ID or project number and the network can be specified using its URL. A given service attachment can manage connections at either the project or network level. Therefore, both the reject and accept lists for a given service attachment must contain either only projects or only networks.
      *     @type string $creation_timestamp
      *           [Output Only] Creation timestamp in RFC3339 text format.
      *     @type string $description
@@ -166,6 +172,8 @@ class ServiceAttachment extends \Google\Protobuf\Internal\Message
      *           An array of URLs where each entry is the URL of a subnet provided by the service producer to use for NAT in this service attachment.
      *     @type string $producer_forwarding_rule
      *           The URL of a forwarding rule with loadBalancingScheme INTERNAL* that is serving the endpoint identified by this service attachment.
+     *     @type int $propagated_connection_limit
+     *           The number of consumer spokes that connected Private Service Connect endpoints can be propagated to through Network Connectivity Center. This limit lets the service producer limit how many propagated Private Service Connect connections can be established to this service attachment from a single consumer. If the connection preference of the service attachment is ACCEPT_MANUAL, the limit applies to each project or network that is listed in the consumer accept list. If the connection preference of the service attachment is ACCEPT_AUTOMATIC, the limit applies to each project that contains a connected endpoint. If unspecified, the default propagated connection limit is 250.
      *     @type \Google\Cloud\Compute\V1\Uint128 $psc_service_attachment_id
      *           [Output Only] An 128-bit global unique ID of the PSC service attachment.
      *     @type bool $reconcile_connections
@@ -248,7 +256,7 @@ class ServiceAttachment extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Projects that are allowed to connect to this service attachment.
+     * Specifies which consumer projects or networks are allowed to connect to the service attachment. Each project or network has a connection limit. A given service attachment can manage connections at either the project or network level. Therefore, both the accept and reject lists for a given service attachment must contain either only projects or only networks.
      *
      * Generated from protobuf field <code>repeated .google.cloud.compute.v1.ServiceAttachmentConsumerProjectLimit consumer_accept_lists = 402725703;</code>
      * @return \Google\Protobuf\Internal\RepeatedField
@@ -259,7 +267,7 @@ class ServiceAttachment extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Projects that are allowed to connect to this service attachment.
+     * Specifies which consumer projects or networks are allowed to connect to the service attachment. Each project or network has a connection limit. A given service attachment can manage connections at either the project or network level. Therefore, both the accept and reject lists for a given service attachment must contain either only projects or only networks.
      *
      * Generated from protobuf field <code>repeated .google.cloud.compute.v1.ServiceAttachmentConsumerProjectLimit consumer_accept_lists = 402725703;</code>
      * @param array<\Google\Cloud\Compute\V1\ServiceAttachmentConsumerProjectLimit>|\Google\Protobuf\Internal\RepeatedField $var
@@ -274,7 +282,7 @@ class ServiceAttachment extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Projects that are not allowed to connect to this service attachment. The project can be specified using its id or number.
+     * Specifies a list of projects or networks that are not allowed to connect to this service attachment. The project can be specified using its project ID or project number and the network can be specified using its URL. A given service attachment can manage connections at either the project or network level. Therefore, both the reject and accept lists for a given service attachment must contain either only projects or only networks.
      *
      * Generated from protobuf field <code>repeated string consumer_reject_lists = 204033182;</code>
      * @return \Google\Protobuf\Internal\RepeatedField
@@ -285,7 +293,7 @@ class ServiceAttachment extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Projects that are not allowed to connect to this service attachment. The project can be specified using its id or number.
+     * Specifies a list of projects or networks that are not allowed to connect to this service attachment. The project can be specified using its project ID or project number and the network can be specified using its URL. A given service attachment can manage connections at either the project or network level. Therefore, both the reject and accept lists for a given service attachment must contain either only projects or only networks.
      *
      * Generated from protobuf field <code>repeated string consumer_reject_lists = 204033182;</code>
      * @param array<string>|\Google\Protobuf\Internal\RepeatedField $var
@@ -635,6 +643,42 @@ class ServiceAttachment extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->producer_forwarding_rule = $var;
+
+        return $this;
+    }
+
+    /**
+     * The number of consumer spokes that connected Private Service Connect endpoints can be propagated to through Network Connectivity Center. This limit lets the service producer limit how many propagated Private Service Connect connections can be established to this service attachment from a single consumer. If the connection preference of the service attachment is ACCEPT_MANUAL, the limit applies to each project or network that is listed in the consumer accept list. If the connection preference of the service attachment is ACCEPT_AUTOMATIC, the limit applies to each project that contains a connected endpoint. If unspecified, the default propagated connection limit is 250.
+     *
+     * Generated from protobuf field <code>optional uint32 propagated_connection_limit = 332719230;</code>
+     * @return int
+     */
+    public function getPropagatedConnectionLimit()
+    {
+        return isset($this->propagated_connection_limit) ? $this->propagated_connection_limit : 0;
+    }
+
+    public function hasPropagatedConnectionLimit()
+    {
+        return isset($this->propagated_connection_limit);
+    }
+
+    public function clearPropagatedConnectionLimit()
+    {
+        unset($this->propagated_connection_limit);
+    }
+
+    /**
+     * The number of consumer spokes that connected Private Service Connect endpoints can be propagated to through Network Connectivity Center. This limit lets the service producer limit how many propagated Private Service Connect connections can be established to this service attachment from a single consumer. If the connection preference of the service attachment is ACCEPT_MANUAL, the limit applies to each project or network that is listed in the consumer accept list. If the connection preference of the service attachment is ACCEPT_AUTOMATIC, the limit applies to each project that contains a connected endpoint. If unspecified, the default propagated connection limit is 250.
+     *
+     * Generated from protobuf field <code>optional uint32 propagated_connection_limit = 332719230;</code>
+     * @param int $var
+     * @return $this
+     */
+    public function setPropagatedConnectionLimit($var)
+    {
+        GPBUtil::checkUint32($var);
+        $this->propagated_connection_limit = $var;
 
         return $this;
     }

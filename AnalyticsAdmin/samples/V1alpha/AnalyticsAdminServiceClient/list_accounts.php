@@ -24,14 +24,15 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListAccounts_sync]
 use Google\Analytics\Admin\V1alpha\Account;
-use Google\Analytics\Admin\V1alpha\AnalyticsAdminServiceClient;
+use Google\Analytics\Admin\V1alpha\Client\AnalyticsAdminServiceClient;
+use Google\Analytics\Admin\V1alpha\ListAccountsRequest;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\PagedListResponse;
 
 /**
  * Returns all accounts accessible by the caller.
  *
- * Note that these accounts might not currently have GA4 properties.
+ * Note that these accounts might not currently have GA properties.
  * Soft-deleted (ie: "trashed") accounts are excluded by default.
  * Returns an empty list if no relevant accounts are found.
  *
@@ -46,10 +47,13 @@ function list_accounts_sample(): void
     // Create a client.
     $analyticsAdminServiceClient = new AnalyticsAdminServiceClient();
 
+    // Prepare the request message.
+    $request = new ListAccountsRequest();
+
     // Call the API and handle any network failures.
     try {
         /** @var PagedListResponse $response */
-        $response = $analyticsAdminServiceClient->listAccounts();
+        $response = $analyticsAdminServiceClient->listAccounts($request);
 
         /** @var Account $element */
         foreach ($response as $element) {

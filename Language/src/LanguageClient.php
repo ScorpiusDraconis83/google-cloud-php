@@ -38,6 +38,7 @@ use Psr\Cache\CacheItemPoolInterface;
  *
  * $language = new LanguageClient();
  * ```
+ * @deprecated See {@see \Google\Cloud\Language\V2\Client\LanguageServiceClient}.
  */
 class LanguageClient
 {
@@ -46,7 +47,7 @@ class LanguageClient
         ClientTrait::jsonDecode insteadof RetryDeciderTrait;
     }
 
-    const VERSION = '0.31.3';
+    const VERSION = '0.34.3';
 
     const FULL_CONTROL_SCOPE = 'https://www.googleapis.com/auth/cloud-platform';
 

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\Retail\V2\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -43,12 +42,15 @@ use Google\Cloud\Retail\V2\GetProductRequest;
 use Google\Cloud\Retail\V2\ImportProductsRequest;
 use Google\Cloud\Retail\V2\ListProductsRequest;
 use Google\Cloud\Retail\V2\Product;
+use Google\Cloud\Retail\V2\PurgeProductsRequest;
 use Google\Cloud\Retail\V2\RemoveFulfillmentPlacesRequest;
 use Google\Cloud\Retail\V2\RemoveLocalInventoriesRequest;
 use Google\Cloud\Retail\V2\SetInventoryRequest;
 use Google\Cloud\Retail\V2\UpdateProductRequest;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Service for ingesting [Product][google.cloud.retail.v2.Product] information
@@ -62,17 +64,18 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface addFulfillmentPlacesAsync(AddFulfillmentPlacesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface addLocalInventoriesAsync(AddLocalInventoriesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createProductAsync(CreateProductRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteProductAsync(DeleteProductRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getProductAsync(GetProductRequest $request, array $optionalArgs = [])
- * @method PromiseInterface importProductsAsync(ImportProductsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listProductsAsync(ListProductsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface removeFulfillmentPlacesAsync(RemoveFulfillmentPlacesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface removeLocalInventoriesAsync(RemoveLocalInventoriesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setInventoryAsync(SetInventoryRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateProductAsync(UpdateProductRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> addFulfillmentPlacesAsync(AddFulfillmentPlacesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> addLocalInventoriesAsync(AddLocalInventoriesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Product> createProductAsync(CreateProductRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteProductAsync(DeleteProductRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Product> getProductAsync(GetProductRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> importProductsAsync(ImportProductsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listProductsAsync(ListProductsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> purgeProductsAsync(PurgeProductsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> removeFulfillmentPlacesAsync(RemoveFulfillmentPlacesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> removeLocalInventoriesAsync(RemoveLocalInventoriesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> setInventoryAsync(SetInventoryRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Product> updateProductAsync(UpdateProductRequest $request, array $optionalArgs = [])
  */
 final class ProductServiceClient
 {
@@ -99,9 +102,7 @@ final class ProductServiceClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private $operationsClient;
 
@@ -147,10 +148,31 @@ final class ProductServiceClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -186,8 +208,13 @@ final class ProductServiceClient
      *
      * @return string The formatted product resource.
      */
-    public static function productName(string $project, string $location, string $catalog, string $branch, string $product): string
-    {
+    public static function productName(
+        string $project,
+        string $location,
+        string $catalog,
+        string $branch,
+        string $product
+    ): string {
         return self::getPathTemplate('product')->render([
             'project' => $project,
             'location' => $location,
@@ -210,14 +237,14 @@ final class ProductServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -239,6 +266,12 @@ final class ProductServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -272,6 +305,9 @@ final class ProductServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -295,10 +331,11 @@ final class ProductServiceClient
     }
 
     /**
-     * It is recommended to use the
+     * We recommend that you use the
      * [ProductService.AddLocalInventories][google.cloud.retail.v2.ProductService.AddLocalInventories]
-     * method instead of
-     * [ProductService.AddFulfillmentPlaces][google.cloud.retail.v2.ProductService.AddFulfillmentPlaces].
+     * method instead of the
+     * [ProductService.AddFulfillmentPlaces][google.cloud.retail.v2.ProductService.AddFulfillmentPlaces]
+     * method.
      * [ProductService.AddLocalInventories][google.cloud.retail.v2.ProductService.AddLocalInventories]
      * achieves the same results but provides more fine-grained control over
      * ingesting local inventory data.
@@ -327,6 +364,8 @@ final class ProductServiceClient
      *
      * The async variant is {@see ProductServiceClient::addFulfillmentPlacesAsync()} .
      *
+     * @example samples/V2/ProductServiceClient/add_fulfillment_places.php
+     *
      * @param AddFulfillmentPlacesRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -341,8 +380,10 @@ final class ProductServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function addFulfillmentPlaces(AddFulfillmentPlacesRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function addFulfillmentPlaces(
+        AddFulfillmentPlacesRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('AddFulfillmentPlaces', $request, $callOptions)->wait();
     }
 
@@ -378,6 +419,8 @@ final class ProductServiceClient
      *
      * The async variant is {@see ProductServiceClient::addLocalInventoriesAsync()} .
      *
+     * @example samples/V2/ProductServiceClient/add_local_inventories.php
+     *
      * @param AddLocalInventoriesRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
      *     Optional.
@@ -401,6 +444,8 @@ final class ProductServiceClient
      * Creates a [Product][google.cloud.retail.v2.Product].
      *
      * The async variant is {@see ProductServiceClient::createProductAsync()} .
+     *
+     * @example samples/V2/ProductServiceClient/create_product.php
      *
      * @param CreateProductRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -426,6 +471,8 @@ final class ProductServiceClient
      *
      * The async variant is {@see ProductServiceClient::deleteProductAsync()} .
      *
+     * @example samples/V2/ProductServiceClient/delete_product.php
+     *
      * @param DeleteProductRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -447,6 +494,8 @@ final class ProductServiceClient
      * Gets a [Product][google.cloud.retail.v2.Product].
      *
      * The async variant is {@see ProductServiceClient::getProductAsync()} .
+     *
+     * @example samples/V2/ProductServiceClient/get_product.php
      *
      * @param GetProductRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -478,6 +527,8 @@ final class ProductServiceClient
      *
      * The async variant is {@see ProductServiceClient::importProductsAsync()} .
      *
+     * @example samples/V2/ProductServiceClient/import_products.php
+     *
      * @param ImportProductsRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -502,6 +553,8 @@ final class ProductServiceClient
      *
      * The async variant is {@see ProductServiceClient::listProductsAsync()} .
      *
+     * @example samples/V2/ProductServiceClient/list_products.php
+     *
      * @param ListProductsRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -522,10 +575,53 @@ final class ProductServiceClient
     }
 
     /**
-     * It is recommended to use the
+     * Permanently deletes all selected [Product][google.cloud.retail.v2.Product]s
+     * under a branch.
+     *
+     * This process is asynchronous. If the request is valid, the removal will be
+     * enqueued and processed offline. Depending on the number of
+     * [Product][google.cloud.retail.v2.Product]s, this operation could take hours
+     * to complete. Before the operation completes, some
+     * [Product][google.cloud.retail.v2.Product]s may still be returned by
+     * [ProductService.GetProduct][google.cloud.retail.v2.ProductService.GetProduct]
+     * or
+     * [ProductService.ListProducts][google.cloud.retail.v2.ProductService.ListProducts].
+     *
+     * Depending on the number of [Product][google.cloud.retail.v2.Product]s, this
+     * operation could take hours to complete. To get a sample of
+     * [Product][google.cloud.retail.v2.Product]s that would be deleted, set
+     * [PurgeProductsRequest.force][google.cloud.retail.v2.PurgeProductsRequest.force]
+     * to false.
+     *
+     * The async variant is {@see ProductServiceClient::purgeProductsAsync()} .
+     *
+     * @example samples/V2/ProductServiceClient/purge_products.php
+     *
+     * @param PurgeProductsRequest $request     A request to house fields associated with the call.
+     * @param array                $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function purgeProducts(PurgeProductsRequest $request, array $callOptions = []): OperationResponse
+    {
+        return $this->startApiCall('PurgeProducts', $request, $callOptions)->wait();
+    }
+
+    /**
+     * We recommend that you use the
      * [ProductService.RemoveLocalInventories][google.cloud.retail.v2.ProductService.RemoveLocalInventories]
-     * method instead of
-     * [ProductService.RemoveFulfillmentPlaces][google.cloud.retail.v2.ProductService.RemoveFulfillmentPlaces].
+     * method instead of the
+     * [ProductService.RemoveFulfillmentPlaces][google.cloud.retail.v2.ProductService.RemoveFulfillmentPlaces]
+     * method.
      * [ProductService.RemoveLocalInventories][google.cloud.retail.v2.ProductService.RemoveLocalInventories]
      * achieves the same results but provides more fine-grained control over
      * ingesting local inventory data.
@@ -555,6 +651,8 @@ final class ProductServiceClient
      * The async variant is {@see ProductServiceClient::removeFulfillmentPlacesAsync()}
      * .
      *
+     * @example samples/V2/ProductServiceClient/remove_fulfillment_places.php
+     *
      * @param RemoveFulfillmentPlacesRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
      *     Optional.
@@ -569,8 +667,10 @@ final class ProductServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function removeFulfillmentPlaces(RemoveFulfillmentPlacesRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function removeFulfillmentPlaces(
+        RemoveFulfillmentPlacesRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('RemoveFulfillmentPlaces', $request, $callOptions)->wait();
     }
 
@@ -605,6 +705,8 @@ final class ProductServiceClient
      * The async variant is {@see ProductServiceClient::removeLocalInventoriesAsync()}
      * .
      *
+     * @example samples/V2/ProductServiceClient/remove_local_inventories.php
+     *
      * @param RemoveLocalInventoriesRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -619,8 +721,10 @@ final class ProductServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function removeLocalInventories(RemoveLocalInventoriesRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function removeLocalInventories(
+        RemoveLocalInventoriesRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('RemoveLocalInventories', $request, $callOptions)->wait();
     }
 
@@ -677,6 +781,8 @@ final class ProductServiceClient
      *
      * The async variant is {@see ProductServiceClient::setInventoryAsync()} .
      *
+     * @example samples/V2/ProductServiceClient/set_inventory.php
+     *
      * @param SetInventoryRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -700,6 +806,8 @@ final class ProductServiceClient
      * Updates a [Product][google.cloud.retail.v2.Product].
      *
      * The async variant is {@see ProductServiceClient::updateProductAsync()} .
+     *
+     * @example samples/V2/ProductServiceClient/update_product.php
      *
      * @param UpdateProductRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {

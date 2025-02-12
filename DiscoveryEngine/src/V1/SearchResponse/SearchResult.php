@@ -24,11 +24,20 @@ class SearchResult extends \Google\Protobuf\Internal\Message
     protected $id = '';
     /**
      * The document data snippet in the search response. Only fields that are
-     * marked as retrievable are populated.
+     * marked as `retrievable` are populated.
      *
      * Generated from protobuf field <code>.google.cloud.discoveryengine.v1.Document document = 2;</code>
      */
     protected $document = null;
+    /**
+     * The chunk data in the search response if the
+     * [SearchRequest.ContentSearchSpec.search_result_mode][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.search_result_mode]
+     * is set to
+     * [CHUNKS][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SearchResultMode.CHUNKS].
+     *
+     * Generated from protobuf field <code>.google.cloud.discoveryengine.v1.Chunk chunk = 18;</code>
+     */
+    protected $chunk = null;
 
     /**
      * Constructor.
@@ -41,7 +50,12 @@ class SearchResult extends \Google\Protobuf\Internal\Message
      *           searched [Document][google.cloud.discoveryengine.v1.Document].
      *     @type \Google\Cloud\DiscoveryEngine\V1\Document $document
      *           The document data snippet in the search response. Only fields that are
-     *           marked as retrievable are populated.
+     *           marked as `retrievable` are populated.
+     *     @type \Google\Cloud\DiscoveryEngine\V1\Chunk $chunk
+     *           The chunk data in the search response if the
+     *           [SearchRequest.ContentSearchSpec.search_result_mode][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.search_result_mode]
+     *           is set to
+     *           [CHUNKS][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SearchResultMode.CHUNKS].
      * }
      */
     public function __construct($data = NULL) {
@@ -79,7 +93,7 @@ class SearchResult extends \Google\Protobuf\Internal\Message
 
     /**
      * The document data snippet in the search response. Only fields that are
-     * marked as retrievable are populated.
+     * marked as `retrievable` are populated.
      *
      * Generated from protobuf field <code>.google.cloud.discoveryengine.v1.Document document = 2;</code>
      * @return \Google\Cloud\DiscoveryEngine\V1\Document|null
@@ -101,7 +115,7 @@ class SearchResult extends \Google\Protobuf\Internal\Message
 
     /**
      * The document data snippet in the search response. Only fields that are
-     * marked as retrievable are populated.
+     * marked as `retrievable` are populated.
      *
      * Generated from protobuf field <code>.google.cloud.discoveryengine.v1.Document document = 2;</code>
      * @param \Google\Cloud\DiscoveryEngine\V1\Document $var
@@ -111,6 +125,48 @@ class SearchResult extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\DiscoveryEngine\V1\Document::class);
         $this->document = $var;
+
+        return $this;
+    }
+
+    /**
+     * The chunk data in the search response if the
+     * [SearchRequest.ContentSearchSpec.search_result_mode][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.search_result_mode]
+     * is set to
+     * [CHUNKS][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SearchResultMode.CHUNKS].
+     *
+     * Generated from protobuf field <code>.google.cloud.discoveryengine.v1.Chunk chunk = 18;</code>
+     * @return \Google\Cloud\DiscoveryEngine\V1\Chunk|null
+     */
+    public function getChunk()
+    {
+        return $this->chunk;
+    }
+
+    public function hasChunk()
+    {
+        return isset($this->chunk);
+    }
+
+    public function clearChunk()
+    {
+        unset($this->chunk);
+    }
+
+    /**
+     * The chunk data in the search response if the
+     * [SearchRequest.ContentSearchSpec.search_result_mode][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.search_result_mode]
+     * is set to
+     * [CHUNKS][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SearchResultMode.CHUNKS].
+     *
+     * Generated from protobuf field <code>.google.cloud.discoveryengine.v1.Chunk chunk = 18;</code>
+     * @param \Google\Cloud\DiscoveryEngine\V1\Chunk $var
+     * @return $this
+     */
+    public function setChunk($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\DiscoveryEngine\V1\Chunk::class);
+        $this->chunk = $var;
 
         return $this;
     }

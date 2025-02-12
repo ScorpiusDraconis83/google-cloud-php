@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ namespace Google\Cloud\Bigtable\Admin\V2\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
+use Google\ApiCore\InsecureCredentialsWrapper;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -61,8 +61,11 @@ use Google\Cloud\Iam\V1\Policy;
 use Google\Cloud\Iam\V1\SetIamPolicyRequest;
 use Google\Cloud\Iam\V1\TestIamPermissionsRequest;
 use Google\Cloud\Iam\V1\TestIamPermissionsResponse;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
+use Grpc\ChannelCredentials;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Service for creating, configuring, and deleting Cloud Bigtable Instances and
@@ -77,27 +80,27 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createAppProfileAsync(CreateAppProfileRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createClusterAsync(CreateClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createInstanceAsync(CreateInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAppProfileAsync(DeleteAppProfileRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteClusterAsync(DeleteClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteInstanceAsync(DeleteInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAppProfileAsync(GetAppProfileRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getClusterAsync(GetClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getInstanceAsync(GetInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAppProfilesAsync(ListAppProfilesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listClustersAsync(ListClustersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listHotTabletsAsync(ListHotTabletsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listInstancesAsync(ListInstancesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface partialUpdateClusterAsync(PartialUpdateClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface partialUpdateInstanceAsync(PartialUpdateInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateAppProfileAsync(UpdateAppProfileRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateClusterAsync(Cluster $request, array $optionalArgs = [])
- * @method PromiseInterface updateInstanceAsync(Instance $request, array $optionalArgs = [])
+ * @method PromiseInterface<AppProfile> createAppProfileAsync(CreateAppProfileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createClusterAsync(CreateClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createInstanceAsync(CreateInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteAppProfileAsync(DeleteAppProfileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteClusterAsync(DeleteClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteInstanceAsync(DeleteInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AppProfile> getAppProfileAsync(GetAppProfileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Cluster> getClusterAsync(GetClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Instance> getInstanceAsync(GetInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAppProfilesAsync(ListAppProfilesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ListClustersResponse> listClustersAsync(ListClustersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listHotTabletsAsync(ListHotTabletsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ListInstancesResponse> listInstancesAsync(ListInstancesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> partialUpdateClusterAsync(PartialUpdateClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> partialUpdateInstanceAsync(PartialUpdateInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateAppProfileAsync(UpdateAppProfileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateClusterAsync(Cluster $request, array $optionalArgs = [])
+ * @method PromiseInterface<Instance> updateInstanceAsync(Instance $request, array $optionalArgs = [])
  */
 final class BigtableInstanceAdminClient
 {
@@ -182,6 +185,25 @@ final class BigtableInstanceAdminClient
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -309,20 +331,24 @@ final class BigtableInstanceAdminClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
 
     /**
      * Constructor.
+     *
+     * Setting the "BIGTABLE_EMULATOR_HOST" environment variable will automatically set
+     * the API Endpoint to the value specified in the variable, as well as ensure that
+     * empty credentials are used in the transport layer.
      *
      * @param array $options {
      *     Optional. Options for configuring the service API wrapper.
@@ -338,6 +364,12 @@ final class BigtableInstanceAdminClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -371,12 +403,16 @@ final class BigtableInstanceAdminClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
      */
     public function __construct(array $options = [])
     {
+        $options = $this->setDefaultEmulatorConfig($options);
         $clientOptions = $this->buildClientOptions($options);
         $this->setClientOptions($clientOptions);
         $this->operationsClient = $this->createOperationsClient($clientOptions);
@@ -398,6 +434,8 @@ final class BigtableInstanceAdminClient
      *
      * The async variant is {@see BigtableInstanceAdminClient::createAppProfileAsync()}
      * .
+     *
+     * @example samples/V2/BigtableInstanceAdminClient/create_app_profile.php
      *
      * @param CreateAppProfileRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -429,6 +467,8 @@ final class BigtableInstanceAdminClient
      *
      * The async variant is {@see BigtableInstanceAdminClient::createClusterAsync()} .
      *
+     * @example samples/V2/BigtableInstanceAdminClient/create_cluster.php
+     *
      * @param CreateClusterRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -459,6 +499,8 @@ final class BigtableInstanceAdminClient
      *
      * The async variant is {@see BigtableInstanceAdminClient::createInstanceAsync()} .
      *
+     * @example samples/V2/BigtableInstanceAdminClient/create_instance.php
+     *
      * @param CreateInstanceRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -484,6 +526,8 @@ final class BigtableInstanceAdminClient
      * The async variant is {@see BigtableInstanceAdminClient::deleteAppProfileAsync()}
      * .
      *
+     * @example samples/V2/BigtableInstanceAdminClient/delete_app_profile.php
+     *
      * @param DeleteAppProfileRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
      *     Optional.
@@ -505,6 +549,8 @@ final class BigtableInstanceAdminClient
      * Deletes a cluster from an instance.
      *
      * The async variant is {@see BigtableInstanceAdminClient::deleteClusterAsync()} .
+     *
+     * @example samples/V2/BigtableInstanceAdminClient/delete_cluster.php
      *
      * @param DeleteClusterRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -528,6 +574,8 @@ final class BigtableInstanceAdminClient
      *
      * The async variant is {@see BigtableInstanceAdminClient::deleteInstanceAsync()} .
      *
+     * @example samples/V2/BigtableInstanceAdminClient/delete_instance.php
+     *
      * @param DeleteInstanceRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -549,6 +597,8 @@ final class BigtableInstanceAdminClient
      * Gets information about an app profile.
      *
      * The async variant is {@see BigtableInstanceAdminClient::getAppProfileAsync()} .
+     *
+     * @example samples/V2/BigtableInstanceAdminClient/get_app_profile.php
      *
      * @param GetAppProfileRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -573,6 +623,8 @@ final class BigtableInstanceAdminClient
      * Gets information about a cluster.
      *
      * The async variant is {@see BigtableInstanceAdminClient::getClusterAsync()} .
+     *
+     * @example samples/V2/BigtableInstanceAdminClient/get_cluster.php
      *
      * @param GetClusterRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -599,6 +651,8 @@ final class BigtableInstanceAdminClient
      *
      * The async variant is {@see BigtableInstanceAdminClient::getIamPolicyAsync()} .
      *
+     * @example samples/V2/BigtableInstanceAdminClient/get_iam_policy.php
+     *
      * @param GetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -622,6 +676,8 @@ final class BigtableInstanceAdminClient
      * Gets information about an instance.
      *
      * The async variant is {@see BigtableInstanceAdminClient::getInstanceAsync()} .
+     *
+     * @example samples/V2/BigtableInstanceAdminClient/get_instance.php
      *
      * @param GetInstanceRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -648,6 +704,8 @@ final class BigtableInstanceAdminClient
      * The async variant is {@see BigtableInstanceAdminClient::listAppProfilesAsync()}
      * .
      *
+     * @example samples/V2/BigtableInstanceAdminClient/list_app_profiles.php
+     *
      * @param ListAppProfilesRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -671,6 +729,8 @@ final class BigtableInstanceAdminClient
      * Lists information about clusters in an instance.
      *
      * The async variant is {@see BigtableInstanceAdminClient::listClustersAsync()} .
+     *
+     * @example samples/V2/BigtableInstanceAdminClient/list_clusters.php
      *
      * @param ListClustersRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -697,6 +757,8 @@ final class BigtableInstanceAdminClient
      *
      * The async variant is {@see BigtableInstanceAdminClient::listHotTabletsAsync()} .
      *
+     * @example samples/V2/BigtableInstanceAdminClient/list_hot_tablets.php
+     *
      * @param ListHotTabletsRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -720,6 +782,8 @@ final class BigtableInstanceAdminClient
      * Lists information about instances in a project.
      *
      * The async variant is {@see BigtableInstanceAdminClient::listInstancesAsync()} .
+     *
+     * @example samples/V2/BigtableInstanceAdminClient/list_instances.php
      *
      * @param ListInstancesRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -757,6 +821,8 @@ final class BigtableInstanceAdminClient
      * The async variant is
      * {@see BigtableInstanceAdminClient::partialUpdateClusterAsync()} .
      *
+     * @example samples/V2/BigtableInstanceAdminClient/partial_update_cluster.php
+     *
      * @param PartialUpdateClusterRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -783,6 +849,8 @@ final class BigtableInstanceAdminClient
      * The async variant is
      * {@see BigtableInstanceAdminClient::partialUpdateInstanceAsync()} .
      *
+     * @example samples/V2/BigtableInstanceAdminClient/partial_update_instance.php
+     *
      * @param PartialUpdateInstanceRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -807,6 +875,8 @@ final class BigtableInstanceAdminClient
      * existing policy.
      *
      * The async variant is {@see BigtableInstanceAdminClient::setIamPolicyAsync()} .
+     *
+     * @example samples/V2/BigtableInstanceAdminClient/set_iam_policy.php
      *
      * @param SetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -833,6 +903,8 @@ final class BigtableInstanceAdminClient
      * The async variant is
      * {@see BigtableInstanceAdminClient::testIamPermissionsAsync()} .
      *
+     * @example samples/V2/BigtableInstanceAdminClient/test_iam_permissions.php
+     *
      * @param TestIamPermissionsRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -857,6 +929,8 @@ final class BigtableInstanceAdminClient
      *
      * The async variant is {@see BigtableInstanceAdminClient::updateAppProfileAsync()}
      * .
+     *
+     * @example samples/V2/BigtableInstanceAdminClient/update_app_profile.php
      *
      * @param UpdateAppProfileRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -886,6 +960,8 @@ final class BigtableInstanceAdminClient
      *
      * The async variant is {@see BigtableInstanceAdminClient::updateClusterAsync()} .
      *
+     * @example samples/V2/BigtableInstanceAdminClient/update_cluster.php
+     *
      * @param Cluster $request     A request to house fields associated with the call.
      * @param array   $callOptions {
      *     Optional.
@@ -912,6 +988,8 @@ final class BigtableInstanceAdminClient
      *
      * The async variant is {@see BigtableInstanceAdminClient::updateInstanceAsync()} .
      *
+     * @example samples/V2/BigtableInstanceAdminClient/update_instance.php
+     *
      * @param Instance $request     A request to house fields associated with the call.
      * @param array    $callOptions {
      *     Optional.
@@ -929,5 +1007,27 @@ final class BigtableInstanceAdminClient
     public function updateInstance(Instance $request, array $callOptions = []): Instance
     {
         return $this->startApiCall('UpdateInstance', $request, $callOptions)->wait();
+    }
+
+    /** Configure the gapic configuration to use a service emulator. */
+    private function setDefaultEmulatorConfig(array $options): array
+    {
+        $emulatorHost = getenv('BIGTABLE_EMULATOR_HOST');
+        if (empty($emulatorHost)) {
+            return $options;
+        }
+
+        if ($scheme = parse_url($emulatorHost, PHP_URL_SCHEME)) {
+            $search = $scheme . '://';
+            $emulatorHost = str_replace($search, '', $emulatorHost);
+        }
+
+        $options['apiEndpoint'] ??= $emulatorHost;
+        if (class_exists(ChannelCredentials::class)) {
+            $options['transportConfig']['grpc']['stubOpts']['credentials'] ??= ChannelCredentials::createInsecure();
+        }
+
+        $options['credentials'] ??= new InsecureCredentialsWrapper();
+        return $options;
     }
 }

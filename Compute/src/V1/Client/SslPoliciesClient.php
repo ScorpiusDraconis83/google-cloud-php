@@ -44,6 +44,7 @@ use Google\Cloud\Compute\V1\PatchSslPolicyRequest;
 use Google\Cloud\Compute\V1\SslPoliciesListAvailableFeaturesResponse;
 use Google\Cloud\Compute\V1\SslPolicy;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The SslPolicies API.
@@ -51,13 +52,13 @@ use GuzzleHttp\Promise\PromiseInterface;
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
  *
- * @method PromiseInterface aggregatedListAsync(AggregatedListSslPoliciesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAsync(DeleteSslPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAsync(GetSslPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface insertAsync(InsertSslPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAsync(ListSslPoliciesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAvailableFeaturesAsync(ListAvailableFeaturesSslPoliciesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface patchAsync(PatchSslPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> aggregatedListAsync(AggregatedListSslPoliciesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteAsync(DeleteSslPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<SslPolicy> getAsync(GetSslPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> insertAsync(InsertSslPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAsync(ListSslPoliciesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<SslPoliciesListAvailableFeaturesResponse> listAvailableFeaturesAsync(ListAvailableFeaturesSslPoliciesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> patchAsync(PatchSslPolicyRequest $request, array $optionalArgs = [])
  */
 final class SslPoliciesClient
 {
@@ -116,8 +117,8 @@ final class SslPoliciesClient
         return 'rest';
     }
 
-    /** Implements GapicClientTrait::getSupportedTransports. */
-    private static function getSupportedTransports()
+    /** Implements ClientOptionsTrait::supportedTransports. */
+    private static function supportedTransports()
     {
         return [
             'rest',
@@ -149,6 +150,9 @@ final class SslPoliciesClient
             'operationNameMethod' => 'getName',
             'operationStatusMethod' => 'getStatus',
             'operationStatusDoneValue' => \Google\Cloud\Compute\V1\Operation\Status::DONE,
+            'getOperationRequest' => '\Google\Cloud\Compute\V1\GetGlobalOperationRequest',
+            'cancelOperationRequest' => null,
+            'deleteOperationRequest' => '\Google\Cloud\Compute\V1\DeleteGlobalOperationRequest',
         ];
     }
 
@@ -188,6 +192,12 @@ final class SslPoliciesClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -218,6 +228,9 @@ final class SslPoliciesClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -241,9 +254,11 @@ final class SslPoliciesClient
     }
 
     /**
-     * Retrieves the list of all SslPolicy resources, regional and global, available to the specified project.
+     * Retrieves the list of all SslPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
      *
      * The async variant is {@see SslPoliciesClient::aggregatedListAsync()} .
+     *
+     * @example samples/V1/SslPoliciesClient/aggregated_list.php
      *
      * @param AggregatedListSslPoliciesRequest $request     A request to house fields associated with the call.
      * @param array                            $callOptions {
@@ -269,6 +284,8 @@ final class SslPoliciesClient
      *
      * The async variant is {@see SslPoliciesClient::deleteAsync()} .
      *
+     * @example samples/V1/SslPoliciesClient/delete.php
+     *
      * @param DeleteSslPolicyRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -292,6 +309,8 @@ final class SslPoliciesClient
      * Lists all of the ordered rules present in a single specified policy.
      *
      * The async variant is {@see SslPoliciesClient::getAsync()} .
+     *
+     * @example samples/V1/SslPoliciesClient/get.php
      *
      * @param GetSslPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -317,6 +336,8 @@ final class SslPoliciesClient
      *
      * The async variant is {@see SslPoliciesClient::insertAsync()} .
      *
+     * @example samples/V1/SslPoliciesClient/insert.php
+     *
      * @param InsertSslPolicyRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -340,6 +361,8 @@ final class SslPoliciesClient
      * Lists all the SSL policies that have been configured for the specified project.
      *
      * The async variant is {@see SslPoliciesClient::listAsync()} .
+     *
+     * @example samples/V1/SslPoliciesClient/list.php
      *
      * @param ListSslPoliciesRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -365,6 +388,8 @@ final class SslPoliciesClient
      *
      * The async variant is {@see SslPoliciesClient::listAvailableFeaturesAsync()} .
      *
+     * @example samples/V1/SslPoliciesClient/list_available_features.php
+     *
      * @param ListAvailableFeaturesSslPoliciesRequest $request     A request to house fields associated with the call.
      * @param array                                   $callOptions {
      *     Optional.
@@ -388,6 +413,8 @@ final class SslPoliciesClient
      * Patches the specified SSL policy with the data included in the request.
      *
      * The async variant is {@see SslPoliciesClient::patchAsync()} .
+     *
+     * @example samples/V1/SslPoliciesClient/patch.php
      *
      * @param PatchSslPolicyRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {

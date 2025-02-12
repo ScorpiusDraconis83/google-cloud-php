@@ -21,7 +21,7 @@ class HotwordRule extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.privacy.dlp.v2.CustomInfoType.Regex hotword_regex = 1;</code>
      */
-    private $hotword_regex = null;
+    protected $hotword_regex = null;
     /**
      * Range of characters within which the entire hotword must reside.
      * The total length of the window cannot exceed 1000 characters.
@@ -34,17 +34,17 @@ class HotwordRule extends \Google\Protobuf\Internal\Message
      * For tabular data, if you want to modify the likelihood of an entire
      * column of findngs, see
      * [Hotword example: Set the match likelihood of a table column]
-     * (https://cloud.google.com/dlp/docs/creating-custom-infotypes-likelihood#match-column-values).
+     * (https://cloud.google.com/sensitive-data-protection/docs/creating-custom-infotypes-likelihood#match-column-values).
      *
      * Generated from protobuf field <code>.google.privacy.dlp.v2.CustomInfoType.DetectionRule.Proximity proximity = 2;</code>
      */
-    private $proximity = null;
+    protected $proximity = null;
     /**
      * Likelihood adjustment to apply to all matching findings.
      *
      * Generated from protobuf field <code>.google.privacy.dlp.v2.CustomInfoType.DetectionRule.LikelihoodAdjustment likelihood_adjustment = 3;</code>
      */
-    private $likelihood_adjustment = null;
+    protected $likelihood_adjustment = null;
 
     /**
      * Constructor.
@@ -66,7 +66,7 @@ class HotwordRule extends \Google\Protobuf\Internal\Message
      *           For tabular data, if you want to modify the likelihood of an entire
      *           column of findngs, see
      *           [Hotword example: Set the match likelihood of a table column]
-     *           (https://cloud.google.com/dlp/docs/creating-custom-infotypes-likelihood#match-column-values).
+     *           (https://cloud.google.com/sensitive-data-protection/docs/creating-custom-infotypes-likelihood#match-column-values).
      *     @type \Google\Cloud\Dlp\V2\CustomInfoType\DetectionRule\LikelihoodAdjustment $likelihood_adjustment
      *           Likelihood adjustment to apply to all matching findings.
      * }
@@ -124,7 +124,7 @@ class HotwordRule extends \Google\Protobuf\Internal\Message
      * For tabular data, if you want to modify the likelihood of an entire
      * column of findngs, see
      * [Hotword example: Set the match likelihood of a table column]
-     * (https://cloud.google.com/dlp/docs/creating-custom-infotypes-likelihood#match-column-values).
+     * (https://cloud.google.com/sensitive-data-protection/docs/creating-custom-infotypes-likelihood#match-column-values).
      *
      * Generated from protobuf field <code>.google.privacy.dlp.v2.CustomInfoType.DetectionRule.Proximity proximity = 2;</code>
      * @return \Google\Cloud\Dlp\V2\CustomInfoType\DetectionRule\Proximity|null
@@ -156,7 +156,7 @@ class HotwordRule extends \Google\Protobuf\Internal\Message
      * For tabular data, if you want to modify the likelihood of an entire
      * column of findngs, see
      * [Hotword example: Set the match likelihood of a table column]
-     * (https://cloud.google.com/dlp/docs/creating-custom-infotypes-likelihood#match-column-values).
+     * (https://cloud.google.com/sensitive-data-protection/docs/creating-custom-infotypes-likelihood#match-column-values).
      *
      * Generated from protobuf field <code>.google.privacy.dlp.v2.CustomInfoType.DetectionRule.Proximity proximity = 2;</code>
      * @param \Google\Cloud\Dlp\V2\CustomInfoType\DetectionRule\Proximity $var
@@ -208,6 +208,4 @@ class HotwordRule extends \Google\Protobuf\Internal\Message
 
 }
 
-// Adding a class alias for backwards compatibility with the previous class name.
-class_alias(HotwordRule::class, \Google\Cloud\Dlp\V2\CustomInfoType_DetectionRule_HotwordRule::class);
 

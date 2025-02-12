@@ -9,48 +9,54 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Message for updating a SecurityHealthAnalyticsCustomModule
+ * Request message for
+ * [SecurityCenterManagement.UpdateSecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.SecurityCenterManagement.UpdateSecurityHealthAnalyticsCustomModule].
  *
  * Generated from protobuf message <code>google.cloud.securitycentermanagement.v1.UpdateSecurityHealthAnalyticsCustomModuleRequest</code>
  */
 class UpdateSecurityHealthAnalyticsCustomModuleRequest extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Required. Field mask is used to specify the fields to be overwritten in the
-     * SecurityHealthAnalyticsCustomModule resource by the update.
-     * The fields specified in the update_mask are relative to the resource, not
-     * the full request. A field will be overwritten if it is in the mask. If the
-     * user does not provide a mask then all fields will be overwritten.
+     * Required. The fields to update. The following values are valid:
+     * * `custom_config`
+     * * `enablement_state`
+     * If you omit this field or set it to the wildcard value `*`, then all
+     * eligible fields are updated.
      *
      * Generated from protobuf field <code>.google.protobuf.FieldMask update_mask = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      */
     protected $update_mask = null;
     /**
-     * Required. The resource being updated
+     * Required. The resource being updated.
      *
      * Generated from protobuf field <code>.google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule security_health_analytics_custom_module = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
     protected $security_health_analytics_custom_module = null;
     /**
-     * Optional. When set to true, only validations (including IAM checks) will
-     * done for the request (module will not be updated). An OK response indicates
-     * the request is valid while an error response indicates the request is
-     * invalid. Note that a subsequent request to actually update the module could
-     * still fail because 1. the state could have changed (e.g. IAM permission
-     * lost) or
-     * 2. A failure occurred while trying to update the module.
+     * Optional. When set to `true`, the request will be validated (including IAM
+     * checks), but no module will be updated. An `OK` response indicates that the
+     * request is valid, while an error response indicates that the request is
+     * invalid.
+     * If the request is valid, a subsequent request to update the module could
+     * still fail for one of the following reasons:
+     * *  The state of your cloud resources changed; for example, you lost a
+     *    required IAM permission
+     * *  An error occurred during creation of the module
+     * Defaults to `false`.
      *
      * Generated from protobuf field <code>bool validate_only = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
     protected $validate_only = false;
 
     /**
-     * @param \Google\Cloud\SecurityCenterManagement\V1\SecurityHealthAnalyticsCustomModule $securityHealthAnalyticsCustomModule Required. The resource being updated
-     * @param \Google\Protobuf\FieldMask                                                    $updateMask                          Required. Field mask is used to specify the fields to be overwritten in the
-     *                                                                                                                           SecurityHealthAnalyticsCustomModule resource by the update.
-     *                                                                                                                           The fields specified in the update_mask are relative to the resource, not
-     *                                                                                                                           the full request. A field will be overwritten if it is in the mask. If the
-     *                                                                                                                           user does not provide a mask then all fields will be overwritten.
+     * @param \Google\Cloud\SecurityCenterManagement\V1\SecurityHealthAnalyticsCustomModule $securityHealthAnalyticsCustomModule Required. The resource being updated.
+     * @param \Google\Protobuf\FieldMask                                                    $updateMask                          Required. The fields to update. The following values are valid:
+     *
+     *                                                                                                                           * `custom_config`
+     *                                                                                                                           * `enablement_state`
+     *
+     *                                                                                                                           If you omit this field or set it to the wildcard value `*`, then all
+     *                                                                                                                           eligible fields are updated.
      *
      * @return \Google\Cloud\SecurityCenterManagement\V1\UpdateSecurityHealthAnalyticsCustomModuleRequest
      *
@@ -70,21 +76,24 @@ class UpdateSecurityHealthAnalyticsCustomModuleRequest extends \Google\Protobuf\
      *     Optional. Data for populating the Message object.
      *
      *     @type \Google\Protobuf\FieldMask $update_mask
-     *           Required. Field mask is used to specify the fields to be overwritten in the
-     *           SecurityHealthAnalyticsCustomModule resource by the update.
-     *           The fields specified in the update_mask are relative to the resource, not
-     *           the full request. A field will be overwritten if it is in the mask. If the
-     *           user does not provide a mask then all fields will be overwritten.
+     *           Required. The fields to update. The following values are valid:
+     *           * `custom_config`
+     *           * `enablement_state`
+     *           If you omit this field or set it to the wildcard value `*`, then all
+     *           eligible fields are updated.
      *     @type \Google\Cloud\SecurityCenterManagement\V1\SecurityHealthAnalyticsCustomModule $security_health_analytics_custom_module
-     *           Required. The resource being updated
+     *           Required. The resource being updated.
      *     @type bool $validate_only
-     *           Optional. When set to true, only validations (including IAM checks) will
-     *           done for the request (module will not be updated). An OK response indicates
-     *           the request is valid while an error response indicates the request is
-     *           invalid. Note that a subsequent request to actually update the module could
-     *           still fail because 1. the state could have changed (e.g. IAM permission
-     *           lost) or
-     *           2. A failure occurred while trying to update the module.
+     *           Optional. When set to `true`, the request will be validated (including IAM
+     *           checks), but no module will be updated. An `OK` response indicates that the
+     *           request is valid, while an error response indicates that the request is
+     *           invalid.
+     *           If the request is valid, a subsequent request to update the module could
+     *           still fail for one of the following reasons:
+     *           *  The state of your cloud resources changed; for example, you lost a
+     *              required IAM permission
+     *           *  An error occurred during creation of the module
+     *           Defaults to `false`.
      * }
      */
     public function __construct($data = NULL) {
@@ -93,11 +102,11 @@ class UpdateSecurityHealthAnalyticsCustomModuleRequest extends \Google\Protobuf\
     }
 
     /**
-     * Required. Field mask is used to specify the fields to be overwritten in the
-     * SecurityHealthAnalyticsCustomModule resource by the update.
-     * The fields specified in the update_mask are relative to the resource, not
-     * the full request. A field will be overwritten if it is in the mask. If the
-     * user does not provide a mask then all fields will be overwritten.
+     * Required. The fields to update. The following values are valid:
+     * * `custom_config`
+     * * `enablement_state`
+     * If you omit this field or set it to the wildcard value `*`, then all
+     * eligible fields are updated.
      *
      * Generated from protobuf field <code>.google.protobuf.FieldMask update_mask = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      * @return \Google\Protobuf\FieldMask|null
@@ -118,11 +127,11 @@ class UpdateSecurityHealthAnalyticsCustomModuleRequest extends \Google\Protobuf\
     }
 
     /**
-     * Required. Field mask is used to specify the fields to be overwritten in the
-     * SecurityHealthAnalyticsCustomModule resource by the update.
-     * The fields specified in the update_mask are relative to the resource, not
-     * the full request. A field will be overwritten if it is in the mask. If the
-     * user does not provide a mask then all fields will be overwritten.
+     * Required. The fields to update. The following values are valid:
+     * * `custom_config`
+     * * `enablement_state`
+     * If you omit this field or set it to the wildcard value `*`, then all
+     * eligible fields are updated.
      *
      * Generated from protobuf field <code>.google.protobuf.FieldMask update_mask = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      * @param \Google\Protobuf\FieldMask $var
@@ -137,7 +146,7 @@ class UpdateSecurityHealthAnalyticsCustomModuleRequest extends \Google\Protobuf\
     }
 
     /**
-     * Required. The resource being updated
+     * Required. The resource being updated.
      *
      * Generated from protobuf field <code>.google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule security_health_analytics_custom_module = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      * @return \Google\Cloud\SecurityCenterManagement\V1\SecurityHealthAnalyticsCustomModule|null
@@ -158,7 +167,7 @@ class UpdateSecurityHealthAnalyticsCustomModuleRequest extends \Google\Protobuf\
     }
 
     /**
-     * Required. The resource being updated
+     * Required. The resource being updated.
      *
      * Generated from protobuf field <code>.google.cloud.securitycentermanagement.v1.SecurityHealthAnalyticsCustomModule security_health_analytics_custom_module = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      * @param \Google\Cloud\SecurityCenterManagement\V1\SecurityHealthAnalyticsCustomModule $var
@@ -173,13 +182,16 @@ class UpdateSecurityHealthAnalyticsCustomModuleRequest extends \Google\Protobuf\
     }
 
     /**
-     * Optional. When set to true, only validations (including IAM checks) will
-     * done for the request (module will not be updated). An OK response indicates
-     * the request is valid while an error response indicates the request is
-     * invalid. Note that a subsequent request to actually update the module could
-     * still fail because 1. the state could have changed (e.g. IAM permission
-     * lost) or
-     * 2. A failure occurred while trying to update the module.
+     * Optional. When set to `true`, the request will be validated (including IAM
+     * checks), but no module will be updated. An `OK` response indicates that the
+     * request is valid, while an error response indicates that the request is
+     * invalid.
+     * If the request is valid, a subsequent request to update the module could
+     * still fail for one of the following reasons:
+     * *  The state of your cloud resources changed; for example, you lost a
+     *    required IAM permission
+     * *  An error occurred during creation of the module
+     * Defaults to `false`.
      *
      * Generated from protobuf field <code>bool validate_only = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @return bool
@@ -190,13 +202,16 @@ class UpdateSecurityHealthAnalyticsCustomModuleRequest extends \Google\Protobuf\
     }
 
     /**
-     * Optional. When set to true, only validations (including IAM checks) will
-     * done for the request (module will not be updated). An OK response indicates
-     * the request is valid while an error response indicates the request is
-     * invalid. Note that a subsequent request to actually update the module could
-     * still fail because 1. the state could have changed (e.g. IAM permission
-     * lost) or
-     * 2. A failure occurred while trying to update the module.
+     * Optional. When set to `true`, the request will be validated (including IAM
+     * checks), but no module will be updated. An `OK` response indicates that the
+     * request is valid, while an error response indicates that the request is
+     * invalid.
+     * If the request is valid, a subsequent request to update the module could
+     * still fail for one of the following reasons:
+     * *  The state of your cloud resources changed; for example, you lost a
+     *    required IAM permission
+     * *  An error occurred during creation of the module
+     * Defaults to `false`.
      *
      * Generated from protobuf field <code>bool validate_only = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @param bool $var

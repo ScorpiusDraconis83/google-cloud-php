@@ -25,8 +25,9 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // [START retail_v2_generated_SearchService_Search_sync]
 use Google\ApiCore\ApiException;
 use Google\ApiCore\PagedListResponse;
+use Google\Cloud\Retail\V2\Client\SearchServiceClient;
+use Google\Cloud\Retail\V2\SearchRequest;
 use Google\Cloud\Retail\V2\SearchResponse\SearchResult;
-use Google\Cloud\Retail\V2\SearchServiceClient;
 
 /**
  * Performs a search.
@@ -39,7 +40,7 @@ use Google\Cloud\Retail\V2\SearchServiceClient;
  *                          or the name of the legacy placement resource, such as
  *                          `projects/&#42;/locations/global/catalogs/default_catalog/placements/default_search`.
  *                          This field is used to identify the serving config name and the set
- *                          of models that will be used to make the search.
+ *                          of models that are used to make the search.
  * @param string $visitorId A unique identifier for tracking visitors. For example, this
  *                          could be implemented with an HTTP cookie, which should be able to uniquely
  *                          identify a visitor on a single device. This unique identifier should not
@@ -56,10 +57,15 @@ function search_sample(string $placement, string $visitorId): void
     // Create a client.
     $searchServiceClient = new SearchServiceClient();
 
+    // Prepare the request message.
+    $request = (new SearchRequest())
+        ->setPlacement($placement)
+        ->setVisitorId($visitorId);
+
     // Call the API and handle any network failures.
     try {
         /** @var PagedListResponse $response */
-        $response = $searchServiceClient->search($placement, $visitorId);
+        $response = $searchServiceClient->search($request);
 
         /** @var SearchResult $element */
         foreach ($response as $element) {

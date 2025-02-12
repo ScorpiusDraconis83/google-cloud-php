@@ -104,6 +104,21 @@ class ManageBucketsTest extends StorageTestCase
         );
     }
 
+    /**
+     * @dataProvider hnsConfigs
+     */
+    public function testCreateBucketsWithHnsConfigs($hnsConfig, $expectedHnsEnabled)
+    {
+        $name = uniqid(self::TESTING_PREFIX);
+
+        $this->assertFalse(self::$client->bucket($name)->exists());
+        $bucket = self::createBucket(self::$client, $name, $hnsConfig);
+
+        $this->assertTrue(self::$client->bucket($name)->exists());
+        $this->assertEquals($name, $bucket->name());
+        $this->assertEquals($expectedHnsEnabled, $bucket->info()['hierarchicalNamespace']['enabled'] ?? false);
+    }
+
     public function testUpdateBucket()
     {
         $options = [
@@ -115,6 +130,32 @@ class ManageBucketsTest extends StorageTestCase
         $info = self::$bucket->update($options);
 
         $this->assertEquals($options['website'], $info['website']);
+    }
+
+    public function testSoftDeletePolicy()
+    {
+        $durationSecond = 8*24*60*60;
+        // set soft delete policy
+        self::$bucket->update([
+            'softDeletePolicy' => [
+                'retentionDurationSeconds' => $durationSecond
+                ]
+            ]);
+        $this->assertArrayHasKey('softDeletePolicy', self::$bucket->info());
+        $this->assertEquals(
+            $durationSecond,
+            self::$bucket->info()['softDeletePolicy']['retentionDurationSeconds']
+        );
+
+        // remove soft delete policy
+        self::$bucket->update([
+            'softDeletePolicy' => []
+        ]);
+        $this->assertArrayHasKey('softDeletePolicy', self::$bucket->info());
+        $this->assertEquals(
+            0,
+            self::$bucket->info()['softDeletePolicy']['retentionDurationSeconds']
+        );
     }
 
     /**
@@ -129,6 +170,31 @@ class ManageBucketsTest extends StorageTestCase
 
         $lifecycle = Bucket::lifecycle();
         $lifecycle->addDeleteRule($rule);
+
+        $bucket = self::createBucket(self::$client, uniqid(self::TESTING_PREFIX), [
+            'lifecycle' => $lifecycle
+        ]);
+
+        $this->assertEquals($lifecycle->toArray(), $bucket->info()['lifecycle']);
+    }
+
+    /**
+     * @group storage-bucket-lifecycle
+     * @dataProvider lifecycleRules
+     */
+    public function testCreateBucketWithLifecycleAbortIncompleteMultipartUploadRule(array $rule, $isError = false)
+    {
+        $supportedRules = [
+            'age',
+            'matchesPrefix',
+            'matchesSuffix'
+        ];
+        if ($isError || !in_array(array_key_first($rule), $supportedRules)) {
+            $this->expectException(BadRequestException::class);
+        }
+
+        $lifecycle = Bucket::lifecycle();
+        $lifecycle->addAbortIncompleteMultipartUploadRule($rule);
 
         $bucket = self::createBucket(self::$client, uniqid(self::TESTING_PREFIX), [
             'lifecycle' => $lifecycle
@@ -412,5 +478,50 @@ class ManageBucketsTest extends StorageTestCase
             [['enabled' => true, 'terminalStorageClass' => 'NEARLINE']],
             [['enabled' => true, 'terminalStorageClass' => 'ARCHIVE']],
         ];
+    }
+
+    public function hnsConfigs()
+    {
+        return [
+            [[], false],
+            [['hierarchicalNamespace' => ['enabled' => false,]], false],
+            [[
+                'hierarchicalNamespace' => ['enabled' => true,],
+                'iamConfiguration' => ['uniformBucketLevelAccess' => ['enabled' => true]]
+            ], true],
+        ];
+    }
+
+    public function testSoftDeleteBucket()
+    {
+        $name = "soft-delete-bucket-" . uniqid();
+        $softDeleteBucket = self::createBucket(
+            self::$client,
+            $name,
+            [
+                'softDeletePolicy' => ['retentionDurationSeconds' => 8 * 24 * 60 * 60]
+            ]
+        );
+
+        // Assert that the bucket was created correctly.
+        $this->assertEquals($name, $softDeleteBucket->name());
+        $generation = $softDeleteBucket->info()['generation'];
+
+        // Delete the bucket.
+        $softDeleteBucket->delete();
+        $this->assertFalse(self::$client->bucket($name)->exists());
+
+        // Retrieve the soft-deleted bucket by generation.
+        $softDeleteBucket->reload(['softDeleted' => true, 'generation' => $generation]);
+
+        // Assert that the retrieved bucket is the soft-deleted version.
+        $this->assertEquals($name, $softDeleteBucket->name());
+        $this->assertEquals($generation, $softDeleteBucket->info()['generation']);
+        $this->assertArrayHasKey('softDeleteTime', $softDeleteBucket->info());
+        $this->assertArrayHasKey('hardDeleteTime', $softDeleteBucket->info());
+
+        // Restore the soft-deleted bucket.
+        self::$client->restore($name, $generation);
+        $this->assertTrue(self::$client->bucket($name)->exists());
     }
 }

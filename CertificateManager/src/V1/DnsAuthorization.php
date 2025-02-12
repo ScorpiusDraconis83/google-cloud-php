@@ -23,19 +23,19 @@ class DnsAuthorization extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Output only. The creation timestamp of a DnsAuthorization.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp create_time = 2 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $create_time = null;
+    protected $create_time = null;
     /**
      * Output only. The last update timestamp of a DnsAuthorization.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp update_time = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $update_time = null;
+    protected $update_time = null;
     /**
      * Set of labels associated with a DnsAuthorization.
      *
@@ -47,7 +47,7 @@ class DnsAuthorization extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string description = 5;</code>
      */
-    private $description = '';
+    protected $description = '';
     /**
      * Required. Immutable. A domain that is being authorized. A DnsAuthorization
      * resource covers a single domain and its wildcard, e.g. authorization for
@@ -56,14 +56,22 @@ class DnsAuthorization extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string domain = 6 [(.google.api.field_behavior) = REQUIRED, (.google.api.field_behavior) = IMMUTABLE];</code>
      */
-    private $domain = '';
+    protected $domain = '';
     /**
      * Output only. DNS Resource Record that needs to be added to DNS
      * configuration.
      *
      * Generated from protobuf field <code>.google.cloud.certificatemanager.v1.DnsAuthorization.DnsResourceRecord dns_resource_record = 10 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $dns_resource_record = null;
+    protected $dns_resource_record = null;
+    /**
+     * Immutable. Type of DnsAuthorization. If unset during resource creation the
+     * following default will be used:
+     * - in location global: FIXED_RECORD.
+     *
+     * Generated from protobuf field <code>.google.cloud.certificatemanager.v1.DnsAuthorization.Type type = 11 [(.google.api.field_behavior) = IMMUTABLE];</code>
+     */
+    protected $type = 0;
 
     /**
      * Constructor.
@@ -91,6 +99,10 @@ class DnsAuthorization extends \Google\Protobuf\Internal\Message
      *     @type \Google\Cloud\CertificateManager\V1\DnsAuthorization\DnsResourceRecord $dns_resource_record
      *           Output only. DNS Resource Record that needs to be added to DNS
      *           configuration.
+     *     @type int $type
+     *           Immutable. Type of DnsAuthorization. If unset during resource creation the
+     *           following default will be used:
+     *           - in location global: FIXED_RECORD.
      * }
      */
     public function __construct($data = NULL) {
@@ -318,6 +330,36 @@ class DnsAuthorization extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\CertificateManager\V1\DnsAuthorization\DnsResourceRecord::class);
         $this->dns_resource_record = $var;
+
+        return $this;
+    }
+
+    /**
+     * Immutable. Type of DnsAuthorization. If unset during resource creation the
+     * following default will be used:
+     * - in location global: FIXED_RECORD.
+     *
+     * Generated from protobuf field <code>.google.cloud.certificatemanager.v1.DnsAuthorization.Type type = 11 [(.google.api.field_behavior) = IMMUTABLE];</code>
+     * @return int
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Immutable. Type of DnsAuthorization. If unset during resource creation the
+     * following default will be used:
+     * - in location global: FIXED_RECORD.
+     *
+     * Generated from protobuf field <code>.google.cloud.certificatemanager.v1.DnsAuthorization.Type type = 11 [(.google.api.field_behavior) = IMMUTABLE];</code>
+     * @param int $var
+     * @return $this
+     */
+    public function setType($var)
+    {
+        GPBUtil::checkEnum($var, \Google\Cloud\CertificateManager\V1\DnsAuthorization\Type::class);
+        $this->type = $var;
 
         return $this;
     }

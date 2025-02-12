@@ -28,16 +28,19 @@ class FirewallAction extends \Google\Protobuf\Internal\Message
      *           The user request did not match any policy and should be allowed
      *           access to the requested resource.
      *     @type \Google\Cloud\RecaptchaEnterprise\V1\FirewallAction\BlockAction $block
-     *           This action will deny access to a given page. The user will get an HTTP
+     *           This action denies access to a given page. The user gets an HTTP
      *           error code.
+     *     @type \Google\Cloud\RecaptchaEnterprise\V1\FirewallAction\IncludeRecaptchaScriptAction $include_recaptcha_script
+     *           This action injects reCAPTCHA JavaScript code into the HTML page
+     *           returned by the site backend.
      *     @type \Google\Cloud\RecaptchaEnterprise\V1\FirewallAction\RedirectAction $redirect
-     *           This action will redirect the request to a ReCaptcha interstitial to
+     *           This action redirects the request to a reCAPTCHA interstitial to
      *           attach a token.
      *     @type \Google\Cloud\RecaptchaEnterprise\V1\FirewallAction\SubstituteAction $substitute
-     *           This action will transparently serve a different page to an offending
+     *           This action transparently serves a different page to an offending
      *           user.
      *     @type \Google\Cloud\RecaptchaEnterprise\V1\FirewallAction\SetHeaderAction $set_header
-     *           This action will set a custom header but allow the request to continue
+     *           This action sets a custom header but allow the request to continue
      *           to the customer backend.
      * }
      */
@@ -80,7 +83,7 @@ class FirewallAction extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * This action will deny access to a given page. The user will get an HTTP
+     * This action denies access to a given page. The user gets an HTTP
      * error code.
      *
      * Generated from protobuf field <code>.google.cloud.recaptchaenterprise.v1.FirewallAction.BlockAction block = 2;</code>
@@ -97,7 +100,7 @@ class FirewallAction extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * This action will deny access to a given page. The user will get an HTTP
+     * This action denies access to a given page. The user gets an HTTP
      * error code.
      *
      * Generated from protobuf field <code>.google.cloud.recaptchaenterprise.v1.FirewallAction.BlockAction block = 2;</code>
@@ -113,7 +116,40 @@ class FirewallAction extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * This action will redirect the request to a ReCaptcha interstitial to
+     * This action injects reCAPTCHA JavaScript code into the HTML page
+     * returned by the site backend.
+     *
+     * Generated from protobuf field <code>.google.cloud.recaptchaenterprise.v1.FirewallAction.IncludeRecaptchaScriptAction include_recaptcha_script = 6;</code>
+     * @return \Google\Cloud\RecaptchaEnterprise\V1\FirewallAction\IncludeRecaptchaScriptAction|null
+     */
+    public function getIncludeRecaptchaScript()
+    {
+        return $this->readOneof(6);
+    }
+
+    public function hasIncludeRecaptchaScript()
+    {
+        return $this->hasOneof(6);
+    }
+
+    /**
+     * This action injects reCAPTCHA JavaScript code into the HTML page
+     * returned by the site backend.
+     *
+     * Generated from protobuf field <code>.google.cloud.recaptchaenterprise.v1.FirewallAction.IncludeRecaptchaScriptAction include_recaptcha_script = 6;</code>
+     * @param \Google\Cloud\RecaptchaEnterprise\V1\FirewallAction\IncludeRecaptchaScriptAction $var
+     * @return $this
+     */
+    public function setIncludeRecaptchaScript($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\RecaptchaEnterprise\V1\FirewallAction\IncludeRecaptchaScriptAction::class);
+        $this->writeOneof(6, $var);
+
+        return $this;
+    }
+
+    /**
+     * This action redirects the request to a reCAPTCHA interstitial to
      * attach a token.
      *
      * Generated from protobuf field <code>.google.cloud.recaptchaenterprise.v1.FirewallAction.RedirectAction redirect = 5;</code>
@@ -130,7 +166,7 @@ class FirewallAction extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * This action will redirect the request to a ReCaptcha interstitial to
+     * This action redirects the request to a reCAPTCHA interstitial to
      * attach a token.
      *
      * Generated from protobuf field <code>.google.cloud.recaptchaenterprise.v1.FirewallAction.RedirectAction redirect = 5;</code>
@@ -146,7 +182,7 @@ class FirewallAction extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * This action will transparently serve a different page to an offending
+     * This action transparently serves a different page to an offending
      * user.
      *
      * Generated from protobuf field <code>.google.cloud.recaptchaenterprise.v1.FirewallAction.SubstituteAction substitute = 3;</code>
@@ -163,7 +199,7 @@ class FirewallAction extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * This action will transparently serve a different page to an offending
+     * This action transparently serves a different page to an offending
      * user.
      *
      * Generated from protobuf field <code>.google.cloud.recaptchaenterprise.v1.FirewallAction.SubstituteAction substitute = 3;</code>
@@ -179,7 +215,7 @@ class FirewallAction extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * This action will set a custom header but allow the request to continue
+     * This action sets a custom header but allow the request to continue
      * to the customer backend.
      *
      * Generated from protobuf field <code>.google.cloud.recaptchaenterprise.v1.FirewallAction.SetHeaderAction set_header = 4;</code>
@@ -196,7 +232,7 @@ class FirewallAction extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * This action will set a custom header but allow the request to continue
+     * This action sets a custom header but allow the request to continue
      * to the customer backend.
      *
      * Generated from protobuf field <code>.google.cloud.recaptchaenterprise.v1.FirewallAction.SetHeaderAction set_header = 4;</code>

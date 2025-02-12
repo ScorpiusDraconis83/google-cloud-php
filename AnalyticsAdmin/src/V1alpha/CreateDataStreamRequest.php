@@ -20,13 +20,29 @@ class CreateDataStreamRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * Required. The DataStream to create.
      *
      * Generated from protobuf field <code>.google.analytics.admin.v1alpha.DataStream data_stream = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $data_stream = null;
+    protected $data_stream = null;
+
+    /**
+     * @param string                                     $parent     Required. Example format: properties/1234
+     *                                                               Please see {@see AnalyticsAdminServiceClient::propertyName()} for help formatting this field.
+     * @param \Google\Analytics\Admin\V1alpha\DataStream $dataStream Required. The DataStream to create.
+     *
+     * @return \Google\Analytics\Admin\V1alpha\CreateDataStreamRequest
+     *
+     * @experimental
+     */
+    public static function build(string $parent, \Google\Analytics\Admin\V1alpha\DataStream $dataStream): self
+    {
+        return (new self())
+            ->setParent($parent)
+            ->setDataStream($dataStream);
+    }
 
     /**
      * Constructor.

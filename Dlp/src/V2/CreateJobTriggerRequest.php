@@ -19,11 +19,11 @@ class CreateJobTriggerRequest extends \Google\Protobuf\Internal\Message
      * Required. Parent resource name.
      * The format of this value varies depending on whether you have [specified a
      * processing
-     * location](https://cloud.google.com/dlp/docs/specifying-location):
-     * + Projects scope, location specified:<br/>
-     *   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-     * + Projects scope, no location specified (defaults to global):<br/>
-     *   `projects/`<var>PROJECT_ID</var>
+     * location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
+     * + Projects scope, location specified:
+     *   `projects/{project_id}/locations/{location_id}`
+     * + Projects scope, no location specified (defaults to global):
+     *   `projects/{project_id}`
      * The following example `parent` string specifies a parent project with the
      * identifier `example-project`, and specifies the `europe-west3` location
      * for processing data:
@@ -31,13 +31,13 @@ class CreateJobTriggerRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * Required. The JobTrigger to create.
      *
      * Generated from protobuf field <code>.google.privacy.dlp.v2.JobTrigger job_trigger = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $job_trigger = null;
+    protected $job_trigger = null;
     /**
      * The trigger id can contain uppercase and lowercase letters,
      * numbers, and hyphens; that is, it must match the regular
@@ -46,25 +46,25 @@ class CreateJobTriggerRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string trigger_id = 3;</code>
      */
-    private $trigger_id = '';
+    protected $trigger_id = '';
     /**
      * Deprecated. This field has no effect.
      *
      * Generated from protobuf field <code>string location_id = 4;</code>
      */
-    private $location_id = '';
+    protected $location_id = '';
 
     /**
      * @param string                          $parent     Required. Parent resource name.
      *
      *                                                    The format of this value varies depending on whether you have [specified a
      *                                                    processing
-     *                                                    location](https://cloud.google.com/dlp/docs/specifying-location):
+     *                                                    location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
      *
-     *                                                    + Projects scope, location specified:<br/>
-     *                                                    `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-     *                                                    + Projects scope, no location specified (defaults to global):<br/>
-     *                                                    `projects/`<var>PROJECT_ID</var>
+     *                                                    + Projects scope, location specified:
+     *                                                    `projects/{project_id}/locations/{location_id}`
+     *                                                    + Projects scope, no location specified (defaults to global):
+     *                                                    `projects/{project_id}`
      *
      *                                                    The following example `parent` string specifies a parent project with the
      *                                                    identifier `example-project`, and specifies the `europe-west3` location
@@ -95,11 +95,11 @@ class CreateJobTriggerRequest extends \Google\Protobuf\Internal\Message
      *           Required. Parent resource name.
      *           The format of this value varies depending on whether you have [specified a
      *           processing
-     *           location](https://cloud.google.com/dlp/docs/specifying-location):
-     *           + Projects scope, location specified:<br/>
-     *             `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-     *           + Projects scope, no location specified (defaults to global):<br/>
-     *             `projects/`<var>PROJECT_ID</var>
+     *           location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
+     *           + Projects scope, location specified:
+     *             `projects/{project_id}/locations/{location_id}`
+     *           + Projects scope, no location specified (defaults to global):
+     *             `projects/{project_id}`
      *           The following example `parent` string specifies a parent project with the
      *           identifier `example-project`, and specifies the `europe-west3` location
      *           for processing data:
@@ -124,11 +124,11 @@ class CreateJobTriggerRequest extends \Google\Protobuf\Internal\Message
      * Required. Parent resource name.
      * The format of this value varies depending on whether you have [specified a
      * processing
-     * location](https://cloud.google.com/dlp/docs/specifying-location):
-     * + Projects scope, location specified:<br/>
-     *   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-     * + Projects scope, no location specified (defaults to global):<br/>
-     *   `projects/`<var>PROJECT_ID</var>
+     * location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
+     * + Projects scope, location specified:
+     *   `projects/{project_id}/locations/{location_id}`
+     * + Projects scope, no location specified (defaults to global):
+     *   `projects/{project_id}`
      * The following example `parent` string specifies a parent project with the
      * identifier `example-project`, and specifies the `europe-west3` location
      * for processing data:
@@ -146,11 +146,11 @@ class CreateJobTriggerRequest extends \Google\Protobuf\Internal\Message
      * Required. Parent resource name.
      * The format of this value varies depending on whether you have [specified a
      * processing
-     * location](https://cloud.google.com/dlp/docs/specifying-location):
-     * + Projects scope, location specified:<br/>
-     *   `projects/`<var>PROJECT_ID</var>`/locations/`<var>LOCATION_ID</var>
-     * + Projects scope, no location specified (defaults to global):<br/>
-     *   `projects/`<var>PROJECT_ID</var>
+     * location](https://cloud.google.com/sensitive-data-protection/docs/specifying-location):
+     * + Projects scope, location specified:
+     *   `projects/{project_id}/locations/{location_id}`
+     * + Projects scope, no location specified (defaults to global):
+     *   `projects/{project_id}`
      * The following example `parent` string specifies a parent project with the
      * identifier `example-project`, and specifies the `europe-west3` location
      * for processing data:

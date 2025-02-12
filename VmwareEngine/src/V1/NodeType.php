@@ -24,51 +24,71 @@ class NodeType extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Output only. The canonical identifier of the node type
      * (corresponds to the `NodeType`). For example: standard-72.
      *
      * Generated from protobuf field <code>string node_type_id = 2 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $node_type_id = '';
+    protected $node_type_id = '';
     /**
      * Output only. The friendly name for this node type.
      * For example: ve1-standard-72
      *
      * Generated from protobuf field <code>string display_name = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $display_name = '';
+    protected $display_name = '';
     /**
      * Output only. The total number of virtual CPUs in a single node.
      *
      * Generated from protobuf field <code>int32 virtual_cpu_count = 4 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $virtual_cpu_count = 0;
+    protected $virtual_cpu_count = 0;
     /**
      * Output only. The total number of CPU cores in a single node.
      *
      * Generated from protobuf field <code>int32 total_core_count = 5 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $total_core_count = 0;
+    protected $total_core_count = 0;
     /**
      * Output only. The amount of physical memory available, defined in GB.
      *
      * Generated from protobuf field <code>int32 memory_gb = 7 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $memory_gb = 0;
+    protected $memory_gb = 0;
     /**
      * Output only. The amount of storage available, defined in GB.
      *
      * Generated from protobuf field <code>int32 disk_size_gb = 8 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $disk_size_gb = 0;
+    protected $disk_size_gb = 0;
     /**
      * Output only. List of possible values of custom core count.
      *
      * Generated from protobuf field <code>repeated int32 available_custom_core_counts = 11 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
     private $available_custom_core_counts;
+    /**
+     * Output only. The type of the resource.
+     *
+     * Generated from protobuf field <code>.google.cloud.vmwareengine.v1.NodeType.Kind kind = 12 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $kind = 0;
+    /**
+     * Output only. Families of the node type.
+     * For node types to be in the same cluster
+     * they must share at least one element in the `families`.
+     *
+     * Generated from protobuf field <code>repeated string families = 13 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    private $families;
+    /**
+     * Output only. Capabilities of this node type.
+     *
+     * Generated from protobuf field <code>repeated .google.cloud.vmwareengine.v1.NodeType.Capability capabilities = 14 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    private $capabilities;
 
     /**
      * Constructor.
@@ -98,6 +118,14 @@ class NodeType extends \Google\Protobuf\Internal\Message
      *           Output only. The amount of storage available, defined in GB.
      *     @type array<int>|\Google\Protobuf\Internal\RepeatedField $available_custom_core_counts
      *           Output only. List of possible values of custom core count.
+     *     @type int $kind
+     *           Output only. The type of the resource.
+     *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $families
+     *           Output only. Families of the node type.
+     *           For node types to be in the same cluster
+     *           they must share at least one element in the `families`.
+     *     @type array<int>|\Google\Protobuf\Internal\RepeatedField $capabilities
+     *           Output only. Capabilities of this node type.
      * }
      */
     public function __construct($data = NULL) {
@@ -321,6 +349,88 @@ class NodeType extends \Google\Protobuf\Internal\Message
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::INT32);
         $this->available_custom_core_counts = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Output only. The type of the resource.
+     *
+     * Generated from protobuf field <code>.google.cloud.vmwareengine.v1.NodeType.Kind kind = 12 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return int
+     */
+    public function getKind()
+    {
+        return $this->kind;
+    }
+
+    /**
+     * Output only. The type of the resource.
+     *
+     * Generated from protobuf field <code>.google.cloud.vmwareengine.v1.NodeType.Kind kind = 12 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param int $var
+     * @return $this
+     */
+    public function setKind($var)
+    {
+        GPBUtil::checkEnum($var, \Google\Cloud\VmwareEngine\V1\NodeType\Kind::class);
+        $this->kind = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Families of the node type.
+     * For node types to be in the same cluster
+     * they must share at least one element in the `families`.
+     *
+     * Generated from protobuf field <code>repeated string families = 13 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getFamilies()
+    {
+        return $this->families;
+    }
+
+    /**
+     * Output only. Families of the node type.
+     * For node types to be in the same cluster
+     * they must share at least one element in the `families`.
+     *
+     * Generated from protobuf field <code>repeated string families = 13 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param array<string>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setFamilies($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
+        $this->families = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Capabilities of this node type.
+     *
+     * Generated from protobuf field <code>repeated .google.cloud.vmwareengine.v1.NodeType.Capability capabilities = 14 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getCapabilities()
+    {
+        return $this->capabilities;
+    }
+
+    /**
+     * Output only. Capabilities of this node type.
+     *
+     * Generated from protobuf field <code>repeated .google.cloud.vmwareengine.v1.NodeType.Capability capabilities = 14 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param array<int>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setCapabilities($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::ENUM, \Google\Cloud\VmwareEngine\V1\NodeType\Capability::class);
+        $this->capabilities = $arr;
 
         return $this;
     }

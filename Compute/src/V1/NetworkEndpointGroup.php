@@ -16,25 +16,25 @@ use Google\Protobuf\Internal\GPBUtil;
 class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Metadata defined as annotations on the network endpoint group.
+     * Optional. Metadata defined as annotations on the network endpoint group.
      *
      * Generated from protobuf field <code>map<string, string> annotations = 112032548;</code>
      */
     private $annotations;
     /**
-     * Only valid when networkEndpointType is "SERVERLESS". Only one of cloudRun, appEngine or cloudFunction may be set.
+     * Optional. Only valid when networkEndpointType is SERVERLESS. Only one of cloudRun, appEngine or cloudFunction may be set.
      *
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.NetworkEndpointGroupAppEngine app_engine = 340788768;</code>
      */
     private $app_engine = null;
     /**
-     * Only valid when networkEndpointType is "SERVERLESS". Only one of cloudRun, appEngine or cloudFunction may be set.
+     * Optional. Only valid when networkEndpointType is SERVERLESS. Only one of cloudRun, appEngine or cloudFunction may be set.
      *
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.NetworkEndpointGroupCloudFunction cloud_function = 519893666;</code>
      */
     private $cloud_function = null;
     /**
-     * Only valid when networkEndpointType is "SERVERLESS". Only one of cloudRun, appEngine or cloudFunction may be set.
+     * Optional. Only valid when networkEndpointType is SERVERLESS. Only one of cloudRun, appEngine or cloudFunction may be set.
      *
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.NetworkEndpointGroupCloudRun cloud_run = 111060353;</code>
      */
@@ -46,7 +46,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
      */
     private $creation_timestamp = null;
     /**
-     * The default port used if the port number is not specified in the network endpoint.
+     * The default port used if the port number is not specified in the network endpoint. Optional. If the network endpoint type is either GCE_VM_IP, SERVERLESS or PRIVATE_SERVICE_CONNECT, this field must not be specified.
      *
      * Generated from protobuf field <code>optional int32 default_port = 423377855;</code>
      */
@@ -76,24 +76,26 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
      */
     private $name = null;
     /**
-     * The URL of the network to which all network endpoints in the NEG belong. Uses "default" project network if unspecified.
+     * The URL of the network to which all network endpoints in the NEG belong. Uses default project network if unspecified.
      *
      * Generated from protobuf field <code>optional string network = 232872494;</code>
      */
     private $network = null;
     /**
-     * Type of network endpoints in this network endpoint group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS, PRIVATE_SERVICE_CONNECT.
+     * Type of network endpoints in this network endpoint group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS, PRIVATE_SERVICE_CONNECT, GCE_VM_IP_PORTMAP.
      * Check the NetworkEndpointType enum for the list of possible values.
      *
      * Generated from protobuf field <code>optional string network_endpoint_type = 118301523;</code>
      */
     private $network_endpoint_type = null;
     /**
+     * Optional. Only valid when networkEndpointType is PRIVATE_SERVICE_CONNECT.
+     *
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.NetworkEndpointGroupPscData psc_data = 71937481;</code>
      */
     private $psc_data = null;
     /**
-     * The target service url used to set up private service connection to a Google API or a PSC Producer Service Attachment. An example value is: "asia-northeast3-cloudkms.googleapis.com"
+     * The target service url used to set up private service connection to a Google API or a PSC Producer Service Attachment. An example value is: asia-northeast3-cloudkms.googleapis.com. Optional. Only valid when networkEndpointType is PRIVATE_SERVICE_CONNECT.
      *
      * Generated from protobuf field <code>optional string psc_target_service = 269132134;</code>
      */
@@ -136,17 +138,17 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type array|\Google\Protobuf\Internal\MapField $annotations
-     *           Metadata defined as annotations on the network endpoint group.
+     *           Optional. Metadata defined as annotations on the network endpoint group.
      *     @type \Google\Cloud\Compute\V1\NetworkEndpointGroupAppEngine $app_engine
-     *           Only valid when networkEndpointType is "SERVERLESS". Only one of cloudRun, appEngine or cloudFunction may be set.
+     *           Optional. Only valid when networkEndpointType is SERVERLESS. Only one of cloudRun, appEngine or cloudFunction may be set.
      *     @type \Google\Cloud\Compute\V1\NetworkEndpointGroupCloudFunction $cloud_function
-     *           Only valid when networkEndpointType is "SERVERLESS". Only one of cloudRun, appEngine or cloudFunction may be set.
+     *           Optional. Only valid when networkEndpointType is SERVERLESS. Only one of cloudRun, appEngine or cloudFunction may be set.
      *     @type \Google\Cloud\Compute\V1\NetworkEndpointGroupCloudRun $cloud_run
-     *           Only valid when networkEndpointType is "SERVERLESS". Only one of cloudRun, appEngine or cloudFunction may be set.
+     *           Optional. Only valid when networkEndpointType is SERVERLESS. Only one of cloudRun, appEngine or cloudFunction may be set.
      *     @type string $creation_timestamp
      *           [Output Only] Creation timestamp in RFC3339 text format.
      *     @type int $default_port
-     *           The default port used if the port number is not specified in the network endpoint.
+     *           The default port used if the port number is not specified in the network endpoint. Optional. If the network endpoint type is either GCE_VM_IP, SERVERLESS or PRIVATE_SERVICE_CONNECT, this field must not be specified.
      *     @type string $description
      *           An optional description of this resource. Provide this property when you create the resource.
      *     @type int|string $id
@@ -156,13 +158,14 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
      *     @type string $name
      *           Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
      *     @type string $network
-     *           The URL of the network to which all network endpoints in the NEG belong. Uses "default" project network if unspecified.
+     *           The URL of the network to which all network endpoints in the NEG belong. Uses default project network if unspecified.
      *     @type string $network_endpoint_type
-     *           Type of network endpoints in this network endpoint group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS, PRIVATE_SERVICE_CONNECT.
+     *           Type of network endpoints in this network endpoint group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS, PRIVATE_SERVICE_CONNECT, GCE_VM_IP_PORTMAP.
      *           Check the NetworkEndpointType enum for the list of possible values.
      *     @type \Google\Cloud\Compute\V1\NetworkEndpointGroupPscData $psc_data
+     *           Optional. Only valid when networkEndpointType is PRIVATE_SERVICE_CONNECT.
      *     @type string $psc_target_service
-     *           The target service url used to set up private service connection to a Google API or a PSC Producer Service Attachment. An example value is: "asia-northeast3-cloudkms.googleapis.com"
+     *           The target service url used to set up private service connection to a Google API or a PSC Producer Service Attachment. An example value is: asia-northeast3-cloudkms.googleapis.com. Optional. Only valid when networkEndpointType is PRIVATE_SERVICE_CONNECT.
      *     @type string $region
      *           [Output Only] The URL of the region where the network endpoint group is located.
      *     @type string $self_link
@@ -181,7 +184,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Metadata defined as annotations on the network endpoint group.
+     * Optional. Metadata defined as annotations on the network endpoint group.
      *
      * Generated from protobuf field <code>map<string, string> annotations = 112032548;</code>
      * @return \Google\Protobuf\Internal\MapField
@@ -192,7 +195,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Metadata defined as annotations on the network endpoint group.
+     * Optional. Metadata defined as annotations on the network endpoint group.
      *
      * Generated from protobuf field <code>map<string, string> annotations = 112032548;</code>
      * @param array|\Google\Protobuf\Internal\MapField $var
@@ -207,7 +210,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Only valid when networkEndpointType is "SERVERLESS". Only one of cloudRun, appEngine or cloudFunction may be set.
+     * Optional. Only valid when networkEndpointType is SERVERLESS. Only one of cloudRun, appEngine or cloudFunction may be set.
      *
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.NetworkEndpointGroupAppEngine app_engine = 340788768;</code>
      * @return \Google\Cloud\Compute\V1\NetworkEndpointGroupAppEngine|null
@@ -228,7 +231,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Only valid when networkEndpointType is "SERVERLESS". Only one of cloudRun, appEngine or cloudFunction may be set.
+     * Optional. Only valid when networkEndpointType is SERVERLESS. Only one of cloudRun, appEngine or cloudFunction may be set.
      *
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.NetworkEndpointGroupAppEngine app_engine = 340788768;</code>
      * @param \Google\Cloud\Compute\V1\NetworkEndpointGroupAppEngine $var
@@ -243,7 +246,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Only valid when networkEndpointType is "SERVERLESS". Only one of cloudRun, appEngine or cloudFunction may be set.
+     * Optional. Only valid when networkEndpointType is SERVERLESS. Only one of cloudRun, appEngine or cloudFunction may be set.
      *
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.NetworkEndpointGroupCloudFunction cloud_function = 519893666;</code>
      * @return \Google\Cloud\Compute\V1\NetworkEndpointGroupCloudFunction|null
@@ -264,7 +267,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Only valid when networkEndpointType is "SERVERLESS". Only one of cloudRun, appEngine or cloudFunction may be set.
+     * Optional. Only valid when networkEndpointType is SERVERLESS. Only one of cloudRun, appEngine or cloudFunction may be set.
      *
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.NetworkEndpointGroupCloudFunction cloud_function = 519893666;</code>
      * @param \Google\Cloud\Compute\V1\NetworkEndpointGroupCloudFunction $var
@@ -279,7 +282,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Only valid when networkEndpointType is "SERVERLESS". Only one of cloudRun, appEngine or cloudFunction may be set.
+     * Optional. Only valid when networkEndpointType is SERVERLESS. Only one of cloudRun, appEngine or cloudFunction may be set.
      *
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.NetworkEndpointGroupCloudRun cloud_run = 111060353;</code>
      * @return \Google\Cloud\Compute\V1\NetworkEndpointGroupCloudRun|null
@@ -300,7 +303,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Only valid when networkEndpointType is "SERVERLESS". Only one of cloudRun, appEngine or cloudFunction may be set.
+     * Optional. Only valid when networkEndpointType is SERVERLESS. Only one of cloudRun, appEngine or cloudFunction may be set.
      *
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.NetworkEndpointGroupCloudRun cloud_run = 111060353;</code>
      * @param \Google\Cloud\Compute\V1\NetworkEndpointGroupCloudRun $var
@@ -351,7 +354,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The default port used if the port number is not specified in the network endpoint.
+     * The default port used if the port number is not specified in the network endpoint. Optional. If the network endpoint type is either GCE_VM_IP, SERVERLESS or PRIVATE_SERVICE_CONNECT, this field must not be specified.
      *
      * Generated from protobuf field <code>optional int32 default_port = 423377855;</code>
      * @return int
@@ -372,7 +375,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The default port used if the port number is not specified in the network endpoint.
+     * The default port used if the port number is not specified in the network endpoint. Optional. If the network endpoint type is either GCE_VM_IP, SERVERLESS or PRIVATE_SERVICE_CONNECT, this field must not be specified.
      *
      * Generated from protobuf field <code>optional int32 default_port = 423377855;</code>
      * @param int $var
@@ -531,7 +534,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The URL of the network to which all network endpoints in the NEG belong. Uses "default" project network if unspecified.
+     * The URL of the network to which all network endpoints in the NEG belong. Uses default project network if unspecified.
      *
      * Generated from protobuf field <code>optional string network = 232872494;</code>
      * @return string
@@ -552,7 +555,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The URL of the network to which all network endpoints in the NEG belong. Uses "default" project network if unspecified.
+     * The URL of the network to which all network endpoints in the NEG belong. Uses default project network if unspecified.
      *
      * Generated from protobuf field <code>optional string network = 232872494;</code>
      * @param string $var
@@ -567,7 +570,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Type of network endpoints in this network endpoint group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS, PRIVATE_SERVICE_CONNECT.
+     * Type of network endpoints in this network endpoint group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS, PRIVATE_SERVICE_CONNECT, GCE_VM_IP_PORTMAP.
      * Check the NetworkEndpointType enum for the list of possible values.
      *
      * Generated from protobuf field <code>optional string network_endpoint_type = 118301523;</code>
@@ -589,7 +592,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Type of network endpoints in this network endpoint group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS, PRIVATE_SERVICE_CONNECT.
+     * Type of network endpoints in this network endpoint group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS, PRIVATE_SERVICE_CONNECT, GCE_VM_IP_PORTMAP.
      * Check the NetworkEndpointType enum for the list of possible values.
      *
      * Generated from protobuf field <code>optional string network_endpoint_type = 118301523;</code>
@@ -605,6 +608,8 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Optional. Only valid when networkEndpointType is PRIVATE_SERVICE_CONNECT.
+     *
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.NetworkEndpointGroupPscData psc_data = 71937481;</code>
      * @return \Google\Cloud\Compute\V1\NetworkEndpointGroupPscData|null
      */
@@ -624,6 +629,8 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Optional. Only valid when networkEndpointType is PRIVATE_SERVICE_CONNECT.
+     *
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.NetworkEndpointGroupPscData psc_data = 71937481;</code>
      * @param \Google\Cloud\Compute\V1\NetworkEndpointGroupPscData $var
      * @return $this
@@ -637,7 +644,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The target service url used to set up private service connection to a Google API or a PSC Producer Service Attachment. An example value is: "asia-northeast3-cloudkms.googleapis.com"
+     * The target service url used to set up private service connection to a Google API or a PSC Producer Service Attachment. An example value is: asia-northeast3-cloudkms.googleapis.com. Optional. Only valid when networkEndpointType is PRIVATE_SERVICE_CONNECT.
      *
      * Generated from protobuf field <code>optional string psc_target_service = 269132134;</code>
      * @return string
@@ -658,7 +665,7 @@ class NetworkEndpointGroup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The target service url used to set up private service connection to a Google API or a PSC Producer Service Attachment. An example value is: "asia-northeast3-cloudkms.googleapis.com"
+     * The target service url used to set up private service connection to a Google API or a PSC Producer Service Attachment. An example value is: asia-northeast3-cloudkms.googleapis.com. Optional. Only valid when networkEndpointType is PRIVATE_SERVICE_CONNECT.
      *
      * Generated from protobuf field <code>optional string psc_target_service = 269132134;</code>
      * @param string $var

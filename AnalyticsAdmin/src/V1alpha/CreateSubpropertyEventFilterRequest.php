@@ -21,13 +21,30 @@ class CreateSubpropertyEventFilterRequest extends \Google\Protobuf\Internal\Mess
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * Required. The subproperty event filter to create.
      *
      * Generated from protobuf field <code>.google.analytics.admin.v1alpha.SubpropertyEventFilter subproperty_event_filter = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $subproperty_event_filter = null;
+    protected $subproperty_event_filter = null;
+
+    /**
+     * @param string                                                 $parent                 Required. The ordinary property for which to create a subproperty event
+     *                                                                                       filter. Format: properties/property_id Example: properties/123
+     *                                                                                       Please see {@see AnalyticsAdminServiceClient::propertyName()} for help formatting this field.
+     * @param \Google\Analytics\Admin\V1alpha\SubpropertyEventFilter $subpropertyEventFilter Required. The subproperty event filter to create.
+     *
+     * @return \Google\Analytics\Admin\V1alpha\CreateSubpropertyEventFilterRequest
+     *
+     * @experimental
+     */
+    public static function build(string $parent, \Google\Analytics\Admin\V1alpha\SubpropertyEventFilter $subpropertyEventFilter): self
+    {
+        return (new self())
+            ->setParent($parent)
+            ->setSubpropertyEventFilter($subpropertyEventFilter);
+    }
 
     /**
      * Constructor.

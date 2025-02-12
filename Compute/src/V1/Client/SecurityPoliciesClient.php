@@ -50,6 +50,7 @@ use Google\Cloud\Compute\V1\SecurityPolicy;
 use Google\Cloud\Compute\V1\SecurityPolicyRule;
 use Google\Cloud\Compute\V1\SetLabelsSecurityPolicyRequest;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The SecurityPolicies API.
@@ -57,18 +58,18 @@ use GuzzleHttp\Promise\PromiseInterface;
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
  *
- * @method PromiseInterface addRuleAsync(AddRuleSecurityPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface aggregatedListAsync(AggregatedListSecurityPoliciesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAsync(DeleteSecurityPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAsync(GetSecurityPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getRuleAsync(GetRuleSecurityPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface insertAsync(InsertSecurityPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAsync(ListSecurityPoliciesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listPreconfiguredExpressionSetsAsync(ListPreconfiguredExpressionSetsSecurityPoliciesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface patchAsync(PatchSecurityPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface patchRuleAsync(PatchRuleSecurityPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface removeRuleAsync(RemoveRuleSecurityPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setLabelsAsync(SetLabelsSecurityPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> addRuleAsync(AddRuleSecurityPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> aggregatedListAsync(AggregatedListSecurityPoliciesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteAsync(DeleteSecurityPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<SecurityPolicy> getAsync(GetSecurityPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<SecurityPolicyRule> getRuleAsync(GetRuleSecurityPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> insertAsync(InsertSecurityPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAsync(ListSecurityPoliciesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<SecurityPoliciesListPreconfiguredExpressionSetsResponse> listPreconfiguredExpressionSetsAsync(ListPreconfiguredExpressionSetsSecurityPoliciesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> patchAsync(PatchSecurityPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> patchRuleAsync(PatchRuleSecurityPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> removeRuleAsync(RemoveRuleSecurityPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> setLabelsAsync(SetLabelsSecurityPolicyRequest $request, array $optionalArgs = [])
  */
 final class SecurityPoliciesClient
 {
@@ -127,8 +128,8 @@ final class SecurityPoliciesClient
         return 'rest';
     }
 
-    /** Implements GapicClientTrait::getSupportedTransports. */
-    private static function getSupportedTransports()
+    /** Implements ClientOptionsTrait::supportedTransports. */
+    private static function supportedTransports()
     {
         return [
             'rest',
@@ -160,6 +161,9 @@ final class SecurityPoliciesClient
             'operationNameMethod' => 'getName',
             'operationStatusMethod' => 'getStatus',
             'operationStatusDoneValue' => \Google\Cloud\Compute\V1\Operation\Status::DONE,
+            'getOperationRequest' => '\Google\Cloud\Compute\V1\GetGlobalOperationRequest',
+            'cancelOperationRequest' => null,
+            'deleteOperationRequest' => '\Google\Cloud\Compute\V1\DeleteGlobalOperationRequest',
         ];
     }
 
@@ -199,6 +203,12 @@ final class SecurityPoliciesClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -229,6 +239,9 @@ final class SecurityPoliciesClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -256,6 +269,8 @@ final class SecurityPoliciesClient
      *
      * The async variant is {@see SecurityPoliciesClient::addRuleAsync()} .
      *
+     * @example samples/V1/SecurityPoliciesClient/add_rule.php
+     *
      * @param AddRuleSecurityPolicyRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -276,9 +291,11 @@ final class SecurityPoliciesClient
     }
 
     /**
-     * Retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project.
+     * Retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
      *
      * The async variant is {@see SecurityPoliciesClient::aggregatedListAsync()} .
+     *
+     * @example samples/V1/SecurityPoliciesClient/aggregated_list.php
      *
      * @param AggregatedListSecurityPoliciesRequest $request     A request to house fields associated with the call.
      * @param array                                 $callOptions {
@@ -304,6 +321,8 @@ final class SecurityPoliciesClient
      *
      * The async variant is {@see SecurityPoliciesClient::deleteAsync()} .
      *
+     * @example samples/V1/SecurityPoliciesClient/delete.php
+     *
      * @param DeleteSecurityPolicyRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -327,6 +346,8 @@ final class SecurityPoliciesClient
      * List all of the ordered rules present in a single specified policy.
      *
      * The async variant is {@see SecurityPoliciesClient::getAsync()} .
+     *
+     * @example samples/V1/SecurityPoliciesClient/get.php
      *
      * @param GetSecurityPolicyRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -352,6 +373,8 @@ final class SecurityPoliciesClient
      *
      * The async variant is {@see SecurityPoliciesClient::getRuleAsync()} .
      *
+     * @example samples/V1/SecurityPoliciesClient/get_rule.php
+     *
      * @param GetRuleSecurityPolicyRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -376,6 +399,8 @@ final class SecurityPoliciesClient
      *
      * The async variant is {@see SecurityPoliciesClient::insertAsync()} .
      *
+     * @example samples/V1/SecurityPoliciesClient/insert.php
+     *
      * @param InsertSecurityPolicyRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -399,6 +424,8 @@ final class SecurityPoliciesClient
      * List all the policies that have been configured for the specified project.
      *
      * The async variant is {@see SecurityPoliciesClient::listAsync()} .
+     *
+     * @example samples/V1/SecurityPoliciesClient/list.php
      *
      * @param ListSecurityPoliciesRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
@@ -425,6 +452,8 @@ final class SecurityPoliciesClient
      * The async variant is
      * {@see SecurityPoliciesClient::listPreconfiguredExpressionSetsAsync()} .
      *
+     * @example samples/V1/SecurityPoliciesClient/list_preconfigured_expression_sets.php
+     *
      * @param ListPreconfiguredExpressionSetsSecurityPoliciesRequest $request     A request to house fields associated with the call.
      * @param array                                                  $callOptions {
      *     Optional.
@@ -448,6 +477,8 @@ final class SecurityPoliciesClient
      * Patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
      *
      * The async variant is {@see SecurityPoliciesClient::patchAsync()} .
+     *
+     * @example samples/V1/SecurityPoliciesClient/patch.php
      *
      * @param PatchSecurityPolicyRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -473,6 +504,8 @@ final class SecurityPoliciesClient
      *
      * The async variant is {@see SecurityPoliciesClient::patchRuleAsync()} .
      *
+     * @example samples/V1/SecurityPoliciesClient/patch_rule.php
+     *
      * @param PatchRuleSecurityPolicyRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
      *     Optional.
@@ -497,6 +530,8 @@ final class SecurityPoliciesClient
      *
      * The async variant is {@see SecurityPoliciesClient::removeRuleAsync()} .
      *
+     * @example samples/V1/SecurityPoliciesClient/remove_rule.php
+     *
      * @param RemoveRuleSecurityPolicyRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
      *     Optional.
@@ -520,6 +555,8 @@ final class SecurityPoliciesClient
      * Sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
      *
      * The async variant is {@see SecurityPoliciesClient::setLabelsAsync()} .
+     *
+     * @example samples/V1/SecurityPoliciesClient/set_labels.php
      *
      * @param SetLabelsSecurityPolicyRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {

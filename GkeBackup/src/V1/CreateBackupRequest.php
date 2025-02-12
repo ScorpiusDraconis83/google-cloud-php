@@ -21,15 +21,15 @@ class CreateBackupRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
-     * The Backup resource to create.
+     * Optional. The Backup resource to create.
      *
-     * Generated from protobuf field <code>.google.cloud.gkebackup.v1.Backup backup = 2;</code>
+     * Generated from protobuf field <code>.google.cloud.gkebackup.v1.Backup backup = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $backup = null;
+    protected $backup = null;
     /**
-     * The client-provided short name for the Backup resource.
+     * Optional. The client-provided short name for the Backup resource.
      * This name must:
      * - be between 1 and 63 characters long (inclusive)
      * - consist of only lower-case ASCII letters, numbers, and dashes
@@ -37,16 +37,16 @@ class CreateBackupRequest extends \Google\Protobuf\Internal\Message
      * - end with a lower-case letter or number
      * - be unique within the set of Backups in this BackupPlan
      *
-     * Generated from protobuf field <code>string backup_id = 3;</code>
+     * Generated from protobuf field <code>string backup_id = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $backup_id = '';
+    protected $backup_id = '';
 
     /**
      * @param string                            $parent   Required. The BackupPlan within which to create the Backup.
      *                                                    Format: `projects/&#42;/locations/&#42;/backupPlans/*`
      *                                                    Please see {@see BackupForGKEClient::backupPlanName()} for help formatting this field.
-     * @param \Google\Cloud\GkeBackup\V1\Backup $backup   The Backup resource to create.
-     * @param string                            $backupId The client-provided short name for the Backup resource.
+     * @param \Google\Cloud\GkeBackup\V1\Backup $backup   Optional. The Backup resource to create.
+     * @param string                            $backupId Optional. The client-provided short name for the Backup resource.
      *                                                    This name must:
      *
      *                                                    - be between 1 and 63 characters long (inclusive)
@@ -77,9 +77,9 @@ class CreateBackupRequest extends \Google\Protobuf\Internal\Message
      *           Required. The BackupPlan within which to create the Backup.
      *           Format: `projects/&#42;&#47;locations/&#42;&#47;backupPlans/&#42;`
      *     @type \Google\Cloud\GkeBackup\V1\Backup $backup
-     *           The Backup resource to create.
+     *           Optional. The Backup resource to create.
      *     @type string $backup_id
-     *           The client-provided short name for the Backup resource.
+     *           Optional. The client-provided short name for the Backup resource.
      *           This name must:
      *           - be between 1 and 63 characters long (inclusive)
      *           - consist of only lower-case ASCII letters, numbers, and dashes
@@ -122,9 +122,9 @@ class CreateBackupRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The Backup resource to create.
+     * Optional. The Backup resource to create.
      *
-     * Generated from protobuf field <code>.google.cloud.gkebackup.v1.Backup backup = 2;</code>
+     * Generated from protobuf field <code>.google.cloud.gkebackup.v1.Backup backup = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @return \Google\Cloud\GkeBackup\V1\Backup|null
      */
     public function getBackup()
@@ -143,9 +143,9 @@ class CreateBackupRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The Backup resource to create.
+     * Optional. The Backup resource to create.
      *
-     * Generated from protobuf field <code>.google.cloud.gkebackup.v1.Backup backup = 2;</code>
+     * Generated from protobuf field <code>.google.cloud.gkebackup.v1.Backup backup = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @param \Google\Cloud\GkeBackup\V1\Backup $var
      * @return $this
      */
@@ -158,7 +158,7 @@ class CreateBackupRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The client-provided short name for the Backup resource.
+     * Optional. The client-provided short name for the Backup resource.
      * This name must:
      * - be between 1 and 63 characters long (inclusive)
      * - consist of only lower-case ASCII letters, numbers, and dashes
@@ -166,7 +166,7 @@ class CreateBackupRequest extends \Google\Protobuf\Internal\Message
      * - end with a lower-case letter or number
      * - be unique within the set of Backups in this BackupPlan
      *
-     * Generated from protobuf field <code>string backup_id = 3;</code>
+     * Generated from protobuf field <code>string backup_id = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @return string
      */
     public function getBackupId()
@@ -175,7 +175,7 @@ class CreateBackupRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The client-provided short name for the Backup resource.
+     * Optional. The client-provided short name for the Backup resource.
      * This name must:
      * - be between 1 and 63 characters long (inclusive)
      * - consist of only lower-case ASCII letters, numbers, and dashes
@@ -183,7 +183,7 @@ class CreateBackupRequest extends \Google\Protobuf\Internal\Message
      * - end with a lower-case letter or number
      * - be unique within the set of Backups in this BackupPlan
      *
-     * Generated from protobuf field <code>string backup_id = 3;</code>
+     * Generated from protobuf field <code>string backup_id = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @param string $var
      * @return $this
      */

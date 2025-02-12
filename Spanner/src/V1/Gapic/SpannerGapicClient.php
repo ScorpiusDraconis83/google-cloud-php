@@ -55,6 +55,7 @@ use Google\Cloud\Spanner\V1\GetSessionRequest;
 use Google\Cloud\Spanner\V1\KeySet;
 use Google\Cloud\Spanner\V1\ListSessionsRequest;
 use Google\Cloud\Spanner\V1\ListSessionsResponse;
+use Google\Cloud\Spanner\V1\MultiplexedSessionPrecommitToken;
 use Google\Cloud\Spanner\V1\Mutation;
 use Google\Cloud\Spanner\V1\PartialResultSet;
 use Google\Cloud\Spanner\V1\PartitionOptions;
@@ -69,6 +70,7 @@ use Google\Cloud\Spanner\V1\Session;
 use Google\Cloud\Spanner\V1\Transaction;
 use Google\Cloud\Spanner\V1\TransactionOptions;
 use Google\Cloud\Spanner\V1\TransactionSelector;
+use Google\Protobuf\Duration;
 use Google\Protobuf\GPBEmpty;
 use Google\Protobuf\Struct;
 
@@ -447,6 +449,19 @@ class SpannerGapicClient
      *
      *     @type RequestOptions $requestOptions
      *           Common options for this request.
+     *     @type bool $excludeTxnFromChangeStreams
+     *           Optional. When `exclude_txn_from_change_streams` is set to `true`:
+     *           * Mutations from all transactions in this batch write operation will not
+     *           be recorded in change streams with DDL option `allow_txn_exclusion=true`
+     *           that are tracking columns modified by these transactions.
+     *           * Mutations from all transactions in this batch write operation will be
+     *           recorded in change streams with DDL option `allow_txn_exclusion=false or
+     *           not set` that are tracking columns modified by these transactions.
+     *
+     *           When `exclude_txn_from_change_streams` is set to `false` or not set,
+     *           mutations from all transactions in this batch write operation will be
+     *           recorded in all change streams that are tracking columns modified by these
+     *           transactions.
      *     @type int $timeoutMillis
      *           Timeout to use for this call.
      * }
@@ -467,6 +482,12 @@ class SpannerGapicClient
         $requestParamHeaders['session'] = $session;
         if (isset($optionalArgs['requestOptions'])) {
             $request->setRequestOptions($optionalArgs['requestOptions']);
+        }
+
+        if (isset($optionalArgs['excludeTxnFromChangeStreams'])) {
+            $request->setExcludeTxnFromChangeStreams(
+                $optionalArgs['excludeTxnFromChangeStreams']
+            );
         }
 
         $requestParams = new RequestParamsHeaderDescriptor(
@@ -514,6 +535,13 @@ class SpannerGapicClient
      *           request_options struct will not do anything. To set the priority for a
      *           transaction, set it on the reads and writes that are part of this
      *           transaction instead.
+     *     @type Mutation $mutationKey
+     *           Optional. Required for read-write transactions on a multiplexed session
+     *           that commit mutations but do not perform any reads or queries. Clients
+     *           should randomly select one of the mutations from the mutation set and send
+     *           it as a part of this request.
+     *           This feature is not yet supported and will result in an UNIMPLEMENTED
+     *           error.
      *     @type RetrySettings|array $retrySettings
      *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
      *           associative array of retry settings parameters. See the documentation on
@@ -536,6 +564,10 @@ class SpannerGapicClient
         $requestParamHeaders['session'] = $session;
         if (isset($optionalArgs['requestOptions'])) {
             $request->setRequestOptions($optionalArgs['requestOptions']);
+        }
+
+        if (isset($optionalArgs['mutationKey'])) {
+            $request->setMutationKey($optionalArgs['mutationKey']);
         }
 
         $requestParams = new RequestParamsHeaderDescriptor(
@@ -603,8 +635,21 @@ class SpannerGapicClient
      *           If `true`, then statistics related to the transaction will be included in
      *           the [CommitResponse][google.spanner.v1.CommitResponse.commit_stats].
      *           Default value is `false`.
+     *     @type Duration $maxCommitDelay
+     *           Optional. The amount of latency this request is willing to incur in order
+     *           to improve throughput. If this field is not set, Spanner assumes requests
+     *           are relatively latency sensitive and automatically determines an
+     *           appropriate delay time. You can specify a batching delay value between 0
+     *           and 500 ms.
      *     @type RequestOptions $requestOptions
      *           Common options for this request.
+     *     @type MultiplexedSessionPrecommitToken $precommitToken
+     *           Optional. If the read-write transaction was executed on a multiplexed
+     *           session, the precommit token with the highest sequence number received in
+     *           this transaction attempt, should be included here. Failing to do so will
+     *           result in a FailedPrecondition error.
+     *           This feature is not yet supported and will result in an UNIMPLEMENTED
+     *           error.
      *     @type RetrySettings|array $retrySettings
      *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
      *           associative array of retry settings parameters. See the documentation on
@@ -636,8 +681,16 @@ class SpannerGapicClient
             $request->setReturnCommitStats($optionalArgs['returnCommitStats']);
         }
 
+        if (isset($optionalArgs['maxCommitDelay'])) {
+            $request->setMaxCommitDelay($optionalArgs['maxCommitDelay']);
+        }
+
         if (isset($optionalArgs['requestOptions'])) {
             $request->setRequestOptions($optionalArgs['requestOptions']);
+        }
+
+        if (isset($optionalArgs['precommitToken'])) {
+            $request->setPrecommitToken($optionalArgs['precommitToken']);
         }
 
         $requestParams = new RequestParamsHeaderDescriptor(
@@ -827,6 +880,16 @@ class SpannerGapicClient
      *
      *     @type RequestOptions $requestOptions
      *           Common options for this request.
+     *     @type bool $lastStatements
+     *           Optional. If set to true, this request marks the end of the transaction.
+     *           The transaction should be committed or aborted after these statements
+     *           execute, and attempts to execute any other requests against this
+     *           transaction (including reads and queries) will be rejected.
+     *
+     *           Setting this option may cause some error reporting to be deferred until
+     *           commit time (e.g. validation of unique constraints). Given this, successful
+     *           execution of statements should not be assumed until a subsequent Commit
+     *           call completes successfully.
      *     @type RetrySettings|array $retrySettings
      *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
      *           associative array of retry settings parameters. See the documentation on
@@ -853,6 +916,10 @@ class SpannerGapicClient
         $requestParamHeaders['session'] = $session;
         if (isset($optionalArgs['requestOptions'])) {
             $request->setRequestOptions($optionalArgs['requestOptions']);
+        }
+
+        if (isset($optionalArgs['lastStatements'])) {
+            $request->setLastStatements($optionalArgs['lastStatements']);
         }
 
         $requestParams = new RequestParamsHeaderDescriptor(
@@ -979,6 +1046,16 @@ class SpannerGapicClient
      *
      *           If the field is set to `true` but the request does not set
      *           `partition_token`, the API returns an `INVALID_ARGUMENT` error.
+     *     @type bool $lastStatement
+     *           Optional. If set to true, this statement marks the end of the transaction.
+     *           The transaction should be committed or aborted after this statement
+     *           executes, and attempts to execute any other requests against this
+     *           transaction (including reads and queries) will be rejected.
+     *
+     *           For DML statements, setting this option may cause some error reporting to
+     *           be deferred until commit time (e.g. validation of unique constraints).
+     *           Given this, successful execution of a DML statement should not be assumed
+     *           until a subsequent Commit call completes successfully.
      *     @type RetrySettings|array $retrySettings
      *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
      *           associative array of retry settings parameters. See the documentation on
@@ -1040,6 +1117,10 @@ class SpannerGapicClient
 
         if (isset($optionalArgs['dataBoostEnabled'])) {
             $request->setDataBoostEnabled($optionalArgs['dataBoostEnabled']);
+        }
+
+        if (isset($optionalArgs['lastStatement'])) {
+            $request->setLastStatement($optionalArgs['lastStatement']);
         }
 
         $requestParams = new RequestParamsHeaderDescriptor(
@@ -1162,6 +1243,16 @@ class SpannerGapicClient
      *
      *           If the field is set to `true` but the request does not set
      *           `partition_token`, the API returns an `INVALID_ARGUMENT` error.
+     *     @type bool $lastStatement
+     *           Optional. If set to true, this statement marks the end of the transaction.
+     *           The transaction should be committed or aborted after this statement
+     *           executes, and attempts to execute any other requests against this
+     *           transaction (including reads and queries) will be rejected.
+     *
+     *           For DML statements, setting this option may cause some error reporting to
+     *           be deferred until commit time (e.g. validation of unique constraints).
+     *           Given this, successful execution of a DML statement should not be assumed
+     *           until a subsequent Commit call completes successfully.
      *     @type int $timeoutMillis
      *           Timeout to use for this call.
      * }
@@ -1224,6 +1315,10 @@ class SpannerGapicClient
 
         if (isset($optionalArgs['dataBoostEnabled'])) {
             $request->setDataBoostEnabled($optionalArgs['dataBoostEnabled']);
+        }
+
+        if (isset($optionalArgs['lastStatement'])) {
+            $request->setLastStatement($optionalArgs['lastStatement']);
         }
 
         $requestParams = new RequestParamsHeaderDescriptor(
@@ -1412,9 +1507,10 @@ class SpannerGapicClient
      * @param string $session      Required. The session used to create the partitions.
      * @param string $sql          Required. The query request to generate partitions for. The request will
      *                             fail if the query is not root partitionable. For a query to be root
-     *                             partitionable, it needs to satisfy a few conditions. For example, the first
-     *                             operator in the query execution plan must be a distributed union operator.
-     *                             For more information about other conditions, see [Read data in
+     *                             partitionable, it needs to satisfy a few conditions. For example, if the
+     *                             query execution plan contains a distributed union operator, then it must be
+     *                             the first operator in the plan. For more information about other
+     *                             conditions, see [Read data in
      *                             parallel](https://cloud.google.com/spanner/docs/reads#read_data_in_parallel).
      *
      *                             The query request must not contain DML commands, such as INSERT, UPDATE, or
@@ -1699,6 +1795,19 @@ class SpannerGapicClient
      *
      *           If the field is set to `true` but the request does not set
      *           `partition_token`, the API returns an `INVALID_ARGUMENT` error.
+     *     @type int $orderBy
+     *           Optional. Order for the returned rows.
+     *
+     *           By default, Spanner will return result rows in primary key order except for
+     *           PartitionRead requests. For applications that do not require rows to be
+     *           returned in primary key (`ORDER_BY_PRIMARY_KEY`) order, setting
+     *           `ORDER_BY_NO_ORDER` option allows Spanner to optimize row retrieval,
+     *           resulting in lower latencies in certain cases (e.g. bulk point lookups).
+     *           For allowed values, use constants defined on {@see \Google\Cloud\Spanner\V1\ReadRequest\OrderBy}
+     *     @type int $lockHint
+     *           Optional. Lock Hint for the request, it can only be used with read-write
+     *           transactions.
+     *           For allowed values, use constants defined on {@see \Google\Cloud\Spanner\V1\ReadRequest\LockHint}
      *     @type RetrySettings|array $retrySettings
      *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
      *           associative array of retry settings parameters. See the documentation on
@@ -1755,6 +1864,14 @@ class SpannerGapicClient
 
         if (isset($optionalArgs['dataBoostEnabled'])) {
             $request->setDataBoostEnabled($optionalArgs['dataBoostEnabled']);
+        }
+
+        if (isset($optionalArgs['orderBy'])) {
+            $request->setOrderBy($optionalArgs['orderBy']);
+        }
+
+        if (isset($optionalArgs['lockHint'])) {
+            $request->setLockHint($optionalArgs['lockHint']);
         }
 
         $requestParams = new RequestParamsHeaderDescriptor(
@@ -1912,6 +2029,19 @@ class SpannerGapicClient
      *
      *           If the field is set to `true` but the request does not set
      *           `partition_token`, the API returns an `INVALID_ARGUMENT` error.
+     *     @type int $orderBy
+     *           Optional. Order for the returned rows.
+     *
+     *           By default, Spanner will return result rows in primary key order except for
+     *           PartitionRead requests. For applications that do not require rows to be
+     *           returned in primary key (`ORDER_BY_PRIMARY_KEY`) order, setting
+     *           `ORDER_BY_NO_ORDER` option allows Spanner to optimize row retrieval,
+     *           resulting in lower latencies in certain cases (e.g. bulk point lookups).
+     *           For allowed values, use constants defined on {@see \Google\Cloud\Spanner\V1\ReadRequest\OrderBy}
+     *     @type int $lockHint
+     *           Optional. Lock Hint for the request, it can only be used with read-write
+     *           transactions.
+     *           For allowed values, use constants defined on {@see \Google\Cloud\Spanner\V1\ReadRequest\LockHint}
      *     @type int $timeoutMillis
      *           Timeout to use for this call.
      * }
@@ -1966,6 +2096,14 @@ class SpannerGapicClient
 
         if (isset($optionalArgs['dataBoostEnabled'])) {
             $request->setDataBoostEnabled($optionalArgs['dataBoostEnabled']);
+        }
+
+        if (isset($optionalArgs['orderBy'])) {
+            $request->setOrderBy($optionalArgs['orderBy']);
+        }
+
+        if (isset($optionalArgs['lockHint'])) {
+            $request->setLockHint($optionalArgs['lockHint']);
         }
 
         $requestParams = new RequestParamsHeaderDescriptor(

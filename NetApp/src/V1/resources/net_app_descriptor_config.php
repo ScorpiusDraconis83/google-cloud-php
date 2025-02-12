@@ -1,4 +1,24 @@
 <?php
+/*
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * GENERATED CODE WARNING
+ * This file was automatically generated - do not edit!
+ */
 
 return [
     'interfaces' => [
@@ -82,6 +102,25 @@ return [
             'CreateKmsConfig' => [
                 'longRunning' => [
                     'operationReturnType' => '\Google\Cloud\NetApp\V1\KmsConfig',
+                    'metadataReturnType' => '\Google\Cloud\NetApp\V1\OperationMetadata',
+                    'initialPollDelayMillis' => '500',
+                    'pollDelayMultiplier' => '1.5',
+                    'maxPollDelayMillis' => '5000',
+                    'totalPollTimeoutMillis' => '300000',
+                ],
+                'callType' => \Google\ApiCore\Call::LONGRUNNING_CALL,
+                'headerParams' => [
+                    [
+                        'keyName' => 'parent',
+                        'fieldAccessors' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
+            'CreateQuotaRule' => [
+                'longRunning' => [
+                    'operationReturnType' => '\Google\Cloud\NetApp\V1\QuotaRule',
                     'metadataReturnType' => '\Google\Cloud\NetApp\V1\OperationMetadata',
                     'initialPollDelayMillis' => '500',
                     'pollDelayMultiplier' => '1.5',
@@ -269,6 +308,25 @@ return [
                     ],
                 ],
             ],
+            'DeleteQuotaRule' => [
+                'longRunning' => [
+                    'operationReturnType' => '\Google\Protobuf\GPBEmpty',
+                    'metadataReturnType' => '\Google\Cloud\NetApp\V1\OperationMetadata',
+                    'initialPollDelayMillis' => '500',
+                    'pollDelayMultiplier' => '1.5',
+                    'maxPollDelayMillis' => '5000',
+                    'totalPollTimeoutMillis' => '300000',
+                ],
+                'callType' => \Google\ApiCore\Call::LONGRUNNING_CALL,
+                'headerParams' => [
+                    [
+                        'keyName' => 'name',
+                        'fieldAccessors' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'DeleteReplication' => [
                 'longRunning' => [
                     'operationReturnType' => '\Google\Protobuf\GPBEmpty',
@@ -364,6 +422,25 @@ return [
                     ],
                 ],
             ],
+            'EstablishPeering' => [
+                'longRunning' => [
+                    'operationReturnType' => '\Google\Cloud\NetApp\V1\Replication',
+                    'metadataReturnType' => '\Google\Cloud\NetApp\V1\OperationMetadata',
+                    'initialPollDelayMillis' => '500',
+                    'pollDelayMultiplier' => '1.5',
+                    'maxPollDelayMillis' => '5000',
+                    'totalPollTimeoutMillis' => '300000',
+                ],
+                'callType' => \Google\ApiCore\Call::LONGRUNNING_CALL,
+                'headerParams' => [
+                    [
+                        'keyName' => 'name',
+                        'fieldAccessors' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'ResumeReplication' => [
                 'longRunning' => [
                     'operationReturnType' => '\Google\Cloud\NetApp\V1\Replication',
@@ -422,6 +499,44 @@ return [
                 ],
             ],
             'StopReplication' => [
+                'longRunning' => [
+                    'operationReturnType' => '\Google\Cloud\NetApp\V1\Replication',
+                    'metadataReturnType' => '\Google\Cloud\NetApp\V1\OperationMetadata',
+                    'initialPollDelayMillis' => '500',
+                    'pollDelayMultiplier' => '1.5',
+                    'maxPollDelayMillis' => '5000',
+                    'totalPollTimeoutMillis' => '300000',
+                ],
+                'callType' => \Google\ApiCore\Call::LONGRUNNING_CALL,
+                'headerParams' => [
+                    [
+                        'keyName' => 'name',
+                        'fieldAccessors' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'SwitchActiveReplicaZone' => [
+                'longRunning' => [
+                    'operationReturnType' => '\Google\Cloud\NetApp\V1\StoragePool',
+                    'metadataReturnType' => '\Google\Cloud\NetApp\V1\OperationMetadata',
+                    'initialPollDelayMillis' => '500',
+                    'pollDelayMultiplier' => '1.5',
+                    'maxPollDelayMillis' => '5000',
+                    'totalPollTimeoutMillis' => '300000',
+                ],
+                'callType' => \Google\ApiCore\Call::LONGRUNNING_CALL,
+                'headerParams' => [
+                    [
+                        'keyName' => 'name',
+                        'fieldAccessors' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'SyncReplication' => [
                 'longRunning' => [
                     'operationReturnType' => '\Google\Cloud\NetApp\V1\Replication',
                     'metadataReturnType' => '\Google\Cloud\NetApp\V1\OperationMetadata',
@@ -540,6 +655,26 @@ return [
                     ],
                 ],
             ],
+            'UpdateQuotaRule' => [
+                'longRunning' => [
+                    'operationReturnType' => '\Google\Cloud\NetApp\V1\QuotaRule',
+                    'metadataReturnType' => '\Google\Cloud\NetApp\V1\OperationMetadata',
+                    'initialPollDelayMillis' => '500',
+                    'pollDelayMultiplier' => '1.5',
+                    'maxPollDelayMillis' => '5000',
+                    'totalPollTimeoutMillis' => '300000',
+                ],
+                'callType' => \Google\ApiCore\Call::LONGRUNNING_CALL,
+                'headerParams' => [
+                    [
+                        'keyName' => 'quota_rule.name',
+                        'fieldAccessors' => [
+                            'getQuotaRule',
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'UpdateReplication' => [
                 'longRunning' => [
                     'operationReturnType' => '\Google\Cloud\NetApp\V1\Replication',
@@ -620,6 +755,25 @@ return [
                     ],
                 ],
             ],
+            'ValidateDirectoryService' => [
+                'longRunning' => [
+                    'operationReturnType' => '\Google\Protobuf\GPBEmpty',
+                    'metadataReturnType' => '\Google\Cloud\NetApp\V1\OperationMetadata',
+                    'initialPollDelayMillis' => '500',
+                    'pollDelayMultiplier' => '1.5',
+                    'maxPollDelayMillis' => '5000',
+                    'totalPollTimeoutMillis' => '300000',
+                ],
+                'callType' => \Google\ApiCore\Call::LONGRUNNING_CALL,
+                'headerParams' => [
+                    [
+                        'keyName' => 'name',
+                        'fieldAccessors' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'GetActiveDirectory' => [
                 'callType' => \Google\ApiCore\Call::UNARY_CALL,
                 'responseType' => 'Google\Cloud\NetApp\V1\ActiveDirectory',
@@ -671,6 +825,18 @@ return [
             'GetKmsConfig' => [
                 'callType' => \Google\ApiCore\Call::UNARY_CALL,
                 'responseType' => 'Google\Cloud\NetApp\V1\KmsConfig',
+                'headerParams' => [
+                    [
+                        'keyName' => 'name',
+                        'fieldAccessors' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'GetQuotaRule' => [
+                'callType' => \Google\ApiCore\Call::UNARY_CALL,
+                'responseType' => 'Google\Cloud\NetApp\V1\QuotaRule',
                 'headerParams' => [
                     [
                         'keyName' => 'name',
@@ -828,6 +994,26 @@ return [
                     ],
                 ],
             ],
+            'ListQuotaRules' => [
+                'pageStreaming' => [
+                    'requestPageTokenGetMethod' => 'getPageToken',
+                    'requestPageTokenSetMethod' => 'setPageToken',
+                    'requestPageSizeGetMethod' => 'getPageSize',
+                    'requestPageSizeSetMethod' => 'setPageSize',
+                    'responsePageTokenGetMethod' => 'getNextPageToken',
+                    'resourcesGetMethod' => 'getQuotaRules',
+                ],
+                'callType' => \Google\ApiCore\Call::PAGINATED_CALL,
+                'responseType' => 'Google\Cloud\NetApp\V1\ListQuotaRulesResponse',
+                'headerParams' => [
+                    [
+                        'keyName' => 'parent',
+                        'fieldAccessors' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
             'ListReplications' => [
                 'pageStreaming' => [
                     'requestPageTokenGetMethod' => 'getPageToken',
@@ -962,6 +1148,7 @@ return [
                 'kmsConfig' => 'projects/{project}/locations/{location}/kmsConfigs/{kms_config}',
                 'location' => 'projects/{project}/locations/{location}',
                 'network' => 'projects/{project}/global/networks/{network}',
+                'quotaRule' => 'projects/{project}/locations/{location}/volumes/{volume}/quotaRules/{quota_rule}',
                 'replication' => 'projects/{project}/locations/{location}/volumes/{volume}/replications/{replication}',
                 'snapshot' => 'projects/{project}/locations/{location}/volumes/{volume}/snapshots/{snapshot}',
                 'storagePool' => 'projects/{project}/locations/{location}/storagePools/{storage_pool}',

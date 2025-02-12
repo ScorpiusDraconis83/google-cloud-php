@@ -20,27 +20,33 @@ class Container extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Container image URI provided when configuring a pod or container. This
      * string can identify a container image version using mutable tags.
      *
      * Generated from protobuf field <code>string uri = 2;</code>
      */
-    private $uri = '';
+    protected $uri = '';
     /**
      * Optional container image ID, if provided by the container runtime. Uniquely
      * identifies the container image launched using a container image digest.
      *
      * Generated from protobuf field <code>string image_id = 3;</code>
      */
-    private $image_id = '';
+    protected $image_id = '';
     /**
      * Container labels, as provided by the container runtime.
      *
      * Generated from protobuf field <code>repeated .google.cloud.securitycenter.v1.Label labels = 4;</code>
      */
     private $labels;
+    /**
+     * The time that the container was created.
+     *
+     * Generated from protobuf field <code>.google.protobuf.Timestamp create_time = 5;</code>
+     */
+    protected $create_time = null;
 
     /**
      * Constructor.
@@ -58,6 +64,8 @@ class Container extends \Google\Protobuf\Internal\Message
      *           identifies the container image launched using a container image digest.
      *     @type array<\Google\Cloud\SecurityCenter\V1\Label>|\Google\Protobuf\Internal\RepeatedField $labels
      *           Container labels, as provided by the container runtime.
+     *     @type \Google\Protobuf\Timestamp $create_time
+     *           The time that the container was created.
      * }
      */
     public function __construct($data = NULL) {
@@ -169,6 +177,42 @@ class Container extends \Google\Protobuf\Internal\Message
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Google\Cloud\SecurityCenter\V1\Label::class);
         $this->labels = $arr;
+
+        return $this;
+    }
+
+    /**
+     * The time that the container was created.
+     *
+     * Generated from protobuf field <code>.google.protobuf.Timestamp create_time = 5;</code>
+     * @return \Google\Protobuf\Timestamp|null
+     */
+    public function getCreateTime()
+    {
+        return $this->create_time;
+    }
+
+    public function hasCreateTime()
+    {
+        return isset($this->create_time);
+    }
+
+    public function clearCreateTime()
+    {
+        unset($this->create_time);
+    }
+
+    /**
+     * The time that the container was created.
+     *
+     * Generated from protobuf field <code>.google.protobuf.Timestamp create_time = 5;</code>
+     * @param \Google\Protobuf\Timestamp $var
+     * @return $this
+     */
+    public function setCreateTime($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Protobuf\Timestamp::class);
+        $this->create_time = $var;
 
         return $this;
     }

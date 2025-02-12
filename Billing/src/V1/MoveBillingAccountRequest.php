@@ -23,15 +23,15 @@ class MoveBillingAccountRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
-     * Required. The resource name of the Organization to reparent
+     * Required. The resource name of the Organization to move
      * the billing account under.
      * Must be of the form `organizations/{organization_id}`.
      *
      * Generated from protobuf field <code>string destination_parent = 2 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $destination_parent = '';
+    protected $destination_parent = '';
 
     /**
      * Constructor.
@@ -45,7 +45,7 @@ class MoveBillingAccountRequest extends \Google\Protobuf\Internal\Message
      *           The specified billing account cannot be a subaccount, since a subaccount
      *           always belongs to the same organization as its parent account.
      *     @type string $destination_parent
-     *           Required. The resource name of the Organization to reparent
+     *           Required. The resource name of the Organization to move
      *           the billing account under.
      *           Must be of the form `organizations/{organization_id}`.
      * }
@@ -88,7 +88,7 @@ class MoveBillingAccountRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. The resource name of the Organization to reparent
+     * Required. The resource name of the Organization to move
      * the billing account under.
      * Must be of the form `organizations/{organization_id}`.
      *
@@ -101,7 +101,7 @@ class MoveBillingAccountRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. The resource name of the Organization to reparent
+     * Required. The resource name of the Organization to move
      * the billing account under.
      * Must be of the form `organizations/{organization_id}`.
      *

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\Channel\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -96,8 +95,10 @@ use Google\Cloud\Channel\V1\UpdateChannelPartnerLinkRequest;
 use Google\Cloud\Channel\V1\UpdateChannelPartnerRepricingConfigRequest;
 use Google\Cloud\Channel\V1\UpdateCustomerRepricingConfigRequest;
 use Google\Cloud\Channel\V1\UpdateCustomerRequest;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: CloudChannelService lets Google cloud resellers and distributors manage
@@ -129,55 +130,55 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface activateEntitlementAsync(ActivateEntitlementRequest $request, array $optionalArgs = [])
- * @method PromiseInterface cancelEntitlementAsync(CancelEntitlementRequest $request, array $optionalArgs = [])
- * @method PromiseInterface changeOfferAsync(ChangeOfferRequest $request, array $optionalArgs = [])
- * @method PromiseInterface changeParametersAsync(ChangeParametersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface changeRenewalSettingsAsync(ChangeRenewalSettingsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface checkCloudIdentityAccountsExistAsync(CheckCloudIdentityAccountsExistRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createChannelPartnerLinkAsync(CreateChannelPartnerLinkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createChannelPartnerRepricingConfigAsync(CreateChannelPartnerRepricingConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createCustomerAsync(CreateCustomerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createCustomerRepricingConfigAsync(CreateCustomerRepricingConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createEntitlementAsync(CreateEntitlementRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteChannelPartnerRepricingConfigAsync(DeleteChannelPartnerRepricingConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteCustomerAsync(DeleteCustomerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteCustomerRepricingConfigAsync(DeleteCustomerRepricingConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getChannelPartnerLinkAsync(GetChannelPartnerLinkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getChannelPartnerRepricingConfigAsync(GetChannelPartnerRepricingConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getCustomerAsync(GetCustomerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getCustomerRepricingConfigAsync(GetCustomerRepricingConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getEntitlementAsync(GetEntitlementRequest $request, array $optionalArgs = [])
- * @method PromiseInterface importCustomerAsync(ImportCustomerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listChannelPartnerLinksAsync(ListChannelPartnerLinksRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listChannelPartnerRepricingConfigsAsync(ListChannelPartnerRepricingConfigsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listCustomerRepricingConfigsAsync(ListCustomerRepricingConfigsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listCustomersAsync(ListCustomersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listEntitlementChangesAsync(ListEntitlementChangesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listEntitlementsAsync(ListEntitlementsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listOffersAsync(ListOffersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listProductsAsync(ListProductsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listPurchasableOffersAsync(ListPurchasableOffersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listPurchasableSkusAsync(ListPurchasableSkusRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listSkuGroupBillableSkusAsync(ListSkuGroupBillableSkusRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listSkuGroupsAsync(ListSkuGroupsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listSkusAsync(ListSkusRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listSubscribersAsync(ListSubscribersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listTransferableOffersAsync(ListTransferableOffersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listTransferableSkusAsync(ListTransferableSkusRequest $request, array $optionalArgs = [])
- * @method PromiseInterface lookupOfferAsync(LookupOfferRequest $request, array $optionalArgs = [])
- * @method PromiseInterface provisionCloudIdentityAsync(ProvisionCloudIdentityRequest $request, array $optionalArgs = [])
- * @method PromiseInterface queryEligibleBillingAccountsAsync(QueryEligibleBillingAccountsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface registerSubscriberAsync(RegisterSubscriberRequest $request, array $optionalArgs = [])
- * @method PromiseInterface startPaidServiceAsync(StartPaidServiceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface suspendEntitlementAsync(SuspendEntitlementRequest $request, array $optionalArgs = [])
- * @method PromiseInterface transferEntitlementsAsync(TransferEntitlementsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface transferEntitlementsToGoogleAsync(TransferEntitlementsToGoogleRequest $request, array $optionalArgs = [])
- * @method PromiseInterface unregisterSubscriberAsync(UnregisterSubscriberRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateChannelPartnerLinkAsync(UpdateChannelPartnerLinkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateChannelPartnerRepricingConfigAsync(UpdateChannelPartnerRepricingConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateCustomerAsync(UpdateCustomerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateCustomerRepricingConfigAsync(UpdateCustomerRepricingConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> activateEntitlementAsync(ActivateEntitlementRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> cancelEntitlementAsync(CancelEntitlementRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> changeOfferAsync(ChangeOfferRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> changeParametersAsync(ChangeParametersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> changeRenewalSettingsAsync(ChangeRenewalSettingsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CheckCloudIdentityAccountsExistResponse> checkCloudIdentityAccountsExistAsync(CheckCloudIdentityAccountsExistRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ChannelPartnerLink> createChannelPartnerLinkAsync(CreateChannelPartnerLinkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ChannelPartnerRepricingConfig> createChannelPartnerRepricingConfigAsync(CreateChannelPartnerRepricingConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Customer> createCustomerAsync(CreateCustomerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CustomerRepricingConfig> createCustomerRepricingConfigAsync(CreateCustomerRepricingConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createEntitlementAsync(CreateEntitlementRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteChannelPartnerRepricingConfigAsync(DeleteChannelPartnerRepricingConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteCustomerAsync(DeleteCustomerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteCustomerRepricingConfigAsync(DeleteCustomerRepricingConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ChannelPartnerLink> getChannelPartnerLinkAsync(GetChannelPartnerLinkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ChannelPartnerRepricingConfig> getChannelPartnerRepricingConfigAsync(GetChannelPartnerRepricingConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Customer> getCustomerAsync(GetCustomerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CustomerRepricingConfig> getCustomerRepricingConfigAsync(GetCustomerRepricingConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Entitlement> getEntitlementAsync(GetEntitlementRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Customer> importCustomerAsync(ImportCustomerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listChannelPartnerLinksAsync(ListChannelPartnerLinksRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listChannelPartnerRepricingConfigsAsync(ListChannelPartnerRepricingConfigsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listCustomerRepricingConfigsAsync(ListCustomerRepricingConfigsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listCustomersAsync(ListCustomersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listEntitlementChangesAsync(ListEntitlementChangesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listEntitlementsAsync(ListEntitlementsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listOffersAsync(ListOffersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listProductsAsync(ListProductsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listPurchasableOffersAsync(ListPurchasableOffersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listPurchasableSkusAsync(ListPurchasableSkusRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listSkuGroupBillableSkusAsync(ListSkuGroupBillableSkusRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listSkuGroupsAsync(ListSkuGroupsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listSkusAsync(ListSkusRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listSubscribersAsync(ListSubscribersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listTransferableOffersAsync(ListTransferableOffersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listTransferableSkusAsync(ListTransferableSkusRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Offer> lookupOfferAsync(LookupOfferRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> provisionCloudIdentityAsync(ProvisionCloudIdentityRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<QueryEligibleBillingAccountsResponse> queryEligibleBillingAccountsAsync(QueryEligibleBillingAccountsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<RegisterSubscriberResponse> registerSubscriberAsync(RegisterSubscriberRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> startPaidServiceAsync(StartPaidServiceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> suspendEntitlementAsync(SuspendEntitlementRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> transferEntitlementsAsync(TransferEntitlementsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> transferEntitlementsToGoogleAsync(TransferEntitlementsToGoogleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<UnregisterSubscriberResponse> unregisterSubscriberAsync(UnregisterSubscriberRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ChannelPartnerLink> updateChannelPartnerLinkAsync(UpdateChannelPartnerLinkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ChannelPartnerRepricingConfig> updateChannelPartnerRepricingConfigAsync(UpdateChannelPartnerRepricingConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Customer> updateCustomerAsync(UpdateCustomerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CustomerRepricingConfig> updateCustomerRepricingConfigAsync(UpdateCustomerRepricingConfigRequest $request, array $optionalArgs = [])
  */
 final class CloudChannelServiceClient
 {
@@ -204,9 +205,7 @@ final class CloudChannelServiceClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/apps.order',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/apps.order'];
 
     private $operationsClient;
 
@@ -252,10 +251,31 @@ final class CloudChannelServiceClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -285,8 +305,11 @@ final class CloudChannelServiceClient
      *
      * @return string The formatted channel_partner_repricing_config resource.
      */
-    public static function channelPartnerRepricingConfigName(string $account, string $channelPartner, string $channelPartnerRepricingConfig): string
-    {
+    public static function channelPartnerRepricingConfigName(
+        string $account,
+        string $channelPartner,
+        string $channelPartnerRepricingConfig
+    ): string {
         return self::getPathTemplate('channelPartnerRepricingConfig')->render([
             'account' => $account,
             'channel_partner' => $channelPartner,
@@ -321,8 +344,11 @@ final class CloudChannelServiceClient
      *
      * @return string The formatted customer_repricing_config resource.
      */
-    public static function customerRepricingConfigName(string $account, string $customer, string $customerRepricingConfig): string
-    {
+    public static function customerRepricingConfigName(
+        string $account,
+        string $customer,
+        string $customerRepricingConfig
+    ): string {
         return self::getPathTemplate('customerRepricingConfig')->render([
             'account' => $account,
             'customer' => $customer,
@@ -417,14 +443,14 @@ final class CloudChannelServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -446,6 +472,12 @@ final class CloudChannelServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -479,6 +511,9 @@ final class CloudChannelServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -533,6 +568,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::activateEntitlementAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/activate_entitlement.php
+     *
      * @param ActivateEntitlementRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
      *     Optional.
@@ -583,6 +620,8 @@ final class CloudChannelServiceClient
      * The async variant is {@see CloudChannelServiceClient::cancelEntitlementAsync()}
      * .
      *
+     * @example samples/V1/CloudChannelServiceClient/cancel_entitlement.php
+     *
      * @param CancelEntitlementRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -626,6 +665,8 @@ final class CloudChannelServiceClient
      * instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
      *
      * The async variant is {@see CloudChannelServiceClient::changeOfferAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/change_offer.php
      *
      * @param ChangeOfferRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -672,6 +713,8 @@ final class CloudChannelServiceClient
      * instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
      *
      * The async variant is {@see CloudChannelServiceClient::changeParametersAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/change_parameters.php
      *
      * @param ChangeParametersRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -720,6 +763,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::changeRenewalSettingsAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/change_renewal_settings.php
+     *
      * @param ChangeRenewalSettingsRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -734,8 +779,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function changeRenewalSettings(ChangeRenewalSettingsRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function changeRenewalSettings(
+        ChangeRenewalSettingsRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('ChangeRenewalSettings', $request, $callOptions)->wait();
     }
 
@@ -763,6 +810,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::checkCloudIdentityAccountsExistAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/check_cloud_identity_accounts_exist.php
+     *
      * @param CheckCloudIdentityAccountsExistRequest $request     A request to house fields associated with the call.
      * @param array                                  $callOptions {
      *     Optional.
@@ -777,8 +826,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function checkCloudIdentityAccountsExist(CheckCloudIdentityAccountsExistRequest $request, array $callOptions = []): CheckCloudIdentityAccountsExistResponse
-    {
+    public function checkCloudIdentityAccountsExist(
+        CheckCloudIdentityAccountsExistRequest $request,
+        array $callOptions = []
+    ): CheckCloudIdentityAccountsExistResponse {
         return $this->startApiCall('CheckCloudIdentityAccountsExist', $request, $callOptions)->wait();
     }
 
@@ -810,6 +861,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::createChannelPartnerLinkAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/create_channel_partner_link.php
+     *
      * @param CreateChannelPartnerLinkRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
      *     Optional.
@@ -824,8 +877,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createChannelPartnerLink(CreateChannelPartnerLinkRequest $request, array $callOptions = []): ChannelPartnerLink
-    {
+    public function createChannelPartnerLink(
+        CreateChannelPartnerLinkRequest $request,
+        array $callOptions = []
+    ): ChannelPartnerLink {
         return $this->startApiCall('CreateChannelPartnerLink', $request, $callOptions)->wait();
     }
 
@@ -877,6 +932,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::createChannelPartnerRepricingConfigAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/create_channel_partner_repricing_config.php
+     *
      * @param CreateChannelPartnerRepricingConfigRequest $request     A request to house fields associated with the call.
      * @param array                                      $callOptions {
      *     Optional.
@@ -891,8 +948,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createChannelPartnerRepricingConfig(CreateChannelPartnerRepricingConfigRequest $request, array $callOptions = []): ChannelPartnerRepricingConfig
-    {
+    public function createChannelPartnerRepricingConfig(
+        CreateChannelPartnerRepricingConfigRequest $request,
+        array $callOptions = []
+    ): ChannelPartnerRepricingConfig {
         return $this->startApiCall('CreateChannelPartnerRepricingConfig', $request, $callOptions)->wait();
     }
 
@@ -915,6 +974,8 @@ final class CloudChannelServiceClient
      * The newly created [Customer][google.cloud.channel.v1.Customer] resource.
      *
      * The async variant is {@see CloudChannelServiceClient::createCustomerAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/create_customer.php
      *
      * @param CreateCustomerRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -982,6 +1043,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::createCustomerRepricingConfigAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/create_customer_repricing_config.php
+     *
      * @param CreateCustomerRepricingConfigRequest $request     A request to house fields associated with the call.
      * @param array                                $callOptions {
      *     Optional.
@@ -996,8 +1059,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createCustomerRepricingConfig(CreateCustomerRepricingConfigRequest $request, array $callOptions = []): CustomerRepricingConfig
-    {
+    public function createCustomerRepricingConfig(
+        CreateCustomerRepricingConfigRequest $request,
+        array $callOptions = []
+    ): CustomerRepricingConfig {
         return $this->startApiCall('CreateCustomerRepricingConfig', $request, $callOptions)->wait();
     }
 
@@ -1045,6 +1110,8 @@ final class CloudChannelServiceClient
      * The async variant is {@see CloudChannelServiceClient::createEntitlementAsync()}
      * .
      *
+     * @example samples/V1/CloudChannelServiceClient/create_entitlement.php
+     *
      * @param CreateEntitlementRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -1086,6 +1153,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::deleteChannelPartnerRepricingConfigAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/delete_channel_partner_repricing_config.php
+     *
      * @param DeleteChannelPartnerRepricingConfigRequest $request     A request to house fields associated with the call.
      * @param array                                      $callOptions {
      *     Optional.
@@ -1098,8 +1167,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function deleteChannelPartnerRepricingConfig(DeleteChannelPartnerRepricingConfigRequest $request, array $callOptions = []): void
-    {
+    public function deleteChannelPartnerRepricingConfig(
+        DeleteChannelPartnerRepricingConfigRequest $request,
+        array $callOptions = []
+    ): void {
         $this->startApiCall('DeleteChannelPartnerRepricingConfig', $request, $callOptions)->wait();
     }
 
@@ -1116,6 +1187,8 @@ final class CloudChannelServiceClient
      * for the name in the request.
      *
      * The async variant is {@see CloudChannelServiceClient::deleteCustomerAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/delete_customer.php
      *
      * @param DeleteCustomerRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -1156,6 +1229,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::deleteCustomerRepricingConfigAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/delete_customer_repricing_config.php
+     *
      * @param DeleteCustomerRepricingConfigRequest $request     A request to house fields associated with the call.
      * @param array                                $callOptions {
      *     Optional.
@@ -1168,8 +1243,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function deleteCustomerRepricingConfig(DeleteCustomerRepricingConfigRequest $request, array $callOptions = []): void
-    {
+    public function deleteCustomerRepricingConfig(
+        DeleteCustomerRepricingConfigRequest $request,
+        array $callOptions = []
+    ): void {
         $this->startApiCall('DeleteCustomerRepricingConfig', $request, $callOptions)->wait();
     }
 
@@ -1193,6 +1270,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::getChannelPartnerLinkAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/get_channel_partner_link.php
+     *
      * @param GetChannelPartnerLinkRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -1207,8 +1286,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getChannelPartnerLink(GetChannelPartnerLinkRequest $request, array $callOptions = []): ChannelPartnerLink
-    {
+    public function getChannelPartnerLink(
+        GetChannelPartnerLinkRequest $request,
+        array $callOptions = []
+    ): ChannelPartnerLink {
         return $this->startApiCall('GetChannelPartnerLink', $request, $callOptions)->wait();
     }
 
@@ -1234,6 +1315,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::getChannelPartnerRepricingConfigAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/get_channel_partner_repricing_config.php
+     *
      * @param GetChannelPartnerRepricingConfigRequest $request     A request to house fields associated with the call.
      * @param array                                   $callOptions {
      *     Optional.
@@ -1248,8 +1331,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getChannelPartnerRepricingConfig(GetChannelPartnerRepricingConfigRequest $request, array $callOptions = []): ChannelPartnerRepricingConfig
-    {
+    public function getChannelPartnerRepricingConfig(
+        GetChannelPartnerRepricingConfigRequest $request,
+        array $callOptions = []
+    ): ChannelPartnerRepricingConfig {
         return $this->startApiCall('GetChannelPartnerRepricingConfig', $request, $callOptions)->wait();
     }
 
@@ -1269,6 +1354,8 @@ final class CloudChannelServiceClient
      * The [Customer][google.cloud.channel.v1.Customer] resource.
      *
      * The async variant is {@see CloudChannelServiceClient::getCustomerAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/get_customer.php
      *
      * @param GetCustomerRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -1311,6 +1398,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::getCustomerRepricingConfigAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/get_customer_repricing_config.php
+     *
      * @param GetCustomerRepricingConfigRequest $request     A request to house fields associated with the call.
      * @param array                             $callOptions {
      *     Optional.
@@ -1325,8 +1414,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getCustomerRepricingConfig(GetCustomerRepricingConfigRequest $request, array $callOptions = []): CustomerRepricingConfig
-    {
+    public function getCustomerRepricingConfig(
+        GetCustomerRepricingConfigRequest $request,
+        array $callOptions = []
+    ): CustomerRepricingConfig {
         return $this->startApiCall('GetCustomerRepricingConfig', $request, $callOptions)->wait();
     }
 
@@ -1344,6 +1435,8 @@ final class CloudChannelServiceClient
      * The requested [Entitlement][google.cloud.channel.v1.Entitlement] resource.
      *
      * The async variant is {@see CloudChannelServiceClient::getEntitlementAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/get_entitlement.php
      *
      * @param GetEntitlementRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -1388,6 +1481,8 @@ final class CloudChannelServiceClient
      *
      * The async variant is {@see CloudChannelServiceClient::importCustomerAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/import_customer.php
+     *
      * @param ImportCustomerRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -1424,6 +1519,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::listChannelPartnerLinksAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/list_channel_partner_links.php
+     *
      * @param ListChannelPartnerLinksRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
      *     Optional.
@@ -1438,8 +1535,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listChannelPartnerLinks(ListChannelPartnerLinksRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listChannelPartnerLinks(
+        ListChannelPartnerLinksRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListChannelPartnerLinks', $request, $callOptions);
     }
 
@@ -1472,6 +1571,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::listChannelPartnerRepricingConfigsAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/list_channel_partner_repricing_configs.php
+     *
      * @param ListChannelPartnerRepricingConfigsRequest $request     A request to house fields associated with the call.
      * @param array                                     $callOptions {
      *     Optional.
@@ -1486,8 +1587,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listChannelPartnerRepricingConfigs(ListChannelPartnerRepricingConfigsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listChannelPartnerRepricingConfigs(
+        ListChannelPartnerRepricingConfigsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListChannelPartnerRepricingConfigs', $request, $callOptions);
     }
 
@@ -1521,6 +1624,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::listCustomerRepricingConfigsAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/list_customer_repricing_configs.php
+     *
      * @param ListCustomerRepricingConfigsRequest $request     A request to house fields associated with the call.
      * @param array                               $callOptions {
      *     Optional.
@@ -1535,8 +1640,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listCustomerRepricingConfigs(ListCustomerRepricingConfigsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listCustomerRepricingConfigs(
+        ListCustomerRepricingConfigsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListCustomerRepricingConfigs', $request, $callOptions);
     }
 
@@ -1554,6 +1661,8 @@ final class CloudChannelServiceClient
      * there are no customers.
      *
      * The async variant is {@see CloudChannelServiceClient::listCustomersAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/list_customers.php
      *
      * @param ListCustomersRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -1595,6 +1704,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::listEntitlementChangesAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/list_entitlement_changes.php
+     *
      * @param ListEntitlementChangesRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -1609,8 +1720,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listEntitlementChanges(ListEntitlementChangesRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listEntitlementChanges(
+        ListEntitlementChangesRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListEntitlementChanges', $request, $callOptions);
     }
 
@@ -1628,6 +1741,8 @@ final class CloudChannelServiceClient
      * [Entitlement][google.cloud.channel.v1.Entitlement]s.
      *
      * The async variant is {@see CloudChannelServiceClient::listEntitlementsAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/list_entitlements.php
      *
      * @param ListEntitlementsRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -1657,6 +1772,8 @@ final class CloudChannelServiceClient
      *
      * The async variant is {@see CloudChannelServiceClient::listOffersAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/list_offers.php
+     *
      * @param ListOffersRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -1684,6 +1801,8 @@ final class CloudChannelServiceClient
      * * INVALID_ARGUMENT: Required request parameters are missing or invalid.
      *
      * The async variant is {@see CloudChannelServiceClient::listProductsAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/list_products.php
      *
      * @param ListProductsRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -1721,6 +1840,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::listPurchasableOffersAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/list_purchasable_offers.php
+     *
      * @param ListPurchasableOffersRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -1735,8 +1856,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listPurchasableOffers(ListPurchasableOffersRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listPurchasableOffers(
+        ListPurchasableOffersRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListPurchasableOffers', $request, $callOptions);
     }
 
@@ -1753,6 +1876,8 @@ final class CloudChannelServiceClient
      *
      * The async variant is
      * {@see CloudChannelServiceClient::listPurchasableSkusAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/list_purchasable_skus.php
      *
      * @param ListPurchasableSkusRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -1797,6 +1922,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::listSkuGroupBillableSkusAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/list_sku_group_billable_skus.php
+     *
      * @param ListSkuGroupBillableSkusRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
      *     Optional.
@@ -1811,8 +1938,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listSkuGroupBillableSkus(ListSkuGroupBillableSkusRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listSkuGroupBillableSkus(
+        ListSkuGroupBillableSkusRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListSkuGroupBillableSkus', $request, $callOptions);
     }
 
@@ -1838,6 +1967,8 @@ final class CloudChannelServiceClient
      * If unsuccessful, returns an error.
      *
      * The async variant is {@see CloudChannelServiceClient::listSkuGroupsAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/list_sku_groups.php
      *
      * @param ListSkuGroupsRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -1866,6 +1997,8 @@ final class CloudChannelServiceClient
      * * INVALID_ARGUMENT: Required request parameters are missing or invalid.
      *
      * The async variant is {@see CloudChannelServiceClient::listSkusAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/list_skus.php
      *
      * @param ListSkusRequest $request     A request to house fields associated with the call.
      * @param array           $callOptions {
@@ -1906,6 +2039,8 @@ final class CloudChannelServiceClient
      * A list of service email addresses.
      *
      * The async variant is {@see CloudChannelServiceClient::listSubscribersAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/list_subscribers.php
      *
      * @param ListSubscribersRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -1953,6 +2088,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::listTransferableOffersAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/list_transferable_offers.php
+     *
      * @param ListTransferableOffersRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -1967,8 +2104,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listTransferableOffers(ListTransferableOffersRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listTransferableOffers(
+        ListTransferableOffersRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListTransferableOffers', $request, $callOptions);
     }
 
@@ -1996,6 +2135,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::listTransferableSkusAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/list_transferable_skus.php
+     *
      * @param ListTransferableSkusRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -2010,8 +2151,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listTransferableSkus(ListTransferableSkusRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listTransferableSkus(
+        ListTransferableSkusRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListTransferableSkus', $request, $callOptions);
     }
 
@@ -2028,6 +2171,8 @@ final class CloudChannelServiceClient
      * The [Offer][google.cloud.channel.v1.Offer] resource.
      *
      * The async variant is {@see CloudChannelServiceClient::lookupOfferAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/lookup_offer.php
      *
      * @param LookupOfferRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -2077,6 +2222,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::provisionCloudIdentityAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/provision_cloud_identity.php
+     *
      * @param ProvisionCloudIdentityRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -2091,8 +2238,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function provisionCloudIdentity(ProvisionCloudIdentityRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function provisionCloudIdentity(
+        ProvisionCloudIdentityRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('ProvisionCloudIdentity', $request, $callOptions)->wait();
     }
 
@@ -2113,6 +2262,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::queryEligibleBillingAccountsAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/query_eligible_billing_accounts.php
+     *
      * @param QueryEligibleBillingAccountsRequest $request     A request to house fields associated with the call.
      * @param array                               $callOptions {
      *     Optional.
@@ -2127,8 +2278,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function queryEligibleBillingAccounts(QueryEligibleBillingAccountsRequest $request, array $callOptions = []): QueryEligibleBillingAccountsResponse
-    {
+    public function queryEligibleBillingAccounts(
+        QueryEligibleBillingAccountsRequest $request,
+        array $callOptions = []
+    ): QueryEligibleBillingAccountsResponse {
         return $this->startApiCall('QueryEligibleBillingAccounts', $request, $callOptions)->wait();
     }
 
@@ -2155,6 +2308,8 @@ final class CloudChannelServiceClient
      * The async variant is {@see CloudChannelServiceClient::registerSubscriberAsync()}
      * .
      *
+     * @example samples/V1/CloudChannelServiceClient/register_subscriber.php
+     *
      * @param RegisterSubscriberRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -2169,8 +2324,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function registerSubscriber(RegisterSubscriberRequest $request, array $callOptions = []): RegisterSubscriberResponse
-    {
+    public function registerSubscriber(
+        RegisterSubscriberRequest $request,
+        array $callOptions = []
+    ): RegisterSubscriberResponse {
         return $this->startApiCall('RegisterSubscriber', $request, $callOptions)->wait();
     }
 
@@ -2201,6 +2358,8 @@ final class CloudChannelServiceClient
      * instance of [OperationMetadata][google.cloud.channel.v1.OperationMetadata].
      *
      * The async variant is {@see CloudChannelServiceClient::startPaidServiceAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/start_paid_service.php
      *
      * @param StartPaidServiceRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -2246,6 +2405,8 @@ final class CloudChannelServiceClient
      *
      * The async variant is {@see CloudChannelServiceClient::suspendEntitlementAsync()}
      * .
+     *
+     * @example samples/V1/CloudChannelServiceClient/suspend_entitlement.php
      *
      * @param SuspendEntitlementRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
@@ -2303,6 +2464,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::transferEntitlementsAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/transfer_entitlements.php
+     *
      * @param TransferEntitlementsRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -2317,8 +2480,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function transferEntitlements(TransferEntitlementsRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function transferEntitlements(
+        TransferEntitlementsRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('TransferEntitlements', $request, $callOptions)->wait();
     }
 
@@ -2356,6 +2521,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::transferEntitlementsToGoogleAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/transfer_entitlements_to_google.php
+     *
      * @param TransferEntitlementsToGoogleRequest $request     A request to house fields associated with the call.
      * @param array                               $callOptions {
      *     Optional.
@@ -2370,8 +2537,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function transferEntitlementsToGoogle(TransferEntitlementsToGoogleRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function transferEntitlementsToGoogle(
+        TransferEntitlementsToGoogleRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('TransferEntitlementsToGoogle', $request, $callOptions)->wait();
     }
 
@@ -2401,6 +2570,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::unregisterSubscriberAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/unregister_subscriber.php
+     *
      * @param UnregisterSubscriberRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -2415,8 +2586,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function unregisterSubscriber(UnregisterSubscriberRequest $request, array $callOptions = []): UnregisterSubscriberResponse
-    {
+    public function unregisterSubscriber(
+        UnregisterSubscriberRequest $request,
+        array $callOptions = []
+    ): UnregisterSubscriberResponse {
         return $this->startApiCall('UnregisterSubscriber', $request, $callOptions)->wait();
     }
 
@@ -2447,6 +2620,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::updateChannelPartnerLinkAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/update_channel_partner_link.php
+     *
      * @param UpdateChannelPartnerLinkRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
      *     Optional.
@@ -2461,8 +2636,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateChannelPartnerLink(UpdateChannelPartnerLinkRequest $request, array $callOptions = []): ChannelPartnerLink
-    {
+    public function updateChannelPartnerLink(
+        UpdateChannelPartnerLinkRequest $request,
+        array $callOptions = []
+    ): ChannelPartnerLink {
         return $this->startApiCall('UpdateChannelPartnerLink', $request, $callOptions)->wait();
     }
 
@@ -2503,6 +2680,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::updateChannelPartnerRepricingConfigAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/update_channel_partner_repricing_config.php
+     *
      * @param UpdateChannelPartnerRepricingConfigRequest $request     A request to house fields associated with the call.
      * @param array                                      $callOptions {
      *     Optional.
@@ -2517,8 +2696,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateChannelPartnerRepricingConfig(UpdateChannelPartnerRepricingConfigRequest $request, array $callOptions = []): ChannelPartnerRepricingConfig
-    {
+    public function updateChannelPartnerRepricingConfig(
+        UpdateChannelPartnerRepricingConfigRequest $request,
+        array $callOptions = []
+    ): ChannelPartnerRepricingConfig {
         return $this->startApiCall('UpdateChannelPartnerRepricingConfig', $request, $callOptions)->wait();
     }
 
@@ -2538,6 +2719,8 @@ final class CloudChannelServiceClient
      * The updated [Customer][google.cloud.channel.v1.Customer] resource.
      *
      * The async variant is {@see CloudChannelServiceClient::updateCustomerAsync()} .
+     *
+     * @example samples/V1/CloudChannelServiceClient/update_customer.php
      *
      * @param UpdateCustomerRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -2595,6 +2778,8 @@ final class CloudChannelServiceClient
      * The async variant is
      * {@see CloudChannelServiceClient::updateCustomerRepricingConfigAsync()} .
      *
+     * @example samples/V1/CloudChannelServiceClient/update_customer_repricing_config.php
+     *
      * @param UpdateCustomerRepricingConfigRequest $request     A request to house fields associated with the call.
      * @param array                                $callOptions {
      *     Optional.
@@ -2609,8 +2794,10 @@ final class CloudChannelServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateCustomerRepricingConfig(UpdateCustomerRepricingConfigRequest $request, array $callOptions = []): CustomerRepricingConfig
-    {
+    public function updateCustomerRepricingConfig(
+        UpdateCustomerRepricingConfigRequest $request,
+        array $callOptions = []
+    ): CustomerRepricingConfig {
         return $this->startApiCall('UpdateCustomerRepricingConfig', $request, $callOptions)->wait();
     }
 }

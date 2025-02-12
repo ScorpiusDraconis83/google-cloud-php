@@ -22,13 +22,31 @@ class CreateAdSenseLinkRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * Required. The AdSense Link to create
      *
      * Generated from protobuf field <code>.google.analytics.admin.v1alpha.AdSenseLink adsense_link = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $adsense_link = null;
+    protected $adsense_link = null;
+
+    /**
+     * @param string                                      $parent      Required. The property for which to create an AdSense Link.
+     *                                                                 Format: properties/{propertyId}
+     *                                                                 Example: properties/1234
+     *                                                                 Please see {@see AnalyticsAdminServiceClient::propertyName()} for help formatting this field.
+     * @param \Google\Analytics\Admin\V1alpha\AdSenseLink $adsenseLink Required. The AdSense Link to create
+     *
+     * @return \Google\Analytics\Admin\V1alpha\CreateAdSenseLinkRequest
+     *
+     * @experimental
+     */
+    public static function build(string $parent, \Google\Analytics\Admin\V1alpha\AdSenseLink $adsenseLink): self
+    {
+        return (new self())
+            ->setParent($parent)
+            ->setAdsenseLink($adsenseLink);
+    }
 
     /**
      * Constructor.

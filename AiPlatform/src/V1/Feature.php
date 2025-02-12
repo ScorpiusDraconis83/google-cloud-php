@@ -28,34 +28,34 @@ class Feature extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = IMMUTABLE];</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Description of the Feature.
      *
      * Generated from protobuf field <code>string description = 2;</code>
      */
-    private $description = '';
+    protected $description = '';
     /**
      * Immutable. Only applicable for Vertex AI Feature Store (Legacy).
      * Type of Feature value.
      *
      * Generated from protobuf field <code>.google.cloud.aiplatform.v1.Feature.ValueType value_type = 3 [(.google.api.field_behavior) = IMMUTABLE];</code>
      */
-    private $value_type = 0;
+    protected $value_type = 0;
     /**
      * Output only. Only applicable for Vertex AI Feature Store (Legacy).
      * Timestamp when this EntityType was created.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp create_time = 4 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $create_time = null;
+    protected $create_time = null;
     /**
      * Output only. Only applicable for Vertex AI Feature Store (Legacy).
      * Timestamp when this EntityType was most recently updated.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp update_time = 5 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $update_time = null;
+    protected $update_time = null;
     /**
      * Optional. The labels with user-defined metadata to organize your Features.
      * Label keys and values can be no longer than 64 characters
@@ -76,7 +76,7 @@ class Feature extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string etag = 7;</code>
      */
-    private $etag = '';
+    protected $etag = '';
     /**
      * Optional. Only applicable for Vertex AI Feature Store (Legacy).
      * If not set, use the monitoring_config defined for the EntityType this
@@ -89,7 +89,7 @@ class Feature extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>bool disable_monitoring = 12 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $disable_monitoring = false;
+    protected $disable_monitoring = false;
     /**
      * Output only. Only applicable for Vertex AI Feature Store (Legacy).
      * The list of historical stats and anomalies with specified objectives.
@@ -99,12 +99,19 @@ class Feature extends \Google\Protobuf\Internal\Message
     private $monitoring_stats_anomalies;
     /**
      * Only applicable for Vertex AI Feature Store.
-     * The name of the BigQuery Table/View columnn hosting data for this version.
+     * The name of the BigQuery Table/View column hosting data for this version.
      * If no value is provided, will use feature_id.
      *
      * Generated from protobuf field <code>string version_column_name = 106;</code>
      */
-    private $version_column_name = '';
+    protected $version_column_name = '';
+    /**
+     * Entity responsible for maintaining this feature. Can be comma separated
+     * list of email addresses or URIs.
+     *
+     * Generated from protobuf field <code>string point_of_contact = 107;</code>
+     */
+    protected $point_of_contact = '';
 
     /**
      * Constructor.
@@ -159,8 +166,11 @@ class Feature extends \Google\Protobuf\Internal\Message
      *           The list of historical stats and anomalies with specified objectives.
      *     @type string $version_column_name
      *           Only applicable for Vertex AI Feature Store.
-     *           The name of the BigQuery Table/View columnn hosting data for this version.
+     *           The name of the BigQuery Table/View column hosting data for this version.
      *           If no value is provided, will use feature_id.
+     *     @type string $point_of_contact
+     *           Entity responsible for maintaining this feature. Can be comma separated
+     *           list of email addresses or URIs.
      * }
      */
     public function __construct($data = NULL) {
@@ -478,7 +488,7 @@ class Feature extends \Google\Protobuf\Internal\Message
 
     /**
      * Only applicable for Vertex AI Feature Store.
-     * The name of the BigQuery Table/View columnn hosting data for this version.
+     * The name of the BigQuery Table/View column hosting data for this version.
      * If no value is provided, will use feature_id.
      *
      * Generated from protobuf field <code>string version_column_name = 106;</code>
@@ -491,7 +501,7 @@ class Feature extends \Google\Protobuf\Internal\Message
 
     /**
      * Only applicable for Vertex AI Feature Store.
-     * The name of the BigQuery Table/View columnn hosting data for this version.
+     * The name of the BigQuery Table/View column hosting data for this version.
      * If no value is provided, will use feature_id.
      *
      * Generated from protobuf field <code>string version_column_name = 106;</code>
@@ -502,6 +512,34 @@ class Feature extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->version_column_name = $var;
+
+        return $this;
+    }
+
+    /**
+     * Entity responsible for maintaining this feature. Can be comma separated
+     * list of email addresses or URIs.
+     *
+     * Generated from protobuf field <code>string point_of_contact = 107;</code>
+     * @return string
+     */
+    public function getPointOfContact()
+    {
+        return $this->point_of_contact;
+    }
+
+    /**
+     * Entity responsible for maintaining this feature. Can be comma separated
+     * list of email addresses or URIs.
+     *
+     * Generated from protobuf field <code>string point_of_contact = 107;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setPointOfContact($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->point_of_contact = $var;
 
         return $this;
     }

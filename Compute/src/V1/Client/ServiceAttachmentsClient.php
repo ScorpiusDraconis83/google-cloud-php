@@ -47,6 +47,7 @@ use Google\Cloud\Compute\V1\SetIamPolicyServiceAttachmentRequest;
 use Google\Cloud\Compute\V1\TestIamPermissionsServiceAttachmentRequest;
 use Google\Cloud\Compute\V1\TestPermissionsResponse;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The ServiceAttachments API.
@@ -54,15 +55,15 @@ use GuzzleHttp\Promise\PromiseInterface;
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
  *
- * @method PromiseInterface aggregatedListAsync(AggregatedListServiceAttachmentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAsync(DeleteServiceAttachmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAsync(GetServiceAttachmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyServiceAttachmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface insertAsync(InsertServiceAttachmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAsync(ListServiceAttachmentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface patchAsync(PatchServiceAttachmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyServiceAttachmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsServiceAttachmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> aggregatedListAsync(AggregatedListServiceAttachmentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteAsync(DeleteServiceAttachmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ServiceAttachment> getAsync(GetServiceAttachmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyServiceAttachmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> insertAsync(InsertServiceAttachmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAsync(ListServiceAttachmentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> patchAsync(PatchServiceAttachmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyServiceAttachmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsServiceAttachmentRequest $request, array $optionalArgs = [])
  */
 final class ServiceAttachmentsClient
 {
@@ -121,8 +122,8 @@ final class ServiceAttachmentsClient
         return 'rest';
     }
 
-    /** Implements GapicClientTrait::getSupportedTransports. */
-    private static function getSupportedTransports()
+    /** Implements ClientOptionsTrait::supportedTransports. */
+    private static function supportedTransports()
     {
         return [
             'rest',
@@ -155,6 +156,9 @@ final class ServiceAttachmentsClient
             'operationNameMethod' => 'getName',
             'operationStatusMethod' => 'getStatus',
             'operationStatusDoneValue' => \Google\Cloud\Compute\V1\Operation\Status::DONE,
+            'getOperationRequest' => '\Google\Cloud\Compute\V1\GetRegionOperationRequest',
+            'cancelOperationRequest' => null,
+            'deleteOperationRequest' => '\Google\Cloud\Compute\V1\DeleteRegionOperationRequest',
         ];
     }
 
@@ -194,6 +198,12 @@ final class ServiceAttachmentsClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -224,6 +234,9 @@ final class ServiceAttachmentsClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -247,9 +260,11 @@ final class ServiceAttachmentsClient
     }
 
     /**
-     * Retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project.
+     * Retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
      *
      * The async variant is {@see ServiceAttachmentsClient::aggregatedListAsync()} .
+     *
+     * @example samples/V1/ServiceAttachmentsClient/aggregated_list.php
      *
      * @param AggregatedListServiceAttachmentsRequest $request     A request to house fields associated with the call.
      * @param array                                   $callOptions {
@@ -275,6 +290,8 @@ final class ServiceAttachmentsClient
      *
      * The async variant is {@see ServiceAttachmentsClient::deleteAsync()} .
      *
+     * @example samples/V1/ServiceAttachmentsClient/delete.php
+     *
      * @param DeleteServiceAttachmentRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
      *     Optional.
@@ -298,6 +315,8 @@ final class ServiceAttachmentsClient
      * Returns the specified ServiceAttachment resource in the given scope.
      *
      * The async variant is {@see ServiceAttachmentsClient::getAsync()} .
+     *
+     * @example samples/V1/ServiceAttachmentsClient/get.php
      *
      * @param GetServiceAttachmentRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
@@ -323,6 +342,8 @@ final class ServiceAttachmentsClient
      *
      * The async variant is {@see ServiceAttachmentsClient::getIamPolicyAsync()} .
      *
+     * @example samples/V1/ServiceAttachmentsClient/get_iam_policy.php
+     *
      * @param GetIamPolicyServiceAttachmentRequest $request     A request to house fields associated with the call.
      * @param array                                $callOptions {
      *     Optional.
@@ -346,6 +367,8 @@ final class ServiceAttachmentsClient
      * Creates a ServiceAttachment in the specified project in the given scope using the parameters that are included in the request.
      *
      * The async variant is {@see ServiceAttachmentsClient::insertAsync()} .
+     *
+     * @example samples/V1/ServiceAttachmentsClient/insert.php
      *
      * @param InsertServiceAttachmentRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
@@ -371,6 +394,8 @@ final class ServiceAttachmentsClient
      *
      * The async variant is {@see ServiceAttachmentsClient::listAsync()} .
      *
+     * @example samples/V1/ServiceAttachmentsClient/list.php
+     *
      * @param ListServiceAttachmentsRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -394,6 +419,8 @@ final class ServiceAttachmentsClient
      * Patches the specified ServiceAttachment resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
      *
      * The async variant is {@see ServiceAttachmentsClient::patchAsync()} .
+     *
+     * @example samples/V1/ServiceAttachmentsClient/patch.php
      *
      * @param PatchServiceAttachmentRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
@@ -419,6 +446,8 @@ final class ServiceAttachmentsClient
      *
      * The async variant is {@see ServiceAttachmentsClient::setIamPolicyAsync()} .
      *
+     * @example samples/V1/ServiceAttachmentsClient/set_iam_policy.php
+     *
      * @param SetIamPolicyServiceAttachmentRequest $request     A request to house fields associated with the call.
      * @param array                                $callOptions {
      *     Optional.
@@ -443,6 +472,8 @@ final class ServiceAttachmentsClient
      *
      * The async variant is {@see ServiceAttachmentsClient::testIamPermissionsAsync()}
      * .
+     *
+     * @example samples/V1/ServiceAttachmentsClient/test_iam_permissions.php
      *
      * @param TestIamPermissionsServiceAttachmentRequest $request     A request to house fields associated with the call.
      * @param array                                      $callOptions {

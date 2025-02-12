@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\NetworkConnectivity\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -61,14 +60,18 @@ use Google\Cloud\NetworkConnectivity\V1\ListHubsRequest;
 use Google\Cloud\NetworkConnectivity\V1\ListRouteTablesRequest;
 use Google\Cloud\NetworkConnectivity\V1\ListRoutesRequest;
 use Google\Cloud\NetworkConnectivity\V1\ListSpokesRequest;
+use Google\Cloud\NetworkConnectivity\V1\QueryHubStatusRequest;
 use Google\Cloud\NetworkConnectivity\V1\RejectHubSpokeRequest;
 use Google\Cloud\NetworkConnectivity\V1\Route;
 use Google\Cloud\NetworkConnectivity\V1\RouteTable;
 use Google\Cloud\NetworkConnectivity\V1\Spoke;
+use Google\Cloud\NetworkConnectivity\V1\UpdateGroupRequest;
 use Google\Cloud\NetworkConnectivity\V1\UpdateHubRequest;
 use Google\Cloud\NetworkConnectivity\V1\UpdateSpokeRequest;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Network Connectivity Center is a hub-and-spoke abstraction for network
@@ -83,30 +86,32 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface acceptHubSpokeAsync(AcceptHubSpokeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createHubAsync(CreateHubRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createSpokeAsync(CreateSpokeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteHubAsync(DeleteHubRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteSpokeAsync(DeleteSpokeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getGroupAsync(GetGroupRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getHubAsync(GetHubRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getRouteAsync(GetRouteRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getRouteTableAsync(GetRouteTableRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getSpokeAsync(GetSpokeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listGroupsAsync(ListGroupsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listHubSpokesAsync(ListHubSpokesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listHubsAsync(ListHubsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listRouteTablesAsync(ListRouteTablesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listRoutesAsync(ListRoutesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listSpokesAsync(ListSpokesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface rejectHubSpokeAsync(RejectHubSpokeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateHubAsync(UpdateHubRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateSpokeAsync(UpdateSpokeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> acceptHubSpokeAsync(AcceptHubSpokeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createHubAsync(CreateHubRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createSpokeAsync(CreateSpokeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteHubAsync(DeleteHubRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteSpokeAsync(DeleteSpokeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Group> getGroupAsync(GetGroupRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Hub> getHubAsync(GetHubRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Route> getRouteAsync(GetRouteRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<RouteTable> getRouteTableAsync(GetRouteTableRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Spoke> getSpokeAsync(GetSpokeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listGroupsAsync(ListGroupsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listHubSpokesAsync(ListHubSpokesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listHubsAsync(ListHubsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listRouteTablesAsync(ListRouteTablesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listRoutesAsync(ListRoutesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listSpokesAsync(ListSpokesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> queryHubStatusAsync(QueryHubStatusRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> rejectHubSpokeAsync(RejectHubSpokeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateGroupAsync(UpdateGroupRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateHubAsync(UpdateHubRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateSpokeAsync(UpdateSpokeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
  */
 final class HubServiceClient
 {
@@ -133,9 +138,7 @@ final class HubServiceClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private $operationsClient;
 
@@ -181,10 +184,31 @@ final class HubServiceClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -394,14 +418,14 @@ final class HubServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -423,6 +447,12 @@ final class HubServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -456,6 +486,9 @@ final class HubServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -484,6 +517,8 @@ final class HubServiceClient
      *
      * The async variant is {@see HubServiceClient::acceptHubSpokeAsync()} .
      *
+     * @example samples/V1/HubServiceClient/accept_hub_spoke.php
+     *
      * @param AcceptHubSpokeRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -507,6 +542,8 @@ final class HubServiceClient
      * Creates a new Network Connectivity Center hub in the specified project.
      *
      * The async variant is {@see HubServiceClient::createHubAsync()} .
+     *
+     * @example samples/V1/HubServiceClient/create_hub.php
      *
      * @param CreateHubRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
@@ -532,6 +569,8 @@ final class HubServiceClient
      *
      * The async variant is {@see HubServiceClient::createSpokeAsync()} .
      *
+     * @example samples/V1/HubServiceClient/create_spoke.php
+     *
      * @param CreateSpokeRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -555,6 +594,8 @@ final class HubServiceClient
      * Deletes a Network Connectivity Center hub.
      *
      * The async variant is {@see HubServiceClient::deleteHubAsync()} .
+     *
+     * @example samples/V1/HubServiceClient/delete_hub.php
      *
      * @param DeleteHubRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
@@ -580,6 +621,8 @@ final class HubServiceClient
      *
      * The async variant is {@see HubServiceClient::deleteSpokeAsync()} .
      *
+     * @example samples/V1/HubServiceClient/delete_spoke.php
+     *
      * @param DeleteSpokeRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -603,6 +646,8 @@ final class HubServiceClient
      * Gets details about a Network Connectivity Center group.
      *
      * The async variant is {@see HubServiceClient::getGroupAsync()} .
+     *
+     * @example samples/V1/HubServiceClient/get_group.php
      *
      * @param GetGroupRequest $request     A request to house fields associated with the call.
      * @param array           $callOptions {
@@ -628,6 +673,8 @@ final class HubServiceClient
      *
      * The async variant is {@see HubServiceClient::getHubAsync()} .
      *
+     * @example samples/V1/HubServiceClient/get_hub.php
+     *
      * @param GetHubRequest $request     A request to house fields associated with the call.
      * @param array         $callOptions {
      *     Optional.
@@ -651,6 +698,8 @@ final class HubServiceClient
      * Gets details about the specified route.
      *
      * The async variant is {@see HubServiceClient::getRouteAsync()} .
+     *
+     * @example samples/V1/HubServiceClient/get_route.php
      *
      * @param GetRouteRequest $request     A request to house fields associated with the call.
      * @param array           $callOptions {
@@ -676,6 +725,8 @@ final class HubServiceClient
      *
      * The async variant is {@see HubServiceClient::getRouteTableAsync()} .
      *
+     * @example samples/V1/HubServiceClient/get_route_table.php
+     *
      * @param GetRouteTableRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -700,6 +751,8 @@ final class HubServiceClient
      *
      * The async variant is {@see HubServiceClient::getSpokeAsync()} .
      *
+     * @example samples/V1/HubServiceClient/get_spoke.php
+     *
      * @param GetSpokeRequest $request     A request to house fields associated with the call.
      * @param array           $callOptions {
      *     Optional.
@@ -723,6 +776,8 @@ final class HubServiceClient
      * Lists groups in a given hub.
      *
      * The async variant is {@see HubServiceClient::listGroupsAsync()} .
+     *
+     * @example samples/V1/HubServiceClient/list_groups.php
      *
      * @param ListGroupsRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -750,6 +805,8 @@ final class HubServiceClient
      *
      * The async variant is {@see HubServiceClient::listHubSpokesAsync()} .
      *
+     * @example samples/V1/HubServiceClient/list_hub_spokes.php
+     *
      * @param ListHubSpokesRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -774,6 +831,8 @@ final class HubServiceClient
      *
      * The async variant is {@see HubServiceClient::listHubsAsync()} .
      *
+     * @example samples/V1/HubServiceClient/list_hubs.php
+     *
      * @param ListHubsRequest $request     A request to house fields associated with the call.
      * @param array           $callOptions {
      *     Optional.
@@ -794,9 +853,11 @@ final class HubServiceClient
     }
 
     /**
-     * Lists route tables in a given project.
+     * Lists route tables in a given hub.
      *
      * The async variant is {@see HubServiceClient::listRouteTablesAsync()} .
+     *
+     * @example samples/V1/HubServiceClient/list_route_tables.php
      *
      * @param ListRouteTablesRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -818,9 +879,11 @@ final class HubServiceClient
     }
 
     /**
-     * Lists routes in a given project.
+     * Lists routes in a given route table.
      *
      * The async variant is {@see HubServiceClient::listRoutesAsync()} .
+     *
+     * @example samples/V1/HubServiceClient/list_routes.php
      *
      * @param ListRoutesRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -847,6 +910,8 @@ final class HubServiceClient
      *
      * The async variant is {@see HubServiceClient::listSpokesAsync()} .
      *
+     * @example samples/V1/HubServiceClient/list_spokes.php
+     *
      * @param ListSpokesRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -867,12 +932,41 @@ final class HubServiceClient
     }
 
     /**
+     * Query the Private Service Connect propagation status of a Network
+     * Connectivity Center hub.
+     *
+     * The async variant is {@see HubServiceClient::queryHubStatusAsync()} .
+     *
+     * @example samples/V1/HubServiceClient/query_hub_status.php
+     *
+     * @param QueryHubStatusRequest $request     A request to house fields associated with the call.
+     * @param array                 $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function queryHubStatus(QueryHubStatusRequest $request, array $callOptions = []): PagedListResponse
+    {
+        return $this->startApiCall('QueryHubStatus', $request, $callOptions);
+    }
+
+    /**
      * Rejects a Network Connectivity Center spoke from being attached to a hub.
      * If the spoke was previously in the `ACTIVE` state, it
      * transitions to the `INACTIVE` state and is no longer able to
      * connect to other spokes that are attached to the hub.
      *
      * The async variant is {@see HubServiceClient::rejectHubSpokeAsync()} .
+     *
+     * @example samples/V1/HubServiceClient/reject_hub_spoke.php
      *
      * @param RejectHubSpokeRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -894,10 +988,38 @@ final class HubServiceClient
     }
 
     /**
+     * Updates the parameters of a Network Connectivity Center group.
+     *
+     * The async variant is {@see HubServiceClient::updateGroupAsync()} .
+     *
+     * @example samples/V1/HubServiceClient/update_group.php
+     *
+     * @param UpdateGroupRequest $request     A request to house fields associated with the call.
+     * @param array              $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function updateGroup(UpdateGroupRequest $request, array $callOptions = []): OperationResponse
+    {
+        return $this->startApiCall('UpdateGroup', $request, $callOptions)->wait();
+    }
+
+    /**
      * Updates the description and/or labels of a Network Connectivity Center
      * hub.
      *
      * The async variant is {@see HubServiceClient::updateHubAsync()} .
+     *
+     * @example samples/V1/HubServiceClient/update_hub.php
      *
      * @param UpdateHubRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
@@ -923,6 +1045,8 @@ final class HubServiceClient
      *
      * The async variant is {@see HubServiceClient::updateSpokeAsync()} .
      *
+     * @example samples/V1/HubServiceClient/update_spoke.php
+     *
      * @param UpdateSpokeRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -946,6 +1070,8 @@ final class HubServiceClient
      * Gets information about a location.
      *
      * The async variant is {@see HubServiceClient::getLocationAsync()} .
+     *
+     * @example samples/V1/HubServiceClient/get_location.php
      *
      * @param GetLocationRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -971,6 +1097,8 @@ final class HubServiceClient
      *
      * The async variant is {@see HubServiceClient::listLocationsAsync()} .
      *
+     * @example samples/V1/HubServiceClient/list_locations.php
+     *
      * @param ListLocationsRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -995,6 +1123,8 @@ final class HubServiceClient
     if the resource exists and does not have a policy set.
      *
      * The async variant is {@see HubServiceClient::getIamPolicyAsync()} .
+     *
+     * @example samples/V1/HubServiceClient/get_iam_policy.php
      *
      * @param GetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -1023,6 +1153,8 @@ final class HubServiceClient
     errors.
      *
      * The async variant is {@see HubServiceClient::setIamPolicyAsync()} .
+     *
+     * @example samples/V1/HubServiceClient/set_iam_policy.php
      *
      * @param SetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -1054,6 +1186,8 @@ final class HubServiceClient
      *
      * The async variant is {@see HubServiceClient::testIamPermissionsAsync()} .
      *
+     * @example samples/V1/HubServiceClient/test_iam_permissions.php
+     *
      * @param TestIamPermissionsRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -1068,8 +1202,10 @@ final class HubServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function testIamPermissions(TestIamPermissionsRequest $request, array $callOptions = []): TestIamPermissionsResponse
-    {
+    public function testIamPermissions(
+        TestIamPermissionsRequest $request,
+        array $callOptions = []
+    ): TestIamPermissionsResponse {
         return $this->startApiCall('TestIamPermissions', $request, $callOptions)->wait();
     }
 }

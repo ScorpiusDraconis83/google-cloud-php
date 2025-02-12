@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,9 @@ use Google\ApiCore\ValidationException;
 use Google\Auth\FetchAuthTokenInterface;
 use Google\Cloud\Dlp\V2\ActivateJobTriggerRequest;
 use Google\Cloud\Dlp\V2\CancelDlpJobRequest;
+use Google\Cloud\Dlp\V2\ColumnDataProfile;
+use Google\Cloud\Dlp\V2\Connection;
+use Google\Cloud\Dlp\V2\CreateConnectionRequest;
 use Google\Cloud\Dlp\V2\CreateDeidentifyTemplateRequest;
 use Google\Cloud\Dlp\V2\CreateDiscoveryConfigRequest;
 use Google\Cloud\Dlp\V2\CreateDlpJobRequest;
@@ -44,21 +47,30 @@ use Google\Cloud\Dlp\V2\CreateStoredInfoTypeRequest;
 use Google\Cloud\Dlp\V2\DeidentifyContentRequest;
 use Google\Cloud\Dlp\V2\DeidentifyContentResponse;
 use Google\Cloud\Dlp\V2\DeidentifyTemplate;
+use Google\Cloud\Dlp\V2\DeleteConnectionRequest;
 use Google\Cloud\Dlp\V2\DeleteDeidentifyTemplateRequest;
 use Google\Cloud\Dlp\V2\DeleteDiscoveryConfigRequest;
 use Google\Cloud\Dlp\V2\DeleteDlpJobRequest;
+use Google\Cloud\Dlp\V2\DeleteFileStoreDataProfileRequest;
 use Google\Cloud\Dlp\V2\DeleteInspectTemplateRequest;
 use Google\Cloud\Dlp\V2\DeleteJobTriggerRequest;
 use Google\Cloud\Dlp\V2\DeleteStoredInfoTypeRequest;
+use Google\Cloud\Dlp\V2\DeleteTableDataProfileRequest;
 use Google\Cloud\Dlp\V2\DiscoveryConfig;
 use Google\Cloud\Dlp\V2\DlpJob;
+use Google\Cloud\Dlp\V2\FileStoreDataProfile;
 use Google\Cloud\Dlp\V2\FinishDlpJobRequest;
+use Google\Cloud\Dlp\V2\GetColumnDataProfileRequest;
+use Google\Cloud\Dlp\V2\GetConnectionRequest;
 use Google\Cloud\Dlp\V2\GetDeidentifyTemplateRequest;
 use Google\Cloud\Dlp\V2\GetDiscoveryConfigRequest;
 use Google\Cloud\Dlp\V2\GetDlpJobRequest;
+use Google\Cloud\Dlp\V2\GetFileStoreDataProfileRequest;
 use Google\Cloud\Dlp\V2\GetInspectTemplateRequest;
 use Google\Cloud\Dlp\V2\GetJobTriggerRequest;
+use Google\Cloud\Dlp\V2\GetProjectDataProfileRequest;
 use Google\Cloud\Dlp\V2\GetStoredInfoTypeRequest;
+use Google\Cloud\Dlp\V2\GetTableDataProfileRequest;
 use Google\Cloud\Dlp\V2\HybridInspectDlpJobRequest;
 use Google\Cloud\Dlp\V2\HybridInspectJobTriggerRequest;
 use Google\Cloud\Dlp\V2\HybridInspectResponse;
@@ -66,36 +78,42 @@ use Google\Cloud\Dlp\V2\InspectContentRequest;
 use Google\Cloud\Dlp\V2\InspectContentResponse;
 use Google\Cloud\Dlp\V2\InspectTemplate;
 use Google\Cloud\Dlp\V2\JobTrigger;
+use Google\Cloud\Dlp\V2\ListColumnDataProfilesRequest;
+use Google\Cloud\Dlp\V2\ListConnectionsRequest;
 use Google\Cloud\Dlp\V2\ListDeidentifyTemplatesRequest;
 use Google\Cloud\Dlp\V2\ListDiscoveryConfigsRequest;
 use Google\Cloud\Dlp\V2\ListDlpJobsRequest;
+use Google\Cloud\Dlp\V2\ListFileStoreDataProfilesRequest;
 use Google\Cloud\Dlp\V2\ListInfoTypesRequest;
 use Google\Cloud\Dlp\V2\ListInfoTypesResponse;
 use Google\Cloud\Dlp\V2\ListInspectTemplatesRequest;
 use Google\Cloud\Dlp\V2\ListJobTriggersRequest;
+use Google\Cloud\Dlp\V2\ListProjectDataProfilesRequest;
 use Google\Cloud\Dlp\V2\ListStoredInfoTypesRequest;
+use Google\Cloud\Dlp\V2\ListTableDataProfilesRequest;
+use Google\Cloud\Dlp\V2\ProjectDataProfile;
 use Google\Cloud\Dlp\V2\RedactImageRequest;
 use Google\Cloud\Dlp\V2\RedactImageResponse;
 use Google\Cloud\Dlp\V2\ReidentifyContentRequest;
 use Google\Cloud\Dlp\V2\ReidentifyContentResponse;
+use Google\Cloud\Dlp\V2\SearchConnectionsRequest;
 use Google\Cloud\Dlp\V2\StoredInfoType;
+use Google\Cloud\Dlp\V2\TableDataProfile;
+use Google\Cloud\Dlp\V2\UpdateConnectionRequest;
 use Google\Cloud\Dlp\V2\UpdateDeidentifyTemplateRequest;
 use Google\Cloud\Dlp\V2\UpdateDiscoveryConfigRequest;
 use Google\Cloud\Dlp\V2\UpdateInspectTemplateRequest;
 use Google\Cloud\Dlp\V2\UpdateJobTriggerRequest;
 use Google\Cloud\Dlp\V2\UpdateStoredInfoTypeRequest;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
- * Service Description: The Cloud Data Loss Prevention (DLP) API is a service that allows clients
- * to detect the presence of Personally Identifiable Information (PII) and other
- * privacy-sensitive data in user-supplied, unstructured data streams, like text
- * blocks or images.
- * The service also includes methods for sensitive data redaction and
- * scheduling of data scans on Google Cloud Platform based data sets.
- *
+ * Service Description: Sensitive Data Protection provides access to a powerful sensitive data
+ * inspection, classification, and de-identification platform that works
+ * on text, images, and Google Cloud storage repositories.
  * To learn more about concepts and find how-to guides see
- * https://cloud.google.com/dlp/docs/.
+ * https://cloud.google.com/sensitive-data-protection/docs/.
  *
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
@@ -105,47 +123,63 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface activateJobTriggerAsync(ActivateJobTriggerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface cancelDlpJobAsync(CancelDlpJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createDeidentifyTemplateAsync(CreateDeidentifyTemplateRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createDiscoveryConfigAsync(CreateDiscoveryConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createDlpJobAsync(CreateDlpJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createInspectTemplateAsync(CreateInspectTemplateRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createJobTriggerAsync(CreateJobTriggerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createStoredInfoTypeAsync(CreateStoredInfoTypeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deidentifyContentAsync(DeidentifyContentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteDeidentifyTemplateAsync(DeleteDeidentifyTemplateRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteDiscoveryConfigAsync(DeleteDiscoveryConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteDlpJobAsync(DeleteDlpJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteInspectTemplateAsync(DeleteInspectTemplateRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteJobTriggerAsync(DeleteJobTriggerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteStoredInfoTypeAsync(DeleteStoredInfoTypeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface finishDlpJobAsync(FinishDlpJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getDeidentifyTemplateAsync(GetDeidentifyTemplateRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getDiscoveryConfigAsync(GetDiscoveryConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getDlpJobAsync(GetDlpJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getInspectTemplateAsync(GetInspectTemplateRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getJobTriggerAsync(GetJobTriggerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getStoredInfoTypeAsync(GetStoredInfoTypeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface hybridInspectDlpJobAsync(HybridInspectDlpJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface hybridInspectJobTriggerAsync(HybridInspectJobTriggerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface inspectContentAsync(InspectContentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listDeidentifyTemplatesAsync(ListDeidentifyTemplatesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listDiscoveryConfigsAsync(ListDiscoveryConfigsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listDlpJobsAsync(ListDlpJobsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listInfoTypesAsync(ListInfoTypesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listInspectTemplatesAsync(ListInspectTemplatesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listJobTriggersAsync(ListJobTriggersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listStoredInfoTypesAsync(ListStoredInfoTypesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface redactImageAsync(RedactImageRequest $request, array $optionalArgs = [])
- * @method PromiseInterface reidentifyContentAsync(ReidentifyContentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateDeidentifyTemplateAsync(UpdateDeidentifyTemplateRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateDiscoveryConfigAsync(UpdateDiscoveryConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateInspectTemplateAsync(UpdateInspectTemplateRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateJobTriggerAsync(UpdateJobTriggerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateStoredInfoTypeAsync(UpdateStoredInfoTypeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DlpJob> activateJobTriggerAsync(ActivateJobTriggerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> cancelDlpJobAsync(CancelDlpJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Connection> createConnectionAsync(CreateConnectionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DeidentifyTemplate> createDeidentifyTemplateAsync(CreateDeidentifyTemplateRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DiscoveryConfig> createDiscoveryConfigAsync(CreateDiscoveryConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DlpJob> createDlpJobAsync(CreateDlpJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<InspectTemplate> createInspectTemplateAsync(CreateInspectTemplateRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<JobTrigger> createJobTriggerAsync(CreateJobTriggerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<StoredInfoType> createStoredInfoTypeAsync(CreateStoredInfoTypeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DeidentifyContentResponse> deidentifyContentAsync(DeidentifyContentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteConnectionAsync(DeleteConnectionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteDeidentifyTemplateAsync(DeleteDeidentifyTemplateRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteDiscoveryConfigAsync(DeleteDiscoveryConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteDlpJobAsync(DeleteDlpJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteFileStoreDataProfileAsync(DeleteFileStoreDataProfileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteInspectTemplateAsync(DeleteInspectTemplateRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteJobTriggerAsync(DeleteJobTriggerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteStoredInfoTypeAsync(DeleteStoredInfoTypeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteTableDataProfileAsync(DeleteTableDataProfileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> finishDlpJobAsync(FinishDlpJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ColumnDataProfile> getColumnDataProfileAsync(GetColumnDataProfileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Connection> getConnectionAsync(GetConnectionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DeidentifyTemplate> getDeidentifyTemplateAsync(GetDeidentifyTemplateRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DiscoveryConfig> getDiscoveryConfigAsync(GetDiscoveryConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DlpJob> getDlpJobAsync(GetDlpJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<FileStoreDataProfile> getFileStoreDataProfileAsync(GetFileStoreDataProfileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<InspectTemplate> getInspectTemplateAsync(GetInspectTemplateRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<JobTrigger> getJobTriggerAsync(GetJobTriggerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ProjectDataProfile> getProjectDataProfileAsync(GetProjectDataProfileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<StoredInfoType> getStoredInfoTypeAsync(GetStoredInfoTypeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TableDataProfile> getTableDataProfileAsync(GetTableDataProfileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<HybridInspectResponse> hybridInspectDlpJobAsync(HybridInspectDlpJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<HybridInspectResponse> hybridInspectJobTriggerAsync(HybridInspectJobTriggerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<InspectContentResponse> inspectContentAsync(InspectContentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listColumnDataProfilesAsync(ListColumnDataProfilesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listConnectionsAsync(ListConnectionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listDeidentifyTemplatesAsync(ListDeidentifyTemplatesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listDiscoveryConfigsAsync(ListDiscoveryConfigsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listDlpJobsAsync(ListDlpJobsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listFileStoreDataProfilesAsync(ListFileStoreDataProfilesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ListInfoTypesResponse> listInfoTypesAsync(ListInfoTypesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listInspectTemplatesAsync(ListInspectTemplatesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listJobTriggersAsync(ListJobTriggersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listProjectDataProfilesAsync(ListProjectDataProfilesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listStoredInfoTypesAsync(ListStoredInfoTypesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listTableDataProfilesAsync(ListTableDataProfilesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<RedactImageResponse> redactImageAsync(RedactImageRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ReidentifyContentResponse> reidentifyContentAsync(ReidentifyContentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> searchConnectionsAsync(SearchConnectionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Connection> updateConnectionAsync(UpdateConnectionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DeidentifyTemplate> updateDeidentifyTemplateAsync(UpdateDeidentifyTemplateRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DiscoveryConfig> updateDiscoveryConfigAsync(UpdateDiscoveryConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<InspectTemplate> updateInspectTemplateAsync(UpdateInspectTemplateRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<JobTrigger> updateJobTriggerAsync(UpdateJobTriggerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<StoredInfoType> updateStoredInfoTypeAsync(UpdateStoredInfoTypeRequest $request, array $optionalArgs = [])
  */
-class DlpServiceClient
+final class DlpServiceClient
 {
     use GapicClientTrait;
     use ResourceHelperTrait;
@@ -170,9 +204,7 @@ class DlpServiceClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private static function getClientDefaults()
     {
@@ -191,6 +223,47 @@ class DlpServiceClient
                 ],
             ],
         ];
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * column_data_profile resource.
+     *
+     * @param string $organization
+     * @param string $location
+     * @param string $columnDataProfile
+     *
+     * @return string The formatted column_data_profile resource.
+     */
+    public static function columnDataProfileName(
+        string $organization,
+        string $location,
+        string $columnDataProfile
+    ): string {
+        return self::getPathTemplate('columnDataProfile')->render([
+            'organization' => $organization,
+            'location' => $location,
+            'column_data_profile' => $columnDataProfile,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a connection
+     * resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $connection
+     *
+     * @return string The formatted connection resource.
+     */
+    public static function connectionName(string $project, string $location, string $connection): string
+    {
+        return self::getPathTemplate('connection')->render([
+            'project' => $project,
+            'location' => $location,
+            'connection' => $connection,
+        ]);
     }
 
     /**
@@ -243,6 +316,28 @@ class DlpServiceClient
         return self::getPathTemplate('dlpJob')->render([
             'project' => $project,
             'dlp_job' => $dlpJob,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * file_store_data_profile resource.
+     *
+     * @param string $organization
+     * @param string $location
+     * @param string $fileStoreDataProfile
+     *
+     * @return string The formatted file_store_data_profile resource.
+     */
+    public static function fileStoreDataProfileName(
+        string $organization,
+        string $location,
+        string $fileStoreDataProfile
+    ): string {
+        return self::getPathTemplate('fileStoreDataProfile')->render([
+            'organization' => $organization,
+            'location' => $location,
+            'file_store_data_profile' => $fileStoreDataProfile,
         ]);
     }
 
@@ -365,6 +460,50 @@ class DlpServiceClient
 
     /**
      * Formats a string containing the fully-qualified path to represent a
+     * organization_location_column_data_profile resource.
+     *
+     * @param string $organization
+     * @param string $location
+     * @param string $columnDataProfile
+     *
+     * @return string The formatted organization_location_column_data_profile resource.
+     */
+    public static function organizationLocationColumnDataProfileName(
+        string $organization,
+        string $location,
+        string $columnDataProfile
+    ): string {
+        return self::getPathTemplate('organizationLocationColumnDataProfile')->render([
+            'organization' => $organization,
+            'location' => $location,
+            'column_data_profile' => $columnDataProfile,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * organization_location_connection resource.
+     *
+     * @param string $organization
+     * @param string $location
+     * @param string $connection
+     *
+     * @return string The formatted organization_location_connection resource.
+     */
+    public static function organizationLocationConnectionName(
+        string $organization,
+        string $location,
+        string $connection
+    ): string {
+        return self::getPathTemplate('organizationLocationConnection')->render([
+            'organization' => $organization,
+            'location' => $location,
+            'connection' => $connection,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
      * organization_location_deidentify_template resource.
      *
      * @param string $organization
@@ -373,12 +512,37 @@ class DlpServiceClient
      *
      * @return string The formatted organization_location_deidentify_template resource.
      */
-    public static function organizationLocationDeidentifyTemplateName(string $organization, string $location, string $deidentifyTemplate): string
-    {
+    public static function organizationLocationDeidentifyTemplateName(
+        string $organization,
+        string $location,
+        string $deidentifyTemplate
+    ): string {
         return self::getPathTemplate('organizationLocationDeidentifyTemplate')->render([
             'organization' => $organization,
             'location' => $location,
             'deidentify_template' => $deidentifyTemplate,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * organization_location_file_store_data_profile resource.
+     *
+     * @param string $organization
+     * @param string $location
+     * @param string $fileStoreDataProfile
+     *
+     * @return string The formatted organization_location_file_store_data_profile resource.
+     */
+    public static function organizationLocationFileStoreDataProfileName(
+        string $organization,
+        string $location,
+        string $fileStoreDataProfile
+    ): string {
+        return self::getPathTemplate('organizationLocationFileStoreDataProfile')->render([
+            'organization' => $organization,
+            'location' => $location,
+            'file_store_data_profile' => $fileStoreDataProfile,
         ]);
     }
 
@@ -392,12 +556,37 @@ class DlpServiceClient
      *
      * @return string The formatted organization_location_inspect_template resource.
      */
-    public static function organizationLocationInspectTemplateName(string $organization, string $location, string $inspectTemplate): string
-    {
+    public static function organizationLocationInspectTemplateName(
+        string $organization,
+        string $location,
+        string $inspectTemplate
+    ): string {
         return self::getPathTemplate('organizationLocationInspectTemplate')->render([
             'organization' => $organization,
             'location' => $location,
             'inspect_template' => $inspectTemplate,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * organization_location_project_data_profile resource.
+     *
+     * @param string $organization
+     * @param string $location
+     * @param string $projectDataProfile
+     *
+     * @return string The formatted organization_location_project_data_profile resource.
+     */
+    public static function organizationLocationProjectDataProfileName(
+        string $organization,
+        string $location,
+        string $projectDataProfile
+    ): string {
+        return self::getPathTemplate('organizationLocationProjectDataProfile')->render([
+            'organization' => $organization,
+            'location' => $location,
+            'project_data_profile' => $projectDataProfile,
         ]);
     }
 
@@ -411,12 +600,37 @@ class DlpServiceClient
      *
      * @return string The formatted organization_location_stored_info_type resource.
      */
-    public static function organizationLocationStoredInfoTypeName(string $organization, string $location, string $storedInfoType): string
-    {
+    public static function organizationLocationStoredInfoTypeName(
+        string $organization,
+        string $location,
+        string $storedInfoType
+    ): string {
         return self::getPathTemplate('organizationLocationStoredInfoType')->render([
             'organization' => $organization,
             'location' => $location,
             'stored_info_type' => $storedInfoType,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * organization_location_table_data_profile resource.
+     *
+     * @param string $organization
+     * @param string $location
+     * @param string $tableDataProfile
+     *
+     * @return string The formatted organization_location_table_data_profile resource.
+     */
+    public static function organizationLocationTableDataProfileName(
+        string $organization,
+        string $location,
+        string $tableDataProfile
+    ): string {
+        return self::getPathTemplate('organizationLocationTableDataProfile')->render([
+            'organization' => $organization,
+            'location' => $location,
+            'table_data_profile' => $tableDataProfile,
         ]);
     }
 
@@ -449,6 +663,28 @@ class DlpServiceClient
     {
         return self::getPathTemplate('project')->render([
             'project' => $project,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * project_data_profile resource.
+     *
+     * @param string $organization
+     * @param string $location
+     * @param string $projectDataProfile
+     *
+     * @return string The formatted project_data_profile resource.
+     */
+    public static function projectDataProfileName(
+        string $organization,
+        string $location,
+        string $projectDataProfile
+    ): string {
+        return self::getPathTemplate('projectDataProfile')->render([
+            'organization' => $organization,
+            'location' => $location,
+            'project_data_profile' => $projectDataProfile,
         ]);
     }
 
@@ -522,6 +758,47 @@ class DlpServiceClient
 
     /**
      * Formats a string containing the fully-qualified path to represent a
+     * project_location_column_data_profile resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $columnDataProfile
+     *
+     * @return string The formatted project_location_column_data_profile resource.
+     */
+    public static function projectLocationColumnDataProfileName(
+        string $project,
+        string $location,
+        string $columnDataProfile
+    ): string {
+        return self::getPathTemplate('projectLocationColumnDataProfile')->render([
+            'project' => $project,
+            'location' => $location,
+            'column_data_profile' => $columnDataProfile,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * project_location_connection resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $connection
+     *
+     * @return string The formatted project_location_connection resource.
+     */
+    public static function projectLocationConnectionName(string $project, string $location, string $connection): string
+    {
+        return self::getPathTemplate('projectLocationConnection')->render([
+            'project' => $project,
+            'location' => $location,
+            'connection' => $connection,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
      * project_location_deidentify_template resource.
      *
      * @param string $project
@@ -530,8 +807,11 @@ class DlpServiceClient
      *
      * @return string The formatted project_location_deidentify_template resource.
      */
-    public static function projectLocationDeidentifyTemplateName(string $project, string $location, string $deidentifyTemplate): string
-    {
+    public static function projectLocationDeidentifyTemplateName(
+        string $project,
+        string $location,
+        string $deidentifyTemplate
+    ): string {
         return self::getPathTemplate('projectLocationDeidentifyTemplate')->render([
             'project' => $project,
             'location' => $location,
@@ -560,6 +840,28 @@ class DlpServiceClient
 
     /**
      * Formats a string containing the fully-qualified path to represent a
+     * project_location_file_store_data_profile resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $fileStoreDataProfile
+     *
+     * @return string The formatted project_location_file_store_data_profile resource.
+     */
+    public static function projectLocationFileStoreDataProfileName(
+        string $project,
+        string $location,
+        string $fileStoreDataProfile
+    ): string {
+        return self::getPathTemplate('projectLocationFileStoreDataProfile')->render([
+            'project' => $project,
+            'location' => $location,
+            'file_store_data_profile' => $fileStoreDataProfile,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
      * project_location_inspect_template resource.
      *
      * @param string $project
@@ -568,8 +870,11 @@ class DlpServiceClient
      *
      * @return string The formatted project_location_inspect_template resource.
      */
-    public static function projectLocationInspectTemplateName(string $project, string $location, string $inspectTemplate): string
-    {
+    public static function projectLocationInspectTemplateName(
+        string $project,
+        string $location,
+        string $inspectTemplate
+    ): string {
         return self::getPathTemplate('projectLocationInspectTemplate')->render([
             'project' => $project,
             'location' => $location,
@@ -598,6 +903,28 @@ class DlpServiceClient
 
     /**
      * Formats a string containing the fully-qualified path to represent a
+     * project_location_project_data_profile resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $projectDataProfile
+     *
+     * @return string The formatted project_location_project_data_profile resource.
+     */
+    public static function projectLocationProjectDataProfileName(
+        string $project,
+        string $location,
+        string $projectDataProfile
+    ): string {
+        return self::getPathTemplate('projectLocationProjectDataProfile')->render([
+            'project' => $project,
+            'location' => $location,
+            'project_data_profile' => $projectDataProfile,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
      * project_location_stored_info_type resource.
      *
      * @param string $project
@@ -606,12 +933,37 @@ class DlpServiceClient
      *
      * @return string The formatted project_location_stored_info_type resource.
      */
-    public static function projectLocationStoredInfoTypeName(string $project, string $location, string $storedInfoType): string
-    {
+    public static function projectLocationStoredInfoTypeName(
+        string $project,
+        string $location,
+        string $storedInfoType
+    ): string {
         return self::getPathTemplate('projectLocationStoredInfoType')->render([
             'project' => $project,
             'location' => $location,
             'stored_info_type' => $storedInfoType,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * project_location_table_data_profile resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $tableDataProfile
+     *
+     * @return string The formatted project_location_table_data_profile resource.
+     */
+    public static function projectLocationTableDataProfileName(
+        string $project,
+        string $location,
+        string $tableDataProfile
+    ): string {
+        return self::getPathTemplate('projectLocationTableDataProfile')->render([
+            'project' => $project,
+            'location' => $location,
+            'table_data_profile' => $tableDataProfile,
         ]);
     }
 
@@ -650,12 +1002,37 @@ class DlpServiceClient
     }
 
     /**
+     * Formats a string containing the fully-qualified path to represent a
+     * table_data_profile resource.
+     *
+     * @param string $organization
+     * @param string $location
+     * @param string $tableDataProfile
+     *
+     * @return string The formatted table_data_profile resource.
+     */
+    public static function tableDataProfileName(
+        string $organization,
+        string $location,
+        string $tableDataProfile
+    ): string {
+        return self::getPathTemplate('tableDataProfile')->render([
+            'organization' => $organization,
+            'location' => $location,
+            'table_data_profile' => $tableDataProfile,
+        ]);
+    }
+
+    /**
      * Parses a formatted name string and returns an associative array of the components in the name.
      * The following name formats are supported:
      * Template: Pattern
+     * - columnDataProfile: organizations/{organization}/locations/{location}/columnDataProfiles/{column_data_profile}
+     * - connection: projects/{project}/locations/{location}/connections/{connection}
      * - deidentifyTemplate: organizations/{organization}/deidentifyTemplates/{deidentify_template}
      * - discoveryConfig: projects/{project}/locations/{location}/discoveryConfigs/{discovery_config}
      * - dlpJob: projects/{project}/dlpJobs/{dlp_job}
+     * - fileStoreDataProfile: organizations/{organization}/locations/{location}/fileStoreDataProfiles/{file_store_data_profile}
      * - inspectTemplate: organizations/{organization}/inspectTemplates/{inspect_template}
      * - jobTrigger: projects/{project}/jobTriggers/{job_trigger}
      * - location: projects/{project}/locations/{location}
@@ -663,22 +1040,34 @@ class DlpServiceClient
      * - organizationDeidentifyTemplate: organizations/{organization}/deidentifyTemplates/{deidentify_template}
      * - organizationInspectTemplate: organizations/{organization}/inspectTemplates/{inspect_template}
      * - organizationLocation: organizations/{organization}/locations/{location}
+     * - organizationLocationColumnDataProfile: organizations/{organization}/locations/{location}/columnDataProfiles/{column_data_profile}
+     * - organizationLocationConnection: organizations/{organization}/locations/{location}/connections/{connection}
      * - organizationLocationDeidentifyTemplate: organizations/{organization}/locations/{location}/deidentifyTemplates/{deidentify_template}
+     * - organizationLocationFileStoreDataProfile: organizations/{organization}/locations/{location}/fileStoreDataProfiles/{file_store_data_profile}
      * - organizationLocationInspectTemplate: organizations/{organization}/locations/{location}/inspectTemplates/{inspect_template}
+     * - organizationLocationProjectDataProfile: organizations/{organization}/locations/{location}/projectDataProfiles/{project_data_profile}
      * - organizationLocationStoredInfoType: organizations/{organization}/locations/{location}/storedInfoTypes/{stored_info_type}
+     * - organizationLocationTableDataProfile: organizations/{organization}/locations/{location}/tableDataProfiles/{table_data_profile}
      * - organizationStoredInfoType: organizations/{organization}/storedInfoTypes/{stored_info_type}
      * - project: projects/{project}
+     * - projectDataProfile: organizations/{organization}/locations/{location}/projectDataProfiles/{project_data_profile}
      * - projectDeidentifyTemplate: projects/{project}/deidentifyTemplates/{deidentify_template}
      * - projectDlpJob: projects/{project}/dlpJobs/{dlp_job}
      * - projectInspectTemplate: projects/{project}/inspectTemplates/{inspect_template}
      * - projectJobTrigger: projects/{project}/jobTriggers/{job_trigger}
+     * - projectLocationColumnDataProfile: projects/{project}/locations/{location}/columnDataProfiles/{column_data_profile}
+     * - projectLocationConnection: projects/{project}/locations/{location}/connections/{connection}
      * - projectLocationDeidentifyTemplate: projects/{project}/locations/{location}/deidentifyTemplates/{deidentify_template}
      * - projectLocationDlpJob: projects/{project}/locations/{location}/dlpJobs/{dlp_job}
+     * - projectLocationFileStoreDataProfile: projects/{project}/locations/{location}/fileStoreDataProfiles/{file_store_data_profile}
      * - projectLocationInspectTemplate: projects/{project}/locations/{location}/inspectTemplates/{inspect_template}
      * - projectLocationJobTrigger: projects/{project}/locations/{location}/jobTriggers/{job_trigger}
+     * - projectLocationProjectDataProfile: projects/{project}/locations/{location}/projectDataProfiles/{project_data_profile}
      * - projectLocationStoredInfoType: projects/{project}/locations/{location}/storedInfoTypes/{stored_info_type}
+     * - projectLocationTableDataProfile: projects/{project}/locations/{location}/tableDataProfiles/{table_data_profile}
      * - projectStoredInfoType: projects/{project}/storedInfoTypes/{stored_info_type}
      * - storedInfoType: organizations/{organization}/storedInfoTypes/{stored_info_type}
+     * - tableDataProfile: organizations/{organization}/locations/{location}/tableDataProfiles/{table_data_profile}
      *
      * The optional $template argument can be supplied to specify a particular pattern,
      * and must match one of the templates listed above. If no $template argument is
@@ -686,14 +1075,14 @@ class DlpServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -715,6 +1104,12 @@ class DlpServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -748,6 +1143,9 @@ class DlpServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -775,6 +1173,8 @@ class DlpServiceClient
      *
      * The async variant is {@see DlpServiceClient::activateJobTriggerAsync()} .
      *
+     * @example samples/V2/DlpServiceClient/activate_job_trigger.php
+     *
      * @param ActivateJobTriggerRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -798,10 +1198,15 @@ class DlpServiceClient
      * Starts asynchronous cancellation on a long-running DlpJob. The server
      * makes a best effort to cancel the DlpJob, but success is not
      * guaranteed.
-     * See https://cloud.google.com/dlp/docs/inspecting-storage and
-     * https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage
+     * and
+     * https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::cancelDlpJobAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/cancel_dlp_job.php
      *
      * @param CancelDlpJobRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -821,12 +1226,41 @@ class DlpServiceClient
     }
 
     /**
+     * Create a Connection to an external data source.
+     *
+     * The async variant is {@see DlpServiceClient::createConnectionAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/create_connection.php
+     *
+     * @param CreateConnectionRequest $request     A request to house fields associated with the call.
+     * @param array                   $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return Connection
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function createConnection(CreateConnectionRequest $request, array $callOptions = []): Connection
+    {
+        return $this->startApiCall('CreateConnection', $request, $callOptions)->wait();
+    }
+
+    /**
      * Creates a DeidentifyTemplate for reusing frequently used configuration
      * for de-identifying content, images, and storage.
-     * See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-     * more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::createDeidentifyTemplateAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/create_deidentify_template.php
      *
      * @param CreateDeidentifyTemplateRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
@@ -842,8 +1276,10 @@ class DlpServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createDeidentifyTemplate(CreateDeidentifyTemplateRequest $request, array $callOptions = []): DeidentifyTemplate
-    {
+    public function createDeidentifyTemplate(
+        CreateDeidentifyTemplateRequest $request,
+        array $callOptions = []
+    ): DeidentifyTemplate {
         return $this->startApiCall('CreateDeidentifyTemplate', $request, $callOptions)->wait();
     }
 
@@ -851,6 +1287,8 @@ class DlpServiceClient
      * Creates a config for discovery to scan and profile storage.
      *
      * The async variant is {@see DlpServiceClient::createDiscoveryConfigAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/create_discovery_config.php
      *
      * @param CreateDiscoveryConfigRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
@@ -866,21 +1304,28 @@ class DlpServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createDiscoveryConfig(CreateDiscoveryConfigRequest $request, array $callOptions = []): DiscoveryConfig
-    {
+    public function createDiscoveryConfig(
+        CreateDiscoveryConfigRequest $request,
+        array $callOptions = []
+    ): DiscoveryConfig {
         return $this->startApiCall('CreateDiscoveryConfig', $request, $callOptions)->wait();
     }
 
     /**
      * Creates a new job to inspect storage or calculate risk metrics.
-     * See https://cloud.google.com/dlp/docs/inspecting-storage and
-     * https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage
+     * and
+     * https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
+     * to learn more.
      *
      * When no InfoTypes or CustomInfoTypes are specified in inspect jobs, the
      * system will automatically choose what detectors to run. By default this may
      * be all types, but may change over time as detectors are updated.
      *
      * The async variant is {@see DlpServiceClient::createDlpJobAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/create_dlp_job.php
      *
      * @param CreateDlpJobRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -904,9 +1349,13 @@ class DlpServiceClient
     /**
      * Creates an InspectTemplate for reusing frequently used configuration
      * for inspecting content, images, and storage.
-     * See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-templates
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::createInspectTemplateAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/create_inspect_template.php
      *
      * @param CreateInspectTemplateRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
@@ -922,17 +1371,23 @@ class DlpServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createInspectTemplate(CreateInspectTemplateRequest $request, array $callOptions = []): InspectTemplate
-    {
+    public function createInspectTemplate(
+        CreateInspectTemplateRequest $request,
+        array $callOptions = []
+    ): InspectTemplate {
         return $this->startApiCall('CreateInspectTemplate', $request, $callOptions)->wait();
     }
 
     /**
      * Creates a job trigger to run DLP actions such as scanning storage for
      * sensitive information on a set schedule.
-     * See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::createJobTriggerAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/create_job_trigger.php
      *
      * @param CreateJobTriggerRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -955,10 +1410,13 @@ class DlpServiceClient
 
     /**
      * Creates a pre-built stored infoType to be used for inspection.
-     * See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-     * learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::createStoredInfoTypeAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/create_stored_info_type.php
      *
      * @param CreateStoredInfoTypeRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
@@ -982,14 +1440,17 @@ class DlpServiceClient
     /**
      * De-identifies potentially sensitive info from a ContentItem.
      * This method has limits on input size and output size.
-     * See https://cloud.google.com/dlp/docs/deidentify-sensitive-data to
-     * learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/deidentify-sensitive-data
+     * to learn more.
      *
      * When no InfoTypes or CustomInfoTypes are specified in this request, the
      * system will automatically choose what detectors to run. By default this may
      * be all types, but may change over time as detectors are updated.
      *
      * The async variant is {@see DlpServiceClient::deidentifyContentAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/deidentify_content.php
      *
      * @param DeidentifyContentRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -1005,17 +1466,46 @@ class DlpServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function deidentifyContent(DeidentifyContentRequest $request, array $callOptions = []): DeidentifyContentResponse
-    {
+    public function deidentifyContent(
+        DeidentifyContentRequest $request,
+        array $callOptions = []
+    ): DeidentifyContentResponse {
         return $this->startApiCall('DeidentifyContent', $request, $callOptions)->wait();
     }
 
     /**
+     * Delete a Connection.
+     *
+     * The async variant is {@see DlpServiceClient::deleteConnectionAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/delete_connection.php
+     *
+     * @param DeleteConnectionRequest $request     A request to house fields associated with the call.
+     * @param array                   $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function deleteConnection(DeleteConnectionRequest $request, array $callOptions = []): void
+    {
+        $this->startApiCall('DeleteConnection', $request, $callOptions)->wait();
+    }
+
+    /**
      * Deletes a DeidentifyTemplate.
-     * See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-     * more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::deleteDeidentifyTemplateAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/delete_deidentify_template.php
      *
      * @param DeleteDeidentifyTemplateRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
@@ -1039,6 +1529,8 @@ class DlpServiceClient
      *
      * The async variant is {@see DlpServiceClient::deleteDiscoveryConfigAsync()} .
      *
+     * @example samples/V2/DlpServiceClient/delete_discovery_config.php
+     *
      * @param DeleteDiscoveryConfigRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -1060,10 +1552,15 @@ class DlpServiceClient
      * Deletes a long-running DlpJob. This method indicates that the client is
      * no longer interested in the DlpJob result. The job will be canceled if
      * possible.
-     * See https://cloud.google.com/dlp/docs/inspecting-storage and
-     * https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage
+     * and
+     * https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::deleteDlpJobAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/delete_dlp_job.php
      *
      * @param DeleteDlpJobRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -1083,10 +1580,42 @@ class DlpServiceClient
     }
 
     /**
+     * Delete a FileStoreDataProfile. Will not prevent the profile from being
+     * regenerated if the resource is still included in a discovery configuration.
+     *
+     * The async variant is {@see DlpServiceClient::deleteFileStoreDataProfileAsync()}
+     * .
+     *
+     * @example samples/V2/DlpServiceClient/delete_file_store_data_profile.php
+     *
+     * @param DeleteFileStoreDataProfileRequest $request     A request to house fields associated with the call.
+     * @param array                             $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function deleteFileStoreDataProfile(
+        DeleteFileStoreDataProfileRequest $request,
+        array $callOptions = []
+    ): void {
+        $this->startApiCall('DeleteFileStoreDataProfile', $request, $callOptions)->wait();
+    }
+
+    /**
      * Deletes an InspectTemplate.
-     * See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-templates
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::deleteInspectTemplateAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/delete_inspect_template.php
      *
      * @param DeleteInspectTemplateRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
@@ -1107,9 +1636,13 @@ class DlpServiceClient
 
     /**
      * Deletes a job trigger.
-     * See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::deleteJobTriggerAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/delete_job_trigger.php
      *
      * @param DeleteJobTriggerRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -1130,10 +1663,13 @@ class DlpServiceClient
 
     /**
      * Deletes a stored infoType.
-     * See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-     * learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::deleteStoredInfoTypeAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/delete_stored_info_type.php
      *
      * @param DeleteStoredInfoTypeRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
@@ -1153,10 +1689,37 @@ class DlpServiceClient
     }
 
     /**
+     * Delete a TableDataProfile. Will not prevent the profile from being
+     * regenerated if the table is still included in a discovery configuration.
+     *
+     * The async variant is {@see DlpServiceClient::deleteTableDataProfileAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/delete_table_data_profile.php
+     *
+     * @param DeleteTableDataProfileRequest $request     A request to house fields associated with the call.
+     * @param array                         $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function deleteTableDataProfile(DeleteTableDataProfileRequest $request, array $callOptions = []): void
+    {
+        $this->startApiCall('DeleteTableDataProfile', $request, $callOptions)->wait();
+    }
+
+    /**
      * Finish a running hybrid DlpJob. Triggers the finalization steps and running
      * of any enabled actions that have not yet run.
      *
      * The async variant is {@see DlpServiceClient::finishDlpJobAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/finish_dlp_job.php
      *
      * @param FinishDlpJobRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -1176,11 +1739,68 @@ class DlpServiceClient
     }
 
     /**
+     * Gets a column data profile.
+     *
+     * The async variant is {@see DlpServiceClient::getColumnDataProfileAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/get_column_data_profile.php
+     *
+     * @param GetColumnDataProfileRequest $request     A request to house fields associated with the call.
+     * @param array                       $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return ColumnDataProfile
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getColumnDataProfile(
+        GetColumnDataProfileRequest $request,
+        array $callOptions = []
+    ): ColumnDataProfile {
+        return $this->startApiCall('GetColumnDataProfile', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Get a Connection by name.
+     *
+     * The async variant is {@see DlpServiceClient::getConnectionAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/get_connection.php
+     *
+     * @param GetConnectionRequest $request     A request to house fields associated with the call.
+     * @param array                $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return Connection
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getConnection(GetConnectionRequest $request, array $callOptions = []): Connection
+    {
+        return $this->startApiCall('GetConnection', $request, $callOptions)->wait();
+    }
+
+    /**
      * Gets a DeidentifyTemplate.
-     * See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-     * more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::getDeidentifyTemplateAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/get_deidentify_template.php
      *
      * @param GetDeidentifyTemplateRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
@@ -1196,8 +1816,10 @@ class DlpServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getDeidentifyTemplate(GetDeidentifyTemplateRequest $request, array $callOptions = []): DeidentifyTemplate
-    {
+    public function getDeidentifyTemplate(
+        GetDeidentifyTemplateRequest $request,
+        array $callOptions = []
+    ): DeidentifyTemplate {
         return $this->startApiCall('GetDeidentifyTemplate', $request, $callOptions)->wait();
     }
 
@@ -1205,6 +1827,8 @@ class DlpServiceClient
      * Gets a discovery configuration.
      *
      * The async variant is {@see DlpServiceClient::getDiscoveryConfigAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/get_discovery_config.php
      *
      * @param GetDiscoveryConfigRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
@@ -1227,10 +1851,15 @@ class DlpServiceClient
 
     /**
      * Gets the latest state of a long-running DlpJob.
-     * See https://cloud.google.com/dlp/docs/inspecting-storage and
-     * https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage
+     * and
+     * https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::getDlpJobAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/get_dlp_job.php
      *
      * @param GetDlpJobRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
@@ -1252,10 +1881,42 @@ class DlpServiceClient
     }
 
     /**
+     * Gets a file store data profile.
+     *
+     * The async variant is {@see DlpServiceClient::getFileStoreDataProfileAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/get_file_store_data_profile.php
+     *
+     * @param GetFileStoreDataProfileRequest $request     A request to house fields associated with the call.
+     * @param array                          $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return FileStoreDataProfile
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getFileStoreDataProfile(
+        GetFileStoreDataProfileRequest $request,
+        array $callOptions = []
+    ): FileStoreDataProfile {
+        return $this->startApiCall('GetFileStoreDataProfile', $request, $callOptions)->wait();
+    }
+
+    /**
      * Gets an InspectTemplate.
-     * See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-templates
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::getInspectTemplateAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/get_inspect_template.php
      *
      * @param GetInspectTemplateRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
@@ -1278,9 +1939,13 @@ class DlpServiceClient
 
     /**
      * Gets a job trigger.
-     * See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::getJobTriggerAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/get_job_trigger.php
      *
      * @param GetJobTriggerRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -1302,11 +1967,42 @@ class DlpServiceClient
     }
 
     /**
+     * Gets a project data profile.
+     *
+     * The async variant is {@see DlpServiceClient::getProjectDataProfileAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/get_project_data_profile.php
+     *
+     * @param GetProjectDataProfileRequest $request     A request to house fields associated with the call.
+     * @param array                        $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return ProjectDataProfile
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getProjectDataProfile(
+        GetProjectDataProfileRequest $request,
+        array $callOptions = []
+    ): ProjectDataProfile {
+        return $this->startApiCall('GetProjectDataProfile', $request, $callOptions)->wait();
+    }
+
+    /**
      * Gets a stored infoType.
-     * See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-     * learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::getStoredInfoTypeAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/get_stored_info_type.php
      *
      * @param GetStoredInfoTypeRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -1328,11 +2024,39 @@ class DlpServiceClient
     }
 
     /**
+     * Gets a table data profile.
+     *
+     * The async variant is {@see DlpServiceClient::getTableDataProfileAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/get_table_data_profile.php
+     *
+     * @param GetTableDataProfileRequest $request     A request to house fields associated with the call.
+     * @param array                      $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return TableDataProfile
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getTableDataProfile(GetTableDataProfileRequest $request, array $callOptions = []): TableDataProfile
+    {
+        return $this->startApiCall('GetTableDataProfile', $request, $callOptions)->wait();
+    }
+
+    /**
      * Inspect hybrid content and store findings to a job.
      * To review the findings, inspect the job. Inspection will occur
      * asynchronously.
      *
      * The async variant is {@see DlpServiceClient::hybridInspectDlpJobAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/hybrid_inspect_dlp_job.php
      *
      * @param HybridInspectDlpJobRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -1348,8 +2072,10 @@ class DlpServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function hybridInspectDlpJob(HybridInspectDlpJobRequest $request, array $callOptions = []): HybridInspectResponse
-    {
+    public function hybridInspectDlpJob(
+        HybridInspectDlpJobRequest $request,
+        array $callOptions = []
+    ): HybridInspectResponse {
         return $this->startApiCall('HybridInspectDlpJob', $request, $callOptions)->wait();
     }
 
@@ -1359,6 +2085,8 @@ class DlpServiceClient
      * jobs within the trigger.
      *
      * The async variant is {@see DlpServiceClient::hybridInspectJobTriggerAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/hybrid_inspect_job_trigger.php
      *
      * @param HybridInspectJobTriggerRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
@@ -1374,8 +2102,10 @@ class DlpServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function hybridInspectJobTrigger(HybridInspectJobTriggerRequest $request, array $callOptions = []): HybridInspectResponse
-    {
+    public function hybridInspectJobTrigger(
+        HybridInspectJobTriggerRequest $request,
+        array $callOptions = []
+    ): HybridInspectResponse {
         return $this->startApiCall('HybridInspectJobTrigger', $request, $callOptions)->wait();
     }
 
@@ -1387,10 +2117,14 @@ class DlpServiceClient
      * system will automatically choose what detectors to run. By default this may
      * be all types, but may change over time as detectors are updated.
      *
-     * For how to guides, see https://cloud.google.com/dlp/docs/inspecting-images
-     * and https://cloud.google.com/dlp/docs/inspecting-text,
+     * For how to guides, see
+     * https://cloud.google.com/sensitive-data-protection/docs/inspecting-images
+     * and
+     * https://cloud.google.com/sensitive-data-protection/docs/inspecting-text,
      *
      * The async variant is {@see DlpServiceClient::inspectContentAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/inspect_content.php
      *
      * @param InspectContentRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -1412,11 +2146,69 @@ class DlpServiceClient
     }
 
     /**
+     * Lists column data profiles for an organization.
+     *
+     * The async variant is {@see DlpServiceClient::listColumnDataProfilesAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/list_column_data_profiles.php
+     *
+     * @param ListColumnDataProfilesRequest $request     A request to house fields associated with the call.
+     * @param array                         $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listColumnDataProfiles(
+        ListColumnDataProfilesRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
+        return $this->startApiCall('ListColumnDataProfiles', $request, $callOptions);
+    }
+
+    /**
+     * Lists Connections in a parent. Use SearchConnections to see all connections
+     * within an organization.
+     *
+     * The async variant is {@see DlpServiceClient::listConnectionsAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/list_connections.php
+     *
+     * @param ListConnectionsRequest $request     A request to house fields associated with the call.
+     * @param array                  $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listConnections(ListConnectionsRequest $request, array $callOptions = []): PagedListResponse
+    {
+        return $this->startApiCall('ListConnections', $request, $callOptions);
+    }
+
+    /**
      * Lists DeidentifyTemplates.
-     * See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-     * more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::listDeidentifyTemplatesAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/list_deidentify_templates.php
      *
      * @param ListDeidentifyTemplatesRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
@@ -1432,8 +2224,10 @@ class DlpServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listDeidentifyTemplates(ListDeidentifyTemplatesRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listDeidentifyTemplates(
+        ListDeidentifyTemplatesRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListDeidentifyTemplates', $request, $callOptions);
     }
 
@@ -1441,6 +2235,8 @@ class DlpServiceClient
      * Lists discovery configurations.
      *
      * The async variant is {@see DlpServiceClient::listDiscoveryConfigsAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/list_discovery_configs.php
      *
      * @param ListDiscoveryConfigsRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
@@ -1456,17 +2252,24 @@ class DlpServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listDiscoveryConfigs(ListDiscoveryConfigsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listDiscoveryConfigs(
+        ListDiscoveryConfigsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListDiscoveryConfigs', $request, $callOptions);
     }
 
     /**
      * Lists DlpJobs that match the specified filter in the request.
-     * See https://cloud.google.com/dlp/docs/inspecting-storage and
-     * https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage
+     * and
+     * https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::listDlpJobsAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/list_dlp_jobs.php
      *
      * @param ListDlpJobsRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -1488,11 +2291,42 @@ class DlpServiceClient
     }
 
     /**
+     * Lists file store data profiles for an organization.
+     *
+     * The async variant is {@see DlpServiceClient::listFileStoreDataProfilesAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/list_file_store_data_profiles.php
+     *
+     * @param ListFileStoreDataProfilesRequest $request     A request to house fields associated with the call.
+     * @param array                            $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listFileStoreDataProfiles(
+        ListFileStoreDataProfilesRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
+        return $this->startApiCall('ListFileStoreDataProfiles', $request, $callOptions);
+    }
+
+    /**
      * Returns a list of the sensitive information types that DLP API
-     * supports. See https://cloud.google.com/dlp/docs/infotypes-reference to
-     * learn more.
+     * supports. See
+     * https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::listInfoTypesAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/list_info_types.php
      *
      * @param ListInfoTypesRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -1515,9 +2349,13 @@ class DlpServiceClient
 
     /**
      * Lists InspectTemplates.
-     * See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-templates
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::listInspectTemplatesAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/list_inspect_templates.php
      *
      * @param ListInspectTemplatesRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
@@ -1533,16 +2371,22 @@ class DlpServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listInspectTemplates(ListInspectTemplatesRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listInspectTemplates(
+        ListInspectTemplatesRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListInspectTemplates', $request, $callOptions);
     }
 
     /**
      * Lists job triggers.
-     * See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::listJobTriggersAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/list_job_triggers.php
      *
      * @param ListJobTriggersRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -1564,11 +2408,42 @@ class DlpServiceClient
     }
 
     /**
+     * Lists project data profiles for an organization.
+     *
+     * The async variant is {@see DlpServiceClient::listProjectDataProfilesAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/list_project_data_profiles.php
+     *
+     * @param ListProjectDataProfilesRequest $request     A request to house fields associated with the call.
+     * @param array                          $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listProjectDataProfiles(
+        ListProjectDataProfilesRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
+        return $this->startApiCall('ListProjectDataProfiles', $request, $callOptions);
+    }
+
+    /**
      * Lists stored infoTypes.
-     * See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-     * learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::listStoredInfoTypesAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/list_stored_info_types.php
      *
      * @param ListStoredInfoTypesRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -1590,16 +2465,47 @@ class DlpServiceClient
     }
 
     /**
+     * Lists table data profiles for an organization.
+     *
+     * The async variant is {@see DlpServiceClient::listTableDataProfilesAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/list_table_data_profiles.php
+     *
+     * @param ListTableDataProfilesRequest $request     A request to house fields associated with the call.
+     * @param array                        $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listTableDataProfiles(
+        ListTableDataProfilesRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
+        return $this->startApiCall('ListTableDataProfiles', $request, $callOptions);
+    }
+
+    /**
      * Redacts potentially sensitive info from an image.
      * This method has limits on input size, processing time, and output size.
-     * See https://cloud.google.com/dlp/docs/redacting-sensitive-data-images to
-     * learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/redacting-sensitive-data-images
+     * to learn more.
      *
      * When no InfoTypes or CustomInfoTypes are specified in this request, the
      * system will automatically choose what detectors to run. By default this may
      * be all types, but may change over time as detectors are updated.
      *
      * The async variant is {@see DlpServiceClient::redactImageAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/redact_image.php
      *
      * @param RedactImageRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -1623,10 +2529,12 @@ class DlpServiceClient
     /**
      * Re-identifies content that has been de-identified.
      * See
-     * https://cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example
+     * https://cloud.google.com/sensitive-data-protection/docs/pseudonymization#re-identification_in_free_text_code_example
      * to learn more.
      *
      * The async variant is {@see DlpServiceClient::reidentifyContentAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/reidentify_content.php
      *
      * @param ReidentifyContentRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -1642,17 +2550,74 @@ class DlpServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function reidentifyContent(ReidentifyContentRequest $request, array $callOptions = []): ReidentifyContentResponse
-    {
+    public function reidentifyContent(
+        ReidentifyContentRequest $request,
+        array $callOptions = []
+    ): ReidentifyContentResponse {
         return $this->startApiCall('ReidentifyContent', $request, $callOptions)->wait();
     }
 
     /**
+     * Searches for Connections in a parent.
+     *
+     * The async variant is {@see DlpServiceClient::searchConnectionsAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/search_connections.php
+     *
+     * @param SearchConnectionsRequest $request     A request to house fields associated with the call.
+     * @param array                    $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function searchConnections(SearchConnectionsRequest $request, array $callOptions = []): PagedListResponse
+    {
+        return $this->startApiCall('SearchConnections', $request, $callOptions);
+    }
+
+    /**
+     * Update a Connection.
+     *
+     * The async variant is {@see DlpServiceClient::updateConnectionAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/update_connection.php
+     *
+     * @param UpdateConnectionRequest $request     A request to house fields associated with the call.
+     * @param array                   $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return Connection
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function updateConnection(UpdateConnectionRequest $request, array $callOptions = []): Connection
+    {
+        return $this->startApiCall('UpdateConnection', $request, $callOptions)->wait();
+    }
+
+    /**
      * Updates the DeidentifyTemplate.
-     * See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-     * more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::updateDeidentifyTemplateAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/update_deidentify_template.php
      *
      * @param UpdateDeidentifyTemplateRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
@@ -1668,8 +2633,10 @@ class DlpServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateDeidentifyTemplate(UpdateDeidentifyTemplateRequest $request, array $callOptions = []): DeidentifyTemplate
-    {
+    public function updateDeidentifyTemplate(
+        UpdateDeidentifyTemplateRequest $request,
+        array $callOptions = []
+    ): DeidentifyTemplate {
         return $this->startApiCall('UpdateDeidentifyTemplate', $request, $callOptions)->wait();
     }
 
@@ -1677,6 +2644,8 @@ class DlpServiceClient
      * Updates a discovery configuration.
      *
      * The async variant is {@see DlpServiceClient::updateDiscoveryConfigAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/update_discovery_config.php
      *
      * @param UpdateDiscoveryConfigRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
@@ -1692,16 +2661,22 @@ class DlpServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateDiscoveryConfig(UpdateDiscoveryConfigRequest $request, array $callOptions = []): DiscoveryConfig
-    {
+    public function updateDiscoveryConfig(
+        UpdateDiscoveryConfigRequest $request,
+        array $callOptions = []
+    ): DiscoveryConfig {
         return $this->startApiCall('UpdateDiscoveryConfig', $request, $callOptions)->wait();
     }
 
     /**
      * Updates the InspectTemplate.
-     * See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-templates
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::updateInspectTemplateAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/update_inspect_template.php
      *
      * @param UpdateInspectTemplateRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
@@ -1717,16 +2692,22 @@ class DlpServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateInspectTemplate(UpdateInspectTemplateRequest $request, array $callOptions = []): InspectTemplate
-    {
+    public function updateInspectTemplate(
+        UpdateInspectTemplateRequest $request,
+        array $callOptions = []
+    ): InspectTemplate {
         return $this->startApiCall('UpdateInspectTemplate', $request, $callOptions)->wait();
     }
 
     /**
      * Updates a job trigger.
-     * See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::updateJobTriggerAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/update_job_trigger.php
      *
      * @param UpdateJobTriggerRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -1750,10 +2731,13 @@ class DlpServiceClient
     /**
      * Updates the stored infoType by creating a new version. The existing version
      * will continue to be used until the new version is ready.
-     * See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-     * learn more.
+     * See
+     * https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes
+     * to learn more.
      *
      * The async variant is {@see DlpServiceClient::updateStoredInfoTypeAsync()} .
+     *
+     * @example samples/V2/DlpServiceClient/update_stored_info_type.php
      *
      * @param UpdateStoredInfoTypeRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {

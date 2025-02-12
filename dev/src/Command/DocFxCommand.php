@@ -25,33 +25,49 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 use RuntimeException;
+use Google\Auth\Cache\FileSystemCacheItemPool;
+use Google\Cloud\Dev\Component;
+use Google\Cloud\Dev\DocFx\Node\ClassNode;
 use Google\Cloud\Dev\DocFx\Page\PageTree;
 use Google\Cloud\Dev\DocFx\Page\OverviewPage;
-use Google\Cloud\Dev\Component;
+use Google\Cloud\Dev\DocFx\XrefValidationTrait;
 
 /**
  * @internal
  */
 class DocFxCommand extends Command
 {
+    use XrefValidationTrait;
+
     private array $composerJson;
     private array $repoMetadataJson;
+
+    // these links are inexplicably broken in phpdoc generation, and will require more investigation
+    private static array $allowedReferenceFailures = [
+        '\Google\Cloud\ResourceManager\V3\Client\ProjectsClient::testIamPermissions()'
+            => 'ProjectsClient::testIamPermissionsAsync()',
+        '\Google\Cloud\Logging\V2\Client\ConfigServiceV2Client::getView()'
+            => 'ConfigServiceV2Client::getViewAsync()'
+    ];
+
+    private static array $productNeutralGuides = [
+        'AUTHENTICATION.md' => 'Authentication',
+        'DEBUG.md' => 'Debug Logging',
+        'MIGRATING.md' => 'Migrating to V2',
+    ];
 
     protected function configure()
     {
         $this->setName('docfx')
             ->setDescription('Generate DocFX yaml from a phpdoc strucutre.xml')
             ->addOption('xml', '', InputOption::VALUE_REQUIRED, 'Path to phpdoc structure.xml')
-            ->addOption('component', 'c', InputOption::VALUE_REQUIRED, 'Generate docs only for a single component.', '')
+            ->addOption('component', 'c', InputOption::VALUE_REQUIRED, 'Generate docs for a specific component.', '')
             ->addOption('out', '', InputOption::VALUE_REQUIRED, 'Path where to store the generated output.', 'out')
             ->addOption('metadata-version', '', InputOption::VALUE_REQUIRED, 'version to write to docs.metadata using docuploader')
             ->addOption('staging-bucket', '', InputOption::VALUE_REQUIRED, 'Upload to the specified staging bucket using docuploader.')
-            ->addOption(
-                'component-path',
-                '',
-                InputOption::VALUE_OPTIONAL,
-                'Specify the path of the desired component. Please note, this option is only intended for testing purposes.
-            ')
+            ->addOption('path', '', InputOption::VALUE_OPTIONAL, 'Specify the path to the composer package to generate.')
+            ->addOption('--with-cache', '', InputOption::VALUE_NONE, 'Cache expensive proto namespace lookups to a file')
+            ->addOption('--generate-product-neutral-guides', '', InputOption::VALUE_NONE, 'Instead of a component, generate product-neutral guides.')
         ;
     }
 
@@ -61,11 +77,67 @@ class DocFxCommand extends Command
             throw new RuntimeException('This command must be run on PHP 8.0 or above');
         }
 
-        $componentName = $input->getOption('component') ?: basename(getcwd());
-        $component = new Component($componentName, $input->getOption('component-path'));
+        // YAML dump configuration
+        $inline = 11; // The level where you switch to inline YAML
+        $indent = 2; // The amount of spaces to use for indentation of nested nodes
+        $flags = Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK;
+
+        $outDir = $input->getOption('out');
+        if (!is_dir($outDir)) {
+            if (!mkdir($outDir)) {
+                throw new RuntimeException('out directory doesn\'t exist and cannot be created');
+            }
+        }
+
+        if ($input->getOption('generate-product-neutral-guides')) {
+            $output->writeln('Generating <options=bold;fg=white>product neutral guides</>');
+            $tocItems = [];
+            foreach (self::$productNeutralGuides as $file => $name) {
+                file_put_contents(
+                    $outDir . '/' . strtolower($file),
+                    file_get_contents(Component::ROOT_DIR . '/' . $file)
+                );
+                $tocItems[] = ['name' => $name, 'href' => strtolower($file)];
+            }
+            // Write the TOC to a file
+            $guideToc = array_filter([
+                'uid' => 'product-neutral-guides',
+                'name' => 'Client library help',
+                'items' => $tocItems,
+            ]);
+            $tocYaml = Yaml::dump([$guideToc], $inline, $indent, $flags);
+            $outFile = sprintf('%s/toc.yml', $outDir);
+            file_put_contents($outFile, $tocYaml);
+
+            $output->writeln('Done.');
+
+            if ($metadataVersion = $input->getOption('metadata-version')) {
+                $output->write(sprintf('Writing docs.metadata with version <fg=white>%s</>... ', $metadataVersion));
+                $process = new Process([
+                    'docuploader', 'create-metadata',
+                    '--name', 'help',
+                    '--version', $metadataVersion,
+                    '--language', 'php',
+                    $outDir . '/docs.metadata'
+                ]);
+                $process->mustRun();
+                $output->writeln('Done.');
+            }
+
+            if ($stagingBucket = $input->getOption('staging-bucket')) {
+                $output->write(sprintf('Running docuploader to upload to staging bucket <fg=white>%s</>... ', $stagingBucket));
+                $this->uploadToStagingBucket($outDir, $stagingBucket);
+                $output->writeln('Done.');
+            }
+
+            return 0;
+        }
+
+        $componentPath = $input->getOption('path');
+        $componentName = rtrim($input->getOption('component'), '/') ?: basename($componentPath ?: getcwd());
+        $component = new Component($componentName, $componentPath);
         $output->writeln(sprintf('Generating documentation for <options=bold;fg=white>%s</>', $componentName));
         $xml = $input->getOption('xml');
-        $outDir = $input->getOption('out');
         if (empty($xml)) {
             $output->write('Running phpdoc to generate structure.xml... ');
             // Run "phpdoc"
@@ -79,30 +151,25 @@ class DocFxCommand extends Command
                 : sprintf('Default structure.xml file "%s" not found.', $xml));
         }
 
-        if (!is_dir($outDir)) {
-            if (!mkdir($outDir)) {
-                throw new RuntimeException('out directory doesn\'t exist and cannot be created');
-            }
-        }
-
         $output->write(sprintf('Writing output to <fg=white>%s</>... ', $outDir));
 
-        // YAML dump configuration
-        $inline = 11; // The level where you switch to inline YAML
-        $indent = 2; // The amount of spaces to use for indentation of nested nodes
-        $flags = Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK;
-
+        $valid = true;
         $tocItems = [];
         $packageDescription = $component->getDescription();
+        $isBeta = 'stable' !== $component->getReleaseLevel();
+        $packageNamespaces = $this->getProtoPackageToNamespaceMap($input->getOption('with-cache'));
         foreach ($component->getNamespaces() as $namespace => $dir) {
             $pageTree = new PageTree(
                 $xml,
                 $namespace,
                 $packageDescription,
-                $component->getPath()
+                $component->getPath(),
+                $packageNamespaces
             );
 
             foreach ($pageTree->getPages() as $page) {
+                // validate the docs page. this will fail the job if it's false
+                $valid = $this->validate($page->getClassNode(), $output) && $valid;
                 $docFxArray = ['items' => $page->getItems()];
 
                 // Dump the YAML for the class node
@@ -117,11 +184,25 @@ class DocFxCommand extends Command
             $tocItems = array_merge($tocItems, $pageTree->getTocItems());
         }
 
-        $releaseLevel = $component->getReleaseLevel();
+        // exit early if the docs aren't valid
+        if (!$valid) {
+            return 1;
+        }
+
         if (file_exists($overviewFile = sprintf('%s/README.md', $component->getPath()))) {
+            // Add Migrating Doc if we are in a V2 component
+            if (str_starts_with($component->getPackageVersion(), '2.')) {
+                if (!file_exists($migratingFile = sprintf($component->getPath() . '/MIGRATING.md'))) {
+                    $migratingFile = Component::ROOT_DIR . '/MIGRATING.md';
+                }
+                file_put_contents($outDir . '/migrating.md', file_get_contents($migratingFile));
+                // Add "migrating" as the second item on the TOC (after "overview")
+                array_unshift($tocItems, ['name' => 'Migrating', 'href' => 'migrating.md']);
+            }
+
             $overview = new OverviewPage(
                 file_get_contents($overviewFile),
-                $releaseLevel !== 'stable'
+                $isBeta
             );
             $outFile = sprintf('%s/%s', $outDir, $overview->getFilename());
             file_put_contents($outFile, $overview->getContents());
@@ -133,7 +214,7 @@ class DocFxCommand extends Command
         $componentToc = array_filter([
             'uid' => $component->getReferenceDocumentationUid(),
             'name' => $component->getPackageName(),
-            'status' => $releaseLevel !== 'stable' ? 'beta' : '',
+            'status' => $isBeta ? 'beta' : '',
             'items' => $tocItems,
         ]);
         $tocYaml = Yaml::dump([$componentToc], $inline, $indent, $flags);
@@ -144,15 +225,20 @@ class DocFxCommand extends Command
 
         if ($metadataVersion = $input->getOption('metadata-version')) {
             $output->write(sprintf('Writing docs.metadata with version <fg=white>%s</>... ', $metadataVersion));
+            $xrefs = array_merge(...array_map(
+                fn ($c) => ['--xrefs', sprintf('devsite://php/%s', $c->getId())],
+                $component->getComponentDependencies(),
+            ));
             $process = new Process([
                 'docuploader', 'create-metadata',
-                '--name', str_replace('google/', '', $component->getPackageName()),
+                '--name', $component->getId(),
                 '--version', $metadataVersion,
                 '--language', 'php',
                 '--distribution-name', $component->getPackageName(),
                 '--product-page', $component->getProductDocumentation(),
                 '--github-repository', $component->getRepoName(),
                 '--issue-tracker', $component->getIssueTracker(),
+                ...$xrefs,
                 $outDir . '/docs.metadata'
             ]);
             $process->mustRun();
@@ -161,19 +247,7 @@ class DocFxCommand extends Command
 
         if ($stagingBucket = $input->getOption('staging-bucket')) {
             $output->write(sprintf('Running docuploader to upload to staging bucket <fg=white>%s</>... ', $stagingBucket));
-            $process = new Process([
-                'docuploader',
-                'upload',
-                $outDir,
-                '--staging-bucket',
-                $stagingBucket,
-                '--destination-prefix',
-                'docfx-',
-                '--metadata-file',
-                 // use "realdir" until https://github.com/googleapis/docuploader/issues/132 is fixed
-                realpath($outDir) . '/docs.metadata'
-            ]);
-            $process->mustRun();
+            $this->uploadToStagingBucket($outDir, $stagingBucket);
             $output->writeln('Done.');
         }
 
@@ -198,5 +272,72 @@ class DocFxCommand extends Command
         $process->setTimeout(120);
 
         return $process;
+    }
+
+    private function validate(ClassNode $class, OutputInterface $output): bool
+    {
+        $valid = true;
+        $emptyRef = '<options=bold>empty</>';
+        $isGenerated = $class->isProtobufMessageClass() || $class->isProtobufEnumClass() || $class->isServiceClass();
+        foreach (array_merge([$class], $class->getMethods(), $class->getConstants()) as $node) {
+            foreach ($this->getInvalidXrefs($node->getContent()) as $invalidRef) {
+                if (isset(self::$allowedReferenceFailures[$node->getFullname()])
+                    && self::$allowedReferenceFailures[$node->getFullname()] == $invalidRef) {
+                    // these links are inexplicably broken in phpdoc generation, and will require more investigation
+                    continue;
+                }
+                $output->write(sprintf("\n<error>Invalid xref in %s: %s</>", $node->getFullname(), $invalidRef));
+                $valid = false;
+            }
+            foreach ($this->getBrokenXrefs($node->getContent()) as $brokenRef) {
+                $output->writeln(
+                    sprintf('<comment>Broken xref in %s: %s</>', $node->getFullname(), $brokenRef ?: $emptyRef),
+                    $isGenerated ? OutputInterface::VERBOSITY_VERBOSE : OutputInterface::VERBOSITY_NORMAL
+                );
+                // generated classes are allowed to have broken xrefs
+                if ($isGenerated) {
+                    continue;
+                }
+                $valid = false;
+            }
+        }
+        if (!$valid) {
+            $output->writeln('');
+        }
+        return $valid;
+    }
+
+    private function getProtoPackageToNamespaceMap(bool $useFileCache): array
+    {
+        if (!$useFileCache) {
+            return Component::getProtoPackageToNamespaceMap();
+        }
+
+        $cache = new FileSystemCacheItemPool('.cache');
+        $item = $cache->getItem('phpdoc_proto_package_to_namespace_map');
+
+        if (!$item->isHit()) {
+            $item->set(Component::getProtoPackageToNamespaceMap());
+            $cache->save($item);
+        }
+
+        return $item->get();
+    }
+
+    private function uploadToStagingBucket(string $outDir, string $stagingBucket): void
+    {
+        $process = new Process([
+            'docuploader',
+            'upload',
+            $outDir,
+            '--staging-bucket',
+            $stagingBucket,
+            '--destination-prefix',
+            'docfx-',
+            '--metadata-file',
+             // use "realdir" until https://github.com/googleapis/docuploader/issues/132 is fixed
+            realpath($outDir) . '/docs.metadata'
+        ]);
+        $process->mustRun();
     }
 }

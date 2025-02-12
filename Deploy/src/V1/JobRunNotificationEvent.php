@@ -22,43 +22,55 @@ class JobRunNotificationEvent extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string message = 1;</code>
      */
-    private $message = '';
+    protected $message = '';
     /**
      * The name of the `JobRun`.
      *
      * Generated from protobuf field <code>string job_run = 2;</code>
      */
-    private $job_run = '';
+    protected $job_run = '';
     /**
      * Unique identifier of the `DeliveryPipeline`.
      *
      * Generated from protobuf field <code>string pipeline_uid = 3;</code>
      */
-    private $pipeline_uid = '';
+    protected $pipeline_uid = '';
     /**
      * Unique identifier of the `Release`.
      *
      * Generated from protobuf field <code>string release_uid = 4;</code>
      */
-    private $release_uid = '';
+    protected $release_uid = '';
+    /**
+     * The name of the `Release`.
+     *
+     * Generated from protobuf field <code>string release = 8;</code>
+     */
+    protected $release = '';
     /**
      * Unique identifier of the `Rollout`.
      *
      * Generated from protobuf field <code>string rollout_uid = 5;</code>
      */
-    private $rollout_uid = '';
+    protected $rollout_uid = '';
+    /**
+     * The name of the `Rollout`.
+     *
+     * Generated from protobuf field <code>string rollout = 9;</code>
+     */
+    protected $rollout = '';
     /**
      * ID of the `Target`.
      *
      * Generated from protobuf field <code>string target_id = 6;</code>
      */
-    private $target_id = '';
+    protected $target_id = '';
     /**
      * Type of this notification, e.g. for a Pub/Sub failure.
      *
      * Generated from protobuf field <code>.google.cloud.deploy.v1.Type type = 7;</code>
      */
-    private $type = 0;
+    protected $type = 0;
 
     /**
      * Constructor.
@@ -74,8 +86,12 @@ class JobRunNotificationEvent extends \Google\Protobuf\Internal\Message
      *           Unique identifier of the `DeliveryPipeline`.
      *     @type string $release_uid
      *           Unique identifier of the `Release`.
+     *     @type string $release
+     *           The name of the `Release`.
      *     @type string $rollout_uid
      *           Unique identifier of the `Rollout`.
+     *     @type string $rollout
+     *           The name of the `Rollout`.
      *     @type string $target_id
      *           ID of the `Target`.
      *     @type int $type
@@ -192,6 +208,32 @@ class JobRunNotificationEvent extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * The name of the `Release`.
+     *
+     * Generated from protobuf field <code>string release = 8;</code>
+     * @return string
+     */
+    public function getRelease()
+    {
+        return $this->release;
+    }
+
+    /**
+     * The name of the `Release`.
+     *
+     * Generated from protobuf field <code>string release = 8;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setRelease($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->release = $var;
+
+        return $this;
+    }
+
+    /**
      * Unique identifier of the `Rollout`.
      *
      * Generated from protobuf field <code>string rollout_uid = 5;</code>
@@ -213,6 +255,32 @@ class JobRunNotificationEvent extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->rollout_uid = $var;
+
+        return $this;
+    }
+
+    /**
+     * The name of the `Rollout`.
+     *
+     * Generated from protobuf field <code>string rollout = 9;</code>
+     * @return string
+     */
+    public function getRollout()
+    {
+        return $this->rollout;
+    }
+
+    /**
+     * The name of the `Rollout`.
+     *
+     * Generated from protobuf field <code>string rollout = 9;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setRollout($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->rollout = $var;
 
         return $this;
     }

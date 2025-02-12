@@ -17,16 +17,23 @@ use Google\Protobuf\Internal\GPBUtil;
 class AvroConfig extends \Google\Protobuf\Internal\Message
 {
     /**
-     * When true, write the subscription name, message_id, publish_time,
-     * attributes, and ordering_key as additional fields in the output. The
-     * subscription name, message_id, and publish_time fields are put in their
-     * own fields while all other message properties other than data (for
-     * example, an ordering_key, if present) are added as entries in the
-     * attributes map.
+     * Optional. When true, write the subscription name, message_id,
+     * publish_time, attributes, and ordering_key as additional fields in the
+     * output. The subscription name, message_id, and publish_time fields are
+     * put in their own fields while all other message properties other than
+     * data (for example, an ordering_key, if present) are added as entries in
+     * the attributes map.
      *
-     * Generated from protobuf field <code>bool write_metadata = 1;</code>
+     * Generated from protobuf field <code>bool write_metadata = 1 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
     private $write_metadata = false;
+    /**
+     * Optional. When true, the output Cloud Storage file will be serialized
+     * using the topic schema, if it exists.
+     *
+     * Generated from protobuf field <code>bool use_topic_schema = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    private $use_topic_schema = false;
 
     /**
      * Constructor.
@@ -35,12 +42,15 @@ class AvroConfig extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type bool $write_metadata
-     *           When true, write the subscription name, message_id, publish_time,
-     *           attributes, and ordering_key as additional fields in the output. The
-     *           subscription name, message_id, and publish_time fields are put in their
-     *           own fields while all other message properties other than data (for
-     *           example, an ordering_key, if present) are added as entries in the
-     *           attributes map.
+     *           Optional. When true, write the subscription name, message_id,
+     *           publish_time, attributes, and ordering_key as additional fields in the
+     *           output. The subscription name, message_id, and publish_time fields are
+     *           put in their own fields while all other message properties other than
+     *           data (for example, an ordering_key, if present) are added as entries in
+     *           the attributes map.
+     *     @type bool $use_topic_schema
+     *           Optional. When true, the output Cloud Storage file will be serialized
+     *           using the topic schema, if it exists.
      * }
      */
     public function __construct($data = NULL) {
@@ -49,14 +59,14 @@ class AvroConfig extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * When true, write the subscription name, message_id, publish_time,
-     * attributes, and ordering_key as additional fields in the output. The
-     * subscription name, message_id, and publish_time fields are put in their
-     * own fields while all other message properties other than data (for
-     * example, an ordering_key, if present) are added as entries in the
-     * attributes map.
+     * Optional. When true, write the subscription name, message_id,
+     * publish_time, attributes, and ordering_key as additional fields in the
+     * output. The subscription name, message_id, and publish_time fields are
+     * put in their own fields while all other message properties other than
+     * data (for example, an ordering_key, if present) are added as entries in
+     * the attributes map.
      *
-     * Generated from protobuf field <code>bool write_metadata = 1;</code>
+     * Generated from protobuf field <code>bool write_metadata = 1 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @return bool
      */
     public function getWriteMetadata()
@@ -65,14 +75,14 @@ class AvroConfig extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * When true, write the subscription name, message_id, publish_time,
-     * attributes, and ordering_key as additional fields in the output. The
-     * subscription name, message_id, and publish_time fields are put in their
-     * own fields while all other message properties other than data (for
-     * example, an ordering_key, if present) are added as entries in the
-     * attributes map.
+     * Optional. When true, write the subscription name, message_id,
+     * publish_time, attributes, and ordering_key as additional fields in the
+     * output. The subscription name, message_id, and publish_time fields are
+     * put in their own fields while all other message properties other than
+     * data (for example, an ordering_key, if present) are added as entries in
+     * the attributes map.
      *
-     * Generated from protobuf field <code>bool write_metadata = 1;</code>
+     * Generated from protobuf field <code>bool write_metadata = 1 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @param bool $var
      * @return $this
      */
@@ -84,8 +94,34 @@ class AvroConfig extends \Google\Protobuf\Internal\Message
         return $this;
     }
 
+    /**
+     * Optional. When true, the output Cloud Storage file will be serialized
+     * using the topic schema, if it exists.
+     *
+     * Generated from protobuf field <code>bool use_topic_schema = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return bool
+     */
+    public function getUseTopicSchema()
+    {
+        return $this->use_topic_schema;
+    }
+
+    /**
+     * Optional. When true, the output Cloud Storage file will be serialized
+     * using the topic schema, if it exists.
+     *
+     * Generated from protobuf field <code>bool use_topic_schema = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setUseTopicSchema($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->use_topic_schema = $var;
+
+        return $this;
+    }
+
 }
 
-// Adding a class alias for backwards compatibility with the previous class name.
-class_alias(AvroConfig::class, \Google\Cloud\PubSub\V1\CloudStorageConfig_AvroConfig::class);
 

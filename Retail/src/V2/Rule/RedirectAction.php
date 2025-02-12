@@ -11,7 +11,7 @@ use Google\Protobuf\Internal\GPBUtil;
 /**
  * Redirects a shopper to a specific page.
  * * Rule Condition:
- *   - Must specify
+ *   Must specify
  *   [Condition.query_terms][google.cloud.retail.v2.Condition.query_terms].
  * * Action Input: Request Query
  * * Action Result: Redirects shopper to provided uri.
@@ -25,7 +25,7 @@ class RedirectAction extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string redirect_uri = 1;</code>
      */
-    private $redirect_uri = '';
+    protected $redirect_uri = '';
 
     /**
      * Constructor.

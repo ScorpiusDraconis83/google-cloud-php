@@ -20,7 +20,7 @@ class BuildOccurrence extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.grafeas.v1.BuildProvenance provenance = 1;</code>
      */
-    private $provenance = null;
+    protected $provenance = null;
     /**
      * Serialized JSON representation of the provenance, used in generating the
      * build signature in the corresponding build note. After verifying the
@@ -35,14 +35,14 @@ class BuildOccurrence extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string provenance_bytes = 2;</code>
      */
-    private $provenance_bytes = '';
+    protected $provenance_bytes = '';
     /**
      * Deprecated. See InTotoStatement for the replacement.
      * In-toto Provenance representation as defined in spec.
      *
      * Generated from protobuf field <code>.grafeas.v1.InTotoProvenance intoto_provenance = 3;</code>
      */
-    private $intoto_provenance = null;
+    protected $intoto_provenance = null;
     /**
      * In-toto Statement representation as defined in spec.
      * The intoto_statement can contain any type of provenance. The serialized
@@ -51,7 +51,16 @@ class BuildOccurrence extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.grafeas.v1.InTotoStatement intoto_statement = 4;</code>
      */
-    private $intoto_statement = null;
+    protected $intoto_statement = null;
+    /**
+     * In-Toto Slsa Provenance V1 represents a slsa provenance meeting the slsa
+     * spec, wrapped in an in-toto statement. This allows for direct
+     * jsonification of a to-spec in-toto slsa statement with a to-spec
+     * slsa provenance.
+     *
+     * Generated from protobuf field <code>.grafeas.v1.InTotoSlsaProvenanceV1 in_toto_slsa_provenance_v1 = 5;</code>
+     */
+    protected $in_toto_slsa_provenance_v1 = null;
 
     /**
      * Constructor.
@@ -80,6 +89,11 @@ class BuildOccurrence extends \Google\Protobuf\Internal\Message
      *           The intoto_statement can contain any type of provenance. The serialized
      *           payload of the statement can be stored and signed in the Occurrence's
      *           envelope.
+     *     @type \Grafeas\V1\InTotoSlsaProvenanceV1 $in_toto_slsa_provenance_v1
+     *           In-Toto Slsa Provenance V1 represents a slsa provenance meeting the slsa
+     *           spec, wrapped in an in-toto statement. This allows for direct
+     *           jsonification of a to-spec in-toto slsa statement with a to-spec
+     *           slsa provenance.
      * }
      */
     public function __construct($data = NULL) {
@@ -243,6 +257,48 @@ class BuildOccurrence extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Grafeas\V1\InTotoStatement::class);
         $this->intoto_statement = $var;
+
+        return $this;
+    }
+
+    /**
+     * In-Toto Slsa Provenance V1 represents a slsa provenance meeting the slsa
+     * spec, wrapped in an in-toto statement. This allows for direct
+     * jsonification of a to-spec in-toto slsa statement with a to-spec
+     * slsa provenance.
+     *
+     * Generated from protobuf field <code>.grafeas.v1.InTotoSlsaProvenanceV1 in_toto_slsa_provenance_v1 = 5;</code>
+     * @return \Grafeas\V1\InTotoSlsaProvenanceV1|null
+     */
+    public function getInTotoSlsaProvenanceV1()
+    {
+        return $this->in_toto_slsa_provenance_v1;
+    }
+
+    public function hasInTotoSlsaProvenanceV1()
+    {
+        return isset($this->in_toto_slsa_provenance_v1);
+    }
+
+    public function clearInTotoSlsaProvenanceV1()
+    {
+        unset($this->in_toto_slsa_provenance_v1);
+    }
+
+    /**
+     * In-Toto Slsa Provenance V1 represents a slsa provenance meeting the slsa
+     * spec, wrapped in an in-toto statement. This allows for direct
+     * jsonification of a to-spec in-toto slsa statement with a to-spec
+     * slsa provenance.
+     *
+     * Generated from protobuf field <code>.grafeas.v1.InTotoSlsaProvenanceV1 in_toto_slsa_provenance_v1 = 5;</code>
+     * @param \Grafeas\V1\InTotoSlsaProvenanceV1 $var
+     * @return $this
+     */
+    public function setInTotoSlsaProvenanceV1($var)
+    {
+        GPBUtil::checkMessage($var, \Grafeas\V1\InTotoSlsaProvenanceV1::class);
+        $this->in_toto_slsa_provenance_v1 = $var;
 
         return $this;
     }

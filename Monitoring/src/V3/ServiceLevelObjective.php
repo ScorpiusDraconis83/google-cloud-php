@@ -21,18 +21,18 @@ use Google\Protobuf\Internal\GPBUtil;
 class ServiceLevelObjective extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Resource name for this `ServiceLevelObjective`. The format is:
+     * Identifier. Resource name for this `ServiceLevelObjective`. The format is:
      *     projects/[PROJECT_ID_OR_NUMBER]/services/[SERVICE_ID]/serviceLevelObjectives/[SLO_NAME]
      *
-     * Generated from protobuf field <code>string name = 1;</code>
+     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = IDENTIFIER];</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Name used for UI elements listing this SLO.
      *
      * Generated from protobuf field <code>string display_name = 11;</code>
      */
-    private $display_name = '';
+    protected $display_name = '';
     /**
      * The definition of good service, used to measure and calculate the quality
      * of the `Service`'s performance with respect to a single aspect of service
@@ -40,14 +40,14 @@ class ServiceLevelObjective extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.monitoring.v3.ServiceLevelIndicator service_level_indicator = 3;</code>
      */
-    private $service_level_indicator = null;
+    protected $service_level_indicator = null;
     /**
      * The fraction of service that must be good in order for this objective to be
-     * met. `0 < goal <= 0.999`.
+     * met. `0 < goal <= 0.9999`.
      *
      * Generated from protobuf field <code>double goal = 4;</code>
      */
-    private $goal = 0.0;
+    protected $goal = 0.0;
     /**
      * Labels which have been used to annotate the service-level objective. Label
      * keys must start with a letter. Label keys and values may contain lowercase
@@ -68,7 +68,7 @@ class ServiceLevelObjective extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type string $name
-     *           Resource name for this `ServiceLevelObjective`. The format is:
+     *           Identifier. Resource name for this `ServiceLevelObjective`. The format is:
      *               projects/[PROJECT_ID_OR_NUMBER]/services/[SERVICE_ID]/serviceLevelObjectives/[SLO_NAME]
      *     @type string $display_name
      *           Name used for UI elements listing this SLO.
@@ -78,7 +78,7 @@ class ServiceLevelObjective extends \Google\Protobuf\Internal\Message
      *           quality.
      *     @type float $goal
      *           The fraction of service that must be good in order for this objective to be
-     *           met. `0 < goal <= 0.999`.
+     *           met. `0 < goal <= 0.9999`.
      *     @type \Google\Protobuf\Duration $rolling_period
      *           A rolling time period, semantically "in the past `<rolling_period>`".
      *           Must be an integer multiple of 1 day no larger than 30 days.
@@ -101,10 +101,10 @@ class ServiceLevelObjective extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Resource name for this `ServiceLevelObjective`. The format is:
+     * Identifier. Resource name for this `ServiceLevelObjective`. The format is:
      *     projects/[PROJECT_ID_OR_NUMBER]/services/[SERVICE_ID]/serviceLevelObjectives/[SLO_NAME]
      *
-     * Generated from protobuf field <code>string name = 1;</code>
+     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = IDENTIFIER];</code>
      * @return string
      */
     public function getName()
@@ -113,10 +113,10 @@ class ServiceLevelObjective extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Resource name for this `ServiceLevelObjective`. The format is:
+     * Identifier. Resource name for this `ServiceLevelObjective`. The format is:
      *     projects/[PROJECT_ID_OR_NUMBER]/services/[SERVICE_ID]/serviceLevelObjectives/[SLO_NAME]
      *
-     * Generated from protobuf field <code>string name = 1;</code>
+     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = IDENTIFIER];</code>
      * @param string $var
      * @return $this
      */
@@ -196,7 +196,7 @@ class ServiceLevelObjective extends \Google\Protobuf\Internal\Message
 
     /**
      * The fraction of service that must be good in order for this objective to be
-     * met. `0 < goal <= 0.999`.
+     * met. `0 < goal <= 0.9999`.
      *
      * Generated from protobuf field <code>double goal = 4;</code>
      * @return float
@@ -208,7 +208,7 @@ class ServiceLevelObjective extends \Google\Protobuf\Internal\Message
 
     /**
      * The fraction of service that must be good in order for this objective to be
-     * met. `0 < goal <= 0.999`.
+     * met. `0 < goal <= 0.9999`.
      *
      * Generated from protobuf field <code>double goal = 4;</code>
      * @param float $var

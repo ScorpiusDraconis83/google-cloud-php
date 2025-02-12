@@ -22,7 +22,7 @@ class UpdatePropertyRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.analytics.admin.v1alpha.Property property = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $property = null;
+    protected $property = null;
     /**
      * Required. The list of fields to be updated. Field names must be in snake
      * case (e.g., "field_to_update"). Omitted fields will not be updated. To
@@ -31,7 +31,27 @@ class UpdatePropertyRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.FieldMask update_mask = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $update_mask = null;
+    protected $update_mask = null;
+
+    /**
+     * @param \Google\Analytics\Admin\V1alpha\Property $property   Required. The property to update.
+     *                                                             The property's `name` field is used to identify the property to be
+     *                                                             updated.
+     * @param \Google\Protobuf\FieldMask               $updateMask Required. The list of fields to be updated. Field names must be in snake
+     *                                                             case (e.g., "field_to_update"). Omitted fields will not be updated. To
+     *                                                             replace the entire entity, use one path with the string "*" to match all
+     *                                                             fields.
+     *
+     * @return \Google\Analytics\Admin\V1alpha\UpdatePropertyRequest
+     *
+     * @experimental
+     */
+    public static function build(\Google\Analytics\Admin\V1alpha\Property $property, \Google\Protobuf\FieldMask $updateMask): self
+    {
+        return (new self())
+            ->setProperty($property)
+            ->setUpdateMask($updateMask);
+    }
 
     /**
      * Constructor.

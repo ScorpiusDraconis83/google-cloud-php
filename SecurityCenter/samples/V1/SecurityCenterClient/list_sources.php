@@ -25,15 +25,16 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // [START securitycenter_v1_generated_SecurityCenter_ListSources_sync]
 use Google\ApiCore\ApiException;
 use Google\ApiCore\PagedListResponse;
-use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\Client\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\ListSourcesRequest;
 use Google\Cloud\SecurityCenter\V1\Source;
 
 /**
  * Lists all sources belonging to an organization.
  *
  * @param string $formattedParent Resource name of the parent of sources to list. Its format should
- *                                be "organizations/[organization_id]", "folders/[folder_id]", or
- *                                "projects/[project_id]". Please see
+ *                                be `organizations/[organization_id]`, `folders/[folder_id]`, or
+ *                                `projects/[project_id]`. Please see
  *                                {@see SecurityCenterClient::projectName()} for help formatting this field.
  */
 function list_sources_sample(string $formattedParent): void
@@ -41,10 +42,14 @@ function list_sources_sample(string $formattedParent): void
     // Create a client.
     $securityCenterClient = new SecurityCenterClient();
 
+    // Prepare the request message.
+    $request = (new ListSourcesRequest())
+        ->setParent($formattedParent);
+
     // Call the API and handle any network failures.
     try {
         /** @var PagedListResponse $response */
-        $response = $securityCenterClient->listSources($formattedParent);
+        $response = $securityCenterClient->listSources($request);
 
         /** @var Source $element */
         foreach ($response as $element) {

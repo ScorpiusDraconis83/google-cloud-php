@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\AIPlatform\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -85,8 +84,10 @@ use Google\Cloud\Iam\V1\TestIamPermissionsResponse;
 use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\Location;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: A service for creating and managing Vertex AI's jobs.
@@ -99,46 +100,46 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface cancelBatchPredictionJobAsync(CancelBatchPredictionJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface cancelCustomJobAsync(CancelCustomJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface cancelDataLabelingJobAsync(CancelDataLabelingJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface cancelHyperparameterTuningJobAsync(CancelHyperparameterTuningJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface cancelNasJobAsync(CancelNasJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createBatchPredictionJobAsync(CreateBatchPredictionJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createCustomJobAsync(CreateCustomJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createDataLabelingJobAsync(CreateDataLabelingJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createHyperparameterTuningJobAsync(CreateHyperparameterTuningJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createModelDeploymentMonitoringJobAsync(CreateModelDeploymentMonitoringJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createNasJobAsync(CreateNasJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteBatchPredictionJobAsync(DeleteBatchPredictionJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteCustomJobAsync(DeleteCustomJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteDataLabelingJobAsync(DeleteDataLabelingJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteHyperparameterTuningJobAsync(DeleteHyperparameterTuningJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteModelDeploymentMonitoringJobAsync(DeleteModelDeploymentMonitoringJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteNasJobAsync(DeleteNasJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getBatchPredictionJobAsync(GetBatchPredictionJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getCustomJobAsync(GetCustomJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getDataLabelingJobAsync(GetDataLabelingJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getHyperparameterTuningJobAsync(GetHyperparameterTuningJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getModelDeploymentMonitoringJobAsync(GetModelDeploymentMonitoringJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getNasJobAsync(GetNasJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getNasTrialDetailAsync(GetNasTrialDetailRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listBatchPredictionJobsAsync(ListBatchPredictionJobsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listCustomJobsAsync(ListCustomJobsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listDataLabelingJobsAsync(ListDataLabelingJobsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listHyperparameterTuningJobsAsync(ListHyperparameterTuningJobsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listModelDeploymentMonitoringJobsAsync(ListModelDeploymentMonitoringJobsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listNasJobsAsync(ListNasJobsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listNasTrialDetailsAsync(ListNasTrialDetailsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface pauseModelDeploymentMonitoringJobAsync(PauseModelDeploymentMonitoringJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface resumeModelDeploymentMonitoringJobAsync(ResumeModelDeploymentMonitoringJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface searchModelDeploymentMonitoringStatsAnomaliesAsync(SearchModelDeploymentMonitoringStatsAnomaliesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateModelDeploymentMonitoringJobAsync(UpdateModelDeploymentMonitoringJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> cancelBatchPredictionJobAsync(CancelBatchPredictionJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> cancelCustomJobAsync(CancelCustomJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> cancelDataLabelingJobAsync(CancelDataLabelingJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> cancelHyperparameterTuningJobAsync(CancelHyperparameterTuningJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> cancelNasJobAsync(CancelNasJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<BatchPredictionJob> createBatchPredictionJobAsync(CreateBatchPredictionJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CustomJob> createCustomJobAsync(CreateCustomJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DataLabelingJob> createDataLabelingJobAsync(CreateDataLabelingJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<HyperparameterTuningJob> createHyperparameterTuningJobAsync(CreateHyperparameterTuningJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ModelDeploymentMonitoringJob> createModelDeploymentMonitoringJobAsync(CreateModelDeploymentMonitoringJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<NasJob> createNasJobAsync(CreateNasJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteBatchPredictionJobAsync(DeleteBatchPredictionJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteCustomJobAsync(DeleteCustomJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteDataLabelingJobAsync(DeleteDataLabelingJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteHyperparameterTuningJobAsync(DeleteHyperparameterTuningJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteModelDeploymentMonitoringJobAsync(DeleteModelDeploymentMonitoringJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteNasJobAsync(DeleteNasJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<BatchPredictionJob> getBatchPredictionJobAsync(GetBatchPredictionJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CustomJob> getCustomJobAsync(GetCustomJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DataLabelingJob> getDataLabelingJobAsync(GetDataLabelingJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<HyperparameterTuningJob> getHyperparameterTuningJobAsync(GetHyperparameterTuningJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ModelDeploymentMonitoringJob> getModelDeploymentMonitoringJobAsync(GetModelDeploymentMonitoringJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<NasJob> getNasJobAsync(GetNasJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<NasTrialDetail> getNasTrialDetailAsync(GetNasTrialDetailRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listBatchPredictionJobsAsync(ListBatchPredictionJobsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listCustomJobsAsync(ListCustomJobsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listDataLabelingJobsAsync(ListDataLabelingJobsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listHyperparameterTuningJobsAsync(ListHyperparameterTuningJobsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listModelDeploymentMonitoringJobsAsync(ListModelDeploymentMonitoringJobsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listNasJobsAsync(ListNasJobsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listNasTrialDetailsAsync(ListNasTrialDetailsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> pauseModelDeploymentMonitoringJobAsync(PauseModelDeploymentMonitoringJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> resumeModelDeploymentMonitoringJobAsync(ResumeModelDeploymentMonitoringJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> searchModelDeploymentMonitoringStatsAnomaliesAsync(SearchModelDeploymentMonitoringStatsAnomaliesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateModelDeploymentMonitoringJobAsync(UpdateModelDeploymentMonitoringJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
  */
 final class JobServiceClient
 {
@@ -214,10 +215,31 @@ final class JobServiceClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -250,8 +272,12 @@ final class JobServiceClient
      *
      * @return string The formatted context resource.
      */
-    public static function contextName(string $project, string $location, string $metadataStore, string $context): string
-    {
+    public static function contextName(
+        string $project,
+        string $location,
+        string $metadataStore,
+        string $context
+    ): string {
         return self::getPathTemplate('context')->render([
             'project' => $project,
             'location' => $location,
@@ -346,8 +372,11 @@ final class JobServiceClient
      *
      * @return string The formatted hyperparameter_tuning_job resource.
      */
-    public static function hyperparameterTuningJobName(string $project, string $location, string $hyperparameterTuningJob): string
-    {
+    public static function hyperparameterTuningJobName(
+        string $project,
+        string $location,
+        string $hyperparameterTuningJob
+    ): string {
         return self::getPathTemplate('hyperparameterTuningJob')->render([
             'project' => $project,
             'location' => $location,
@@ -401,8 +430,11 @@ final class JobServiceClient
      *
      * @return string The formatted model_deployment_monitoring_job resource.
      */
-    public static function modelDeploymentMonitoringJobName(string $project, string $location, string $modelDeploymentMonitoringJob): string
-    {
+    public static function modelDeploymentMonitoringJobName(
+        string $project,
+        string $location,
+        string $modelDeploymentMonitoringJob
+    ): string {
         return self::getPathTemplate('modelDeploymentMonitoringJob')->render([
             'project' => $project,
             'location' => $location,
@@ -440,8 +472,12 @@ final class JobServiceClient
      *
      * @return string The formatted nas_trial_detail resource.
      */
-    public static function nasTrialDetailName(string $project, string $location, string $nasJob, string $nasTrialDetail): string
-    {
+    public static function nasTrialDetailName(
+        string $project,
+        string $location,
+        string $nasJob,
+        string $nasTrialDetail
+    ): string {
         return self::getPathTemplate('nasTrialDetail')->render([
             'project' => $project,
             'location' => $location,
@@ -486,6 +522,25 @@ final class JobServiceClient
 
     /**
      * Formats a string containing the fully-qualified path to represent a
+     * persistent_resource resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $persistentResource
+     *
+     * @return string The formatted persistent_resource resource.
+     */
+    public static function persistentResourceName(string $project, string $location, string $persistentResource): string
+    {
+        return self::getPathTemplate('persistentResource')->render([
+            'project' => $project,
+            'location' => $location,
+            'persistent_resource' => $persistentResource,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
      * project_location_endpoint resource.
      *
      * @param string $project
@@ -514,13 +569,36 @@ final class JobServiceClient
      *
      * @return string The formatted project_location_publisher_model resource.
      */
-    public static function projectLocationPublisherModelName(string $project, string $location, string $publisher, string $model): string
-    {
+    public static function projectLocationPublisherModelName(
+        string $project,
+        string $location,
+        string $publisher,
+        string $model
+    ): string {
         return self::getPathTemplate('projectLocationPublisherModel')->render([
             'project' => $project,
             'location' => $location,
             'publisher' => $publisher,
             'model' => $model,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a reservation
+     * resource.
+     *
+     * @param string $projectIdOrNumber
+     * @param string $zone
+     * @param string $reservationName
+     *
+     * @return string The formatted reservation resource.
+     */
+    public static function reservationName(string $projectIdOrNumber, string $zone, string $reservationName): string
+    {
+        return self::getPathTemplate('reservation')->render([
+            'project_id_or_number' => $projectIdOrNumber,
+            'zone' => $zone,
+            'reservation_name' => $reservationName,
         ]);
     }
 
@@ -582,8 +660,10 @@ final class JobServiceClient
      * - nasTrialDetail: projects/{project}/locations/{location}/nasJobs/{nas_job}/nasTrialDetails/{nas_trial_detail}
      * - network: projects/{project}/global/networks/{network}
      * - notificationChannel: projects/{project}/notificationChannels/{notification_channel}
+     * - persistentResource: projects/{project}/locations/{location}/persistentResources/{persistent_resource}
      * - projectLocationEndpoint: projects/{project}/locations/{location}/endpoints/{endpoint}
      * - projectLocationPublisherModel: projects/{project}/locations/{location}/publishers/{publisher}/models/{model}
+     * - reservation: projects/{project_id_or_number}/zones/{zone}/reservations/{reservation_name}
      * - tensorboard: projects/{project}/locations/{location}/tensorboards/{tensorboard}
      * - trial: projects/{project}/locations/{location}/studies/{study}/trials/{trial}
      *
@@ -593,14 +673,14 @@ final class JobServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -622,6 +702,12 @@ final class JobServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -655,6 +741,9 @@ final class JobServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -805,8 +894,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function cancelHyperparameterTuningJob(CancelHyperparameterTuningJobRequest $request, array $callOptions = []): void
-    {
+    public function cancelHyperparameterTuningJob(
+        CancelHyperparameterTuningJobRequest $request,
+        array $callOptions = []
+    ): void {
         $this->startApiCall('CancelHyperparameterTuningJob', $request, $callOptions)->wait();
     }
 
@@ -868,8 +959,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createBatchPredictionJob(CreateBatchPredictionJobRequest $request, array $callOptions = []): BatchPredictionJob
-    {
+    public function createBatchPredictionJob(
+        CreateBatchPredictionJobRequest $request,
+        array $callOptions = []
+    ): BatchPredictionJob {
         return $this->startApiCall('CreateBatchPredictionJob', $request, $callOptions)->wait();
     }
 
@@ -921,8 +1014,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createDataLabelingJob(CreateDataLabelingJobRequest $request, array $callOptions = []): DataLabelingJob
-    {
+    public function createDataLabelingJob(
+        CreateDataLabelingJobRequest $request,
+        array $callOptions = []
+    ): DataLabelingJob {
         return $this->startApiCall('CreateDataLabelingJob', $request, $callOptions)->wait();
     }
 
@@ -948,8 +1043,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createHyperparameterTuningJob(CreateHyperparameterTuningJobRequest $request, array $callOptions = []): HyperparameterTuningJob
-    {
+    public function createHyperparameterTuningJob(
+        CreateHyperparameterTuningJobRequest $request,
+        array $callOptions = []
+    ): HyperparameterTuningJob {
         return $this->startApiCall('CreateHyperparameterTuningJob', $request, $callOptions)->wait();
     }
 
@@ -976,8 +1073,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createModelDeploymentMonitoringJob(CreateModelDeploymentMonitoringJobRequest $request, array $callOptions = []): ModelDeploymentMonitoringJob
-    {
+    public function createModelDeploymentMonitoringJob(
+        CreateModelDeploymentMonitoringJobRequest $request,
+        array $callOptions = []
+    ): ModelDeploymentMonitoringJob {
         return $this->startApiCall('CreateModelDeploymentMonitoringJob', $request, $callOptions)->wait();
     }
 
@@ -1029,8 +1128,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function deleteBatchPredictionJob(DeleteBatchPredictionJobRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function deleteBatchPredictionJob(
+        DeleteBatchPredictionJobRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('DeleteBatchPredictionJob', $request, $callOptions)->wait();
     }
 
@@ -1081,8 +1182,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function deleteDataLabelingJob(DeleteDataLabelingJobRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function deleteDataLabelingJob(
+        DeleteDataLabelingJobRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('DeleteDataLabelingJob', $request, $callOptions)->wait();
     }
 
@@ -1108,8 +1211,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function deleteHyperparameterTuningJob(DeleteHyperparameterTuningJobRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function deleteHyperparameterTuningJob(
+        DeleteHyperparameterTuningJobRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('DeleteHyperparameterTuningJob', $request, $callOptions)->wait();
     }
 
@@ -1135,8 +1240,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function deleteModelDeploymentMonitoringJob(DeleteModelDeploymentMonitoringJobRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function deleteModelDeploymentMonitoringJob(
+        DeleteModelDeploymentMonitoringJobRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('DeleteModelDeploymentMonitoringJob', $request, $callOptions)->wait();
     }
 
@@ -1187,8 +1294,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getBatchPredictionJob(GetBatchPredictionJobRequest $request, array $callOptions = []): BatchPredictionJob
-    {
+    public function getBatchPredictionJob(
+        GetBatchPredictionJobRequest $request,
+        array $callOptions = []
+    ): BatchPredictionJob {
         return $this->startApiCall('GetBatchPredictionJob', $request, $callOptions)->wait();
     }
 
@@ -1266,8 +1375,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getHyperparameterTuningJob(GetHyperparameterTuningJobRequest $request, array $callOptions = []): HyperparameterTuningJob
-    {
+    public function getHyperparameterTuningJob(
+        GetHyperparameterTuningJobRequest $request,
+        array $callOptions = []
+    ): HyperparameterTuningJob {
         return $this->startApiCall('GetHyperparameterTuningJob', $request, $callOptions)->wait();
     }
 
@@ -1293,8 +1404,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getModelDeploymentMonitoringJob(GetModelDeploymentMonitoringJobRequest $request, array $callOptions = []): ModelDeploymentMonitoringJob
-    {
+    public function getModelDeploymentMonitoringJob(
+        GetModelDeploymentMonitoringJobRequest $request,
+        array $callOptions = []
+    ): ModelDeploymentMonitoringJob {
         return $this->startApiCall('GetModelDeploymentMonitoringJob', $request, $callOptions)->wait();
     }
 
@@ -1371,8 +1484,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listBatchPredictionJobs(ListBatchPredictionJobsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listBatchPredictionJobs(
+        ListBatchPredictionJobsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListBatchPredictionJobs', $request, $callOptions);
     }
 
@@ -1423,8 +1538,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listDataLabelingJobs(ListDataLabelingJobsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listDataLabelingJobs(
+        ListDataLabelingJobsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListDataLabelingJobs', $request, $callOptions);
     }
 
@@ -1450,8 +1567,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listHyperparameterTuningJobs(ListHyperparameterTuningJobsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listHyperparameterTuningJobs(
+        ListHyperparameterTuningJobsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListHyperparameterTuningJobs', $request, $callOptions);
     }
 
@@ -1477,8 +1596,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listModelDeploymentMonitoringJobs(ListModelDeploymentMonitoringJobsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listModelDeploymentMonitoringJobs(
+        ListModelDeploymentMonitoringJobsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListModelDeploymentMonitoringJobs', $request, $callOptions);
     }
 
@@ -1557,8 +1678,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function pauseModelDeploymentMonitoringJob(PauseModelDeploymentMonitoringJobRequest $request, array $callOptions = []): void
-    {
+    public function pauseModelDeploymentMonitoringJob(
+        PauseModelDeploymentMonitoringJobRequest $request,
+        array $callOptions = []
+    ): void {
         $this->startApiCall('PauseModelDeploymentMonitoringJob', $request, $callOptions)->wait();
     }
 
@@ -1584,8 +1707,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function resumeModelDeploymentMonitoringJob(ResumeModelDeploymentMonitoringJobRequest $request, array $callOptions = []): void
-    {
+    public function resumeModelDeploymentMonitoringJob(
+        ResumeModelDeploymentMonitoringJobRequest $request,
+        array $callOptions = []
+    ): void {
         $this->startApiCall('ResumeModelDeploymentMonitoringJob', $request, $callOptions)->wait();
     }
 
@@ -1611,8 +1736,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function searchModelDeploymentMonitoringStatsAnomalies(SearchModelDeploymentMonitoringStatsAnomaliesRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function searchModelDeploymentMonitoringStatsAnomalies(
+        SearchModelDeploymentMonitoringStatsAnomaliesRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('SearchModelDeploymentMonitoringStatsAnomalies', $request, $callOptions);
     }
 
@@ -1638,8 +1765,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateModelDeploymentMonitoringJob(UpdateModelDeploymentMonitoringJobRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function updateModelDeploymentMonitoringJob(
+        UpdateModelDeploymentMonitoringJobRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('UpdateModelDeploymentMonitoringJob', $request, $callOptions)->wait();
     }
 
@@ -1779,8 +1908,10 @@ final class JobServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function testIamPermissions(TestIamPermissionsRequest $request, array $callOptions = []): TestIamPermissionsResponse
-    {
+    public function testIamPermissions(
+        TestIamPermissionsRequest $request,
+        array $callOptions = []
+    ): TestIamPermissionsResponse {
         return $this->startApiCall('TestIamPermissions', $request, $callOptions)->wait();
     }
 }

@@ -1,4 +1,24 @@
 <?php
+/*
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * GENERATED CODE WARNING
+ * This file was automatically generated - do not edit!
+ */
 
 return [
     'interfaces' => [
@@ -16,7 +36,6 @@ return [
                 ],
                 'queryParams' => [
                     'channel_id',
-                    'validate_only',
                 ],
             ],
             'CreateChannelConnection' => [
@@ -34,6 +53,66 @@ return [
                     'channel_connection_id',
                 ],
             ],
+            'CreateEnrollment' => [
+                'method' => 'post',
+                'uriTemplate' => '/v1/{parent=projects/*/locations/*}/enrollments',
+                'body' => 'enrollment',
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+                'queryParams' => [
+                    'enrollment_id',
+                ],
+            ],
+            'CreateGoogleApiSource' => [
+                'method' => 'post',
+                'uriTemplate' => '/v1/{parent=projects/*/locations/*}/googleApiSources',
+                'body' => 'google_api_source',
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+                'queryParams' => [
+                    'google_api_source_id',
+                ],
+            ],
+            'CreateMessageBus' => [
+                'method' => 'post',
+                'uriTemplate' => '/v1/{parent=projects/*/locations/*}/messageBuses',
+                'body' => 'message_bus',
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+                'queryParams' => [
+                    'message_bus_id',
+                ],
+            ],
+            'CreatePipeline' => [
+                'method' => 'post',
+                'uriTemplate' => '/v1/{parent=projects/*/locations/*}/pipelines',
+                'body' => 'pipeline',
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+                'queryParams' => [
+                    'pipeline_id',
+                ],
+            ],
             'CreateTrigger' => [
                 'method' => 'post',
                 'uriTemplate' => '/v1/{parent=projects/*/locations/*}/triggers',
@@ -47,7 +126,6 @@ return [
                 ],
                 'queryParams' => [
                     'trigger_id',
-                    'validate_only',
                 ],
             ],
             'DeleteChannel' => [
@@ -60,13 +138,54 @@ return [
                         ],
                     ],
                 ],
-                'queryParams' => [
-                    'validate_only',
-                ],
             ],
             'DeleteChannelConnection' => [
                 'method' => 'delete',
                 'uriTemplate' => '/v1/{name=projects/*/locations/*/channelConnections/*}',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'DeleteEnrollment' => [
+                'method' => 'delete',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/enrollments/*}',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'DeleteGoogleApiSource' => [
+                'method' => 'delete',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/googleApiSources/*}',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'DeleteMessageBus' => [
+                'method' => 'delete',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/messageBuses/*}',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'DeletePipeline' => [
+                'method' => 'delete',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/pipelines/*}',
                 'placeholders' => [
                     'name' => [
                         'getters' => [
@@ -84,9 +203,6 @@ return [
                             'getName',
                         ],
                     ],
-                ],
-                'queryParams' => [
-                    'validate_only',
                 ],
             ],
             'GetChannel' => [
@@ -111,9 +227,53 @@ return [
                     ],
                 ],
             ],
+            'GetEnrollment' => [
+                'method' => 'get',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/enrollments/*}',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'GetGoogleApiSource' => [
+                'method' => 'get',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/googleApiSources/*}',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'GetGoogleChannelConfig' => [
                 'method' => 'get',
                 'uriTemplate' => '/v1/{name=projects/*/locations/*/googleChannelConfig}',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'GetMessageBus' => [
+                'method' => 'get',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/messageBuses/*}',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'GetPipeline' => [
+                'method' => 'get',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/pipelines/*}',
                 'placeholders' => [
                     'name' => [
                         'getters' => [
@@ -166,6 +326,61 @@ return [
                     ],
                 ],
             ],
+            'ListEnrollments' => [
+                'method' => 'get',
+                'uriTemplate' => '/v1/{parent=projects/*/locations/*}/enrollments',
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
+            'ListGoogleApiSources' => [
+                'method' => 'get',
+                'uriTemplate' => '/v1/{parent=projects/*/locations/*}/googleApiSources',
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
+            'ListMessageBusEnrollments' => [
+                'method' => 'get',
+                'uriTemplate' => '/v1/{parent=projects/*/locations/*/messageBuses/*}:listEnrollments',
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
+            'ListMessageBuses' => [
+                'method' => 'get',
+                'uriTemplate' => '/v1/{parent=projects/*/locations/*}/messageBuses',
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
+            'ListPipelines' => [
+                'method' => 'get',
+                'uriTemplate' => '/v1/{parent=projects/*/locations/*}/pipelines',
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
             'ListProviders' => [
                 'method' => 'get',
                 'uriTemplate' => '/v1/{parent=projects/*/locations/*}/providers',
@@ -200,8 +415,31 @@ return [
                         ],
                     ],
                 ],
-                'queryParams' => [
-                    'validate_only',
+            ],
+            'UpdateEnrollment' => [
+                'method' => 'patch',
+                'uriTemplate' => '/v1/{enrollment.name=projects/*/locations/*/enrollments/*}',
+                'body' => 'enrollment',
+                'placeholders' => [
+                    'enrollment.name' => [
+                        'getters' => [
+                            'getEnrollment',
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'UpdateGoogleApiSource' => [
+                'method' => 'patch',
+                'uriTemplate' => '/v1/{google_api_source.name=projects/*/locations/*/googleApiSources/*}',
+                'body' => 'google_api_source',
+                'placeholders' => [
+                    'google_api_source.name' => [
+                        'getters' => [
+                            'getGoogleApiSource',
+                            'getName',
+                        ],
+                    ],
                 ],
             ],
             'UpdateGoogleChannelConfig' => [
@@ -212,6 +450,32 @@ return [
                     'google_channel_config.name' => [
                         'getters' => [
                             'getGoogleChannelConfig',
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'UpdateMessageBus' => [
+                'method' => 'patch',
+                'uriTemplate' => '/v1/{message_bus.name=projects/*/locations/*/messageBuses/*}',
+                'body' => 'message_bus',
+                'placeholders' => [
+                    'message_bus.name' => [
+                        'getters' => [
+                            'getMessageBus',
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'UpdatePipeline' => [
+                'method' => 'patch',
+                'uriTemplate' => '/v1/{pipeline.name=projects/*/locations/*/pipelines/*}',
+                'body' => 'pipeline',
+                'placeholders' => [
+                    'pipeline.name' => [
+                        'getters' => [
+                            'getPipeline',
                             'getName',
                         ],
                     ],
@@ -228,9 +492,6 @@ return [
                             'getName',
                         ],
                     ],
-                ],
-                'queryParams' => [
-                    'validate_only',
                 ],
             ],
         ],
@@ -271,6 +532,22 @@ return [
                         'method' => 'get',
                         'uriTemplate' => '/v1/{resource=projects/*/locations/*/channelConnections/*}:getIamPolicy',
                     ],
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/messageBuses/*}:getIamPolicy',
+                    ],
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/enrollments/*}:getIamPolicy',
+                    ],
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/pipelines/*}:getIamPolicy',
+                    ],
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/googleApiSources/*}:getIamPolicy',
+                    ],
                 ],
                 'placeholders' => [
                     'resource' => [
@@ -295,6 +572,26 @@ return [
                         'uriTemplate' => '/v1/{resource=projects/*/locations/*/channelConnections/*}:setIamPolicy',
                         'body' => '*',
                     ],
+                    [
+                        'method' => 'post',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/messageBuses/*}:setIamPolicy',
+                        'body' => '*',
+                    ],
+                    [
+                        'method' => 'post',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/enrollments/*}:setIamPolicy',
+                        'body' => '*',
+                    ],
+                    [
+                        'method' => 'post',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/pipelines/*}:setIamPolicy',
+                        'body' => '*',
+                    ],
+                    [
+                        'method' => 'post',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/googleApiSources/*}:setIamPolicy',
+                        'body' => '*',
+                    ],
                 ],
                 'placeholders' => [
                     'resource' => [
@@ -317,6 +614,26 @@ return [
                     [
                         'method' => 'post',
                         'uriTemplate' => '/v1/{resource=projects/*/locations/*/channelConnections/*}:testIamPermissions',
+                        'body' => '*',
+                    ],
+                    [
+                        'method' => 'post',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/messageBuses/*}:testIamPermissions',
+                        'body' => '*',
+                    ],
+                    [
+                        'method' => 'post',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/enrollments/*}:testIamPermissions',
+                        'body' => '*',
+                    ],
+                    [
+                        'method' => 'post',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/pipelines/*}:testIamPermissions',
+                        'body' => '*',
+                    ],
+                    [
+                        'method' => 'post',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/googleApiSources/*}:testIamPermissions',
                         'body' => '*',
                     ],
                 ],

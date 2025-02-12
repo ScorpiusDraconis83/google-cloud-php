@@ -34,11 +34,40 @@ on authenticating your client. Once authenticated, you'll be ready to start maki
 
 ### Sample
 
+```php
+Google\ApiCore\ApiException;
+Google\Cloud\PolicySimulator\V1\Client\SimulatorClient;
+Google\Cloud\PolicySimulator\V1\GetReplayRequest;
+Google\Cloud\PolicySimulator\V1\Replay;
+
+// Create a client.
+$simulatorClient = new SimulatorClient();
+
+// Prepare the request message.
+$request = (new GetReplayRequest())
+    ->setName($formattedName);
+
+// Call the API and handle any network failures.
+try {
+    /** @var Replay $response */
+    $response = $simulatorClient->getReplay($request);
+    printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
+} catch (ApiException $ex) {
+    printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());
+}
+```
+
 See the [samples directory](https://github.com/googleapis/google-cloud-php-policysimulator/tree/main/samples) for a canonical list of samples.
+
+### Debugging
+
+Please see our [Debugging guide](https://github.com/googleapis/google-cloud-php/blob/main/DEBUG.md)
+for more information about the debugging tools.
 
 ### Version
 
-This component is considered alpha. As such, it is still a work-in-progress and is more likely to get backwards-incompatible updates.
+This component is considered GA (generally available). As such, it will not introduce backwards-incompatible changes in
+any minor or patch releases. We will address issues and requests with the highest priority.
 
 ### Next Steps
 

@@ -1,4 +1,24 @@
 <?php
+/*
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * GENERATED CODE WARNING
+ * This file was automatically generated - do not edit!
+ */
 
 return [
     'interfaces' => [
@@ -108,6 +128,21 @@ return [
                     'delivery_pipeline_id',
                 ],
             ],
+            'CreateDeployPolicy' => [
+                'method' => 'post',
+                'uriTemplate' => '/v1/{parent=projects/*/locations/*}/deployPolicies',
+                'body' => 'deploy_policy',
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+                'queryParams' => [
+                    'deploy_policy_id',
+                ],
+            ],
             'CreateRelease' => [
                 'method' => 'post',
                 'uriTemplate' => '/v1/{parent=projects/*/locations/*/deliveryPipelines/*}/releases',
@@ -186,6 +221,17 @@ return [
                     ],
                 ],
             ],
+            'DeleteDeployPolicy' => [
+                'method' => 'delete',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/deployPolicies/*}',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'DeleteTarget' => [
                 'method' => 'delete',
                 'uriTemplate' => '/v1/{name=projects/*/locations/*/targets/*}',
@@ -244,6 +290,17 @@ return [
             'GetDeliveryPipeline' => [
                 'method' => 'get',
                 'uriTemplate' => '/v1/{name=projects/*/locations/*/deliveryPipelines/*}',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'GetDeployPolicy' => [
+                'method' => 'get',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/deployPolicies/*}',
                 'placeholders' => [
                     'name' => [
                         'getters' => [
@@ -344,6 +401,17 @@ return [
             'ListDeliveryPipelines' => [
                 'method' => 'get',
                 'uriTemplate' => '/v1/{parent=projects/*/locations/*}/deliveryPipelines',
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
+            'ListDeployPolicies' => [
+                'method' => 'get',
+                'uriTemplate' => '/v1/{parent=projects/*/locations/*}/deployPolicies',
                 'placeholders' => [
                     'parent' => [
                         'getters' => [
@@ -480,6 +548,22 @@ return [
                     'update_mask',
                 ],
             ],
+            'UpdateDeployPolicy' => [
+                'method' => 'patch',
+                'uriTemplate' => '/v1/{deploy_policy.name=projects/*/locations/*/deployPolicies/*}',
+                'body' => 'deploy_policy',
+                'placeholders' => [
+                    'deploy_policy.name' => [
+                        'getters' => [
+                            'getDeployPolicy',
+                            'getName',
+                        ],
+                    ],
+                ],
+                'queryParams' => [
+                    'update_mask',
+                ],
+            ],
             'UpdateTarget' => [
                 'method' => 'patch',
                 'uriTemplate' => '/v1/{target.name=projects/*/locations/*/targets/*}',
@@ -530,6 +614,14 @@ return [
                         'method' => 'get',
                         'uriTemplate' => '/v1/{resource=projects/*/locations/*/targets/*}:getIamPolicy',
                     ],
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/customTargetTypes/*}:getIamPolicy',
+                    ],
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/deployPolicies/*}:getIamPolicy',
+                    ],
                 ],
                 'placeholders' => [
                     'resource' => [
@@ -547,6 +639,16 @@ return [
                     [
                         'method' => 'post',
                         'uriTemplate' => '/v1/{resource=projects/*/locations/*/targets/*}:setIamPolicy',
+                        'body' => '*',
+                    ],
+                    [
+                        'method' => 'post',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/customTargetTypes/*}:setIamPolicy',
+                        'body' => '*',
+                    ],
+                    [
+                        'method' => 'post',
+                        'uriTemplate' => '/v1/{resource=projects/*/locations/*/deployPolicies/*}:setIamPolicy',
                         'body' => '*',
                     ],
                 ],

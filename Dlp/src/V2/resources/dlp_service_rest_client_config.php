@@ -1,4 +1,24 @@
 <?php
+/*
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * GENERATED CODE WARNING
+ * This file was automatically generated - do not edit!
+ */
 
 return [
     'interfaces' => [
@@ -37,6 +57,25 @@ return [
                     'name' => [
                         'getters' => [
                             'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'CreateConnection' => [
+                'method' => 'post',
+                'uriTemplate' => '/v2/{parent=projects/*/locations/*}/connections',
+                'body' => '*',
+                'additionalBindings' => [
+                    [
+                        'method' => 'post',
+                        'uriTemplate' => '/v2/{parent=organizations/*/locations/*}/connections',
+                        'body' => '*',
+                    ],
+                ],
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
                         ],
                     ],
                 ],
@@ -110,7 +149,7 @@ return [
             ],
             'CreateInspectTemplate' => [
                 'method' => 'post',
-                'uriTemplate' => '/v2/{parent=organizations/*}/inspectTemplates',
+                'uriTemplate' => '/v2/{parent=projects/*/locations/*}/inspectTemplates',
                 'body' => '*',
                 'additionalBindings' => [
                     [
@@ -125,7 +164,7 @@ return [
                     ],
                     [
                         'method' => 'post',
-                        'uriTemplate' => '/v2/{parent=projects/*/locations/*}/inspectTemplates',
+                        'uriTemplate' => '/v2/{parent=organizations/*}/inspectTemplates',
                         'body' => '*',
                     ],
                 ],
@@ -209,6 +248,23 @@ return [
                     ],
                 ],
             ],
+            'DeleteConnection' => [
+                'method' => 'delete',
+                'uriTemplate' => '/v2/{name=projects/*/locations/*/connections/*}',
+                'additionalBindings' => [
+                    [
+                        'method' => 'delete',
+                        'uriTemplate' => '/v2/{name=organizations/*/locations/*/connections/*}',
+                    ],
+                ],
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'DeleteDeidentifyTemplate' => [
                 'method' => 'delete',
                 'uriTemplate' => '/v2/{name=organizations/*/deidentifyTemplates/*}',
@@ -268,9 +324,26 @@ return [
                     ],
                 ],
             ],
+            'DeleteFileStoreDataProfile' => [
+                'method' => 'delete',
+                'uriTemplate' => '/v2/{name=organizations/*/locations/*/fileStoreDataProfiles/*}',
+                'additionalBindings' => [
+                    [
+                        'method' => 'delete',
+                        'uriTemplate' => '/v2/{name=projects/*/locations/*/fileStoreDataProfiles/*}',
+                    ],
+                ],
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'DeleteInspectTemplate' => [
                 'method' => 'delete',
-                'uriTemplate' => '/v2/{name=organizations/*/inspectTemplates/*}',
+                'uriTemplate' => '/v2/{name=projects/*/locations/*/inspectTemplates/*}',
                 'additionalBindings' => [
                     [
                         'method' => 'delete',
@@ -282,7 +355,7 @@ return [
                     ],
                     [
                         'method' => 'delete',
-                        'uriTemplate' => '/v2/{name=projects/*/locations/*/inspectTemplates/*}',
+                        'uriTemplate' => '/v2/{name=organizations/*/inspectTemplates/*}',
                     ],
                 ],
                 'placeholders' => [
@@ -339,10 +412,61 @@ return [
                     ],
                 ],
             ],
+            'DeleteTableDataProfile' => [
+                'method' => 'delete',
+                'uriTemplate' => '/v2/{name=organizations/*/locations/*/tableDataProfiles/*}',
+                'additionalBindings' => [
+                    [
+                        'method' => 'delete',
+                        'uriTemplate' => '/v2/{name=projects/*/locations/*/tableDataProfiles/*}',
+                    ],
+                ],
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'FinishDlpJob' => [
                 'method' => 'post',
                 'uriTemplate' => '/v2/{name=projects/*/locations/*/dlpJobs/*}:finish',
                 'body' => '*',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'GetColumnDataProfile' => [
+                'method' => 'get',
+                'uriTemplate' => '/v2/{name=organizations/*/locations/*/columnDataProfiles/*}',
+                'additionalBindings' => [
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v2/{name=projects/*/locations/*/columnDataProfiles/*}',
+                    ],
+                ],
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'GetConnection' => [
+                'method' => 'get',
+                'uriTemplate' => '/v2/{name=projects/*/locations/*/connections/*}',
+                'additionalBindings' => [
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v2/{name=organizations/*/locations/*/connections/*}',
+                    ],
+                ],
                 'placeholders' => [
                     'name' => [
                         'getters' => [
@@ -410,9 +534,26 @@ return [
                     ],
                 ],
             ],
+            'GetFileStoreDataProfile' => [
+                'method' => 'get',
+                'uriTemplate' => '/v2/{name=organizations/*/locations/*/fileStoreDataProfiles/*}',
+                'additionalBindings' => [
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v2/{name=projects/*/locations/*/fileStoreDataProfiles/*}',
+                    ],
+                ],
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'GetInspectTemplate' => [
                 'method' => 'get',
-                'uriTemplate' => '/v2/{name=organizations/*/inspectTemplates/*}',
+                'uriTemplate' => '/v2/{name=projects/*/locations/*/inspectTemplates/*}',
                 'additionalBindings' => [
                     [
                         'method' => 'get',
@@ -424,7 +565,7 @@ return [
                     ],
                     [
                         'method' => 'get',
-                        'uriTemplate' => '/v2/{name=projects/*/locations/*/inspectTemplates/*}',
+                        'uriTemplate' => '/v2/{name=organizations/*/inspectTemplates/*}',
                     ],
                 ],
                 'placeholders' => [
@@ -456,6 +597,23 @@ return [
                     ],
                 ],
             ],
+            'GetProjectDataProfile' => [
+                'method' => 'get',
+                'uriTemplate' => '/v2/{name=organizations/*/locations/*/projectDataProfiles/*}',
+                'additionalBindings' => [
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v2/{name=projects/*/locations/*/projectDataProfiles/*}',
+                    ],
+                ],
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'GetStoredInfoType' => [
                 'method' => 'get',
                 'uriTemplate' => '/v2/{name=organizations/*/storedInfoTypes/*}',
@@ -471,6 +629,23 @@ return [
                     [
                         'method' => 'get',
                         'uriTemplate' => '/v2/{name=projects/*/locations/*/storedInfoTypes/*}',
+                    ],
+                ],
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'GetTableDataProfile' => [
+                'method' => 'get',
+                'uriTemplate' => '/v2/{name=organizations/*/locations/*/tableDataProfiles/*}',
+                'additionalBindings' => [
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v2/{name=projects/*/locations/*/tableDataProfiles/*}',
                     ],
                 ],
                 'placeholders' => [
@@ -514,6 +689,40 @@ return [
                         'method' => 'post',
                         'uriTemplate' => '/v2/{parent=projects/*/locations/*}/content:inspect',
                         'body' => '*',
+                    ],
+                ],
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
+            'ListColumnDataProfiles' => [
+                'method' => 'get',
+                'uriTemplate' => '/v2/{parent=organizations/*/locations/*}/columnDataProfiles',
+                'additionalBindings' => [
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v2/{parent=projects/*/locations/*}/columnDataProfiles',
+                    ],
+                ],
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
+            'ListConnections' => [
+                'method' => 'get',
+                'uriTemplate' => '/v2/{parent=projects/*/locations/*}/connections',
+                'additionalBindings' => [
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v2/{parent=organizations/*/locations/*}/connections',
                     ],
                 ],
                 'placeholders' => [
@@ -587,6 +796,23 @@ return [
                     ],
                 ],
             ],
+            'ListFileStoreDataProfiles' => [
+                'method' => 'get',
+                'uriTemplate' => '/v2/{parent=organizations/*/locations/*}/fileStoreDataProfiles',
+                'additionalBindings' => [
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v2/{parent=projects/*/locations/*}/fileStoreDataProfiles',
+                    ],
+                ],
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
             'ListInfoTypes' => [
                 'method' => 'get',
                 'uriTemplate' => '/v2/infoTypes',
@@ -606,7 +832,7 @@ return [
             ],
             'ListInspectTemplates' => [
                 'method' => 'get',
-                'uriTemplate' => '/v2/{parent=organizations/*}/inspectTemplates',
+                'uriTemplate' => '/v2/{parent=projects/*/locations/*}/inspectTemplates',
                 'additionalBindings' => [
                     [
                         'method' => 'get',
@@ -618,7 +844,7 @@ return [
                     ],
                     [
                         'method' => 'get',
-                        'uriTemplate' => '/v2/{parent=projects/*/locations/*}/inspectTemplates',
+                        'uriTemplate' => '/v2/{parent=organizations/*}/inspectTemplates',
                     ],
                 ],
                 'placeholders' => [
@@ -650,6 +876,23 @@ return [
                     ],
                 ],
             ],
+            'ListProjectDataProfiles' => [
+                'method' => 'get',
+                'uriTemplate' => '/v2/{parent=organizations/*/locations/*}/projectDataProfiles',
+                'additionalBindings' => [
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v2/{parent=projects/*/locations/*}/projectDataProfiles',
+                    ],
+                ],
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
             'ListStoredInfoTypes' => [
                 'method' => 'get',
                 'uriTemplate' => '/v2/{parent=organizations/*}/storedInfoTypes',
@@ -665,6 +908,23 @@ return [
                     [
                         'method' => 'get',
                         'uriTemplate' => '/v2/{parent=projects/*/locations/*}/storedInfoTypes',
+                    ],
+                ],
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
+            'ListTableDataProfiles' => [
+                'method' => 'get',
+                'uriTemplate' => '/v2/{parent=organizations/*/locations/*}/tableDataProfiles',
+                'additionalBindings' => [
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v2/{parent=projects/*/locations/*}/tableDataProfiles',
                     ],
                 ],
                 'placeholders' => [
@@ -709,6 +969,42 @@ return [
                     'parent' => [
                         'getters' => [
                             'getParent',
+                        ],
+                    ],
+                ],
+            ],
+            'SearchConnections' => [
+                'method' => 'get',
+                'uriTemplate' => '/v2/{parent=projects/*/locations/*}/connections:search',
+                'additionalBindings' => [
+                    [
+                        'method' => 'get',
+                        'uriTemplate' => '/v2/{parent=organizations/*/locations/*}/connections:search',
+                    ],
+                ],
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
+            'UpdateConnection' => [
+                'method' => 'patch',
+                'uriTemplate' => '/v2/{name=projects/*/locations/*/connections/*}',
+                'body' => '*',
+                'additionalBindings' => [
+                    [
+                        'method' => 'patch',
+                        'uriTemplate' => '/v2/{name=organizations/*/locations/*/connections/*}',
+                        'body' => '*',
+                    ],
+                ],
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
                         ],
                     ],
                 ],
@@ -763,7 +1059,7 @@ return [
             ],
             'UpdateInspectTemplate' => [
                 'method' => 'patch',
-                'uriTemplate' => '/v2/{name=organizations/*/inspectTemplates/*}',
+                'uriTemplate' => '/v2/{name=projects/*/locations/*/inspectTemplates/*}',
                 'body' => '*',
                 'additionalBindings' => [
                     [
@@ -778,7 +1074,7 @@ return [
                     ],
                     [
                         'method' => 'patch',
-                        'uriTemplate' => '/v2/{name=projects/*/locations/*/inspectTemplates/*}',
+                        'uriTemplate' => '/v2/{name=organizations/*/inspectTemplates/*}',
                         'body' => '*',
                     ],
                 ],

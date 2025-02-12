@@ -25,10 +25,10 @@
         }
     },
     "require": {
-        "php": ">=7.4",
-        "google/gax": "^1.24.0",
-        "google/access-context-manager": "^0.4",
-        "google/cloud-osconfig": "^1.0"
+        "php": "^8.0",
+        "google/gax": "^1.36.0",
+        "google/access-context-manager": "^1.0",
+        "google/cloud-osconfig": "^2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0",

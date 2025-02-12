@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\Dialogflow\V2\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -50,9 +49,11 @@ use Google\Cloud\Dialogflow\V2\ValidationResult;
 use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\Location;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use Google\Protobuf\Struct;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Service for managing [Agents][google.cloud.dialogflow.v2.Agent].
@@ -65,17 +66,17 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface deleteAgentAsync(DeleteAgentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface exportAgentAsync(ExportAgentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAgentAsync(GetAgentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getValidationResultAsync(GetValidationResultRequest $request, array $optionalArgs = [])
- * @method PromiseInterface importAgentAsync(ImportAgentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface restoreAgentAsync(RestoreAgentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface searchAgentsAsync(SearchAgentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setAgentAsync(SetAgentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface trainAgentAsync(TrainAgentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteAgentAsync(DeleteAgentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> exportAgentAsync(ExportAgentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Agent> getAgentAsync(GetAgentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ValidationResult> getValidationResultAsync(GetValidationResultRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> importAgentAsync(ImportAgentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> restoreAgentAsync(RestoreAgentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> searchAgentsAsync(SearchAgentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Agent> setAgentAsync(SetAgentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> trainAgentAsync(TrainAgentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
  */
 final class AgentsClient
 {
@@ -151,10 +152,31 @@ final class AgentsClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -252,14 +274,14 @@ final class AgentsClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -281,6 +303,12 @@ final class AgentsClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -314,6 +342,9 @@ final class AgentsClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -340,6 +371,8 @@ final class AgentsClient
      * Deletes the specified agent.
      *
      * The async variant is {@see AgentsClient::deleteAgentAsync()} .
+     *
+     * @example samples/V2/AgentsClient/delete_agent.php
      *
      * @param DeleteAgentRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -372,6 +405,8 @@ final class AgentsClient
      *
      * The async variant is {@see AgentsClient::exportAgentAsync()} .
      *
+     * @example samples/V2/AgentsClient/export_agent.php
+     *
      * @param ExportAgentRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -395,6 +430,8 @@ final class AgentsClient
      * Retrieves the specified agent.
      *
      * The async variant is {@see AgentsClient::getAgentAsync()} .
+     *
+     * @example samples/V2/AgentsClient/get_agent.php
      *
      * @param GetAgentRequest $request     A request to house fields associated with the call.
      * @param array           $callOptions {
@@ -420,6 +457,8 @@ final class AgentsClient
      * training time and is updated automatically when training is completed.
      *
      * The async variant is {@see AgentsClient::getValidationResultAsync()} .
+     *
+     * @example samples/V2/AgentsClient/get_validation_result.php
      *
      * @param GetValidationResultRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -471,6 +510,8 @@ final class AgentsClient
      *
      * The async variant is {@see AgentsClient::importAgentAsync()} .
      *
+     * @example samples/V2/AgentsClient/import_agent.php
+     *
      * @param ImportAgentRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -519,6 +560,8 @@ final class AgentsClient
      *
      * The async variant is {@see AgentsClient::restoreAgentAsync()} .
      *
+     * @example samples/V2/AgentsClient/restore_agent.php
+     *
      * @param RestoreAgentRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -549,6 +592,8 @@ final class AgentsClient
      *
      * The async variant is {@see AgentsClient::searchAgentsAsync()} .
      *
+     * @example samples/V2/AgentsClient/search_agents.php
+     *
      * @param SearchAgentsRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -576,6 +621,8 @@ final class AgentsClient
      * documentation](https://cloud.google.com/dialogflow/es/docs/training).
      *
      * The async variant is {@see AgentsClient::setAgentAsync()} .
+     *
+     * @example samples/V2/AgentsClient/set_agent.php
      *
      * @param SetAgentRequest $request     A request to house fields associated with the call.
      * @param array           $callOptions {
@@ -614,6 +661,8 @@ final class AgentsClient
      *
      * The async variant is {@see AgentsClient::trainAgentAsync()} .
      *
+     * @example samples/V2/AgentsClient/train_agent.php
+     *
      * @param TrainAgentRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -638,6 +687,8 @@ final class AgentsClient
      *
      * The async variant is {@see AgentsClient::getLocationAsync()} .
      *
+     * @example samples/V2/AgentsClient/get_location.php
+     *
      * @param GetLocationRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -661,6 +712,8 @@ final class AgentsClient
      * Lists information about the supported locations for this service.
      *
      * The async variant is {@see AgentsClient::listLocationsAsync()} .
+     *
+     * @example samples/V2/AgentsClient/list_locations.php
      *
      * @param ListLocationsRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {

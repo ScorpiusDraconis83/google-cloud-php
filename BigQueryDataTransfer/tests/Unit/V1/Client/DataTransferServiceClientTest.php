@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ use Google\Cloud\BigQuery\DataTransfer\V1\StartManualTransferRunsResponse;
 use Google\Cloud\BigQuery\DataTransfer\V1\TransferConfig;
 use Google\Cloud\BigQuery\DataTransfer\V1\TransferMessage;
 use Google\Cloud\BigQuery\DataTransfer\V1\TransferRun;
+use Google\Cloud\BigQuery\DataTransfer\V1\UnenrollDataSourcesRequest;
 use Google\Cloud\BigQuery\DataTransfer\V1\UpdateTransferConfigRequest;
 use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
@@ -79,7 +80,9 @@ class DataTransferServiceClientTest extends GeneratedTest
     /** @return CredentialsWrapper */
     private function createCredentials()
     {
-        return $this->getMockBuilder(CredentialsWrapper::class)->disableOriginalConstructor()->getMock();
+        return $this->getMockBuilder(CredentialsWrapper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /** @return DataTransferServiceClient */
@@ -106,15 +109,17 @@ class DataTransferServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->dataSourceName('[PROJECT]', '[DATA_SOURCE]');
-        $request = (new CheckValidCredsRequest())
-            ->setName($formattedName);
+        $request = (new CheckValidCredsRequest())->setName($formattedName);
         $response = $gapicClient->checkValidCreds($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.bigquery.datatransfer.v1.DataTransferService/CheckValidCreds', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.bigquery.datatransfer.v1.DataTransferService/CheckValidCreds',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getName();
         $this->assertProtobufEquals($formattedName, $actualValue);
         $this->assertTrue($transport->isExhausted());
@@ -131,17 +136,19 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->dataSourceName('[PROJECT]', '[DATA_SOURCE]');
-        $request = (new CheckValidCredsRequest())
-            ->setName($formattedName);
+        $request = (new CheckValidCredsRequest())->setName($formattedName);
         try {
             $gapicClient->checkValidCreds($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -189,16 +196,17 @@ class DataTransferServiceClientTest extends GeneratedTest
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
         $transferConfig = new TransferConfig();
-        $request = (new CreateTransferConfigRequest())
-            ->setParent($formattedParent)
-            ->setTransferConfig($transferConfig);
+        $request = (new CreateTransferConfigRequest())->setParent($formattedParent)->setTransferConfig($transferConfig);
         $response = $gapicClient->createTransferConfig($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.bigquery.datatransfer.v1.DataTransferService/CreateTransferConfig', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.bigquery.datatransfer.v1.DataTransferService/CreateTransferConfig',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $actualValue = $actualRequestObject->getTransferConfig();
@@ -217,19 +225,20 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
         $transferConfig = new TransferConfig();
-        $request = (new CreateTransferConfigRequest())
-            ->setParent($formattedParent)
-            ->setTransferConfig($transferConfig);
+        $request = (new CreateTransferConfigRequest())->setParent($formattedParent)->setTransferConfig($transferConfig);
         try {
             $gapicClient->createTransferConfig($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -256,14 +265,16 @@ class DataTransferServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->transferConfigName('[PROJECT]', '[TRANSFER_CONFIG]');
-        $request = (new DeleteTransferConfigRequest())
-            ->setName($formattedName);
+        $request = (new DeleteTransferConfigRequest())->setName($formattedName);
         $gapicClient->deleteTransferConfig($request);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.bigquery.datatransfer.v1.DataTransferService/DeleteTransferConfig', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.bigquery.datatransfer.v1.DataTransferService/DeleteTransferConfig',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getName();
         $this->assertProtobufEquals($formattedName, $actualValue);
         $this->assertTrue($transport->isExhausted());
@@ -280,17 +291,19 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->transferConfigName('[PROJECT]', '[TRANSFER_CONFIG]');
-        $request = (new DeleteTransferConfigRequest())
-            ->setName($formattedName);
+        $request = (new DeleteTransferConfigRequest())->setName($formattedName);
         try {
             $gapicClient->deleteTransferConfig($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -317,14 +330,16 @@ class DataTransferServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->runName('[PROJECT]', '[TRANSFER_CONFIG]', '[RUN]');
-        $request = (new DeleteTransferRunRequest())
-            ->setName($formattedName);
+        $request = (new DeleteTransferRunRequest())->setName($formattedName);
         $gapicClient->deleteTransferRun($request);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.bigquery.datatransfer.v1.DataTransferService/DeleteTransferRun', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.bigquery.datatransfer.v1.DataTransferService/DeleteTransferRun',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getName();
         $this->assertProtobufEquals($formattedName, $actualValue);
         $this->assertTrue($transport->isExhausted());
@@ -341,17 +356,19 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->runName('[PROJECT]', '[TRANSFER_CONFIG]', '[RUN]');
-        $request = (new DeleteTransferRunRequest())
-            ->setName($formattedName);
+        $request = (new DeleteTransferRunRequest())->setName($formattedName);
         try {
             $gapicClient->deleteTransferRun($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -382,7 +399,10 @@ class DataTransferServiceClientTest extends GeneratedTest
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.bigquery.datatransfer.v1.DataTransferService/EnrollDataSources', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.bigquery.datatransfer.v1.DataTransferService/EnrollDataSources',
+            $actualFuncCall
+        );
         $this->assertTrue($transport->isExhausted());
     }
 
@@ -397,12 +417,15 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new EnrollDataSourcesRequest();
         try {
@@ -455,8 +478,7 @@ class DataTransferServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->dataSourceName('[PROJECT]', '[DATA_SOURCE]');
-        $request = (new GetDataSourceRequest())
-            ->setName($formattedName);
+        $request = (new GetDataSourceRequest())->setName($formattedName);
         $response = $gapicClient->getDataSource($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -480,17 +502,19 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->dataSourceName('[PROJECT]', '[DATA_SOURCE]');
-        $request = (new GetDataSourceRequest())
-            ->setName($formattedName);
+        $request = (new GetDataSourceRequest())->setName($formattedName);
         try {
             $gapicClient->getDataSource($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -537,15 +561,17 @@ class DataTransferServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->transferConfigName('[PROJECT]', '[TRANSFER_CONFIG]');
-        $request = (new GetTransferConfigRequest())
-            ->setName($formattedName);
+        $request = (new GetTransferConfigRequest())->setName($formattedName);
         $response = $gapicClient->getTransferConfig($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.bigquery.datatransfer.v1.DataTransferService/GetTransferConfig', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.bigquery.datatransfer.v1.DataTransferService/GetTransferConfig',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getName();
         $this->assertProtobufEquals($formattedName, $actualValue);
         $this->assertTrue($transport->isExhausted());
@@ -562,17 +588,19 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->transferConfigName('[PROJECT]', '[TRANSFER_CONFIG]');
-        $request = (new GetTransferConfigRequest())
-            ->setName($formattedName);
+        $request = (new GetTransferConfigRequest())->setName($formattedName);
         try {
             $gapicClient->getTransferConfig($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -611,8 +639,7 @@ class DataTransferServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->runName('[PROJECT]', '[TRANSFER_CONFIG]', '[RUN]');
-        $request = (new GetTransferRunRequest())
-            ->setName($formattedName);
+        $request = (new GetTransferRunRequest())->setName($formattedName);
         $response = $gapicClient->getTransferRun($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -636,17 +663,19 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->runName('[PROJECT]', '[TRANSFER_CONFIG]', '[RUN]');
-        $request = (new GetTransferRunRequest())
-            ->setName($formattedName);
+        $request = (new GetTransferRunRequest())->setName($formattedName);
         try {
             $gapicClient->getTransferRun($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -671,17 +700,14 @@ class DataTransferServiceClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $dataSourcesElement = new DataSource();
-        $dataSources = [
-            $dataSourcesElement,
-        ];
+        $dataSources = [$dataSourcesElement];
         $expectedResponse = new ListDataSourcesResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setDataSources($dataSources);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
-        $request = (new ListDataSourcesRequest())
-            ->setParent($formattedParent);
+        $request = (new ListDataSourcesRequest())->setParent($formattedParent);
         $response = $gapicClient->listDataSources($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -691,7 +717,10 @@ class DataTransferServiceClientTest extends GeneratedTest
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.bigquery.datatransfer.v1.DataTransferService/ListDataSources', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.bigquery.datatransfer.v1.DataTransferService/ListDataSources',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $this->assertTrue($transport->isExhausted());
@@ -708,17 +737,19 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
-        $request = (new ListDataSourcesRequest())
-            ->setParent($formattedParent);
+        $request = (new ListDataSourcesRequest())->setParent($formattedParent);
         try {
             $gapicClient->listDataSources($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -743,17 +774,14 @@ class DataTransferServiceClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $transferConfigsElement = new TransferConfig();
-        $transferConfigs = [
-            $transferConfigsElement,
-        ];
+        $transferConfigs = [$transferConfigsElement];
         $expectedResponse = new ListTransferConfigsResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setTransferConfigs($transferConfigs);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
-        $request = (new ListTransferConfigsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListTransferConfigsRequest())->setParent($formattedParent);
         $response = $gapicClient->listTransferConfigs($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -763,7 +791,10 @@ class DataTransferServiceClientTest extends GeneratedTest
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.bigquery.datatransfer.v1.DataTransferService/ListTransferConfigs', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.bigquery.datatransfer.v1.DataTransferService/ListTransferConfigs',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $this->assertTrue($transport->isExhausted());
@@ -780,17 +811,19 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
-        $request = (new ListTransferConfigsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListTransferConfigsRequest())->setParent($formattedParent);
         try {
             $gapicClient->listTransferConfigs($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -815,17 +848,14 @@ class DataTransferServiceClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $transferMessagesElement = new TransferMessage();
-        $transferMessages = [
-            $transferMessagesElement,
-        ];
+        $transferMessages = [$transferMessagesElement];
         $expectedResponse = new ListTransferLogsResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setTransferMessages($transferMessages);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->runName('[PROJECT]', '[TRANSFER_CONFIG]', '[RUN]');
-        $request = (new ListTransferLogsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListTransferLogsRequest())->setParent($formattedParent);
         $response = $gapicClient->listTransferLogs($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -835,7 +865,10 @@ class DataTransferServiceClientTest extends GeneratedTest
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.bigquery.datatransfer.v1.DataTransferService/ListTransferLogs', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.bigquery.datatransfer.v1.DataTransferService/ListTransferLogs',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $this->assertTrue($transport->isExhausted());
@@ -852,17 +885,19 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->runName('[PROJECT]', '[TRANSFER_CONFIG]', '[RUN]');
-        $request = (new ListTransferLogsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListTransferLogsRequest())->setParent($formattedParent);
         try {
             $gapicClient->listTransferLogs($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -887,17 +922,14 @@ class DataTransferServiceClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $transferRunsElement = new TransferRun();
-        $transferRuns = [
-            $transferRunsElement,
-        ];
+        $transferRuns = [$transferRunsElement];
         $expectedResponse = new ListTransferRunsResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setTransferRuns($transferRuns);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->transferConfigName('[PROJECT]', '[TRANSFER_CONFIG]');
-        $request = (new ListTransferRunsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListTransferRunsRequest())->setParent($formattedParent);
         $response = $gapicClient->listTransferRuns($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -907,7 +939,10 @@ class DataTransferServiceClientTest extends GeneratedTest
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.bigquery.datatransfer.v1.DataTransferService/ListTransferRuns', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.bigquery.datatransfer.v1.DataTransferService/ListTransferRuns',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $this->assertTrue($transport->isExhausted());
@@ -924,17 +959,19 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->transferConfigName('[PROJECT]', '[TRANSFER_CONFIG]');
-        $request = (new ListTransferRunsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListTransferRunsRequest())->setParent($formattedParent);
         try {
             $gapicClient->listTransferRuns($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -973,7 +1010,10 @@ class DataTransferServiceClientTest extends GeneratedTest
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.bigquery.datatransfer.v1.DataTransferService/ScheduleTransferRuns', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.bigquery.datatransfer.v1.DataTransferService/ScheduleTransferRuns',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $actualValue = $actualRequestObject->getStartTime();
@@ -994,12 +1034,15 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->transferConfigName('[PROJECT]', '[TRANSFER_CONFIG]');
@@ -1040,7 +1083,10 @@ class DataTransferServiceClientTest extends GeneratedTest
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.bigquery.datatransfer.v1.DataTransferService/StartManualTransferRuns', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.bigquery.datatransfer.v1.DataTransferService/StartManualTransferRuns',
+            $actualFuncCall
+        );
         $this->assertTrue($transport->isExhausted());
     }
 
@@ -1055,16 +1101,78 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new StartManualTransferRunsRequest();
         try {
             $gapicClient->startManualTransferRuns($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function unenrollDataSourcesTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $expectedResponse = new GPBEmpty();
+        $transport->addResponse($expectedResponse);
+        $request = new UnenrollDataSourcesRequest();
+        $gapicClient->unenrollDataSources($request);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame(
+            '/google.cloud.bigquery.datatransfer.v1.DataTransferService/UnenrollDataSources',
+            $actualFuncCall
+        );
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function unenrollDataSourcesExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        $request = new UnenrollDataSourcesRequest();
+        try {
+            $gapicClient->unenrollDataSources($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -1110,16 +1218,17 @@ class DataTransferServiceClientTest extends GeneratedTest
         // Mock request
         $transferConfig = new TransferConfig();
         $updateMask = new FieldMask();
-        $request = (new UpdateTransferConfigRequest())
-            ->setTransferConfig($transferConfig)
-            ->setUpdateMask($updateMask);
+        $request = (new UpdateTransferConfigRequest())->setTransferConfig($transferConfig)->setUpdateMask($updateMask);
         $response = $gapicClient->updateTransferConfig($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.bigquery.datatransfer.v1.DataTransferService/UpdateTransferConfig', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.bigquery.datatransfer.v1.DataTransferService/UpdateTransferConfig',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getTransferConfig();
         $this->assertProtobufEquals($transferConfig, $actualValue);
         $actualValue = $actualRequestObject->getUpdateMask();
@@ -1138,19 +1247,20 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $transferConfig = new TransferConfig();
         $updateMask = new FieldMask();
-        $request = (new UpdateTransferConfigRequest())
-            ->setTransferConfig($transferConfig)
-            ->setUpdateMask($updateMask);
+        $request = (new UpdateTransferConfigRequest())->setTransferConfig($transferConfig)->setUpdateMask($updateMask);
         try {
             $gapicClient->updateTransferConfig($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1203,12 +1313,15 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new GetLocationRequest();
         try {
@@ -1235,9 +1348,7 @@ class DataTransferServiceClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $locationsElement = new Location();
-        $locations = [
-            $locationsElement,
-        ];
+        $locations = [$locationsElement];
         $expectedResponse = new ListLocationsResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setLocations($locations);
@@ -1267,12 +1378,15 @@ class DataTransferServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new ListLocationsRequest();
         try {
@@ -1303,15 +1417,17 @@ class DataTransferServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->dataSourceName('[PROJECT]', '[DATA_SOURCE]');
-        $request = (new CheckValidCredsRequest())
-            ->setName($formattedName);
+        $request = (new CheckValidCredsRequest())->setName($formattedName);
         $response = $gapicClient->checkValidCredsAsync($request)->wait();
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.bigquery.datatransfer.v1.DataTransferService/CheckValidCreds', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.bigquery.datatransfer.v1.DataTransferService/CheckValidCreds',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getName();
         $this->assertProtobufEquals($formattedName, $actualValue);
         $this->assertTrue($transport->isExhausted());

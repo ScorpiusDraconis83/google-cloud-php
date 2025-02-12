@@ -33,10 +33,10 @@ class ComponentPackage
  \* Updates to the above are reflected here through a refresh process#';
     private string $path;
 
-    private const MIGRATION_V1 = 'v1';
-    private const MIGRATION_V2 = 'v2';
-    private const MIGRATION_V1_AND_V2 = 'v1 and v2';
-    private const MIGRATION_NA = 'n/a';
+    private const MIGRATION_V1 = 'PRE_MIGRATION_SURFACE_ONLY';
+    private const MIGRATION_V2 = 'NEW_SURFACE_ONLY';
+    private const MIGRATION_V1_AND_V2 = 'MIGRATING';
+    private const MIGRATION_NA = 'MIGRATION_MODE_UNSPECIFIED';
 
     public function __construct(private Component $component, private string $name)
     {
@@ -48,7 +48,7 @@ class ComponentPackage
         return $this->name;
     }
 
-    public function getProtoPackage(): string
+    public function getProtoPath(): string
     {
         $gapicClientFiles = $this->getV1GapicClientFiles() + $this->getV2ClientFiles();
 
@@ -78,11 +78,7 @@ class ComponentPackage
         $gapicClientClasses = array_map(fn ($fp) => $this->getClassFromFile($fp), $gapicClientFiles);
 
         foreach ($gapicClientClasses as $className) {
-            // Access V1-surface public constant
-            if (defined($className . '::SERVICE_ADDRESS')) {
-                return constant($className . '::SERVICE_ADDRESS');
-            }
-            // Access V2-surface private constant
+            // Access private constants (for v2 surfaces)
             if ($constants = (new \ReflectionClass($className))->getConstants()) {
                 if (isset($constants['SERVICE_ADDRESS'])) {
                     return $constants['SERVICE_ADDRESS'];
@@ -92,12 +88,49 @@ class ComponentPackage
         return '';
     }
 
-    public function getApiShortname(): string
+    public function getProtoNamespaces(): array
     {
-        $sa = $this->getServiceAddress();
-        return substr($sa, 0, strpos($sa, '.'));
+        $protoPackages = [];
+        foreach ($this->getFilesInDir('*.php', $this->path) as $classFile) {
+            $contents = file_get_contents($classFile);
+            if (preg_match(
+                '/Generated from protobuf message <code>([a-z0-9\.]+)(\..*)<\/code>/',
+                $contents,
+                $matches
+            ) && preg_match('/namespace (.*);/', $contents, $nsMatches)) {
+                // remove namespace (in case it's nested)
+                $protoPackages[$matches[1]] = str_replace(
+                    str_replace('.', '\\', substr($matches[2], 0, strrpos($matches[2], '.'))),
+                    '',
+                    $nsMatches[1]
+                );
+            }
+        }
+        return array_unique($protoPackages);
     }
 
+    public function getBaseUri(): string
+    {
+        if (file_exists($this->path . 'Connection/Rest.php')) {
+            $connection = $this->getClassFromFile($this->path . 'Connection/Rest.php');
+            if (defined($connection . '::DEFAULT_API_ENDPOINT')) {
+                return constant($connection . '::DEFAULT_API_ENDPOINT');
+            }
+            if (defined($connection . '::BASE_URI')) {
+                return constant($connection . '::BASE_URI');
+            }
+        }
+        return '';
+    }
+
+    public function getApiShortname(): string
+    {
+        if ($sa = $this->getServiceAddress()) {
+            return substr($sa, 0, strpos($sa, '.'));
+        }
+        $parts = parse_url($this->getBaseUri());
+        return substr($parts['host'] ?? '', 0, strpos($parts['host'] ?? '', '.'));
+    }
 
     private function getV1GapicClientFiles(): array
     {
@@ -121,12 +154,12 @@ class ComponentPackage
     private function getClassFromFile(string $filePath): string
     {
         foreach ($this->component->getNamespaces() as $namespace => $dir) {
-            $gapicClientClass = str_replace($this->component->getPath() . '/' . $dir, $namespace, $filePath);
-            $gapicClientClass = str_replace(['/', '.php'], ['\\', ''], $gapicClientClass);
-            if (class_exists($gapicClientClass)) {
-                return $gapicClientClass;
+            $className = str_replace($this->component->getPath() . '/' . $dir, $namespace, $filePath);
+            $className = str_replace(['/', '.php'], ['\\', ''], $className);
+            if (class_exists($className)) {
+                return $className;
             }
         }
-        throw new \Exception('No GAPIC client found in ' . $filePath);
+        throw new \Exception('No class found in ' . $filePath);
     }
 }

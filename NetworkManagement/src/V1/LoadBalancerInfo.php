@@ -20,13 +20,16 @@ class LoadBalancerInfo extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.networkmanagement.v1.LoadBalancerInfo.LoadBalancerType load_balancer_type = 1;</code>
      */
-    private $load_balancer_type = 0;
+    protected $load_balancer_type = 0;
     /**
-     * URI of the health check for the load balancer.
+     * URI of the health check for the load balancer. Deprecated and no longer
+     * populated as different load balancer backends might have different health
+     * checks.
      *
-     * Generated from protobuf field <code>string health_check_uri = 2;</code>
+     * Generated from protobuf field <code>string health_check_uri = 2 [deprecated = true];</code>
+     * @deprecated
      */
-    private $health_check_uri = '';
+    protected $health_check_uri = '';
     /**
      * Information for the loadbalancer backends.
      *
@@ -38,13 +41,13 @@ class LoadBalancerInfo extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.networkmanagement.v1.LoadBalancerInfo.BackendType backend_type = 4;</code>
      */
-    private $backend_type = 0;
+    protected $backend_type = 0;
     /**
      * Backend configuration URI.
      *
      * Generated from protobuf field <code>string backend_uri = 5;</code>
      */
-    private $backend_uri = '';
+    protected $backend_uri = '';
 
     /**
      * Constructor.
@@ -55,7 +58,9 @@ class LoadBalancerInfo extends \Google\Protobuf\Internal\Message
      *     @type int $load_balancer_type
      *           Type of the load balancer.
      *     @type string $health_check_uri
-     *           URI of the health check for the load balancer.
+     *           URI of the health check for the load balancer. Deprecated and no longer
+     *           populated as different load balancer backends might have different health
+     *           checks.
      *     @type array<\Google\Cloud\NetworkManagement\V1\LoadBalancerBackend>|\Google\Protobuf\Internal\RepeatedField $backends
      *           Information for the loadbalancer backends.
      *     @type int $backend_type
@@ -96,25 +101,33 @@ class LoadBalancerInfo extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * URI of the health check for the load balancer.
+     * URI of the health check for the load balancer. Deprecated and no longer
+     * populated as different load balancer backends might have different health
+     * checks.
      *
-     * Generated from protobuf field <code>string health_check_uri = 2;</code>
+     * Generated from protobuf field <code>string health_check_uri = 2 [deprecated = true];</code>
      * @return string
+     * @deprecated
      */
     public function getHealthCheckUri()
     {
+        @trigger_error('health_check_uri is deprecated.', E_USER_DEPRECATED);
         return $this->health_check_uri;
     }
 
     /**
-     * URI of the health check for the load balancer.
+     * URI of the health check for the load balancer. Deprecated and no longer
+     * populated as different load balancer backends might have different health
+     * checks.
      *
-     * Generated from protobuf field <code>string health_check_uri = 2;</code>
+     * Generated from protobuf field <code>string health_check_uri = 2 [deprecated = true];</code>
      * @param string $var
      * @return $this
+     * @deprecated
      */
     public function setHealthCheckUri($var)
     {
+        @trigger_error('health_check_uri is deprecated.', E_USER_DEPRECATED);
         GPBUtil::checkString($var, True);
         $this->health_check_uri = $var;
 

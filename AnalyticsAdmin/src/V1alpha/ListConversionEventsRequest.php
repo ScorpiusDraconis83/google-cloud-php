@@ -21,7 +21,7 @@ class ListConversionEventsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * The maximum number of resources to return.
      * If unspecified, at most 50 resources will be returned.
@@ -29,7 +29,7 @@ class ListConversionEventsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>int32 page_size = 2;</code>
      */
-    private $page_size = 0;
+    protected $page_size = 0;
     /**
      * A page token, received from a previous `ListConversionEvents` call.
      * Provide this to retrieve the subsequent page.
@@ -38,7 +38,22 @@ class ListConversionEventsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string page_token = 3;</code>
      */
-    private $page_token = '';
+    protected $page_token = '';
+
+    /**
+     * @param string $parent Required. The resource name of the parent property.
+     *                       Example: 'properties/123'
+     *                       Please see {@see AnalyticsAdminServiceClient::propertyName()} for help formatting this field.
+     *
+     * @return \Google\Analytics\Admin\V1alpha\ListConversionEventsRequest
+     *
+     * @experimental
+     */
+    public static function build(string $parent): self
+    {
+        return (new self())
+            ->setParent($parent);
+    }
 
     /**
      * Constructor.

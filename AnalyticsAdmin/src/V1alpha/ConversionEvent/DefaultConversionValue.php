@@ -22,16 +22,16 @@ class DefaultConversionValue extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>optional double value = 1;</code>
      */
-    private $value = null;
+    protected $value = null;
     /**
      * When a conversion event for this event_name has no set currency,
      * this currency will be applied as the default. Must be in ISO 4217
      * currency code format. See https://en.wikipedia.org/wiki/ISO_4217 for
-     * more.
+     * more information.
      *
      * Generated from protobuf field <code>optional string currency_code = 2;</code>
      */
-    private $currency_code = null;
+    protected $currency_code = null;
 
     /**
      * Constructor.
@@ -46,7 +46,7 @@ class DefaultConversionValue extends \Google\Protobuf\Internal\Message
      *           When a conversion event for this event_name has no set currency,
      *           this currency will be applied as the default. Must be in ISO 4217
      *           currency code format. See https://en.wikipedia.org/wiki/ISO_4217 for
-     *           more.
+     *           more information.
      * }
      */
     public function __construct($data = NULL) {
@@ -96,7 +96,7 @@ class DefaultConversionValue extends \Google\Protobuf\Internal\Message
      * When a conversion event for this event_name has no set currency,
      * this currency will be applied as the default. Must be in ISO 4217
      * currency code format. See https://en.wikipedia.org/wiki/ISO_4217 for
-     * more.
+     * more information.
      *
      * Generated from protobuf field <code>optional string currency_code = 2;</code>
      * @return string
@@ -120,7 +120,7 @@ class DefaultConversionValue extends \Google\Protobuf\Internal\Message
      * When a conversion event for this event_name has no set currency,
      * this currency will be applied as the default. Must be in ISO 4217
      * currency code format. See https://en.wikipedia.org/wiki/ISO_4217 for
-     * more.
+     * more information.
      *
      * Generated from protobuf field <code>optional string currency_code = 2;</code>
      * @param string $var
@@ -136,6 +136,4 @@ class DefaultConversionValue extends \Google\Protobuf\Internal\Message
 
 }
 
-// Adding a class alias for backwards compatibility with the previous class name.
-class_alias(DefaultConversionValue::class, \Google\Analytics\Admin\V1alpha\ConversionEvent_DefaultConversionValue::class);
 

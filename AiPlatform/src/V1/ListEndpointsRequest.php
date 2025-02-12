@@ -22,32 +22,34 @@ class ListEndpointsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * Optional. An expression for filtering the results of the request. For field
      * names both snake_case and camelCase are supported.
-     *   * `endpoint` supports = and !=. `endpoint` represents the Endpoint ID,
-     *     i.e. the last segment of the Endpoint's [resource
-     *     name][google.cloud.aiplatform.v1.Endpoint.name].
-     *   * `display_name` supports = and, !=
+     *   * `endpoint` supports `=` and `!=`. `endpoint` represents the Endpoint
+     *     ID, i.e. the last segment of the Endpoint's
+     *     [resource name][google.cloud.aiplatform.v1.Endpoint.name].
+     *   * `display_name` supports `=` and `!=`.
      *   * `labels` supports general map functions that is:
      *     * `labels.key=value` - key:value equality
-     *     * `labels.key:* or labels:key - key existence
+     *     * `labels.key:*` or `labels:key` - key existence
      *     * A key including a space must be quoted. `labels."a key"`.
+     *   * `base_model_name` only supports `=`.
      * Some examples:
      *   * `endpoint=1`
      *   * `displayName="myDisplayName"`
      *   * `labels.myKey="myValue"`
+     *   * `baseModelName="text-bison"`
      *
      * Generated from protobuf field <code>string filter = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $filter = '';
+    protected $filter = '';
     /**
      * Optional. The standard list page size.
      *
      * Generated from protobuf field <code>int32 page_size = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $page_size = 0;
+    protected $page_size = 0;
     /**
      * Optional. The standard list page token.
      * Typically obtained via
@@ -58,13 +60,13 @@ class ListEndpointsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string page_token = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $page_token = '';
+    protected $page_token = '';
     /**
      * Optional. Mask specifying which fields to read.
      *
      * Generated from protobuf field <code>.google.protobuf.FieldMask read_mask = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $read_mask = null;
+    protected $read_mask = null;
     /**
      * A comma-separated list of fields to order by, sorted in ascending order.
      * Use "desc" after a field name for descending.
@@ -76,7 +78,7 @@ class ListEndpointsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string order_by = 6;</code>
      */
-    private $order_by = '';
+    protected $order_by = '';
 
     /**
      * @param string $parent Required. The resource name of the Location from which to list the
@@ -105,18 +107,20 @@ class ListEndpointsRequest extends \Google\Protobuf\Internal\Message
      *     @type string $filter
      *           Optional. An expression for filtering the results of the request. For field
      *           names both snake_case and camelCase are supported.
-     *             * `endpoint` supports = and !=. `endpoint` represents the Endpoint ID,
-     *               i.e. the last segment of the Endpoint's [resource
-     *               name][google.cloud.aiplatform.v1.Endpoint.name].
-     *             * `display_name` supports = and, !=
+     *             * `endpoint` supports `=` and `!=`. `endpoint` represents the Endpoint
+     *               ID, i.e. the last segment of the Endpoint's
+     *               [resource name][google.cloud.aiplatform.v1.Endpoint.name].
+     *             * `display_name` supports `=` and `!=`.
      *             * `labels` supports general map functions that is:
      *               * `labels.key=value` - key:value equality
-     *               * `labels.key:* or labels:key - key existence
+     *               * `labels.key:*` or `labels:key` - key existence
      *               * A key including a space must be quoted. `labels."a key"`.
+     *             * `base_model_name` only supports `=`.
      *           Some examples:
      *             * `endpoint=1`
      *             * `displayName="myDisplayName"`
      *             * `labels.myKey="myValue"`
+     *             * `baseModelName="text-bison"`
      *     @type int $page_size
      *           Optional. The standard list page size.
      *     @type string $page_token
@@ -174,18 +178,20 @@ class ListEndpointsRequest extends \Google\Protobuf\Internal\Message
     /**
      * Optional. An expression for filtering the results of the request. For field
      * names both snake_case and camelCase are supported.
-     *   * `endpoint` supports = and !=. `endpoint` represents the Endpoint ID,
-     *     i.e. the last segment of the Endpoint's [resource
-     *     name][google.cloud.aiplatform.v1.Endpoint.name].
-     *   * `display_name` supports = and, !=
+     *   * `endpoint` supports `=` and `!=`. `endpoint` represents the Endpoint
+     *     ID, i.e. the last segment of the Endpoint's
+     *     [resource name][google.cloud.aiplatform.v1.Endpoint.name].
+     *   * `display_name` supports `=` and `!=`.
      *   * `labels` supports general map functions that is:
      *     * `labels.key=value` - key:value equality
-     *     * `labels.key:* or labels:key - key existence
+     *     * `labels.key:*` or `labels:key` - key existence
      *     * A key including a space must be quoted. `labels."a key"`.
+     *   * `base_model_name` only supports `=`.
      * Some examples:
      *   * `endpoint=1`
      *   * `displayName="myDisplayName"`
      *   * `labels.myKey="myValue"`
+     *   * `baseModelName="text-bison"`
      *
      * Generated from protobuf field <code>string filter = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @return string
@@ -198,18 +204,20 @@ class ListEndpointsRequest extends \Google\Protobuf\Internal\Message
     /**
      * Optional. An expression for filtering the results of the request. For field
      * names both snake_case and camelCase are supported.
-     *   * `endpoint` supports = and !=. `endpoint` represents the Endpoint ID,
-     *     i.e. the last segment of the Endpoint's [resource
-     *     name][google.cloud.aiplatform.v1.Endpoint.name].
-     *   * `display_name` supports = and, !=
+     *   * `endpoint` supports `=` and `!=`. `endpoint` represents the Endpoint
+     *     ID, i.e. the last segment of the Endpoint's
+     *     [resource name][google.cloud.aiplatform.v1.Endpoint.name].
+     *   * `display_name` supports `=` and `!=`.
      *   * `labels` supports general map functions that is:
      *     * `labels.key=value` - key:value equality
-     *     * `labels.key:* or labels:key - key existence
+     *     * `labels.key:*` or `labels:key` - key existence
      *     * A key including a space must be quoted. `labels."a key"`.
+     *   * `base_model_name` only supports `=`.
      * Some examples:
      *   * `endpoint=1`
      *   * `displayName="myDisplayName"`
      *   * `labels.myKey="myValue"`
+     *   * `baseModelName="text-bison"`
      *
      * Generated from protobuf field <code>string filter = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @param string $var

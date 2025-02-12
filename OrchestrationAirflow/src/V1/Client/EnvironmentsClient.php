@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\Orchestration\Airflow\Service\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -35,16 +34,26 @@ use Google\ApiCore\RetrySettings;
 use Google\ApiCore\Transport\TransportInterface;
 use Google\ApiCore\ValidationException;
 use Google\Auth\FetchAuthTokenInterface;
+use Google\Cloud\Orchestration\Airflow\Service\V1\CheckUpgradeRequest;
 use Google\Cloud\Orchestration\Airflow\Service\V1\CreateEnvironmentRequest;
+use Google\Cloud\Orchestration\Airflow\Service\V1\CreateUserWorkloadsConfigMapRequest;
+use Google\Cloud\Orchestration\Airflow\Service\V1\CreateUserWorkloadsSecretRequest;
 use Google\Cloud\Orchestration\Airflow\Service\V1\DatabaseFailoverRequest;
 use Google\Cloud\Orchestration\Airflow\Service\V1\DeleteEnvironmentRequest;
+use Google\Cloud\Orchestration\Airflow\Service\V1\DeleteUserWorkloadsConfigMapRequest;
+use Google\Cloud\Orchestration\Airflow\Service\V1\DeleteUserWorkloadsSecretRequest;
 use Google\Cloud\Orchestration\Airflow\Service\V1\Environment;
 use Google\Cloud\Orchestration\Airflow\Service\V1\ExecuteAirflowCommandRequest;
 use Google\Cloud\Orchestration\Airflow\Service\V1\ExecuteAirflowCommandResponse;
 use Google\Cloud\Orchestration\Airflow\Service\V1\FetchDatabasePropertiesRequest;
 use Google\Cloud\Orchestration\Airflow\Service\V1\FetchDatabasePropertiesResponse;
 use Google\Cloud\Orchestration\Airflow\Service\V1\GetEnvironmentRequest;
+use Google\Cloud\Orchestration\Airflow\Service\V1\GetUserWorkloadsConfigMapRequest;
+use Google\Cloud\Orchestration\Airflow\Service\V1\GetUserWorkloadsSecretRequest;
 use Google\Cloud\Orchestration\Airflow\Service\V1\ListEnvironmentsRequest;
+use Google\Cloud\Orchestration\Airflow\Service\V1\ListUserWorkloadsConfigMapsRequest;
+use Google\Cloud\Orchestration\Airflow\Service\V1\ListUserWorkloadsSecretsRequest;
+use Google\Cloud\Orchestration\Airflow\Service\V1\ListWorkloadsRequest;
 use Google\Cloud\Orchestration\Airflow\Service\V1\LoadSnapshotRequest;
 use Google\Cloud\Orchestration\Airflow\Service\V1\PollAirflowCommandRequest;
 use Google\Cloud\Orchestration\Airflow\Service\V1\PollAirflowCommandResponse;
@@ -52,8 +61,14 @@ use Google\Cloud\Orchestration\Airflow\Service\V1\SaveSnapshotRequest;
 use Google\Cloud\Orchestration\Airflow\Service\V1\StopAirflowCommandRequest;
 use Google\Cloud\Orchestration\Airflow\Service\V1\StopAirflowCommandResponse;
 use Google\Cloud\Orchestration\Airflow\Service\V1\UpdateEnvironmentRequest;
+use Google\Cloud\Orchestration\Airflow\Service\V1\UpdateUserWorkloadsConfigMapRequest;
+use Google\Cloud\Orchestration\Airflow\Service\V1\UpdateUserWorkloadsSecretRequest;
+use Google\Cloud\Orchestration\Airflow\Service\V1\UserWorkloadsConfigMap;
+use Google\Cloud\Orchestration\Airflow\Service\V1\UserWorkloadsSecret;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Managed Apache Airflow Environments.
@@ -66,18 +81,30 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createEnvironmentAsync(CreateEnvironmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface databaseFailoverAsync(DatabaseFailoverRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteEnvironmentAsync(DeleteEnvironmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface executeAirflowCommandAsync(ExecuteAirflowCommandRequest $request, array $optionalArgs = [])
- * @method PromiseInterface fetchDatabasePropertiesAsync(FetchDatabasePropertiesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getEnvironmentAsync(GetEnvironmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listEnvironmentsAsync(ListEnvironmentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface loadSnapshotAsync(LoadSnapshotRequest $request, array $optionalArgs = [])
- * @method PromiseInterface pollAirflowCommandAsync(PollAirflowCommandRequest $request, array $optionalArgs = [])
- * @method PromiseInterface saveSnapshotAsync(SaveSnapshotRequest $request, array $optionalArgs = [])
- * @method PromiseInterface stopAirflowCommandAsync(StopAirflowCommandRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateEnvironmentAsync(UpdateEnvironmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> checkUpgradeAsync(CheckUpgradeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createEnvironmentAsync(CreateEnvironmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<UserWorkloadsConfigMap> createUserWorkloadsConfigMapAsync(CreateUserWorkloadsConfigMapRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<UserWorkloadsSecret> createUserWorkloadsSecretAsync(CreateUserWorkloadsSecretRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> databaseFailoverAsync(DatabaseFailoverRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteEnvironmentAsync(DeleteEnvironmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteUserWorkloadsConfigMapAsync(DeleteUserWorkloadsConfigMapRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteUserWorkloadsSecretAsync(DeleteUserWorkloadsSecretRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ExecuteAirflowCommandResponse> executeAirflowCommandAsync(ExecuteAirflowCommandRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<FetchDatabasePropertiesResponse> fetchDatabasePropertiesAsync(FetchDatabasePropertiesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Environment> getEnvironmentAsync(GetEnvironmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<UserWorkloadsConfigMap> getUserWorkloadsConfigMapAsync(GetUserWorkloadsConfigMapRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<UserWorkloadsSecret> getUserWorkloadsSecretAsync(GetUserWorkloadsSecretRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listEnvironmentsAsync(ListEnvironmentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listUserWorkloadsConfigMapsAsync(ListUserWorkloadsConfigMapsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listUserWorkloadsSecretsAsync(ListUserWorkloadsSecretsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listWorkloadsAsync(ListWorkloadsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> loadSnapshotAsync(LoadSnapshotRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PollAirflowCommandResponse> pollAirflowCommandAsync(PollAirflowCommandRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> saveSnapshotAsync(SaveSnapshotRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<StopAirflowCommandResponse> stopAirflowCommandAsync(StopAirflowCommandRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateEnvironmentAsync(UpdateEnvironmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<UserWorkloadsConfigMap> updateUserWorkloadsConfigMapAsync(UpdateUserWorkloadsConfigMapRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<UserWorkloadsSecret> updateUserWorkloadsSecretAsync(UpdateUserWorkloadsSecretRequest $request, array $optionalArgs = [])
  */
 final class EnvironmentsClient
 {
@@ -104,9 +131,7 @@ final class EnvironmentsClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private $operationsClient;
 
@@ -152,10 +177,31 @@ final class EnvironmentsClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -178,10 +224,62 @@ final class EnvironmentsClient
     }
 
     /**
+     * Formats a string containing the fully-qualified path to represent a
+     * user_workloads_config_map resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $environment
+     * @param string $userWorkloadsConfigMap
+     *
+     * @return string The formatted user_workloads_config_map resource.
+     */
+    public static function userWorkloadsConfigMapName(
+        string $project,
+        string $location,
+        string $environment,
+        string $userWorkloadsConfigMap
+    ): string {
+        return self::getPathTemplate('userWorkloadsConfigMap')->render([
+            'project' => $project,
+            'location' => $location,
+            'environment' => $environment,
+            'user_workloads_config_map' => $userWorkloadsConfigMap,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * user_workloads_secret resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $environment
+     * @param string $userWorkloadsSecret
+     *
+     * @return string The formatted user_workloads_secret resource.
+     */
+    public static function userWorkloadsSecretName(
+        string $project,
+        string $location,
+        string $environment,
+        string $userWorkloadsSecret
+    ): string {
+        return self::getPathTemplate('userWorkloadsSecret')->render([
+            'project' => $project,
+            'location' => $location,
+            'environment' => $environment,
+            'user_workloads_secret' => $userWorkloadsSecret,
+        ]);
+    }
+
+    /**
      * Parses a formatted name string and returns an associative array of the components in the name.
      * The following name formats are supported:
      * Template: Pattern
      * - environment: projects/{project}/locations/{location}/environments/{environment}
+     * - userWorkloadsConfigMap: projects/{project}/locations/{location}/environments/{environment}/userWorkloadsConfigMaps/{user_workloads_config_map}
+     * - userWorkloadsSecret: projects/{project}/locations/{location}/environments/{environment}/userWorkloadsSecrets/{user_workloads_secret}
      *
      * The optional $template argument can be supplied to specify a particular pattern,
      * and must match one of the templates listed above. If no $template argument is
@@ -189,14 +287,14 @@ final class EnvironmentsClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -218,6 +316,12 @@ final class EnvironmentsClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -251,6 +355,9 @@ final class EnvironmentsClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -274,9 +381,39 @@ final class EnvironmentsClient
     }
 
     /**
+     * Check if an upgrade operation on the environment will succeed.
+     *
+     * In case of problems detailed info can be found in the returned Operation.
+     *
+     * The async variant is {@see EnvironmentsClient::checkUpgradeAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/check_upgrade.php
+     *
+     * @param CheckUpgradeRequest $request     A request to house fields associated with the call.
+     * @param array               $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function checkUpgrade(CheckUpgradeRequest $request, array $callOptions = []): OperationResponse
+    {
+        return $this->startApiCall('CheckUpgrade', $request, $callOptions)->wait();
+    }
+
+    /**
      * Create a new environment.
      *
      * The async variant is {@see EnvironmentsClient::createEnvironmentAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/create_environment.php
      *
      * @param CreateEnvironmentRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -298,9 +435,75 @@ final class EnvironmentsClient
     }
 
     /**
+     * Creates a user workloads ConfigMap.
+     *
+     * This method is supported for Cloud Composer environments in versions
+     * composer-3.*.*-airflow-*.*.* and newer.
+     *
+     * The async variant is
+     * {@see EnvironmentsClient::createUserWorkloadsConfigMapAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/create_user_workloads_config_map.php
+     *
+     * @param CreateUserWorkloadsConfigMapRequest $request     A request to house fields associated with the call.
+     * @param array                               $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return UserWorkloadsConfigMap
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function createUserWorkloadsConfigMap(
+        CreateUserWorkloadsConfigMapRequest $request,
+        array $callOptions = []
+    ): UserWorkloadsConfigMap {
+        return $this->startApiCall('CreateUserWorkloadsConfigMap', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Creates a user workloads Secret.
+     *
+     * This method is supported for Cloud Composer environments in versions
+     * composer-3.*.*-airflow-*.*.* and newer.
+     *
+     * The async variant is {@see EnvironmentsClient::createUserWorkloadsSecretAsync()}
+     * .
+     *
+     * @example samples/V1/EnvironmentsClient/create_user_workloads_secret.php
+     *
+     * @param CreateUserWorkloadsSecretRequest $request     A request to house fields associated with the call.
+     * @param array                            $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return UserWorkloadsSecret
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function createUserWorkloadsSecret(
+        CreateUserWorkloadsSecretRequest $request,
+        array $callOptions = []
+    ): UserWorkloadsSecret {
+        return $this->startApiCall('CreateUserWorkloadsSecret', $request, $callOptions)->wait();
+    }
+
+    /**
      * Triggers database failover (only for highly resilient environments).
      *
      * The async variant is {@see EnvironmentsClient::databaseFailoverAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/database_failover.php
      *
      * @param DatabaseFailoverRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -326,6 +529,8 @@ final class EnvironmentsClient
      *
      * The async variant is {@see EnvironmentsClient::deleteEnvironmentAsync()} .
      *
+     * @example samples/V1/EnvironmentsClient/delete_environment.php
+     *
      * @param DeleteEnvironmentRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -346,9 +551,69 @@ final class EnvironmentsClient
     }
 
     /**
+     * Deletes a user workloads ConfigMap.
+     *
+     * This method is supported for Cloud Composer environments in versions
+     * composer-3.*.*-airflow-*.*.* and newer.
+     *
+     * The async variant is
+     * {@see EnvironmentsClient::deleteUserWorkloadsConfigMapAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/delete_user_workloads_config_map.php
+     *
+     * @param DeleteUserWorkloadsConfigMapRequest $request     A request to house fields associated with the call.
+     * @param array                               $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function deleteUserWorkloadsConfigMap(
+        DeleteUserWorkloadsConfigMapRequest $request,
+        array $callOptions = []
+    ): void {
+        $this->startApiCall('DeleteUserWorkloadsConfigMap', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Deletes a user workloads Secret.
+     *
+     * This method is supported for Cloud Composer environments in versions
+     * composer-3.*.*-airflow-*.*.* and newer.
+     *
+     * The async variant is {@see EnvironmentsClient::deleteUserWorkloadsSecretAsync()}
+     * .
+     *
+     * @example samples/V1/EnvironmentsClient/delete_user_workloads_secret.php
+     *
+     * @param DeleteUserWorkloadsSecretRequest $request     A request to house fields associated with the call.
+     * @param array                            $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function deleteUserWorkloadsSecret(DeleteUserWorkloadsSecretRequest $request, array $callOptions = []): void
+    {
+        $this->startApiCall('DeleteUserWorkloadsSecret', $request, $callOptions)->wait();
+    }
+
+    /**
      * Executes Airflow CLI command.
      *
      * The async variant is {@see EnvironmentsClient::executeAirflowCommandAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/execute_airflow_command.php
      *
      * @param ExecuteAirflowCommandRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
@@ -364,8 +629,10 @@ final class EnvironmentsClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function executeAirflowCommand(ExecuteAirflowCommandRequest $request, array $callOptions = []): ExecuteAirflowCommandResponse
-    {
+    public function executeAirflowCommand(
+        ExecuteAirflowCommandRequest $request,
+        array $callOptions = []
+    ): ExecuteAirflowCommandResponse {
         return $this->startApiCall('ExecuteAirflowCommand', $request, $callOptions)->wait();
     }
 
@@ -373,6 +640,8 @@ final class EnvironmentsClient
      * Fetches database properties.
      *
      * The async variant is {@see EnvironmentsClient::fetchDatabasePropertiesAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/fetch_database_properties.php
      *
      * @param FetchDatabasePropertiesRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
@@ -388,8 +657,10 @@ final class EnvironmentsClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function fetchDatabaseProperties(FetchDatabasePropertiesRequest $request, array $callOptions = []): FetchDatabasePropertiesResponse
-    {
+    public function fetchDatabaseProperties(
+        FetchDatabasePropertiesRequest $request,
+        array $callOptions = []
+    ): FetchDatabasePropertiesResponse {
         return $this->startApiCall('FetchDatabaseProperties', $request, $callOptions)->wait();
     }
 
@@ -397,6 +668,8 @@ final class EnvironmentsClient
      * Get an existing environment.
      *
      * The async variant is {@see EnvironmentsClient::getEnvironmentAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/get_environment.php
      *
      * @param GetEnvironmentRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -418,9 +691,75 @@ final class EnvironmentsClient
     }
 
     /**
+     * Gets an existing user workloads ConfigMap.
+     *
+     * This method is supported for Cloud Composer environments in versions
+     * composer-3.*.*-airflow-*.*.* and newer.
+     *
+     * The async variant is {@see EnvironmentsClient::getUserWorkloadsConfigMapAsync()}
+     * .
+     *
+     * @example samples/V1/EnvironmentsClient/get_user_workloads_config_map.php
+     *
+     * @param GetUserWorkloadsConfigMapRequest $request     A request to house fields associated with the call.
+     * @param array                            $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return UserWorkloadsConfigMap
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getUserWorkloadsConfigMap(
+        GetUserWorkloadsConfigMapRequest $request,
+        array $callOptions = []
+    ): UserWorkloadsConfigMap {
+        return $this->startApiCall('GetUserWorkloadsConfigMap', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Gets an existing user workloads Secret.
+     * Values of the "data" field in the response are cleared.
+     *
+     * This method is supported for Cloud Composer environments in versions
+     * composer-3.*.*-airflow-*.*.* and newer.
+     *
+     * The async variant is {@see EnvironmentsClient::getUserWorkloadsSecretAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/get_user_workloads_secret.php
+     *
+     * @param GetUserWorkloadsSecretRequest $request     A request to house fields associated with the call.
+     * @param array                         $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return UserWorkloadsSecret
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function getUserWorkloadsSecret(
+        GetUserWorkloadsSecretRequest $request,
+        array $callOptions = []
+    ): UserWorkloadsSecret {
+        return $this->startApiCall('GetUserWorkloadsSecret', $request, $callOptions)->wait();
+    }
+
+    /**
      * List environments.
      *
      * The async variant is {@see EnvironmentsClient::listEnvironmentsAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/list_environments.php
      *
      * @param ListEnvironmentsRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -442,12 +781,108 @@ final class EnvironmentsClient
     }
 
     /**
+     * Lists user workloads ConfigMaps.
+     *
+     * This method is supported for Cloud Composer environments in versions
+     * composer-3.*.*-airflow-*.*.* and newer.
+     *
+     * The async variant is
+     * {@see EnvironmentsClient::listUserWorkloadsConfigMapsAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/list_user_workloads_config_maps.php
+     *
+     * @param ListUserWorkloadsConfigMapsRequest $request     A request to house fields associated with the call.
+     * @param array                              $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listUserWorkloadsConfigMaps(
+        ListUserWorkloadsConfigMapsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
+        return $this->startApiCall('ListUserWorkloadsConfigMaps', $request, $callOptions);
+    }
+
+    /**
+     * Lists user workloads Secrets.
+     *
+     * This method is supported for Cloud Composer environments in versions
+     * composer-3.*.*-airflow-*.*.* and newer.
+     *
+     * The async variant is {@see EnvironmentsClient::listUserWorkloadsSecretsAsync()}
+     * .
+     *
+     * @example samples/V1/EnvironmentsClient/list_user_workloads_secrets.php
+     *
+     * @param ListUserWorkloadsSecretsRequest $request     A request to house fields associated with the call.
+     * @param array                           $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listUserWorkloadsSecrets(
+        ListUserWorkloadsSecretsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
+        return $this->startApiCall('ListUserWorkloadsSecrets', $request, $callOptions);
+    }
+
+    /**
+     * Lists workloads in a Cloud Composer environment. Workload is a unit that
+     * runs a single Composer component.
+     *
+     * This method is supported for Cloud Composer environments in versions
+     * composer-2.*.*-airflow-*.*.* and newer.
+     *
+     * The async variant is {@see EnvironmentsClient::listWorkloadsAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/list_workloads.php
+     *
+     * @param ListWorkloadsRequest $request     A request to house fields associated with the call.
+     * @param array                $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return PagedListResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function listWorkloads(ListWorkloadsRequest $request, array $callOptions = []): PagedListResponse
+    {
+        return $this->startApiCall('ListWorkloads', $request, $callOptions);
+    }
+
+    /**
      * Loads a snapshot of a Cloud Composer environment.
      *
      * As a result of this operation, a snapshot of environment's specified in
      * LoadSnapshotRequest is loaded into the environment.
      *
      * The async variant is {@see EnvironmentsClient::loadSnapshotAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/load_snapshot.php
      *
      * @param LoadSnapshotRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -473,6 +908,8 @@ final class EnvironmentsClient
      *
      * The async variant is {@see EnvironmentsClient::pollAirflowCommandAsync()} .
      *
+     * @example samples/V1/EnvironmentsClient/poll_airflow_command.php
+     *
      * @param PollAirflowCommandRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -487,8 +924,10 @@ final class EnvironmentsClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function pollAirflowCommand(PollAirflowCommandRequest $request, array $callOptions = []): PollAirflowCommandResponse
-    {
+    public function pollAirflowCommand(
+        PollAirflowCommandRequest $request,
+        array $callOptions = []
+    ): PollAirflowCommandResponse {
         return $this->startApiCall('PollAirflowCommand', $request, $callOptions)->wait();
     }
 
@@ -499,6 +938,8 @@ final class EnvironmentsClient
      * in a location specified in the SaveSnapshotRequest.
      *
      * The async variant is {@see EnvironmentsClient::saveSnapshotAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/save_snapshot.php
      *
      * @param SaveSnapshotRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -524,6 +965,8 @@ final class EnvironmentsClient
      *
      * The async variant is {@see EnvironmentsClient::stopAirflowCommandAsync()} .
      *
+     * @example samples/V1/EnvironmentsClient/stop_airflow_command.php
+     *
      * @param StopAirflowCommandRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -538,8 +981,10 @@ final class EnvironmentsClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function stopAirflowCommand(StopAirflowCommandRequest $request, array $callOptions = []): StopAirflowCommandResponse
-    {
+    public function stopAirflowCommand(
+        StopAirflowCommandRequest $request,
+        array $callOptions = []
+    ): StopAirflowCommandResponse {
         return $this->startApiCall('StopAirflowCommand', $request, $callOptions)->wait();
     }
 
@@ -547,6 +992,8 @@ final class EnvironmentsClient
      * Update an environment.
      *
      * The async variant is {@see EnvironmentsClient::updateEnvironmentAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/update_environment.php
      *
      * @param UpdateEnvironmentRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -565,5 +1012,69 @@ final class EnvironmentsClient
     public function updateEnvironment(UpdateEnvironmentRequest $request, array $callOptions = []): OperationResponse
     {
         return $this->startApiCall('UpdateEnvironment', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Updates a user workloads ConfigMap.
+     *
+     * This method is supported for Cloud Composer environments in versions
+     * composer-3.*.*-airflow-*.*.* and newer.
+     *
+     * The async variant is
+     * {@see EnvironmentsClient::updateUserWorkloadsConfigMapAsync()} .
+     *
+     * @example samples/V1/EnvironmentsClient/update_user_workloads_config_map.php
+     *
+     * @param UpdateUserWorkloadsConfigMapRequest $request     A request to house fields associated with the call.
+     * @param array                               $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return UserWorkloadsConfigMap
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function updateUserWorkloadsConfigMap(
+        UpdateUserWorkloadsConfigMapRequest $request,
+        array $callOptions = []
+    ): UserWorkloadsConfigMap {
+        return $this->startApiCall('UpdateUserWorkloadsConfigMap', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Updates a user workloads Secret.
+     *
+     * This method is supported for Cloud Composer environments in versions
+     * composer-3.*.*-airflow-*.*.* and newer.
+     *
+     * The async variant is {@see EnvironmentsClient::updateUserWorkloadsSecretAsync()}
+     * .
+     *
+     * @example samples/V1/EnvironmentsClient/update_user_workloads_secret.php
+     *
+     * @param UpdateUserWorkloadsSecretRequest $request     A request to house fields associated with the call.
+     * @param array                            $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return UserWorkloadsSecret
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function updateUserWorkloadsSecret(
+        UpdateUserWorkloadsSecretRequest $request,
+        array $callOptions = []
+    ): UserWorkloadsSecret {
+        return $this->startApiCall('UpdateUserWorkloadsSecret', $request, $callOptions)->wait();
     }
 }

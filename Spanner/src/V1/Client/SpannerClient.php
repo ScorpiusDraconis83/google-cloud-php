@@ -27,6 +27,7 @@ namespace Google\Cloud\Spanner\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
+use Google\ApiCore\InsecureCredentialsWrapper;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
 use Google\ApiCore\RetrySettings;
@@ -57,7 +58,9 @@ use Google\Cloud\Spanner\V1\ResultSet;
 use Google\Cloud\Spanner\V1\RollbackRequest;
 use Google\Cloud\Spanner\V1\Session;
 use Google\Cloud\Spanner\V1\Transaction;
+use Grpc\ChannelCredentials;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Cloud Spanner API
@@ -73,19 +76,19 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface batchCreateSessionsAsync(BatchCreateSessionsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface beginTransactionAsync(BeginTransactionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface commitAsync(CommitRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createSessionAsync(CreateSessionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteSessionAsync(DeleteSessionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface executeBatchDmlAsync(ExecuteBatchDmlRequest $request, array $optionalArgs = [])
- * @method PromiseInterface executeSqlAsync(ExecuteSqlRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getSessionAsync(GetSessionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listSessionsAsync(ListSessionsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface partitionQueryAsync(PartitionQueryRequest $request, array $optionalArgs = [])
- * @method PromiseInterface partitionReadAsync(PartitionReadRequest $request, array $optionalArgs = [])
- * @method PromiseInterface readAsync(ReadRequest $request, array $optionalArgs = [])
- * @method PromiseInterface rollbackAsync(RollbackRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<BatchCreateSessionsResponse> batchCreateSessionsAsync(BatchCreateSessionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Transaction> beginTransactionAsync(BeginTransactionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CommitResponse> commitAsync(CommitRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Session> createSessionAsync(CreateSessionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteSessionAsync(DeleteSessionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ExecuteBatchDmlResponse> executeBatchDmlAsync(ExecuteBatchDmlRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ResultSet> executeSqlAsync(ExecuteSqlRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Session> getSessionAsync(GetSessionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listSessionsAsync(ListSessionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PartitionResponse> partitionQueryAsync(PartitionQueryRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PartitionResponse> partitionReadAsync(PartitionReadRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ResultSet> readAsync(ReadRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> rollbackAsync(RollbackRequest $request, array $optionalArgs = [])
  */
 final class SpannerClient
 {
@@ -189,20 +192,24 @@ final class SpannerClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
 
     /**
      * Constructor.
+     *
+     * Setting the "SPANNER_EMULATOR_HOST" environment variable will automatically set
+     * the API Endpoint to the value specified in the variable, as well as ensure that
+     * empty credentials are used in the transport layer.
      *
      * @param array $options {
      *     Optional. Options for configuring the service API wrapper.
@@ -218,6 +225,12 @@ final class SpannerClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -251,12 +264,16 @@ final class SpannerClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
      */
     public function __construct(array $options = [])
     {
+        $options = $this->setDefaultEmulatorConfig($options);
         $clientOptions = $this->buildClientOptions($options);
         $this->setClientOptions($clientOptions);
     }
@@ -279,6 +296,8 @@ final class SpannerClient
      * See https://goo.gl/TgSFN2 for best practices on session cache management.
      *
      * The async variant is {@see SpannerClient::batchCreateSessionsAsync()} .
+     *
+     * @example samples/V1/SpannerClient/batch_create_sessions.php
      *
      * @param BatchCreateSessionsRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -316,6 +335,8 @@ final class SpannerClient
      * mutation's table. We recommend structuring your mutation groups to be
      * idempotent to avoid this issue.
      *
+     * @example samples/V1/SpannerClient/batch_write.php
+     *
      * @param BatchWriteRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -341,6 +362,8 @@ final class SpannerClient
      * side-effect.
      *
      * The async variant is {@see SpannerClient::beginTransactionAsync()} .
+     *
+     * @example samples/V1/SpannerClient/begin_transaction.php
      *
      * @param BeginTransactionRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -378,6 +401,8 @@ final class SpannerClient
      * state of things as they are now.
      *
      * The async variant is {@see SpannerClient::commitAsync()} .
+     *
+     * @example samples/V1/SpannerClient/commit.php
      *
      * @param CommitRequest $request     A request to house fields associated with the call.
      * @param array         $callOptions {
@@ -421,6 +446,8 @@ final class SpannerClient
      *
      * The async variant is {@see SpannerClient::createSessionAsync()} .
      *
+     * @example samples/V1/SpannerClient/create_session.php
+     *
      * @param CreateSessionRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -446,6 +473,8 @@ final class SpannerClient
      * this session.
      *
      * The async variant is {@see SpannerClient::deleteSessionAsync()} .
+     *
+     * @example samples/V1/SpannerClient/delete_session.php
      *
      * @param DeleteSessionRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -479,6 +508,8 @@ final class SpannerClient
      * are not executed.
      *
      * The async variant is {@see SpannerClient::executeBatchDmlAsync()} .
+     *
+     * @example samples/V1/SpannerClient/execute_batch_dml.php
      *
      * @param ExecuteBatchDmlRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -516,6 +547,8 @@ final class SpannerClient
      *
      * The async variant is {@see SpannerClient::executeSqlAsync()} .
      *
+     * @example samples/V1/SpannerClient/execute_sql.php
+     *
      * @param ExecuteSqlRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -542,6 +575,8 @@ final class SpannerClient
      * the size of the returned result set. However, no individual row in the
      * result set can exceed 100 MiB, and no column value can exceed 10 MiB.
      *
+     * @example samples/V1/SpannerClient/execute_streaming_sql.php
+     *
      * @param ExecuteSqlRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -566,6 +601,8 @@ final class SpannerClient
      *
      * The async variant is {@see SpannerClient::getSessionAsync()} .
      *
+     * @example samples/V1/SpannerClient/get_session.php
+     *
      * @param GetSessionRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -589,6 +626,8 @@ final class SpannerClient
      * Lists all sessions in a given database.
      *
      * The async variant is {@see SpannerClient::listSessionsAsync()} .
+     *
+     * @example samples/V1/SpannerClient/list_sessions.php
      *
      * @param ListSessionsRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -624,6 +663,8 @@ final class SpannerClient
      * the whole operation must be restarted from the beginning.
      *
      * The async variant is {@see SpannerClient::partitionQueryAsync()} .
+     *
+     * @example samples/V1/SpannerClient/partition_query.php
      *
      * @param PartitionQueryRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -662,6 +703,8 @@ final class SpannerClient
      *
      * The async variant is {@see SpannerClient::partitionReadAsync()} .
      *
+     * @example samples/V1/SpannerClient/partition_read.php
+     *
      * @param PartitionReadRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -699,6 +742,8 @@ final class SpannerClient
      *
      * The async variant is {@see SpannerClient::readAsync()} .
      *
+     * @example samples/V1/SpannerClient/read.php
+     *
      * @param ReadRequest $request     A request to house fields associated with the call.
      * @param array       $callOptions {
      *     Optional.
@@ -731,6 +776,8 @@ final class SpannerClient
      *
      * The async variant is {@see SpannerClient::rollbackAsync()} .
      *
+     * @example samples/V1/SpannerClient/rollback.php
+     *
      * @param RollbackRequest $request     A request to house fields associated with the call.
      * @param array           $callOptions {
      *     Optional.
@@ -755,6 +802,8 @@ final class SpannerClient
      * the result set can exceed 100 MiB, and no column value can exceed
      * 10 MiB.
      *
+     * @example samples/V1/SpannerClient/streaming_read.php
+     *
      * @param ReadRequest $request     A request to house fields associated with the call.
      * @param array       $callOptions {
      *     Optional.
@@ -770,5 +819,27 @@ final class SpannerClient
     public function streamingRead(ReadRequest $request, array $callOptions = []): ServerStream
     {
         return $this->startApiCall('StreamingRead', $request, $callOptions);
+    }
+
+    /** Configure the gapic configuration to use a service emulator. */
+    private function setDefaultEmulatorConfig(array $options): array
+    {
+        $emulatorHost = getenv('SPANNER_EMULATOR_HOST');
+        if (empty($emulatorHost)) {
+            return $options;
+        }
+
+        if ($scheme = parse_url($emulatorHost, PHP_URL_SCHEME)) {
+            $search = $scheme . '://';
+            $emulatorHost = str_replace($search, '', $emulatorHost);
+        }
+
+        $options['apiEndpoint'] ??= $emulatorHost;
+        if (class_exists(ChannelCredentials::class)) {
+            $options['transportConfig']['grpc']['stubOpts']['credentials'] ??= ChannelCredentials::createInsecure();
+        }
+
+        $options['credentials'] ??= new InsecureCredentialsWrapper();
+        return $options;
     }
 }

@@ -16,11 +16,11 @@ use Google\Protobuf\Internal\GPBUtil;
 class Cluster extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Required. Unique name of the resource in this scope including project and
-     * location using the form:
+     * Required. Identifier. Unique name of the resource in this scope including
+     * project and location using the form:
      *     `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
      *
-     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = REQUIRED];</code>
+     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.field_behavior) = IDENTIFIER];</code>
      */
     protected $name = '';
     /**
@@ -63,23 +63,24 @@ class Cluster extends \Google\Protobuf\Internal\Message
      */
     protected $transit_encryption_mode = 0;
     /**
-     * Output only. Redis memory size in GB for the entire cluster.
+     * Output only. Redis memory size in GB for the entire cluster rounded up to
+     * the next integer.
      *
      * Generated from protobuf field <code>optional int32 size_gb = 13 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
     protected $size_gb = null;
     /**
-     * Required. Number of shards for the Redis cluster.
+     * Optional. Number of shards for the Redis cluster.
      *
-     * Generated from protobuf field <code>optional int32 shard_count = 14 [(.google.api.field_behavior) = REQUIRED];</code>
+     * Generated from protobuf field <code>optional int32 shard_count = 14 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
     protected $shard_count = null;
     /**
-     * Required. Each PscConfig configures the consumer network where IPs will
+     * Optional. Each PscConfig configures the consumer network where IPs will
      * be designated to the cluster for client access through Private Service
      * Connect Automation. Currently, only one PscConfig is supported.
      *
-     * Generated from protobuf field <code>repeated .google.cloud.redis.cluster.v1.PscConfig psc_configs = 15 [(.google.api.field_behavior) = REQUIRED];</code>
+     * Generated from protobuf field <code>repeated .google.cloud.redis.cluster.v1.PscConfig psc_configs = 15 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
     private $psc_configs;
     /**
@@ -90,8 +91,8 @@ class Cluster extends \Google\Protobuf\Internal\Message
      */
     private $discovery_endpoints;
     /**
-     * Output only. PSC connections for discovery of the cluster topology and
-     * accessing the cluster.
+     * Output only. The list of PSC connections that are auto-created through
+     * service connectivity automation.
      *
      * Generated from protobuf field <code>repeated .google.cloud.redis.cluster.v1.PscConnection psc_connections = 17 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
@@ -102,6 +103,103 @@ class Cluster extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.Cluster.StateInfo state_info = 18 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
     protected $state_info = null;
+    /**
+     * Optional. The type of a redis node in the cluster. NodeType determines the
+     * underlying machine-type of a redis node.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.NodeType node_type = 19 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $node_type = 0;
+    /**
+     * Optional. Persistence config (RDB, AOF) for the cluster.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.ClusterPersistenceConfig persistence_config = 20 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $persistence_config = null;
+    /**
+     * Optional. Key/Value pairs of customer overrides for mutable Redis Configs
+     *
+     * Generated from protobuf field <code>map<string, string> redis_configs = 21 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    private $redis_configs;
+    /**
+     * Output only. Precise value of redis memory size in GB for the entire
+     * cluster.
+     *
+     * Generated from protobuf field <code>optional double precise_size_gb = 22 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $precise_size_gb = null;
+    /**
+     * Optional. This config will be used to determine how the customer wants us
+     * to distribute cluster resources within the region.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.ZoneDistributionConfig zone_distribution_config = 23 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $zone_distribution_config = null;
+    /**
+     * Optional. Cross cluster replication config.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.CrossClusterReplicationConfig cross_cluster_replication_config = 24 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $cross_cluster_replication_config = null;
+    /**
+     * Optional. The delete operation will fail when the value is set to true.
+     *
+     * Generated from protobuf field <code>optional bool deletion_protection_enabled = 25 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $deletion_protection_enabled = null;
+    /**
+     * Optional. ClusterMaintenancePolicy determines when to allow or deny
+     * updates.
+     *
+     * Generated from protobuf field <code>optional .google.cloud.redis.cluster.v1.ClusterMaintenancePolicy maintenance_policy = 26 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $maintenance_policy = null;
+    /**
+     * Output only. ClusterMaintenanceSchedule Output only Published maintenance
+     * schedule.
+     *
+     * Generated from protobuf field <code>optional .google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule maintenance_schedule = 27 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $maintenance_schedule = null;
+    /**
+     * Output only. Service attachment details to configure Psc connections
+     *
+     * Generated from protobuf field <code>repeated .google.cloud.redis.cluster.v1.PscServiceAttachment psc_service_attachments = 30 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    private $psc_service_attachments;
+    /**
+     * Optional. A list of cluster enpoints.
+     *
+     * Generated from protobuf field <code>repeated .google.cloud.redis.cluster.v1.ClusterEndpoint cluster_endpoints = 36 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    private $cluster_endpoints;
+    /**
+     * Optional. Output only. The backup collection full resource name. Example:
+     * projects/{project}/locations/{location}/backupCollections/{collection}
+     *
+     * Generated from protobuf field <code>optional string backup_collection = 39 [(.google.api.field_behavior) = OPTIONAL, (.google.api.field_behavior) = OUTPUT_ONLY, (.google.api.resource_reference) = {</code>
+     */
+    protected $backup_collection = null;
+    /**
+     * Optional. The KMS key used to encrypt the at-rest data of the cluster.
+     *
+     * Generated from protobuf field <code>optional string kms_key = 40 [(.google.api.field_behavior) = OPTIONAL, (.google.api.resource_reference) = {</code>
+     */
+    protected $kms_key = null;
+    /**
+     * Optional. The automated backup config for the cluster.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.AutomatedBackupConfig automated_backup_config = 42 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $automated_backup_config = null;
+    /**
+     * Output only. Encryption information of the data at rest of the cluster.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.EncryptionInfo encryption_info = 43 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $encryption_info = null;
+    protected $import_sources;
 
     /**
      * Constructor.
@@ -109,9 +207,16 @@ class Cluster extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
+     *     @type \Google\Cloud\Redis\Cluster\V1\Cluster\GcsBackupSource $gcs_source
+     *           Optional. Backups stored in Cloud Storage buckets.
+     *           The Cloud Storage buckets need to be the same region as the clusters.
+     *           Read permission is required to import from the provided Cloud Storage
+     *           objects.
+     *     @type \Google\Cloud\Redis\Cluster\V1\Cluster\ManagedBackupSource $managed_backup_source
+     *           Optional. Backups generated and managed by memorystore service.
      *     @type string $name
-     *           Required. Unique name of the resource in this scope including project and
-     *           location using the form:
+     *           Required. Identifier. Unique name of the resource in this scope including
+     *           project and location using the form:
      *               `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
      *     @type \Google\Protobuf\Timestamp $create_time
      *           Output only. The timestamp associated with the cluster creation request.
@@ -129,21 +234,58 @@ class Cluster extends \Google\Protobuf\Internal\Message
      *           Optional. The in-transit encryption for the Redis cluster.
      *           If not provided, encryption  is disabled for the cluster.
      *     @type int $size_gb
-     *           Output only. Redis memory size in GB for the entire cluster.
+     *           Output only. Redis memory size in GB for the entire cluster rounded up to
+     *           the next integer.
      *     @type int $shard_count
-     *           Required. Number of shards for the Redis cluster.
+     *           Optional. Number of shards for the Redis cluster.
      *     @type array<\Google\Cloud\Redis\Cluster\V1\PscConfig>|\Google\Protobuf\Internal\RepeatedField $psc_configs
-     *           Required. Each PscConfig configures the consumer network where IPs will
+     *           Optional. Each PscConfig configures the consumer network where IPs will
      *           be designated to the cluster for client access through Private Service
      *           Connect Automation. Currently, only one PscConfig is supported.
      *     @type array<\Google\Cloud\Redis\Cluster\V1\DiscoveryEndpoint>|\Google\Protobuf\Internal\RepeatedField $discovery_endpoints
      *           Output only. Endpoints created on each given network, for Redis clients to
      *           connect to the cluster. Currently only one discovery endpoint is supported.
      *     @type array<\Google\Cloud\Redis\Cluster\V1\PscConnection>|\Google\Protobuf\Internal\RepeatedField $psc_connections
-     *           Output only. PSC connections for discovery of the cluster topology and
-     *           accessing the cluster.
+     *           Output only. The list of PSC connections that are auto-created through
+     *           service connectivity automation.
      *     @type \Google\Cloud\Redis\Cluster\V1\Cluster\StateInfo $state_info
      *           Output only. Additional information about the current state of the cluster.
+     *     @type int $node_type
+     *           Optional. The type of a redis node in the cluster. NodeType determines the
+     *           underlying machine-type of a redis node.
+     *     @type \Google\Cloud\Redis\Cluster\V1\ClusterPersistenceConfig $persistence_config
+     *           Optional. Persistence config (RDB, AOF) for the cluster.
+     *     @type array|\Google\Protobuf\Internal\MapField $redis_configs
+     *           Optional. Key/Value pairs of customer overrides for mutable Redis Configs
+     *     @type float $precise_size_gb
+     *           Output only. Precise value of redis memory size in GB for the entire
+     *           cluster.
+     *     @type \Google\Cloud\Redis\Cluster\V1\ZoneDistributionConfig $zone_distribution_config
+     *           Optional. This config will be used to determine how the customer wants us
+     *           to distribute cluster resources within the region.
+     *     @type \Google\Cloud\Redis\Cluster\V1\CrossClusterReplicationConfig $cross_cluster_replication_config
+     *           Optional. Cross cluster replication config.
+     *     @type bool $deletion_protection_enabled
+     *           Optional. The delete operation will fail when the value is set to true.
+     *     @type \Google\Cloud\Redis\Cluster\V1\ClusterMaintenancePolicy $maintenance_policy
+     *           Optional. ClusterMaintenancePolicy determines when to allow or deny
+     *           updates.
+     *     @type \Google\Cloud\Redis\Cluster\V1\ClusterMaintenanceSchedule $maintenance_schedule
+     *           Output only. ClusterMaintenanceSchedule Output only Published maintenance
+     *           schedule.
+     *     @type array<\Google\Cloud\Redis\Cluster\V1\PscServiceAttachment>|\Google\Protobuf\Internal\RepeatedField $psc_service_attachments
+     *           Output only. Service attachment details to configure Psc connections
+     *     @type array<\Google\Cloud\Redis\Cluster\V1\ClusterEndpoint>|\Google\Protobuf\Internal\RepeatedField $cluster_endpoints
+     *           Optional. A list of cluster enpoints.
+     *     @type string $backup_collection
+     *           Optional. Output only. The backup collection full resource name. Example:
+     *           projects/{project}/locations/{location}/backupCollections/{collection}
+     *     @type string $kms_key
+     *           Optional. The KMS key used to encrypt the at-rest data of the cluster.
+     *     @type \Google\Cloud\Redis\Cluster\V1\AutomatedBackupConfig $automated_backup_config
+     *           Optional. The automated backup config for the cluster.
+     *     @type \Google\Cloud\Redis\Cluster\V1\EncryptionInfo $encryption_info
+     *           Output only. Encryption information of the data at rest of the cluster.
      * }
      */
     public function __construct($data = NULL) {
@@ -152,11 +294,79 @@ class Cluster extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. Unique name of the resource in this scope including project and
-     * location using the form:
+     * Optional. Backups stored in Cloud Storage buckets.
+     * The Cloud Storage buckets need to be the same region as the clusters.
+     * Read permission is required to import from the provided Cloud Storage
+     * objects.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.Cluster.GcsBackupSource gcs_source = 34 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\Redis\Cluster\V1\Cluster\GcsBackupSource|null
+     */
+    public function getGcsSource()
+    {
+        return $this->readOneof(34);
+    }
+
+    public function hasGcsSource()
+    {
+        return $this->hasOneof(34);
+    }
+
+    /**
+     * Optional. Backups stored in Cloud Storage buckets.
+     * The Cloud Storage buckets need to be the same region as the clusters.
+     * Read permission is required to import from the provided Cloud Storage
+     * objects.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.Cluster.GcsBackupSource gcs_source = 34 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\Redis\Cluster\V1\Cluster\GcsBackupSource $var
+     * @return $this
+     */
+    public function setGcsSource($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Redis\Cluster\V1\Cluster\GcsBackupSource::class);
+        $this->writeOneof(34, $var);
+
+        return $this;
+    }
+
+    /**
+     * Optional. Backups generated and managed by memorystore service.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.Cluster.ManagedBackupSource managed_backup_source = 35 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\Redis\Cluster\V1\Cluster\ManagedBackupSource|null
+     */
+    public function getManagedBackupSource()
+    {
+        return $this->readOneof(35);
+    }
+
+    public function hasManagedBackupSource()
+    {
+        return $this->hasOneof(35);
+    }
+
+    /**
+     * Optional. Backups generated and managed by memorystore service.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.Cluster.ManagedBackupSource managed_backup_source = 35 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\Redis\Cluster\V1\Cluster\ManagedBackupSource $var
+     * @return $this
+     */
+    public function setManagedBackupSource($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Redis\Cluster\V1\Cluster\ManagedBackupSource::class);
+        $this->writeOneof(35, $var);
+
+        return $this;
+    }
+
+    /**
+     * Required. Identifier. Unique name of the resource in this scope including
+     * project and location using the form:
      *     `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
      *
-     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = REQUIRED];</code>
+     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.field_behavior) = IDENTIFIER];</code>
      * @return string
      */
     public function getName()
@@ -165,11 +375,11 @@ class Cluster extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. Unique name of the resource in this scope including project and
-     * location using the form:
+     * Required. Identifier. Unique name of the resource in this scope including
+     * project and location using the form:
      *     `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
      *
-     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = REQUIRED];</code>
+     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.field_behavior) = IDENTIFIER];</code>
      * @param string $var
      * @return $this
      */
@@ -364,7 +574,8 @@ class Cluster extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Output only. Redis memory size in GB for the entire cluster.
+     * Output only. Redis memory size in GB for the entire cluster rounded up to
+     * the next integer.
      *
      * Generated from protobuf field <code>optional int32 size_gb = 13 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      * @return int
@@ -385,7 +596,8 @@ class Cluster extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Output only. Redis memory size in GB for the entire cluster.
+     * Output only. Redis memory size in GB for the entire cluster rounded up to
+     * the next integer.
      *
      * Generated from protobuf field <code>optional int32 size_gb = 13 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      * @param int $var
@@ -400,9 +612,9 @@ class Cluster extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. Number of shards for the Redis cluster.
+     * Optional. Number of shards for the Redis cluster.
      *
-     * Generated from protobuf field <code>optional int32 shard_count = 14 [(.google.api.field_behavior) = REQUIRED];</code>
+     * Generated from protobuf field <code>optional int32 shard_count = 14 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @return int
      */
     public function getShardCount()
@@ -421,9 +633,9 @@ class Cluster extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. Number of shards for the Redis cluster.
+     * Optional. Number of shards for the Redis cluster.
      *
-     * Generated from protobuf field <code>optional int32 shard_count = 14 [(.google.api.field_behavior) = REQUIRED];</code>
+     * Generated from protobuf field <code>optional int32 shard_count = 14 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @param int $var
      * @return $this
      */
@@ -436,11 +648,11 @@ class Cluster extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. Each PscConfig configures the consumer network where IPs will
+     * Optional. Each PscConfig configures the consumer network where IPs will
      * be designated to the cluster for client access through Private Service
      * Connect Automation. Currently, only one PscConfig is supported.
      *
-     * Generated from protobuf field <code>repeated .google.cloud.redis.cluster.v1.PscConfig psc_configs = 15 [(.google.api.field_behavior) = REQUIRED];</code>
+     * Generated from protobuf field <code>repeated .google.cloud.redis.cluster.v1.PscConfig psc_configs = 15 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @return \Google\Protobuf\Internal\RepeatedField
      */
     public function getPscConfigs()
@@ -449,11 +661,11 @@ class Cluster extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. Each PscConfig configures the consumer network where IPs will
+     * Optional. Each PscConfig configures the consumer network where IPs will
      * be designated to the cluster for client access through Private Service
      * Connect Automation. Currently, only one PscConfig is supported.
      *
-     * Generated from protobuf field <code>repeated .google.cloud.redis.cluster.v1.PscConfig psc_configs = 15 [(.google.api.field_behavior) = REQUIRED];</code>
+     * Generated from protobuf field <code>repeated .google.cloud.redis.cluster.v1.PscConfig psc_configs = 15 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @param array<\Google\Cloud\Redis\Cluster\V1\PscConfig>|\Google\Protobuf\Internal\RepeatedField $var
      * @return $this
      */
@@ -494,8 +706,8 @@ class Cluster extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Output only. PSC connections for discovery of the cluster topology and
-     * accessing the cluster.
+     * Output only. The list of PSC connections that are auto-created through
+     * service connectivity automation.
      *
      * Generated from protobuf field <code>repeated .google.cloud.redis.cluster.v1.PscConnection psc_connections = 17 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      * @return \Google\Protobuf\Internal\RepeatedField
@@ -506,8 +718,8 @@ class Cluster extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Output only. PSC connections for discovery of the cluster topology and
-     * accessing the cluster.
+     * Output only. The list of PSC connections that are auto-created through
+     * service connectivity automation.
      *
      * Generated from protobuf field <code>repeated .google.cloud.redis.cluster.v1.PscConnection psc_connections = 17 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      * @param array<\Google\Cloud\Redis\Cluster\V1\PscConnection>|\Google\Protobuf\Internal\RepeatedField $var
@@ -555,6 +767,526 @@ class Cluster extends \Google\Protobuf\Internal\Message
         $this->state_info = $var;
 
         return $this;
+    }
+
+    /**
+     * Optional. The type of a redis node in the cluster. NodeType determines the
+     * underlying machine-type of a redis node.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.NodeType node_type = 19 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return int
+     */
+    public function getNodeType()
+    {
+        return $this->node_type;
+    }
+
+    /**
+     * Optional. The type of a redis node in the cluster. NodeType determines the
+     * underlying machine-type of a redis node.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.NodeType node_type = 19 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param int $var
+     * @return $this
+     */
+    public function setNodeType($var)
+    {
+        GPBUtil::checkEnum($var, \Google\Cloud\Redis\Cluster\V1\NodeType::class);
+        $this->node_type = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Persistence config (RDB, AOF) for the cluster.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.ClusterPersistenceConfig persistence_config = 20 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\Redis\Cluster\V1\ClusterPersistenceConfig|null
+     */
+    public function getPersistenceConfig()
+    {
+        return $this->persistence_config;
+    }
+
+    public function hasPersistenceConfig()
+    {
+        return isset($this->persistence_config);
+    }
+
+    public function clearPersistenceConfig()
+    {
+        unset($this->persistence_config);
+    }
+
+    /**
+     * Optional. Persistence config (RDB, AOF) for the cluster.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.ClusterPersistenceConfig persistence_config = 20 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\Redis\Cluster\V1\ClusterPersistenceConfig $var
+     * @return $this
+     */
+    public function setPersistenceConfig($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Redis\Cluster\V1\ClusterPersistenceConfig::class);
+        $this->persistence_config = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Key/Value pairs of customer overrides for mutable Redis Configs
+     *
+     * Generated from protobuf field <code>map<string, string> redis_configs = 21 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Protobuf\Internal\MapField
+     */
+    public function getRedisConfigs()
+    {
+        return $this->redis_configs;
+    }
+
+    /**
+     * Optional. Key/Value pairs of customer overrides for mutable Redis Configs
+     *
+     * Generated from protobuf field <code>map<string, string> redis_configs = 21 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param array|\Google\Protobuf\Internal\MapField $var
+     * @return $this
+     */
+    public function setRedisConfigs($var)
+    {
+        $arr = GPBUtil::checkMapField($var, \Google\Protobuf\Internal\GPBType::STRING, \Google\Protobuf\Internal\GPBType::STRING);
+        $this->redis_configs = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Precise value of redis memory size in GB for the entire
+     * cluster.
+     *
+     * Generated from protobuf field <code>optional double precise_size_gb = 22 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return float
+     */
+    public function getPreciseSizeGb()
+    {
+        return isset($this->precise_size_gb) ? $this->precise_size_gb : 0.0;
+    }
+
+    public function hasPreciseSizeGb()
+    {
+        return isset($this->precise_size_gb);
+    }
+
+    public function clearPreciseSizeGb()
+    {
+        unset($this->precise_size_gb);
+    }
+
+    /**
+     * Output only. Precise value of redis memory size in GB for the entire
+     * cluster.
+     *
+     * Generated from protobuf field <code>optional double precise_size_gb = 22 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param float $var
+     * @return $this
+     */
+    public function setPreciseSizeGb($var)
+    {
+        GPBUtil::checkDouble($var);
+        $this->precise_size_gb = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. This config will be used to determine how the customer wants us
+     * to distribute cluster resources within the region.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.ZoneDistributionConfig zone_distribution_config = 23 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\Redis\Cluster\V1\ZoneDistributionConfig|null
+     */
+    public function getZoneDistributionConfig()
+    {
+        return $this->zone_distribution_config;
+    }
+
+    public function hasZoneDistributionConfig()
+    {
+        return isset($this->zone_distribution_config);
+    }
+
+    public function clearZoneDistributionConfig()
+    {
+        unset($this->zone_distribution_config);
+    }
+
+    /**
+     * Optional. This config will be used to determine how the customer wants us
+     * to distribute cluster resources within the region.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.ZoneDistributionConfig zone_distribution_config = 23 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\Redis\Cluster\V1\ZoneDistributionConfig $var
+     * @return $this
+     */
+    public function setZoneDistributionConfig($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Redis\Cluster\V1\ZoneDistributionConfig::class);
+        $this->zone_distribution_config = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Cross cluster replication config.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.CrossClusterReplicationConfig cross_cluster_replication_config = 24 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\Redis\Cluster\V1\CrossClusterReplicationConfig|null
+     */
+    public function getCrossClusterReplicationConfig()
+    {
+        return $this->cross_cluster_replication_config;
+    }
+
+    public function hasCrossClusterReplicationConfig()
+    {
+        return isset($this->cross_cluster_replication_config);
+    }
+
+    public function clearCrossClusterReplicationConfig()
+    {
+        unset($this->cross_cluster_replication_config);
+    }
+
+    /**
+     * Optional. Cross cluster replication config.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.CrossClusterReplicationConfig cross_cluster_replication_config = 24 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\Redis\Cluster\V1\CrossClusterReplicationConfig $var
+     * @return $this
+     */
+    public function setCrossClusterReplicationConfig($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Redis\Cluster\V1\CrossClusterReplicationConfig::class);
+        $this->cross_cluster_replication_config = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. The delete operation will fail when the value is set to true.
+     *
+     * Generated from protobuf field <code>optional bool deletion_protection_enabled = 25 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return bool
+     */
+    public function getDeletionProtectionEnabled()
+    {
+        return isset($this->deletion_protection_enabled) ? $this->deletion_protection_enabled : false;
+    }
+
+    public function hasDeletionProtectionEnabled()
+    {
+        return isset($this->deletion_protection_enabled);
+    }
+
+    public function clearDeletionProtectionEnabled()
+    {
+        unset($this->deletion_protection_enabled);
+    }
+
+    /**
+     * Optional. The delete operation will fail when the value is set to true.
+     *
+     * Generated from protobuf field <code>optional bool deletion_protection_enabled = 25 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setDeletionProtectionEnabled($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->deletion_protection_enabled = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. ClusterMaintenancePolicy determines when to allow or deny
+     * updates.
+     *
+     * Generated from protobuf field <code>optional .google.cloud.redis.cluster.v1.ClusterMaintenancePolicy maintenance_policy = 26 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\Redis\Cluster\V1\ClusterMaintenancePolicy|null
+     */
+    public function getMaintenancePolicy()
+    {
+        return $this->maintenance_policy;
+    }
+
+    public function hasMaintenancePolicy()
+    {
+        return isset($this->maintenance_policy);
+    }
+
+    public function clearMaintenancePolicy()
+    {
+        unset($this->maintenance_policy);
+    }
+
+    /**
+     * Optional. ClusterMaintenancePolicy determines when to allow or deny
+     * updates.
+     *
+     * Generated from protobuf field <code>optional .google.cloud.redis.cluster.v1.ClusterMaintenancePolicy maintenance_policy = 26 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\Redis\Cluster\V1\ClusterMaintenancePolicy $var
+     * @return $this
+     */
+    public function setMaintenancePolicy($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Redis\Cluster\V1\ClusterMaintenancePolicy::class);
+        $this->maintenance_policy = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. ClusterMaintenanceSchedule Output only Published maintenance
+     * schedule.
+     *
+     * Generated from protobuf field <code>optional .google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule maintenance_schedule = 27 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return \Google\Cloud\Redis\Cluster\V1\ClusterMaintenanceSchedule|null
+     */
+    public function getMaintenanceSchedule()
+    {
+        return $this->maintenance_schedule;
+    }
+
+    public function hasMaintenanceSchedule()
+    {
+        return isset($this->maintenance_schedule);
+    }
+
+    public function clearMaintenanceSchedule()
+    {
+        unset($this->maintenance_schedule);
+    }
+
+    /**
+     * Output only. ClusterMaintenanceSchedule Output only Published maintenance
+     * schedule.
+     *
+     * Generated from protobuf field <code>optional .google.cloud.redis.cluster.v1.ClusterMaintenanceSchedule maintenance_schedule = 27 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param \Google\Cloud\Redis\Cluster\V1\ClusterMaintenanceSchedule $var
+     * @return $this
+     */
+    public function setMaintenanceSchedule($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Redis\Cluster\V1\ClusterMaintenanceSchedule::class);
+        $this->maintenance_schedule = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Service attachment details to configure Psc connections
+     *
+     * Generated from protobuf field <code>repeated .google.cloud.redis.cluster.v1.PscServiceAttachment psc_service_attachments = 30 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getPscServiceAttachments()
+    {
+        return $this->psc_service_attachments;
+    }
+
+    /**
+     * Output only. Service attachment details to configure Psc connections
+     *
+     * Generated from protobuf field <code>repeated .google.cloud.redis.cluster.v1.PscServiceAttachment psc_service_attachments = 30 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param array<\Google\Cloud\Redis\Cluster\V1\PscServiceAttachment>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setPscServiceAttachments($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Google\Cloud\Redis\Cluster\V1\PscServiceAttachment::class);
+        $this->psc_service_attachments = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Optional. A list of cluster enpoints.
+     *
+     * Generated from protobuf field <code>repeated .google.cloud.redis.cluster.v1.ClusterEndpoint cluster_endpoints = 36 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getClusterEndpoints()
+    {
+        return $this->cluster_endpoints;
+    }
+
+    /**
+     * Optional. A list of cluster enpoints.
+     *
+     * Generated from protobuf field <code>repeated .google.cloud.redis.cluster.v1.ClusterEndpoint cluster_endpoints = 36 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param array<\Google\Cloud\Redis\Cluster\V1\ClusterEndpoint>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setClusterEndpoints($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Google\Cloud\Redis\Cluster\V1\ClusterEndpoint::class);
+        $this->cluster_endpoints = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Output only. The backup collection full resource name. Example:
+     * projects/{project}/locations/{location}/backupCollections/{collection}
+     *
+     * Generated from protobuf field <code>optional string backup_collection = 39 [(.google.api.field_behavior) = OPTIONAL, (.google.api.field_behavior) = OUTPUT_ONLY, (.google.api.resource_reference) = {</code>
+     * @return string
+     */
+    public function getBackupCollection()
+    {
+        return isset($this->backup_collection) ? $this->backup_collection : '';
+    }
+
+    public function hasBackupCollection()
+    {
+        return isset($this->backup_collection);
+    }
+
+    public function clearBackupCollection()
+    {
+        unset($this->backup_collection);
+    }
+
+    /**
+     * Optional. Output only. The backup collection full resource name. Example:
+     * projects/{project}/locations/{location}/backupCollections/{collection}
+     *
+     * Generated from protobuf field <code>optional string backup_collection = 39 [(.google.api.field_behavior) = OPTIONAL, (.google.api.field_behavior) = OUTPUT_ONLY, (.google.api.resource_reference) = {</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setBackupCollection($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->backup_collection = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. The KMS key used to encrypt the at-rest data of the cluster.
+     *
+     * Generated from protobuf field <code>optional string kms_key = 40 [(.google.api.field_behavior) = OPTIONAL, (.google.api.resource_reference) = {</code>
+     * @return string
+     */
+    public function getKmsKey()
+    {
+        return isset($this->kms_key) ? $this->kms_key : '';
+    }
+
+    public function hasKmsKey()
+    {
+        return isset($this->kms_key);
+    }
+
+    public function clearKmsKey()
+    {
+        unset($this->kms_key);
+    }
+
+    /**
+     * Optional. The KMS key used to encrypt the at-rest data of the cluster.
+     *
+     * Generated from protobuf field <code>optional string kms_key = 40 [(.google.api.field_behavior) = OPTIONAL, (.google.api.resource_reference) = {</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setKmsKey($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->kms_key = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. The automated backup config for the cluster.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.AutomatedBackupConfig automated_backup_config = 42 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\Redis\Cluster\V1\AutomatedBackupConfig|null
+     */
+    public function getAutomatedBackupConfig()
+    {
+        return $this->automated_backup_config;
+    }
+
+    public function hasAutomatedBackupConfig()
+    {
+        return isset($this->automated_backup_config);
+    }
+
+    public function clearAutomatedBackupConfig()
+    {
+        unset($this->automated_backup_config);
+    }
+
+    /**
+     * Optional. The automated backup config for the cluster.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.AutomatedBackupConfig automated_backup_config = 42 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\Redis\Cluster\V1\AutomatedBackupConfig $var
+     * @return $this
+     */
+    public function setAutomatedBackupConfig($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Redis\Cluster\V1\AutomatedBackupConfig::class);
+        $this->automated_backup_config = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Encryption information of the data at rest of the cluster.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.EncryptionInfo encryption_info = 43 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return \Google\Cloud\Redis\Cluster\V1\EncryptionInfo|null
+     */
+    public function getEncryptionInfo()
+    {
+        return $this->encryption_info;
+    }
+
+    public function hasEncryptionInfo()
+    {
+        return isset($this->encryption_info);
+    }
+
+    public function clearEncryptionInfo()
+    {
+        unset($this->encryption_info);
+    }
+
+    /**
+     * Output only. Encryption information of the data at rest of the cluster.
+     *
+     * Generated from protobuf field <code>.google.cloud.redis.cluster.v1.EncryptionInfo encryption_info = 43 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param \Google\Cloud\Redis\Cluster\V1\EncryptionInfo $var
+     * @return $this
+     */
+    public function setEncryptionInfo($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Redis\Cluster\V1\EncryptionInfo::class);
+        $this->encryption_info = $var;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImportSources()
+    {
+        return $this->whichOneof("import_sources");
     }
 
 }

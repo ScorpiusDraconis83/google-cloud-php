@@ -9,7 +9,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * The Condition evaluation.
+ * The condition evaluation.
  *
  * Generated from protobuf message <code>google.cloud.asset.v1.ConditionEvaluation</code>
  */
@@ -20,7 +20,7 @@ class ConditionEvaluation extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.asset.v1.ConditionEvaluation.EvaluationValue evaluation_value = 1;</code>
      */
-    private $evaluation_value = 0;
+    protected $evaluation_value = 0;
 
     /**
      * Constructor.

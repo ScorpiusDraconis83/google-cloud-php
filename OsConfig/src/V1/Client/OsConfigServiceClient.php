@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ use Google\Cloud\OsConfig\V1\PausePatchDeploymentRequest;
 use Google\Cloud\OsConfig\V1\ResumePatchDeploymentRequest;
 use Google\Cloud\OsConfig\V1\UpdatePatchDeploymentRequest;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: OS Config API
@@ -63,20 +64,20 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface cancelPatchJobAsync(CancelPatchJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createPatchDeploymentAsync(CreatePatchDeploymentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deletePatchDeploymentAsync(DeletePatchDeploymentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface executePatchJobAsync(ExecutePatchJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getPatchDeploymentAsync(GetPatchDeploymentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getPatchJobAsync(GetPatchJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listPatchDeploymentsAsync(ListPatchDeploymentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listPatchJobInstanceDetailsAsync(ListPatchJobInstanceDetailsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listPatchJobsAsync(ListPatchJobsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface pausePatchDeploymentAsync(PausePatchDeploymentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface resumePatchDeploymentAsync(ResumePatchDeploymentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updatePatchDeploymentAsync(UpdatePatchDeploymentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PatchJob> cancelPatchJobAsync(CancelPatchJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PatchDeployment> createPatchDeploymentAsync(CreatePatchDeploymentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deletePatchDeploymentAsync(DeletePatchDeploymentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PatchJob> executePatchJobAsync(ExecutePatchJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PatchDeployment> getPatchDeploymentAsync(GetPatchDeploymentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PatchJob> getPatchJobAsync(GetPatchJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listPatchDeploymentsAsync(ListPatchDeploymentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listPatchJobInstanceDetailsAsync(ListPatchJobInstanceDetailsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listPatchJobsAsync(ListPatchJobsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PatchDeployment> pausePatchDeploymentAsync(PausePatchDeploymentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PatchDeployment> resumePatchDeploymentAsync(ResumePatchDeploymentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PatchDeployment> updatePatchDeploymentAsync(UpdatePatchDeploymentRequest $request, array $optionalArgs = [])
  */
-class OsConfigServiceClient
+final class OsConfigServiceClient
 {
     use GapicClientTrait;
     use ResourceHelperTrait;
@@ -101,9 +102,7 @@ class OsConfigServiceClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private static function getClientDefaults()
     {
@@ -187,14 +186,14 @@ class OsConfigServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -216,6 +215,12 @@ class OsConfigServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -249,6 +254,9 @@ class OsConfigServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -276,6 +284,8 @@ class OsConfigServiceClient
      *
      * The async variant is {@see OsConfigServiceClient::cancelPatchJobAsync()} .
      *
+     * @example samples/V1/OsConfigServiceClient/cancel_patch_job.php
+     *
      * @param CancelPatchJobRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -301,6 +311,8 @@ class OsConfigServiceClient
      * The async variant is {@see OsConfigServiceClient::createPatchDeploymentAsync()}
      * .
      *
+     * @example samples/V1/OsConfigServiceClient/create_patch_deployment.php
+     *
      * @param CreatePatchDeploymentRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -315,8 +327,10 @@ class OsConfigServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createPatchDeployment(CreatePatchDeploymentRequest $request, array $callOptions = []): PatchDeployment
-    {
+    public function createPatchDeployment(
+        CreatePatchDeploymentRequest $request,
+        array $callOptions = []
+    ): PatchDeployment {
         return $this->startApiCall('CreatePatchDeployment', $request, $callOptions)->wait();
     }
 
@@ -325,6 +339,8 @@ class OsConfigServiceClient
      *
      * The async variant is {@see OsConfigServiceClient::deletePatchDeploymentAsync()}
      * .
+     *
+     * @example samples/V1/OsConfigServiceClient/delete_patch_deployment.php
      *
      * @param DeletePatchDeploymentRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
@@ -347,6 +363,8 @@ class OsConfigServiceClient
      * Patch VM instances by creating and running a patch job.
      *
      * The async variant is {@see OsConfigServiceClient::executePatchJobAsync()} .
+     *
+     * @example samples/V1/OsConfigServiceClient/execute_patch_job.php
      *
      * @param ExecutePatchJobRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -371,6 +389,8 @@ class OsConfigServiceClient
      * Get an OS Config patch deployment.
      *
      * The async variant is {@see OsConfigServiceClient::getPatchDeploymentAsync()} .
+     *
+     * @example samples/V1/OsConfigServiceClient/get_patch_deployment.php
      *
      * @param GetPatchDeploymentRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
@@ -397,6 +417,8 @@ class OsConfigServiceClient
      *
      * The async variant is {@see OsConfigServiceClient::getPatchJobAsync()} .
      *
+     * @example samples/V1/OsConfigServiceClient/get_patch_job.php
+     *
      * @param GetPatchJobRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -421,6 +443,8 @@ class OsConfigServiceClient
      *
      * The async variant is {@see OsConfigServiceClient::listPatchDeploymentsAsync()} .
      *
+     * @example samples/V1/OsConfigServiceClient/list_patch_deployments.php
+     *
      * @param ListPatchDeploymentsRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -435,8 +459,10 @@ class OsConfigServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listPatchDeployments(ListPatchDeploymentsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listPatchDeployments(
+        ListPatchDeploymentsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListPatchDeployments', $request, $callOptions);
     }
 
@@ -445,6 +471,8 @@ class OsConfigServiceClient
      *
      * The async variant is
      * {@see OsConfigServiceClient::listPatchJobInstanceDetailsAsync()} .
+     *
+     * @example samples/V1/OsConfigServiceClient/list_patch_job_instance_details.php
      *
      * @param ListPatchJobInstanceDetailsRequest $request     A request to house fields associated with the call.
      * @param array                              $callOptions {
@@ -460,8 +488,10 @@ class OsConfigServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listPatchJobInstanceDetails(ListPatchJobInstanceDetailsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listPatchJobInstanceDetails(
+        ListPatchJobInstanceDetailsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListPatchJobInstanceDetails', $request, $callOptions);
     }
 
@@ -469,6 +499,8 @@ class OsConfigServiceClient
      * Get a list of patch jobs.
      *
      * The async variant is {@see OsConfigServiceClient::listPatchJobsAsync()} .
+     *
+     * @example samples/V1/OsConfigServiceClient/list_patch_jobs.php
      *
      * @param ListPatchJobsRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -494,6 +526,8 @@ class OsConfigServiceClient
      * Patch deployment in paused state doesn't generate patch jobs.
      *
      * The async variant is {@see OsConfigServiceClient::pausePatchDeploymentAsync()} .
+     *
+     * @example samples/V1/OsConfigServiceClient/pause_patch_deployment.php
      *
      * @param PausePatchDeploymentRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
@@ -521,6 +555,8 @@ class OsConfigServiceClient
      * The async variant is {@see OsConfigServiceClient::resumePatchDeploymentAsync()}
      * .
      *
+     * @example samples/V1/OsConfigServiceClient/resume_patch_deployment.php
+     *
      * @param ResumePatchDeploymentRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -535,8 +571,10 @@ class OsConfigServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function resumePatchDeployment(ResumePatchDeploymentRequest $request, array $callOptions = []): PatchDeployment
-    {
+    public function resumePatchDeployment(
+        ResumePatchDeploymentRequest $request,
+        array $callOptions = []
+    ): PatchDeployment {
         return $this->startApiCall('ResumePatchDeployment', $request, $callOptions)->wait();
     }
 
@@ -545,6 +583,8 @@ class OsConfigServiceClient
      *
      * The async variant is {@see OsConfigServiceClient::updatePatchDeploymentAsync()}
      * .
+     *
+     * @example samples/V1/OsConfigServiceClient/update_patch_deployment.php
      *
      * @param UpdatePatchDeploymentRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
@@ -560,8 +600,10 @@ class OsConfigServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updatePatchDeployment(UpdatePatchDeploymentRequest $request, array $callOptions = []): PatchDeployment
-    {
+    public function updatePatchDeployment(
+        UpdatePatchDeploymentRequest $request,
+        array $callOptions = []
+    ): PatchDeployment {
         return $this->startApiCall('UpdatePatchDeployment', $request, $callOptions)->wait();
     }
 }

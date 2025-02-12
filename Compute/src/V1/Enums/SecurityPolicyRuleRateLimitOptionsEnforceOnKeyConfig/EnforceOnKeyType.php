@@ -48,5 +48,11 @@ class EnforceOnKeyType
 
     const SNI = 'SNI';
 
+    const TLS_JA3_FINGERPRINT = 'TLS_JA3_FINGERPRINT';
+
+    const TLS_JA4_FINGERPRINT = 'TLS_JA4_FINGERPRINT';
+
+    const USER_IP = 'USER_IP';
+
     const XFF_IP = 'XFF_IP';
 }

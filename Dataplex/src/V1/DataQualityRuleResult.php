@@ -20,13 +20,13 @@ class DataQualityRuleResult extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.dataplex.v1.DataQualityRule rule = 1;</code>
      */
-    private $rule = null;
+    protected $rule = null;
     /**
      * Whether the rule passed or failed.
      *
      * Generated from protobuf field <code>bool passed = 7;</code>
      */
-    private $passed = false;
+    protected $passed = false;
     /**
      * The number of rows a rule was evaluated against.
      * This field is only valid for row-level type rules.
@@ -35,37 +35,45 @@ class DataQualityRuleResult extends \Google\Protobuf\Internal\Message
      * evaluation, or
      * * exclude `null` rows from the `evaluated_count`, by setting
      * `ignore_nulls = true`.
+     * This field is not set for rule SqlAssertion.
      *
      * Generated from protobuf field <code>int64 evaluated_count = 9;</code>
      */
-    private $evaluated_count = 0;
+    protected $evaluated_count = 0;
     /**
-     * The number of rows which passed a rule evaluation.
-     * This field is only valid for row-level type rules.
+     * This field is not set for rule SqlAssertion.
      *
      * Generated from protobuf field <code>int64 passed_count = 8;</code>
      */
-    private $passed_count = 0;
+    protected $passed_count = 0;
     /**
      * The number of rows with null values in the specified column.
      *
      * Generated from protobuf field <code>int64 null_count = 5;</code>
      */
-    private $null_count = 0;
+    protected $null_count = 0;
     /**
      * The ratio of **passed_count / evaluated_count**.
      * This field is only valid for row-level type rules.
      *
      * Generated from protobuf field <code>double pass_ratio = 6;</code>
      */
-    private $pass_ratio = 0.0;
+    protected $pass_ratio = 0.0;
     /**
      * The query to find rows that did not pass this rule.
      * This field is only valid for row-level type rules.
      *
      * Generated from protobuf field <code>string failing_rows_query = 10;</code>
      */
-    private $failing_rows_query = '';
+    protected $failing_rows_query = '';
+    /**
+     * Output only. The number of rows returned by the SQL statement in a SQL
+     * assertion rule.
+     * This field is only valid for SQL assertion rules.
+     *
+     * Generated from protobuf field <code>int64 assertion_row_count = 11 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $assertion_row_count = 0;
 
     /**
      * Constructor.
@@ -85,9 +93,9 @@ class DataQualityRuleResult extends \Google\Protobuf\Internal\Message
      *           evaluation, or
      *           * exclude `null` rows from the `evaluated_count`, by setting
      *           `ignore_nulls = true`.
+     *           This field is not set for rule SqlAssertion.
      *     @type int|string $passed_count
-     *           The number of rows which passed a rule evaluation.
-     *           This field is only valid for row-level type rules.
+     *           This field is not set for rule SqlAssertion.
      *     @type int|string $null_count
      *           The number of rows with null values in the specified column.
      *     @type float $pass_ratio
@@ -96,6 +104,10 @@ class DataQualityRuleResult extends \Google\Protobuf\Internal\Message
      *     @type string $failing_rows_query
      *           The query to find rows that did not pass this rule.
      *           This field is only valid for row-level type rules.
+     *     @type int|string $assertion_row_count
+     *           Output only. The number of rows returned by the SQL statement in a SQL
+     *           assertion rule.
+     *           This field is only valid for SQL assertion rules.
      * }
      */
     public function __construct($data = NULL) {
@@ -173,6 +185,7 @@ class DataQualityRuleResult extends \Google\Protobuf\Internal\Message
      * evaluation, or
      * * exclude `null` rows from the `evaluated_count`, by setting
      * `ignore_nulls = true`.
+     * This field is not set for rule SqlAssertion.
      *
      * Generated from protobuf field <code>int64 evaluated_count = 9;</code>
      * @return int|string
@@ -190,6 +203,7 @@ class DataQualityRuleResult extends \Google\Protobuf\Internal\Message
      * evaluation, or
      * * exclude `null` rows from the `evaluated_count`, by setting
      * `ignore_nulls = true`.
+     * This field is not set for rule SqlAssertion.
      *
      * Generated from protobuf field <code>int64 evaluated_count = 9;</code>
      * @param int|string $var
@@ -204,8 +218,7 @@ class DataQualityRuleResult extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The number of rows which passed a rule evaluation.
-     * This field is only valid for row-level type rules.
+     * This field is not set for rule SqlAssertion.
      *
      * Generated from protobuf field <code>int64 passed_count = 8;</code>
      * @return int|string
@@ -216,8 +229,7 @@ class DataQualityRuleResult extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The number of rows which passed a rule evaluation.
-     * This field is only valid for row-level type rules.
+     * This field is not set for rule SqlAssertion.
      *
      * Generated from protobuf field <code>int64 passed_count = 8;</code>
      * @param int|string $var
@@ -309,6 +321,36 @@ class DataQualityRuleResult extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->failing_rows_query = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. The number of rows returned by the SQL statement in a SQL
+     * assertion rule.
+     * This field is only valid for SQL assertion rules.
+     *
+     * Generated from protobuf field <code>int64 assertion_row_count = 11 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return int|string
+     */
+    public function getAssertionRowCount()
+    {
+        return $this->assertion_row_count;
+    }
+
+    /**
+     * Output only. The number of rows returned by the SQL statement in a SQL
+     * assertion rule.
+     * This field is only valid for SQL assertion rules.
+     *
+     * Generated from protobuf field <code>int64 assertion_row_count = 11 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param int|string $var
+     * @return $this
+     */
+    public function setAssertionRowCount($var)
+    {
+        GPBUtil::checkInt64($var);
+        $this->assertion_row_count = $var;
 
         return $this;
     }

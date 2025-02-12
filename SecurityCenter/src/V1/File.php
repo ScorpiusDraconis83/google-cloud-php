@@ -21,13 +21,13 @@ class File extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string path = 1;</code>
      */
-    private $path = '';
+    protected $path = '';
     /**
      * Size of the file in bytes.
      *
      * Generated from protobuf field <code>int64 size = 2;</code>
      */
-    private $size = 0;
+    protected $size = 0;
     /**
      * SHA256 hash of the first hashed_size bytes of the file encoded as a
      * hex string.  If hashed_size == size, sha256 represents the SHA256 hash
@@ -35,7 +35,7 @@ class File extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string sha256 = 3;</code>
      */
-    private $sha256 = '';
+    protected $sha256 = '';
     /**
      * The length in bytes of the file prefix that was hashed.  If
      * hashed_size == size, any hashes reported represent the entire
@@ -43,19 +43,25 @@ class File extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>int64 hashed_size = 4;</code>
      */
-    private $hashed_size = 0;
+    protected $hashed_size = 0;
     /**
      * True when the hash covers only a prefix of the file.
      *
      * Generated from protobuf field <code>bool partially_hashed = 5;</code>
      */
-    private $partially_hashed = false;
+    protected $partially_hashed = false;
     /**
      * Prefix of the file contents as a JSON-encoded string.
      *
      * Generated from protobuf field <code>string contents = 6;</code>
      */
-    private $contents = '';
+    protected $contents = '';
+    /**
+     * Path of the file in terms of underlying disk/partition identifiers.
+     *
+     * Generated from protobuf field <code>.google.cloud.securitycenter.v1.File.DiskPath disk_path = 7;</code>
+     */
+    protected $disk_path = null;
 
     /**
      * Constructor.
@@ -79,6 +85,8 @@ class File extends \Google\Protobuf\Internal\Message
      *           True when the hash covers only a prefix of the file.
      *     @type string $contents
      *           Prefix of the file contents as a JSON-encoded string.
+     *     @type \Google\Cloud\SecurityCenter\V1\File\DiskPath $disk_path
+     *           Path of the file in terms of underlying disk/partition identifiers.
      * }
      */
     public function __construct($data = NULL) {
@@ -246,6 +254,42 @@ class File extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->contents = $var;
+
+        return $this;
+    }
+
+    /**
+     * Path of the file in terms of underlying disk/partition identifiers.
+     *
+     * Generated from protobuf field <code>.google.cloud.securitycenter.v1.File.DiskPath disk_path = 7;</code>
+     * @return \Google\Cloud\SecurityCenter\V1\File\DiskPath|null
+     */
+    public function getDiskPath()
+    {
+        return $this->disk_path;
+    }
+
+    public function hasDiskPath()
+    {
+        return isset($this->disk_path);
+    }
+
+    public function clearDiskPath()
+    {
+        unset($this->disk_path);
+    }
+
+    /**
+     * Path of the file in terms of underlying disk/partition identifiers.
+     *
+     * Generated from protobuf field <code>.google.cloud.securitycenter.v1.File.DiskPath disk_path = 7;</code>
+     * @param \Google\Cloud\SecurityCenter\V1\File\DiskPath $var
+     * @return $this
+     */
+    public function setDiskPath($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\SecurityCenter\V1\File\DiskPath::class);
+        $this->disk_path = $var;
 
         return $this;
     }

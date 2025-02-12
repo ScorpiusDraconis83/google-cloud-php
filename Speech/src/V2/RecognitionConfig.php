@@ -28,7 +28,7 @@ class RecognitionConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string model = 9 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $model = '';
+    protected $model = '';
     /**
      * Optional. The language of the supplied audio as a
      * [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
@@ -48,14 +48,14 @@ class RecognitionConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.speech.v2.RecognitionFeatures features = 2;</code>
      */
-    private $features = null;
+    protected $features = null;
     /**
      * Speech adaptation context that weights recognizer predictions for specific
      * words and phrases.
      *
      * Generated from protobuf field <code>.google.cloud.speech.v2.SpeechAdaptation adaptation = 6;</code>
      */
-    private $adaptation = null;
+    protected $adaptation = null;
     /**
      * Optional. Use transcription normalization to automatically replace parts of
      * the transcript with phrases of your choosing. For StreamingRecognize, this
@@ -64,7 +64,14 @@ class RecognitionConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.speech.v2.TranscriptNormalization transcript_normalization = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $transcript_normalization = null;
+    protected $transcript_normalization = null;
+    /**
+     * Optional. Optional configuration used to automatically run translation on
+     * the given audio to the desired language for supported models.
+     *
+     * Generated from protobuf field <code>.google.cloud.speech.v2.TranslationConfig translation_config = 15 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $translation_config = null;
     protected $decoding_config;
 
     /**
@@ -108,6 +115,9 @@ class RecognitionConfig extends \Google\Protobuf\Internal\Message
      *           the transcript with phrases of your choosing. For StreamingRecognize, this
      *           normalization only applies to stable partial transcripts (stability > 0.8)
      *           and final transcripts.
+     *     @type \Google\Cloud\Speech\V2\TranslationConfig $translation_config
+     *           Optional. Optional configuration used to automatically run translation on
+     *           the given audio to the desired language for supported models.
      * }
      */
     public function __construct($data = NULL) {
@@ -375,6 +385,44 @@ class RecognitionConfig extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\Speech\V2\TranscriptNormalization::class);
         $this->transcript_normalization = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Optional configuration used to automatically run translation on
+     * the given audio to the desired language for supported models.
+     *
+     * Generated from protobuf field <code>.google.cloud.speech.v2.TranslationConfig translation_config = 15 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\Speech\V2\TranslationConfig|null
+     */
+    public function getTranslationConfig()
+    {
+        return $this->translation_config;
+    }
+
+    public function hasTranslationConfig()
+    {
+        return isset($this->translation_config);
+    }
+
+    public function clearTranslationConfig()
+    {
+        unset($this->translation_config);
+    }
+
+    /**
+     * Optional. Optional configuration used to automatically run translation on
+     * the given audio to the desired language for supported models.
+     *
+     * Generated from protobuf field <code>.google.cloud.speech.v2.TranslationConfig translation_config = 15 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\Speech\V2\TranslationConfig $var
+     * @return $this
+     */
+    public function setTranslationConfig($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Speech\V2\TranslationConfig::class);
+        $this->translation_config = $var;
 
         return $this;
     }

@@ -11,7 +11,7 @@ use Google\Protobuf\Internal\GPBUtil;
 /**
  * Configuration for stored infoTypes. All fields and subfield are provided
  * by the user. For more information, see
- * https://cloud.google.com/dlp/docs/creating-custom-infotypes.
+ * https://cloud.google.com/sensitive-data-protection/docs/creating-custom-infotypes.
  *
  * Generated from protobuf message <code>google.privacy.dlp.v2.StoredInfoTypeConfig</code>
  */
@@ -22,13 +22,13 @@ class StoredInfoTypeConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string display_name = 1;</code>
      */
-    private $display_name = '';
+    protected $display_name = '';
     /**
      * Description of the StoredInfoType (max 256 characters).
      *
      * Generated from protobuf field <code>string description = 2;</code>
      */
-    private $description = '';
+    protected $description = '';
     protected $type;
 
     /**

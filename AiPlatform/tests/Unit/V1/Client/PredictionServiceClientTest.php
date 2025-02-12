@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,11 @@ use Google\Cloud\AIPlatform\V1\GenerateContentResponse;
 use Google\Cloud\AIPlatform\V1\PredictRequest;
 use Google\Cloud\AIPlatform\V1\PredictResponse;
 use Google\Cloud\AIPlatform\V1\RawPredictRequest;
+use Google\Cloud\AIPlatform\V1\StreamDirectPredictRequest;
+use Google\Cloud\AIPlatform\V1\StreamDirectPredictResponse;
+use Google\Cloud\AIPlatform\V1\StreamDirectRawPredictRequest;
+use Google\Cloud\AIPlatform\V1\StreamDirectRawPredictResponse;
+use Google\Cloud\AIPlatform\V1\StreamRawPredictRequest;
 use Google\Cloud\AIPlatform\V1\StreamingPredictRequest;
 use Google\Cloud\AIPlatform\V1\StreamingPredictResponse;
 use Google\Cloud\AIPlatform\V1\StreamingRawPredictRequest;
@@ -73,7 +78,9 @@ class PredictionServiceClientTest extends GeneratedTest
     /** @return CredentialsWrapper */
     private function createCredentials()
     {
-        return $this->getMockBuilder(CredentialsWrapper::class)->disableOriginalConstructor()->getMock();
+        return $this->getMockBuilder(CredentialsWrapper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /** @return PredictionServiceClient */
@@ -98,8 +105,7 @@ class PredictionServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
-        $request = (new DirectPredictRequest())
-            ->setEndpoint($formattedEndpoint);
+        $request = (new DirectPredictRequest())->setEndpoint($formattedEndpoint);
         $response = $gapicClient->directPredict($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -123,17 +129,19 @@ class PredictionServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
-        $request = (new DirectPredictRequest())
-            ->setEndpoint($formattedEndpoint);
+        $request = (new DirectPredictRequest())->setEndpoint($formattedEndpoint);
         try {
             $gapicClient->directPredict($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -162,8 +170,7 @@ class PredictionServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
-        $request = (new DirectRawPredictRequest())
-            ->setEndpoint($formattedEndpoint);
+        $request = (new DirectRawPredictRequest())->setEndpoint($formattedEndpoint);
         $response = $gapicClient->directRawPredict($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -187,17 +194,19 @@ class PredictionServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
-        $request = (new DirectRawPredictRequest())
-            ->setEndpoint($formattedEndpoint);
+        $request = (new DirectRawPredictRequest())->setEndpoint($formattedEndpoint);
         try {
             $gapicClient->directRawPredict($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -227,9 +236,7 @@ class PredictionServiceClientTest extends GeneratedTest
         // Mock request
         $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
         $instances = [];
-        $request = (new ExplainRequest())
-            ->setEndpoint($formattedEndpoint)
-            ->setInstances($instances);
+        $request = (new ExplainRequest())->setEndpoint($formattedEndpoint)->setInstances($instances);
         $response = $gapicClient->explain($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -255,21 +262,91 @@ class PredictionServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
         $instances = [];
-        $request = (new ExplainRequest())
-            ->setEndpoint($formattedEndpoint)
-            ->setInstances($instances);
+        $request = (new ExplainRequest())->setEndpoint($formattedEndpoint)->setInstances($instances);
         try {
             $gapicClient->explain($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function generateContentTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $modelVersion = 'modelVersion-1669102142';
+        $expectedResponse = new GenerateContentResponse();
+        $expectedResponse->setModelVersion($modelVersion);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $model = 'model104069929';
+        $contents = [];
+        $request = (new GenerateContentRequest())->setModel($model)->setContents($contents);
+        $response = $gapicClient->generateContent($request);
+        $this->assertEquals($expectedResponse, $response);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.cloud.aiplatform.v1.PredictionService/GenerateContent', $actualFuncCall);
+        $actualValue = $actualRequestObject->getModel();
+        $this->assertProtobufEquals($model, $actualValue);
+        $actualValue = $actualRequestObject->getContents();
+        $this->assertProtobufEquals($contents, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function generateContentExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $model = 'model104069929';
+        $contents = [];
+        $request = (new GenerateContentRequest())->setModel($model)->setContents($contents);
+        try {
+            $gapicClient->generateContent($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -303,9 +380,7 @@ class PredictionServiceClientTest extends GeneratedTest
         // Mock request
         $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
         $instances = [];
-        $request = (new PredictRequest())
-            ->setEndpoint($formattedEndpoint)
-            ->setInstances($instances);
+        $request = (new PredictRequest())->setEndpoint($formattedEndpoint)->setInstances($instances);
         $response = $gapicClient->predict($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -331,19 +406,20 @@ class PredictionServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
         $instances = [];
-        $request = (new PredictRequest())
-            ->setEndpoint($formattedEndpoint)
-            ->setInstances($instances);
+        $request = (new PredictRequest())->setEndpoint($formattedEndpoint)->setInstances($instances);
         try {
             $gapicClient->predict($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -374,8 +450,7 @@ class PredictionServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
-        $request = (new RawPredictRequest())
-            ->setEndpoint($formattedEndpoint);
+        $request = (new RawPredictRequest())->setEndpoint($formattedEndpoint);
         $response = $gapicClient->rawPredict($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -399,17 +474,19 @@ class PredictionServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
-        $request = (new RawPredictRequest())
-            ->setEndpoint($formattedEndpoint);
+        $request = (new RawPredictRequest())->setEndpoint($formattedEndpoint);
         try {
             $gapicClient->rawPredict($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -440,8 +517,7 @@ class PredictionServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse3);
         // Mock request
         $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
-        $request = (new StreamingPredictRequest())
-            ->setEndpoint($formattedEndpoint);
+        $request = (new StreamingPredictRequest())->setEndpoint($formattedEndpoint);
         $serverStream = $gapicClient->serverStreamingPredict($request);
         $this->assertInstanceOf(ServerStream::class, $serverStream);
         $responses = iterator_to_array($serverStream->readAll());
@@ -470,20 +546,216 @@ class PredictionServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->setStreamingStatus($status);
         $this->assertTrue($transport->isExhausted());
         // Mock request
         $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
-        $request = (new StreamingPredictRequest())
-            ->setEndpoint($formattedEndpoint);
+        $request = (new StreamingPredictRequest())->setEndpoint($formattedEndpoint);
         $serverStream = $gapicClient->serverStreamingPredict($request);
         $results = $serverStream->readAll();
+        try {
+            iterator_to_array($results);
+            // If the close stream method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function streamDirectPredictTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $expectedResponse = new StreamDirectPredictResponse();
+        $transport->addResponse($expectedResponse);
+        $expectedResponse2 = new StreamDirectPredictResponse();
+        $transport->addResponse($expectedResponse2);
+        $expectedResponse3 = new StreamDirectPredictResponse();
+        $transport->addResponse($expectedResponse3);
+        // Mock request
+        $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
+        $request = new StreamDirectPredictRequest();
+        $request->setEndpoint($formattedEndpoint);
+        $formattedEndpoint2 = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
+        $request2 = new StreamDirectPredictRequest();
+        $request2->setEndpoint($formattedEndpoint2);
+        $formattedEndpoint3 = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
+        $request3 = new StreamDirectPredictRequest();
+        $request3->setEndpoint($formattedEndpoint3);
+        $bidi = $gapicClient->streamDirectPredict();
+        $this->assertInstanceOf(BidiStream::class, $bidi);
+        $bidi->write($request);
+        $responses = [];
+        $responses[] = $bidi->read();
+        $bidi->writeAll([$request2, $request3]);
+        foreach ($bidi->closeWriteAndReadAll() as $response) {
+            $responses[] = $response;
+        }
+
+        $expectedResponses = [];
+        $expectedResponses[] = $expectedResponse;
+        $expectedResponses[] = $expectedResponse2;
+        $expectedResponses[] = $expectedResponse3;
+        $this->assertEquals($expectedResponses, $responses);
+        $createStreamRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($createStreamRequests));
+        $streamFuncCall = $createStreamRequests[0]->getFuncCall();
+        $streamRequestObject = $createStreamRequests[0]->getRequestObject();
+        $this->assertSame('/google.cloud.aiplatform.v1.PredictionService/StreamDirectPredict', $streamFuncCall);
+        $this->assertNull($streamRequestObject);
+        $callObjects = $transport->popCallObjects();
+        $this->assertSame(1, count($callObjects));
+        $bidiCall = $callObjects[0];
+        $writeRequests = $bidiCall->popReceivedCalls();
+        $expectedRequests = [];
+        $expectedRequests[] = $request;
+        $expectedRequests[] = $request2;
+        $expectedRequests[] = $request3;
+        $this->assertEquals($expectedRequests, $writeRequests);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function streamDirectPredictExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->setStreamingStatus($status);
+        $this->assertTrue($transport->isExhausted());
+        $bidi = $gapicClient->streamDirectPredict();
+        $results = $bidi->closeWriteAndReadAll();
+        try {
+            iterator_to_array($results);
+            // If the close stream method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function streamDirectRawPredictTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $output = '1';
+        $expectedResponse = new StreamDirectRawPredictResponse();
+        $expectedResponse->setOutput($output);
+        $transport->addResponse($expectedResponse);
+        $output2 = '116';
+        $expectedResponse2 = new StreamDirectRawPredictResponse();
+        $expectedResponse2->setOutput($output2);
+        $transport->addResponse($expectedResponse2);
+        $output3 = '117';
+        $expectedResponse3 = new StreamDirectRawPredictResponse();
+        $expectedResponse3->setOutput($output3);
+        $transport->addResponse($expectedResponse3);
+        // Mock request
+        $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
+        $request = new StreamDirectRawPredictRequest();
+        $request->setEndpoint($formattedEndpoint);
+        $formattedEndpoint2 = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
+        $request2 = new StreamDirectRawPredictRequest();
+        $request2->setEndpoint($formattedEndpoint2);
+        $formattedEndpoint3 = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
+        $request3 = new StreamDirectRawPredictRequest();
+        $request3->setEndpoint($formattedEndpoint3);
+        $bidi = $gapicClient->streamDirectRawPredict();
+        $this->assertInstanceOf(BidiStream::class, $bidi);
+        $bidi->write($request);
+        $responses = [];
+        $responses[] = $bidi->read();
+        $bidi->writeAll([$request2, $request3]);
+        foreach ($bidi->closeWriteAndReadAll() as $response) {
+            $responses[] = $response;
+        }
+
+        $expectedResponses = [];
+        $expectedResponses[] = $expectedResponse;
+        $expectedResponses[] = $expectedResponse2;
+        $expectedResponses[] = $expectedResponse3;
+        $this->assertEquals($expectedResponses, $responses);
+        $createStreamRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($createStreamRequests));
+        $streamFuncCall = $createStreamRequests[0]->getFuncCall();
+        $streamRequestObject = $createStreamRequests[0]->getRequestObject();
+        $this->assertSame('/google.cloud.aiplatform.v1.PredictionService/StreamDirectRawPredict', $streamFuncCall);
+        $this->assertNull($streamRequestObject);
+        $callObjects = $transport->popCallObjects();
+        $this->assertSame(1, count($callObjects));
+        $bidiCall = $callObjects[0];
+        $writeRequests = $bidiCall->popReceivedCalls();
+        $expectedRequests = [];
+        $expectedRequests[] = $request;
+        $expectedRequests[] = $request2;
+        $expectedRequests[] = $request3;
+        $this->assertEquals($expectedRequests, $writeRequests);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function streamDirectRawPredictExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->setStreamingStatus($status);
+        $this->assertTrue($transport->isExhausted());
+        $bidi = $gapicClient->streamDirectRawPredict();
+        $results = $bidi->closeWriteAndReadAll();
         try {
             iterator_to_array($results);
             // If the close stream method call did not throw, fail the test
@@ -506,18 +778,22 @@ class PredictionServiceClientTest extends GeneratedTest
         ]);
         $this->assertTrue($transport->isExhausted());
         // Mock response
+        $modelVersion = 'modelVersion-1669102142';
         $expectedResponse = new GenerateContentResponse();
+        $expectedResponse->setModelVersion($modelVersion);
         $transport->addResponse($expectedResponse);
+        $modelVersion2 = 'modelVersion2-1984354059';
         $expectedResponse2 = new GenerateContentResponse();
+        $expectedResponse2->setModelVersion($modelVersion2);
         $transport->addResponse($expectedResponse2);
+        $modelVersion3 = 'modelVersion3-1984354058';
         $expectedResponse3 = new GenerateContentResponse();
+        $expectedResponse3->setModelVersion($modelVersion3);
         $transport->addResponse($expectedResponse3);
         // Mock request
         $model = 'model104069929';
         $contents = [];
-        $request = (new GenerateContentRequest())
-            ->setModel($model)
-            ->setContents($contents);
+        $request = (new GenerateContentRequest())->setModel($model)->setContents($contents);
         $serverStream = $gapicClient->streamGenerateContent($request);
         $this->assertInstanceOf(ServerStream::class, $serverStream);
         $responses = iterator_to_array($serverStream->readAll());
@@ -548,21 +824,109 @@ class PredictionServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->setStreamingStatus($status);
         $this->assertTrue($transport->isExhausted());
         // Mock request
         $model = 'model104069929';
         $contents = [];
-        $request = (new GenerateContentRequest())
-            ->setModel($model)
-            ->setContents($contents);
+        $request = (new GenerateContentRequest())->setModel($model)->setContents($contents);
         $serverStream = $gapicClient->streamGenerateContent($request);
+        $results = $serverStream->readAll();
+        try {
+            iterator_to_array($results);
+            // If the close stream method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function streamRawPredictTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $contentType = 'contentType831846208';
+        $data = '-86';
+        $expectedResponse = new HttpBody();
+        $expectedResponse->setContentType($contentType);
+        $expectedResponse->setData($data);
+        $transport->addResponse($expectedResponse);
+        $contentType2 = 'contentType2540291827';
+        $data2 = '-35';
+        $expectedResponse2 = new HttpBody();
+        $expectedResponse2->setContentType($contentType2);
+        $expectedResponse2->setData($data2);
+        $transport->addResponse($expectedResponse2);
+        $contentType3 = 'contentType3540291828';
+        $data3 = '-34';
+        $expectedResponse3 = new HttpBody();
+        $expectedResponse3->setContentType($contentType3);
+        $expectedResponse3->setData($data3);
+        $transport->addResponse($expectedResponse3);
+        // Mock request
+        $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
+        $request = (new StreamRawPredictRequest())->setEndpoint($formattedEndpoint);
+        $serverStream = $gapicClient->streamRawPredict($request);
+        $this->assertInstanceOf(ServerStream::class, $serverStream);
+        $responses = iterator_to_array($serverStream->readAll());
+        $expectedResponses = [];
+        $expectedResponses[] = $expectedResponse;
+        $expectedResponses[] = $expectedResponse2;
+        $expectedResponses[] = $expectedResponse3;
+        $this->assertEquals($expectedResponses, $responses);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.cloud.aiplatform.v1.PredictionService/StreamRawPredict', $actualFuncCall);
+        $actualValue = $actualRequestObject->getEndpoint();
+        $this->assertProtobufEquals($formattedEndpoint, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function streamRawPredictExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->setStreamingStatus($status);
+        $this->assertTrue($transport->isExhausted());
+        // Mock request
+        $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
+        $request = (new StreamRawPredictRequest())->setEndpoint($formattedEndpoint);
+        $serverStream = $gapicClient->streamRawPredict($request);
         $results = $serverStream->readAll();
         try {
             iterator_to_array($results);
@@ -607,10 +971,7 @@ class PredictionServiceClientTest extends GeneratedTest
         $bidi->write($request);
         $responses = [];
         $responses[] = $bidi->read();
-        $bidi->writeAll([
-            $request2,
-            $request3,
-        ]);
+        $bidi->writeAll([$request2, $request3]);
         foreach ($bidi->closeWriteAndReadAll() as $response) {
             $responses[] = $response;
         }
@@ -648,12 +1009,15 @@ class PredictionServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->setStreamingStatus($status);
         $this->assertTrue($transport->isExhausted());
         $bidi = $gapicClient->streamingPredict();
@@ -707,10 +1071,7 @@ class PredictionServiceClientTest extends GeneratedTest
         $bidi->write($request);
         $responses = [];
         $responses[] = $bidi->read();
-        $bidi->writeAll([
-            $request2,
-            $request3,
-        ]);
+        $bidi->writeAll([$request2, $request3]);
         foreach ($bidi->closeWriteAndReadAll() as $response) {
             $responses[] = $response;
         }
@@ -748,12 +1109,15 @@ class PredictionServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->setStreamingStatus($status);
         $this->assertTrue($transport->isExhausted());
         $bidi = $gapicClient->streamingRawPredict();
@@ -810,12 +1174,15 @@ class PredictionServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new GetLocationRequest();
         try {
@@ -842,9 +1209,7 @@ class PredictionServiceClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $locationsElement = new Location();
-        $locations = [
-            $locationsElement,
-        ];
+        $locations = [$locationsElement];
         $expectedResponse = new ListLocationsResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setLocations($locations);
@@ -874,12 +1239,15 @@ class PredictionServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new ListLocationsRequest();
         try {
@@ -912,8 +1280,7 @@ class PredictionServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $resource = 'resource-341064690';
-        $request = (new GetIamPolicyRequest())
-            ->setResource($resource);
+        $request = (new GetIamPolicyRequest())->setResource($resource);
         $response = $gapicClient->getIamPolicy($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -937,17 +1304,19 @@ class PredictionServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $resource = 'resource-341064690';
-        $request = (new GetIamPolicyRequest())
-            ->setResource($resource);
+        $request = (new GetIamPolicyRequest())->setResource($resource);
         try {
             $gapicClient->getIamPolicy($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -979,9 +1348,7 @@ class PredictionServiceClientTest extends GeneratedTest
         // Mock request
         $resource = 'resource-341064690';
         $policy = new Policy();
-        $request = (new SetIamPolicyRequest())
-            ->setResource($resource)
-            ->setPolicy($policy);
+        $request = (new SetIamPolicyRequest())->setResource($resource)->setPolicy($policy);
         $response = $gapicClient->setIamPolicy($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1007,19 +1374,20 @@ class PredictionServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $resource = 'resource-341064690';
         $policy = new Policy();
-        $request = (new SetIamPolicyRequest())
-            ->setResource($resource)
-            ->setPolicy($policy);
+        $request = (new SetIamPolicyRequest())->setResource($resource)->setPolicy($policy);
         try {
             $gapicClient->setIamPolicy($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1047,9 +1415,7 @@ class PredictionServiceClientTest extends GeneratedTest
         // Mock request
         $resource = 'resource-341064690';
         $permissions = [];
-        $request = (new TestIamPermissionsRequest())
-            ->setResource($resource)
-            ->setPermissions($permissions);
+        $request = (new TestIamPermissionsRequest())->setResource($resource)->setPermissions($permissions);
         $response = $gapicClient->testIamPermissions($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1075,19 +1441,20 @@ class PredictionServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $resource = 'resource-341064690';
         $permissions = [];
-        $request = (new TestIamPermissionsRequest())
-            ->setResource($resource)
-            ->setPermissions($permissions);
+        $request = (new TestIamPermissionsRequest())->setResource($resource)->setPermissions($permissions);
         try {
             $gapicClient->testIamPermissions($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1114,8 +1481,7 @@ class PredictionServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedEndpoint = $gapicClient->endpointName('[PROJECT]', '[LOCATION]', '[ENDPOINT]');
-        $request = (new DirectPredictRequest())
-            ->setEndpoint($formattedEndpoint);
+        $request = (new DirectPredictRequest())->setEndpoint($formattedEndpoint);
         $response = $gapicClient->directPredictAsync($request)->wait();
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();

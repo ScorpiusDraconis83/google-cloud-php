@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\DataCatalog\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -59,14 +58,19 @@ use Google\Cloud\DataCatalog\V1\ListEntriesRequest;
 use Google\Cloud\DataCatalog\V1\ListEntryGroupsRequest;
 use Google\Cloud\DataCatalog\V1\ListTagsRequest;
 use Google\Cloud\DataCatalog\V1\LookupEntryRequest;
+use Google\Cloud\DataCatalog\V1\MigrationConfig;
 use Google\Cloud\DataCatalog\V1\ModifyEntryContactsRequest;
 use Google\Cloud\DataCatalog\V1\ModifyEntryOverviewRequest;
+use Google\Cloud\DataCatalog\V1\OrganizationConfig;
 use Google\Cloud\DataCatalog\V1\ReconcileTagsMetadata;
 use Google\Cloud\DataCatalog\V1\ReconcileTagsRequest;
 use Google\Cloud\DataCatalog\V1\ReconcileTagsResponse;
 use Google\Cloud\DataCatalog\V1\RenameTagTemplateFieldEnumValueRequest;
 use Google\Cloud\DataCatalog\V1\RenameTagTemplateFieldRequest;
+use Google\Cloud\DataCatalog\V1\RetrieveConfigRequest;
+use Google\Cloud\DataCatalog\V1\RetrieveEffectiveConfigRequest;
 use Google\Cloud\DataCatalog\V1\SearchCatalogRequest;
+use Google\Cloud\DataCatalog\V1\SetConfigRequest;
 use Google\Cloud\DataCatalog\V1\StarEntryRequest;
 use Google\Cloud\DataCatalog\V1\StarEntryResponse;
 use Google\Cloud\DataCatalog\V1\Tag;
@@ -84,8 +88,10 @@ use Google\Cloud\Iam\V1\Policy;
 use Google\Cloud\Iam\V1\SetIamPolicyRequest;
 use Google\Cloud\Iam\V1\TestIamPermissionsRequest;
 use Google\Cloud\Iam\V1\TestIamPermissionsResponse;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Data Catalog API service allows you to discover, understand, and manage
@@ -99,40 +105,43 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createEntryAsync(CreateEntryRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createEntryGroupAsync(CreateEntryGroupRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createTagAsync(CreateTagRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createTagTemplateAsync(CreateTagTemplateRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createTagTemplateFieldAsync(CreateTagTemplateFieldRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteEntryAsync(DeleteEntryRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteEntryGroupAsync(DeleteEntryGroupRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteTagAsync(DeleteTagRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteTagTemplateAsync(DeleteTagTemplateRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteTagTemplateFieldAsync(DeleteTagTemplateFieldRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getEntryAsync(GetEntryRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getEntryGroupAsync(GetEntryGroupRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getTagTemplateAsync(GetTagTemplateRequest $request, array $optionalArgs = [])
- * @method PromiseInterface importEntriesAsync(ImportEntriesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listEntriesAsync(ListEntriesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listEntryGroupsAsync(ListEntryGroupsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listTagsAsync(ListTagsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface lookupEntryAsync(LookupEntryRequest $request, array $optionalArgs = [])
- * @method PromiseInterface modifyEntryContactsAsync(ModifyEntryContactsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface modifyEntryOverviewAsync(ModifyEntryOverviewRequest $request, array $optionalArgs = [])
- * @method PromiseInterface reconcileTagsAsync(ReconcileTagsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface renameTagTemplateFieldAsync(RenameTagTemplateFieldRequest $request, array $optionalArgs = [])
- * @method PromiseInterface renameTagTemplateFieldEnumValueAsync(RenameTagTemplateFieldEnumValueRequest $request, array $optionalArgs = [])
- * @method PromiseInterface searchCatalogAsync(SearchCatalogRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface starEntryAsync(StarEntryRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface unstarEntryAsync(UnstarEntryRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateEntryAsync(UpdateEntryRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateEntryGroupAsync(UpdateEntryGroupRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateTagAsync(UpdateTagRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateTagTemplateAsync(UpdateTagTemplateRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateTagTemplateFieldAsync(UpdateTagTemplateFieldRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Entry> createEntryAsync(CreateEntryRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<EntryGroup> createEntryGroupAsync(CreateEntryGroupRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Tag> createTagAsync(CreateTagRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TagTemplate> createTagTemplateAsync(CreateTagTemplateRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TagTemplateField> createTagTemplateFieldAsync(CreateTagTemplateFieldRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteEntryAsync(DeleteEntryRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteEntryGroupAsync(DeleteEntryGroupRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteTagAsync(DeleteTagRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteTagTemplateAsync(DeleteTagTemplateRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteTagTemplateFieldAsync(DeleteTagTemplateFieldRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Entry> getEntryAsync(GetEntryRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<EntryGroup> getEntryGroupAsync(GetEntryGroupRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TagTemplate> getTagTemplateAsync(GetTagTemplateRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> importEntriesAsync(ImportEntriesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listEntriesAsync(ListEntriesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listEntryGroupsAsync(ListEntryGroupsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listTagsAsync(ListTagsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Entry> lookupEntryAsync(LookupEntryRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Contacts> modifyEntryContactsAsync(ModifyEntryContactsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<EntryOverview> modifyEntryOverviewAsync(ModifyEntryOverviewRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> reconcileTagsAsync(ReconcileTagsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TagTemplateField> renameTagTemplateFieldAsync(RenameTagTemplateFieldRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TagTemplateField> renameTagTemplateFieldEnumValueAsync(RenameTagTemplateFieldEnumValueRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OrganizationConfig> retrieveConfigAsync(RetrieveConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<MigrationConfig> retrieveEffectiveConfigAsync(RetrieveEffectiveConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> searchCatalogAsync(SearchCatalogRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<MigrationConfig> setConfigAsync(SetConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<StarEntryResponse> starEntryAsync(StarEntryRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<UnstarEntryResponse> unstarEntryAsync(UnstarEntryRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Entry> updateEntryAsync(UpdateEntryRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<EntryGroup> updateEntryGroupAsync(UpdateEntryGroupRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Tag> updateTagAsync(UpdateTagRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TagTemplate> updateTagTemplateAsync(UpdateTagTemplateRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TagTemplateField> updateTagTemplateFieldAsync(UpdateTagTemplateFieldRequest $request, array $optionalArgs = [])
  */
 final class DataCatalogClient
 {
@@ -159,9 +168,7 @@ final class DataCatalogClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private $operationsClient;
 
@@ -207,10 +214,31 @@ final class DataCatalogClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -282,8 +310,13 @@ final class DataCatalogClient
      *
      * @return string The formatted tag resource.
      */
-    public static function tagName(string $project, string $location, string $entryGroup, string $entry, string $tag): string
-    {
+    public static function tagName(
+        string $project,
+        string $location,
+        string $entryGroup,
+        string $entry,
+        string $tag
+    ): string {
         return self::getPathTemplate('tag')->render([
             'project' => $project,
             'location' => $location,
@@ -323,8 +356,12 @@ final class DataCatalogClient
      *
      * @return string The formatted tag_template_field resource.
      */
-    public static function tagTemplateFieldName(string $project, string $location, string $tagTemplate, string $field): string
-    {
+    public static function tagTemplateFieldName(
+        string $project,
+        string $location,
+        string $tagTemplate,
+        string $field
+    ): string {
         return self::getPathTemplate('tagTemplateField')->render([
             'project' => $project,
             'location' => $location,
@@ -345,8 +382,13 @@ final class DataCatalogClient
      *
      * @return string The formatted tag_template_field_enum_value resource.
      */
-    public static function tagTemplateFieldEnumValueName(string $project, string $location, string $tagTemplate, string $tagTemplateFieldId, string $enumValueDisplayName): string
-    {
+    public static function tagTemplateFieldEnumValueName(
+        string $project,
+        string $location,
+        string $tagTemplate,
+        string $tagTemplateFieldId,
+        string $enumValueDisplayName
+    ): string {
         return self::getPathTemplate('tagTemplateFieldEnumValue')->render([
             'project' => $project,
             'location' => $location,
@@ -374,14 +416,14 @@ final class DataCatalogClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -403,6 +445,12 @@ final class DataCatalogClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -436,6 +484,9 @@ final class DataCatalogClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -473,6 +524,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::createEntryAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/create_entry.php
+     *
      * @param CreateEntryRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -496,7 +549,7 @@ final class DataCatalogClient
      * Creates an entry group.
      *
      * An entry group contains logically related entries together with [Cloud
-     * Identity and Access Management](https://cloud.google.com/data-catalog/docs/concepts/iam) policies.
+     * Identity and Access Management](/data-catalog/docs/concepts/iam) policies.
      * These policies specify users who can create, edit, and view entries
      * within entry groups.
      *
@@ -522,6 +575,8 @@ final class DataCatalogClient
      * project](https://cloud.google.com/data-catalog/docs/concepts/resource-project).
      *
      * The async variant is {@see DataCatalogClient::createEntryGroupAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/create_entry_group.php
      *
      * @param CreateEntryGroupRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -558,6 +613,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::createTagAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/create_tag.php
+     *
      * @param CreateTagRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
      *     Optional.
@@ -587,6 +644,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::createTagTemplateAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/create_tag_template.php
+     *
      * @param CreateTagTemplateRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -615,6 +674,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::createTagTemplateFieldAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/create_tag_template_field.php
+     *
      * @param CreateTagTemplateFieldRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -629,8 +690,10 @@ final class DataCatalogClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createTagTemplateField(CreateTagTemplateFieldRequest $request, array $callOptions = []): TagTemplateField
-    {
+    public function createTagTemplateField(
+        CreateTagTemplateFieldRequest $request,
+        array $callOptions = []
+    ): TagTemplateField {
         return $this->startApiCall('CreateTagTemplateField', $request, $callOptions)->wait();
     }
 
@@ -647,6 +710,8 @@ final class DataCatalogClient
      * project](https://cloud.google.com/data-catalog/docs/concepts/resource-project).
      *
      * The async variant is {@see DataCatalogClient::deleteEntryAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/delete_entry.php
      *
      * @param DeleteEntryRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -675,6 +740,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::deleteEntryGroupAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/delete_entry_group.php
+     *
      * @param DeleteEntryGroupRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
      *     Optional.
@@ -696,6 +763,8 @@ final class DataCatalogClient
      * Deletes a tag.
      *
      * The async variant is {@see DataCatalogClient::deleteTagAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/delete_tag.php
      *
      * @param DeleteTagRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
@@ -722,6 +791,8 @@ final class DataCatalogClient
      * project](https://cloud.google.com/data-catalog/docs/concepts/resource-project).
      *
      * The async variant is {@see DataCatalogClient::deleteTagTemplateAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/delete_tag_template.php
      *
      * @param DeleteTagTemplateRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -750,6 +821,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::deleteTagTemplateFieldAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/delete_tag_template_field.php
+     *
      * @param DeleteTagTemplateFieldRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -771,6 +844,8 @@ final class DataCatalogClient
      * Gets an entry.
      *
      * The async variant is {@see DataCatalogClient::getEntryAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/get_entry.php
      *
      * @param GetEntryRequest $request     A request to house fields associated with the call.
      * @param array           $callOptions {
@@ -795,6 +870,8 @@ final class DataCatalogClient
      * Gets an entry group.
      *
      * The async variant is {@see DataCatalogClient::getEntryGroupAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/get_entry_group.php
      *
      * @param GetEntryGroupRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -840,6 +917,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::getIamPolicyAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/get_iam_policy.php
+     *
      * @param GetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -863,6 +942,8 @@ final class DataCatalogClient
      * Gets a tag template.
      *
      * The async variant is {@see DataCatalogClient::getTagTemplateAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/get_tag_template.php
      *
      * @param GetTagTemplateRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -905,6 +986,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::importEntriesAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/import_entries.php
+     *
      * @param ImportEntriesRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -933,6 +1016,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::listEntriesAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/list_entries.php
+     *
      * @param ListEntriesRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -956,6 +1041,8 @@ final class DataCatalogClient
      * Lists entry groups.
      *
      * The async variant is {@see DataCatalogClient::listEntryGroupsAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/list_entry_groups.php
      *
      * @param ListEntryGroupsRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -983,6 +1070,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::listTagsAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/list_tags.php
+     *
      * @param ListTagsRequest $request     A request to house fields associated with the call.
      * @param array           $callOptions {
      *     Optional.
@@ -1008,6 +1097,8 @@ final class DataCatalogClient
      * The resource name comes from the source Google Cloud Platform service.
      *
      * The async variant is {@see DataCatalogClient::lookupEntryAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/lookup_entry.php
      *
      * @param LookupEntryRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -1037,6 +1128,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::modifyEntryContactsAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/modify_entry_contacts.php
+     *
      * @param ModifyEntryContactsRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
      *     Optional.
@@ -1064,6 +1157,8 @@ final class DataCatalogClient
      * IAM permission on the corresponding project.
      *
      * The async variant is {@see DataCatalogClient::modifyEntryOverviewAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/modify_entry_overview.php
      *
      * @param ModifyEntryOverviewRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -1101,6 +1196,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::reconcileTagsAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/reconcile_tags.php
+     *
      * @param ReconcileTagsRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -1129,6 +1226,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::renameTagTemplateFieldAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/rename_tag_template_field.php
+     *
      * @param RenameTagTemplateFieldRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -1143,8 +1242,10 @@ final class DataCatalogClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function renameTagTemplateField(RenameTagTemplateFieldRequest $request, array $callOptions = []): TagTemplateField
-    {
+    public function renameTagTemplateField(
+        RenameTagTemplateFieldRequest $request,
+        array $callOptions = []
+    ): TagTemplateField {
         return $this->startApiCall('RenameTagTemplateField', $request, $callOptions)->wait();
     }
 
@@ -1155,6 +1256,8 @@ final class DataCatalogClient
      *
      * The async variant is
      * {@see DataCatalogClient::renameTagTemplateFieldEnumValueAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/rename_tag_template_field_enum_value.php
      *
      * @param RenameTagTemplateFieldEnumValueRequest $request     A request to house fields associated with the call.
      * @param array                                  $callOptions {
@@ -1170,9 +1273,71 @@ final class DataCatalogClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function renameTagTemplateFieldEnumValue(RenameTagTemplateFieldEnumValueRequest $request, array $callOptions = []): TagTemplateField
-    {
+    public function renameTagTemplateFieldEnumValue(
+        RenameTagTemplateFieldEnumValueRequest $request,
+        array $callOptions = []
+    ): TagTemplateField {
         return $this->startApiCall('RenameTagTemplateFieldEnumValue', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Retrieves the configuration related to the migration from Data Catalog to
+     * Dataplex for a specific organization, including all the projects under it
+     * which have a separate configuration set.
+     *
+     * The async variant is {@see DataCatalogClient::retrieveConfigAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/retrieve_config.php
+     *
+     * @param RetrieveConfigRequest $request     A request to house fields associated with the call.
+     * @param array                 $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OrganizationConfig
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function retrieveConfig(RetrieveConfigRequest $request, array $callOptions = []): OrganizationConfig
+    {
+        return $this->startApiCall('RetrieveConfig', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Retrieves the effective configuration related to the migration from Data
+     * Catalog to Dataplex for a specific organization or project. If there is no
+     * specific configuration set for the resource, the setting is checked
+     * hierarchicahlly through the ancestors of the resource, starting from the
+     * resource itself.
+     *
+     * The async variant is {@see DataCatalogClient::retrieveEffectiveConfigAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/retrieve_effective_config.php
+     *
+     * @param RetrieveEffectiveConfigRequest $request     A request to house fields associated with the call.
+     * @param array                          $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return MigrationConfig
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function retrieveEffectiveConfig(
+        RetrieveEffectiveConfigRequest $request,
+        array $callOptions = []
+    ): MigrationConfig {
+        return $this->startApiCall('RetrieveEffectiveConfig', $request, $callOptions)->wait();
     }
 
     /**
@@ -1194,6 +1359,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::searchCatalogAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/search_catalog.php
+     *
      * @param SearchCatalogRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -1211,6 +1378,33 @@ final class DataCatalogClient
     public function searchCatalog(SearchCatalogRequest $request, array $callOptions = []): PagedListResponse
     {
         return $this->startApiCall('SearchCatalog', $request, $callOptions);
+    }
+
+    /**
+     * Sets the configuration related to the migration to Dataplex for an
+     * organization or project.
+     *
+     * The async variant is {@see DataCatalogClient::setConfigAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/set_config.php
+     *
+     * @param SetConfigRequest $request     A request to house fields associated with the call.
+     * @param array            $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return MigrationConfig
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function setConfig(SetConfigRequest $request, array $callOptions = []): MigrationConfig
+    {
+        return $this->startApiCall('SetConfig', $request, $callOptions)->wait();
     }
 
     /**
@@ -1233,6 +1427,8 @@ final class DataCatalogClient
      * - `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.
      *
      * The async variant is {@see DataCatalogClient::setIamPolicyAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/set_iam_policy.php
      *
      * @param SetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -1258,6 +1454,8 @@ final class DataCatalogClient
      * the current user. Starring information is private to each user.
      *
      * The async variant is {@see DataCatalogClient::starEntryAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/star_entry.php
      *
      * @param StarEntryRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
@@ -1296,6 +1494,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::testIamPermissionsAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/test_iam_permissions.php
+     *
      * @param TestIamPermissionsRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -1310,8 +1510,10 @@ final class DataCatalogClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function testIamPermissions(TestIamPermissionsRequest $request, array $callOptions = []): TestIamPermissionsResponse
-    {
+    public function testIamPermissions(
+        TestIamPermissionsRequest $request,
+        array $callOptions = []
+    ): TestIamPermissionsResponse {
         return $this->startApiCall('TestIamPermissions', $request, $callOptions)->wait();
     }
 
@@ -1320,6 +1522,8 @@ final class DataCatalogClient
      * the current user. Starring information is private to each user.
      *
      * The async variant is {@see DataCatalogClient::unstarEntryAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/unstar_entry.php
      *
      * @param UnstarEntryRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -1350,6 +1554,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::updateEntryAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/update_entry.php
+     *
      * @param UpdateEntryRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -1379,6 +1585,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::updateEntryGroupAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/update_entry_group.php
+     *
      * @param UpdateEntryGroupRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
      *     Optional.
@@ -1402,6 +1610,8 @@ final class DataCatalogClient
      * Updates an existing tag.
      *
      * The async variant is {@see DataCatalogClient::updateTagAsync()} .
+     *
+     * @example samples/V1/DataCatalogClient/update_tag.php
      *
      * @param UpdateTagRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
@@ -1435,6 +1645,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::updateTagTemplateAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/update_tag_template.php
+     *
      * @param UpdateTagTemplateRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -1466,6 +1678,8 @@ final class DataCatalogClient
      *
      * The async variant is {@see DataCatalogClient::updateTagTemplateFieldAsync()} .
      *
+     * @example samples/V1/DataCatalogClient/update_tag_template_field.php
+     *
      * @param UpdateTagTemplateFieldRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -1480,8 +1694,10 @@ final class DataCatalogClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateTagTemplateField(UpdateTagTemplateFieldRequest $request, array $callOptions = []): TagTemplateField
-    {
+    public function updateTagTemplateField(
+        UpdateTagTemplateFieldRequest $request,
+        array $callOptions = []
+    ): TagTemplateField {
         return $this->startApiCall('UpdateTagTemplateField', $request, $callOptions)->wait();
     }
 }

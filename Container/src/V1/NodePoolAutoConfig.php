@@ -24,14 +24,27 @@ class NodePoolAutoConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.container.v1.NetworkTags network_tags = 1;</code>
      */
-    private $network_tags = null;
+    protected $network_tags = null;
     /**
      * Resource manager tag keys and values to be attached to the nodes
      * for managing Compute Engine firewalls using Network Firewall Policies.
      *
      * Generated from protobuf field <code>.google.container.v1.ResourceManagerTags resource_manager_tags = 2;</code>
      */
-    private $resource_manager_tags = null;
+    protected $resource_manager_tags = null;
+    /**
+     * NodeKubeletConfig controls the defaults for autoprovisioned node-pools.
+     * Currently only `insecure_kubelet_readonly_port_enabled` can be set here.
+     *
+     * Generated from protobuf field <code>.google.container.v1.NodeKubeletConfig node_kubelet_config = 3;</code>
+     */
+    protected $node_kubelet_config = null;
+    /**
+     * Output only. Configuration options for Linux nodes.
+     *
+     * Generated from protobuf field <code>.google.container.v1.LinuxNodeConfig linux_node_config = 4 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $linux_node_config = null;
 
     /**
      * Constructor.
@@ -47,6 +60,11 @@ class NodePoolAutoConfig extends \Google\Protobuf\Internal\Message
      *     @type \Google\Cloud\Container\V1\ResourceManagerTags $resource_manager_tags
      *           Resource manager tag keys and values to be attached to the nodes
      *           for managing Compute Engine firewalls using Network Firewall Policies.
+     *     @type \Google\Cloud\Container\V1\NodeKubeletConfig $node_kubelet_config
+     *           NodeKubeletConfig controls the defaults for autoprovisioned node-pools.
+     *           Currently only `insecure_kubelet_readonly_port_enabled` can be set here.
+     *     @type \Google\Cloud\Container\V1\LinuxNodeConfig $linux_node_config
+     *           Output only. Configuration options for Linux nodes.
      * }
      */
     public function __construct($data = NULL) {
@@ -130,6 +148,80 @@ class NodePoolAutoConfig extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\Container\V1\ResourceManagerTags::class);
         $this->resource_manager_tags = $var;
+
+        return $this;
+    }
+
+    /**
+     * NodeKubeletConfig controls the defaults for autoprovisioned node-pools.
+     * Currently only `insecure_kubelet_readonly_port_enabled` can be set here.
+     *
+     * Generated from protobuf field <code>.google.container.v1.NodeKubeletConfig node_kubelet_config = 3;</code>
+     * @return \Google\Cloud\Container\V1\NodeKubeletConfig|null
+     */
+    public function getNodeKubeletConfig()
+    {
+        return $this->node_kubelet_config;
+    }
+
+    public function hasNodeKubeletConfig()
+    {
+        return isset($this->node_kubelet_config);
+    }
+
+    public function clearNodeKubeletConfig()
+    {
+        unset($this->node_kubelet_config);
+    }
+
+    /**
+     * NodeKubeletConfig controls the defaults for autoprovisioned node-pools.
+     * Currently only `insecure_kubelet_readonly_port_enabled` can be set here.
+     *
+     * Generated from protobuf field <code>.google.container.v1.NodeKubeletConfig node_kubelet_config = 3;</code>
+     * @param \Google\Cloud\Container\V1\NodeKubeletConfig $var
+     * @return $this
+     */
+    public function setNodeKubeletConfig($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Container\V1\NodeKubeletConfig::class);
+        $this->node_kubelet_config = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Configuration options for Linux nodes.
+     *
+     * Generated from protobuf field <code>.google.container.v1.LinuxNodeConfig linux_node_config = 4 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return \Google\Cloud\Container\V1\LinuxNodeConfig|null
+     */
+    public function getLinuxNodeConfig()
+    {
+        return $this->linux_node_config;
+    }
+
+    public function hasLinuxNodeConfig()
+    {
+        return isset($this->linux_node_config);
+    }
+
+    public function clearLinuxNodeConfig()
+    {
+        unset($this->linux_node_config);
+    }
+
+    /**
+     * Output only. Configuration options for Linux nodes.
+     *
+     * Generated from protobuf field <code>.google.container.v1.LinuxNodeConfig linux_node_config = 4 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param \Google\Cloud\Container\V1\LinuxNodeConfig $var
+     * @return $this
+     */
+    public function setLinuxNodeConfig($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Container\V1\LinuxNodeConfig::class);
+        $this->linux_node_config = $var;
 
         return $this;
     }

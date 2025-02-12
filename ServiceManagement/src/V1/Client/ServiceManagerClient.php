@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\ServiceManagement\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\RetrySettings;
@@ -58,8 +57,10 @@ use Google\Cloud\ServiceManagement\V1\SubmitConfigSourceRequest;
 use Google\Cloud\ServiceManagement\V1\SubmitConfigSourceResponse;
 use Google\Cloud\ServiceManagement\V1\UndeleteServiceRequest;
 use Google\Cloud\ServiceManagement\V1\UndeleteServiceResponse;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: [Google Service Management
@@ -68,22 +69,22 @@ use GuzzleHttp\Promise\PromiseInterface;
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
  *
- * @method PromiseInterface createServiceAsync(CreateServiceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createServiceConfigAsync(CreateServiceConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createServiceRolloutAsync(CreateServiceRolloutRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteServiceAsync(DeleteServiceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface generateConfigReportAsync(GenerateConfigReportRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getServiceAsync(GetServiceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getServiceConfigAsync(GetServiceConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getServiceRolloutAsync(GetServiceRolloutRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listServiceConfigsAsync(ListServiceConfigsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listServiceRolloutsAsync(ListServiceRolloutsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listServicesAsync(ListServicesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface submitConfigSourceAsync(SubmitConfigSourceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface undeleteServiceAsync(UndeleteServiceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createServiceAsync(CreateServiceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Service> createServiceConfigAsync(CreateServiceConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createServiceRolloutAsync(CreateServiceRolloutRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteServiceAsync(DeleteServiceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<GenerateConfigReportResponse> generateConfigReportAsync(GenerateConfigReportRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ManagedService> getServiceAsync(GetServiceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Service> getServiceConfigAsync(GetServiceConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Rollout> getServiceRolloutAsync(GetServiceRolloutRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listServiceConfigsAsync(ListServiceConfigsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listServiceRolloutsAsync(ListServiceRolloutsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listServicesAsync(ListServicesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> submitConfigSourceAsync(SubmitConfigSourceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> undeleteServiceAsync(UndeleteServiceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
  */
 final class ServiceManagerClient
 {
@@ -160,10 +161,31 @@ final class ServiceManagerClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -183,6 +205,12 @@ final class ServiceManagerClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -216,6 +244,9 @@ final class ServiceManagerClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -253,6 +284,8 @@ final class ServiceManagerClient
      *
      * The async variant is {@see ServiceManagerClient::createServiceAsync()} .
      *
+     * @example samples/V1/ServiceManagerClient/create_service.php
+     *
      * @param CreateServiceRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -283,6 +316,8 @@ final class ServiceManagerClient
      * eventually.
      *
      * The async variant is {@see ServiceManagerClient::createServiceConfigAsync()} .
+     *
+     * @example samples/V1/ServiceManagerClient/create_service_config.php
      *
      * @param CreateServiceConfigRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -321,6 +356,8 @@ final class ServiceManagerClient
      *
      * The async variant is {@see ServiceManagerClient::createServiceRolloutAsync()} .
      *
+     * @example samples/V1/ServiceManagerClient/create_service_rollout.php
+     *
      * @param CreateServiceRolloutRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -335,8 +372,10 @@ final class ServiceManagerClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createServiceRollout(CreateServiceRolloutRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function createServiceRollout(
+        CreateServiceRolloutRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('CreateServiceRollout', $request, $callOptions)->wait();
     }
 
@@ -351,6 +390,8 @@ final class ServiceManagerClient
      * Operation<response: google.protobuf.Empty>
      *
      * The async variant is {@see ServiceManagerClient::deleteServiceAsync()} .
+     *
+     * @example samples/V1/ServiceManagerClient/delete_service.php
      *
      * @param DeleteServiceRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -386,6 +427,8 @@ final class ServiceManagerClient
      *
      * The async variant is {@see ServiceManagerClient::generateConfigReportAsync()} .
      *
+     * @example samples/V1/ServiceManagerClient/generate_config_report.php
+     *
      * @param GenerateConfigReportRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -400,8 +443,10 @@ final class ServiceManagerClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function generateConfigReport(GenerateConfigReportRequest $request, array $callOptions = []): GenerateConfigReportResponse
-    {
+    public function generateConfigReport(
+        GenerateConfigReportRequest $request,
+        array $callOptions = []
+    ): GenerateConfigReportResponse {
         return $this->startApiCall('GenerateConfigReport', $request, $callOptions)->wait();
     }
 
@@ -410,6 +455,8 @@ final class ServiceManagerClient
      * public.
      *
      * The async variant is {@see ServiceManagerClient::getServiceAsync()} .
+     *
+     * @example samples/V1/ServiceManagerClient/get_service.php
      *
      * @param GetServiceRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -434,6 +481,8 @@ final class ServiceManagerClient
      * Gets a service configuration (version) for a managed service.
      *
      * The async variant is {@see ServiceManagerClient::getServiceConfigAsync()} .
+     *
+     * @example samples/V1/ServiceManagerClient/get_service_config.php
      *
      * @param GetServiceConfigRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -460,6 +509,8 @@ final class ServiceManagerClient
      *
      * The async variant is {@see ServiceManagerClient::getServiceRolloutAsync()} .
      *
+     * @example samples/V1/ServiceManagerClient/get_service_rollout.php
+     *
      * @param GetServiceRolloutRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -485,6 +536,8 @@ final class ServiceManagerClient
      *
      * The async variant is {@see ServiceManagerClient::listServiceConfigsAsync()} .
      *
+     * @example samples/V1/ServiceManagerClient/list_service_configs.php
+     *
      * @param ListServiceConfigsRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -509,6 +562,8 @@ final class ServiceManagerClient
      * service, from the newest to the oldest.
      *
      * The async variant is {@see ServiceManagerClient::listServiceRolloutsAsync()} .
+     *
+     * @example samples/V1/ServiceManagerClient/list_service_rollouts.php
      *
      * @param ListServiceRolloutsRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -537,6 +592,8 @@ final class ServiceManagerClient
      * for.
      *
      * The async variant is {@see ServiceManagerClient::listServicesAsync()} .
+     *
+     * @example samples/V1/ServiceManagerClient/list_services.php
      *
      * @param ListServicesRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -575,6 +632,8 @@ final class ServiceManagerClient
      *
      * The async variant is {@see ServiceManagerClient::submitConfigSourceAsync()} .
      *
+     * @example samples/V1/ServiceManagerClient/submit_config_source.php
+     *
      * @param SubmitConfigSourceRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -604,6 +663,8 @@ final class ServiceManagerClient
      *
      * The async variant is {@see ServiceManagerClient::undeleteServiceAsync()} .
      *
+     * @example samples/V1/ServiceManagerClient/undelete_service.php
+     *
      * @param UndeleteServiceRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -628,6 +689,8 @@ final class ServiceManagerClient
     if the resource exists and does not have a policy set.
      *
      * The async variant is {@see ServiceManagerClient::getIamPolicyAsync()} .
+     *
+     * @example samples/V1/ServiceManagerClient/get_iam_policy.php
      *
      * @param GetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -656,6 +719,8 @@ final class ServiceManagerClient
     errors.
      *
      * The async variant is {@see ServiceManagerClient::setIamPolicyAsync()} .
+     *
+     * @example samples/V1/ServiceManagerClient/set_iam_policy.php
      *
      * @param SetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -687,6 +752,8 @@ final class ServiceManagerClient
      *
      * The async variant is {@see ServiceManagerClient::testIamPermissionsAsync()} .
      *
+     * @example samples/V1/ServiceManagerClient/test_iam_permissions.php
+     *
      * @param TestIamPermissionsRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -701,8 +768,10 @@ final class ServiceManagerClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function testIamPermissions(TestIamPermissionsRequest $request, array $callOptions = []): TestIamPermissionsResponse
-    {
+    public function testIamPermissions(
+        TestIamPermissionsRequest $request,
+        array $callOptions = []
+    ): TestIamPermissionsResponse {
         return $this->startApiCall('TestIamPermissions', $request, $callOptions)->wait();
     }
 }

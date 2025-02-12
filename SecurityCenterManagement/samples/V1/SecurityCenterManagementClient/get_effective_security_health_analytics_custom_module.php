@@ -29,16 +29,16 @@ use Google\Cloud\SecurityCenterManagement\V1\EffectiveSecurityHealthAnalyticsCus
 use Google\Cloud\SecurityCenterManagement\V1\GetEffectiveSecurityHealthAnalyticsCustomModuleRequest;
 
 /**
- * Gets details of a single EffectiveSecurityHealthAnalyticsCustomModule.
+ * Gets details of a single
+ * [EffectiveSecurityHealthAnalyticsCustomModule][google.cloud.securitycentermanagement.v1.EffectiveSecurityHealthAnalyticsCustomModule].
  *
- * @param string $formattedName The resource name of the SHA custom module.
+ * @param string $formattedName The full resource name of the custom module, specified in one of
+ *                              the following formats:
  *
- *                              Its format is:
- *
- *                              * "organizations/{organization}/locations/{location}/effectiveSecurityHealthAnalyticsCustomModules/{module_id}".
- *                              * "folders/{folder}/locations/{location}/effectiveSecurityHealthAnalyticsCustomModules/{module_id}".
- *                              * "projects/{project}/locations/{location}/effectiveSecurityHealthAnalyticsCustomModules/{module_id}". Please see
- *                              {@see SecurityCenterManagementClient::effectiveSecurityHealthAnalyticsCustomModuleName()} for help formatting this field.
+ *                              * `organizations/organization/{location}/effectiveSecurityHealthAnalyticsCustomModules/{custom_module}`
+ *                              * `folders/folder/{location}/effectiveSecurityHealthAnalyticsCustomModules/{custom_module}`
+ *                              * `projects/project/{location}/effectiveSecurityHealthAnalyticsCustomModules/{custom_module}`
+ *                              Please see {@see SecurityCenterManagementClient::effectiveSecurityHealthAnalyticsCustomModuleName()} for help formatting this field.
  */
 function get_effective_security_health_analytics_custom_module_sample(string $formattedName): void
 {

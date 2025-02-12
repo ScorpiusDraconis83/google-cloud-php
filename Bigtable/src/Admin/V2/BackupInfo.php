@@ -20,35 +20,36 @@ class BackupInfo extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string backup = 1 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $backup = '';
+    protected $backup = '';
     /**
      * Output only. The time that the backup was started. Row data in the backup
      * will be no older than this timestamp.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp start_time = 2 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $start_time = null;
+    protected $start_time = null;
     /**
      * Output only. This time that the backup was finished. Row data in the
      * backup will be no newer than this timestamp.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp end_time = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $end_time = null;
+    protected $end_time = null;
     /**
      * Output only. Name of the table the backup was created from.
      *
      * Generated from protobuf field <code>string source_table = 4 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $source_table = '';
+    protected $source_table = '';
     /**
      * Output only. Name of the backup from which this backup was copied. If a
      * backup is not created by copying a backup, this field will be empty. Values
-     * are of the form: projects/<project>/instances/<instance>/backups/<backup>.
+     * are of the form:
+     * projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>
      *
      * Generated from protobuf field <code>string source_backup = 10 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $source_backup = '';
+    protected $source_backup = '';
 
     /**
      * Constructor.
@@ -69,7 +70,8 @@ class BackupInfo extends \Google\Protobuf\Internal\Message
      *     @type string $source_backup
      *           Output only. Name of the backup from which this backup was copied. If a
      *           backup is not created by copying a backup, this field will be empty. Values
-     *           are of the form: projects/<project>/instances/<instance>/backups/<backup>.
+     *           are of the form:
+     *           projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>
      * }
      */
     public function __construct($data = NULL) {
@@ -208,7 +210,8 @@ class BackupInfo extends \Google\Protobuf\Internal\Message
     /**
      * Output only. Name of the backup from which this backup was copied. If a
      * backup is not created by copying a backup, this field will be empty. Values
-     * are of the form: projects/<project>/instances/<instance>/backups/<backup>.
+     * are of the form:
+     * projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>
      *
      * Generated from protobuf field <code>string source_backup = 10 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      * @return string
@@ -221,7 +224,8 @@ class BackupInfo extends \Google\Protobuf\Internal\Message
     /**
      * Output only. Name of the backup from which this backup was copied. If a
      * backup is not created by copying a backup, this field will be empty. Values
-     * are of the form: projects/<project>/instances/<instance>/backups/<backup>.
+     * are of the form:
+     * projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>
      *
      * Generated from protobuf field <code>string source_backup = 10 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      * @param string $var

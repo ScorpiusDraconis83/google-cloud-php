@@ -50,6 +50,7 @@ use Google\Cloud\Compute\V1\RouterStatusResponse;
 use Google\Cloud\Compute\V1\RoutersPreviewResponse;
 use Google\Cloud\Compute\V1\UpdateRouterRequest;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The Routers API.
@@ -57,17 +58,17 @@ use GuzzleHttp\Promise\PromiseInterface;
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
  *
- * @method PromiseInterface aggregatedListAsync(AggregatedListRoutersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAsync(DeleteRouterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAsync(GetRouterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getNatIpInfoAsync(GetNatIpInfoRouterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getNatMappingInfoAsync(GetNatMappingInfoRoutersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getRouterStatusAsync(GetRouterStatusRouterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface insertAsync(InsertRouterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAsync(ListRoutersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface patchAsync(PatchRouterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface previewAsync(PreviewRouterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateAsync(UpdateRouterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> aggregatedListAsync(AggregatedListRoutersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteAsync(DeleteRouterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Router> getAsync(GetRouterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<NatIpInfoResponse> getNatIpInfoAsync(GetNatIpInfoRouterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> getNatMappingInfoAsync(GetNatMappingInfoRoutersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<RouterStatusResponse> getRouterStatusAsync(GetRouterStatusRouterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> insertAsync(InsertRouterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAsync(ListRoutersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> patchAsync(PatchRouterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<RoutersPreviewResponse> previewAsync(PreviewRouterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateAsync(UpdateRouterRequest $request, array $optionalArgs = [])
  */
 final class RoutersClient
 {
@@ -126,8 +127,8 @@ final class RoutersClient
         return 'rest';
     }
 
-    /** Implements GapicClientTrait::getSupportedTransports. */
-    private static function getSupportedTransports()
+    /** Implements ClientOptionsTrait::supportedTransports. */
+    private static function supportedTransports()
     {
         return [
             'rest',
@@ -160,6 +161,9 @@ final class RoutersClient
             'operationNameMethod' => 'getName',
             'operationStatusMethod' => 'getStatus',
             'operationStatusDoneValue' => \Google\Cloud\Compute\V1\Operation\Status::DONE,
+            'getOperationRequest' => '\Google\Cloud\Compute\V1\GetRegionOperationRequest',
+            'cancelOperationRequest' => null,
+            'deleteOperationRequest' => '\Google\Cloud\Compute\V1\DeleteRegionOperationRequest',
         ];
     }
 
@@ -199,6 +203,12 @@ final class RoutersClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -229,6 +239,9 @@ final class RoutersClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -252,9 +265,11 @@ final class RoutersClient
     }
 
     /**
-     * Retrieves an aggregated list of routers.
+     * Retrieves an aggregated list of routers. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
      *
      * The async variant is {@see RoutersClient::aggregatedListAsync()} .
+     *
+     * @example samples/V1/RoutersClient/aggregated_list.php
      *
      * @param AggregatedListRoutersRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
@@ -280,6 +295,8 @@ final class RoutersClient
      *
      * The async variant is {@see RoutersClient::deleteAsync()} .
      *
+     * @example samples/V1/RoutersClient/delete.php
+     *
      * @param DeleteRouterRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -303,6 +320,8 @@ final class RoutersClient
      * Returns the specified Router resource.
      *
      * The async variant is {@see RoutersClient::getAsync()} .
+     *
+     * @example samples/V1/RoutersClient/get.php
      *
      * @param GetRouterRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
@@ -328,6 +347,8 @@ final class RoutersClient
      *
      * The async variant is {@see RoutersClient::getNatIpInfoAsync()} .
      *
+     * @example samples/V1/RoutersClient/get_nat_ip_info.php
+     *
      * @param GetNatIpInfoRouterRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -351,6 +372,8 @@ final class RoutersClient
      * Retrieves runtime Nat mapping information of VM endpoints.
      *
      * The async variant is {@see RoutersClient::getNatMappingInfoAsync()} .
+     *
+     * @example samples/V1/RoutersClient/get_nat_mapping_info.php
      *
      * @param GetNatMappingInfoRoutersRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
@@ -376,6 +399,8 @@ final class RoutersClient
      *
      * The async variant is {@see RoutersClient::getRouterStatusAsync()} .
      *
+     * @example samples/V1/RoutersClient/get_router_status.php
+     *
      * @param GetRouterStatusRouterRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -399,6 +424,8 @@ final class RoutersClient
      * Creates a Router resource in the specified project and region using the data included in the request.
      *
      * The async variant is {@see RoutersClient::insertAsync()} .
+     *
+     * @example samples/V1/RoutersClient/insert.php
      *
      * @param InsertRouterRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -424,6 +451,8 @@ final class RoutersClient
      *
      * The async variant is {@see RoutersClient::listAsync()} .
      *
+     * @example samples/V1/RoutersClient/list.php
+     *
      * @param ListRoutersRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -447,6 +476,8 @@ final class RoutersClient
      * Patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
      *
      * The async variant is {@see RoutersClient::patchAsync()} .
+     *
+     * @example samples/V1/RoutersClient/patch.php
      *
      * @param PatchRouterRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -472,6 +503,8 @@ final class RoutersClient
      *
      * The async variant is {@see RoutersClient::previewAsync()} .
      *
+     * @example samples/V1/RoutersClient/preview.php
+     *
      * @param PreviewRouterRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -495,6 +528,8 @@ final class RoutersClient
      * Updates the specified Router resource with the data included in the request. This method conforms to PUT semantics, which requests that the state of the target resource be created or replaced with the state defined by the representation enclosed in the request message payload.
      *
      * The async variant is {@see RoutersClient::updateAsync()} .
+     *
+     * @example samples/V1/RoutersClient/update.php
      *
      * @param UpdateRouterRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {

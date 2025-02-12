@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,9 @@ class ServingConfigServiceClientTest extends GeneratedTest
     /** @return CredentialsWrapper */
     private function createCredentials()
     {
-        return $this->getMockBuilder(CredentialsWrapper::class)->disableOriginalConstructor()->getMock();
+        return $this->getMockBuilder(CredentialsWrapper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /** @return ServingConfigServiceClient */
@@ -83,6 +85,7 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $priceRerankingLevel = 'priceRerankingLevel1240955890';
         $diversityLevel = 'diversityLevel1294448926';
         $enableCategoryFilterLevel = 'enableCategoryFilterLevel-215507998';
+        $ignoreRecsDenylist = false;
         $expectedResponse = new ServingConfig();
         $expectedResponse->setName($name);
         $expectedResponse->setDisplayName($displayName);
@@ -90,13 +93,17 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $expectedResponse->setPriceRerankingLevel($priceRerankingLevel);
         $expectedResponse->setDiversityLevel($diversityLevel);
         $expectedResponse->setEnableCategoryFilterLevel($enableCategoryFilterLevel);
+        $expectedResponse->setIgnoreRecsDenylist($ignoreRecsDenylist);
         $transport->addResponse($expectedResponse);
         // Mock request
-        $formattedServingConfig = $gapicClient->servingConfigName('[PROJECT]', '[LOCATION]', '[CATALOG]', '[SERVING_CONFIG]');
+        $formattedServingConfig = $gapicClient->servingConfigName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[CATALOG]',
+            '[SERVING_CONFIG]'
+        );
         $controlId = 'controlId637416253';
-        $request = (new AddControlRequest())
-            ->setServingConfig($formattedServingConfig)
-            ->setControlId($controlId);
+        $request = (new AddControlRequest())->setServingConfig($formattedServingConfig)->setControlId($controlId);
         $response = $gapicClient->addControl($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -122,19 +129,25 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
-        $formattedServingConfig = $gapicClient->servingConfigName('[PROJECT]', '[LOCATION]', '[CATALOG]', '[SERVING_CONFIG]');
+        $formattedServingConfig = $gapicClient->servingConfigName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[CATALOG]',
+            '[SERVING_CONFIG]'
+        );
         $controlId = 'controlId637416253';
-        $request = (new AddControlRequest())
-            ->setServingConfig($formattedServingConfig)
-            ->setControlId($controlId);
+        $request = (new AddControlRequest())->setServingConfig($formattedServingConfig)->setControlId($controlId);
         try {
             $gapicClient->addControl($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -163,6 +176,7 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $priceRerankingLevel = 'priceRerankingLevel1240955890';
         $diversityLevel = 'diversityLevel1294448926';
         $enableCategoryFilterLevel = 'enableCategoryFilterLevel-215507998';
+        $ignoreRecsDenylist = false;
         $expectedResponse = new ServingConfig();
         $expectedResponse->setName($name);
         $expectedResponse->setDisplayName($displayName);
@@ -170,6 +184,7 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $expectedResponse->setPriceRerankingLevel($priceRerankingLevel);
         $expectedResponse->setDiversityLevel($diversityLevel);
         $expectedResponse->setEnableCategoryFilterLevel($enableCategoryFilterLevel);
+        $expectedResponse->setIgnoreRecsDenylist($ignoreRecsDenylist);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->catalogName('[PROJECT]', '[LOCATION]', '[CATALOG]');
@@ -210,12 +225,15 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->catalogName('[PROJECT]', '[LOCATION]', '[CATALOG]');
@@ -255,8 +273,7 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->servingConfigName('[PROJECT]', '[LOCATION]', '[CATALOG]', '[SERVING_CONFIG]');
-        $request = (new DeleteServingConfigRequest())
-            ->setName($formattedName);
+        $request = (new DeleteServingConfigRequest())->setName($formattedName);
         $gapicClient->deleteServingConfig($request);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
@@ -279,17 +296,19 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->servingConfigName('[PROJECT]', '[LOCATION]', '[CATALOG]', '[SERVING_CONFIG]');
-        $request = (new DeleteServingConfigRequest())
-            ->setName($formattedName);
+        $request = (new DeleteServingConfigRequest())->setName($formattedName);
         try {
             $gapicClient->deleteServingConfig($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -318,6 +337,7 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $priceRerankingLevel = 'priceRerankingLevel1240955890';
         $diversityLevel = 'diversityLevel1294448926';
         $enableCategoryFilterLevel = 'enableCategoryFilterLevel-215507998';
+        $ignoreRecsDenylist = false;
         $expectedResponse = new ServingConfig();
         $expectedResponse->setName($name2);
         $expectedResponse->setDisplayName($displayName);
@@ -325,11 +345,11 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $expectedResponse->setPriceRerankingLevel($priceRerankingLevel);
         $expectedResponse->setDiversityLevel($diversityLevel);
         $expectedResponse->setEnableCategoryFilterLevel($enableCategoryFilterLevel);
+        $expectedResponse->setIgnoreRecsDenylist($ignoreRecsDenylist);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->servingConfigName('[PROJECT]', '[LOCATION]', '[CATALOG]', '[SERVING_CONFIG]');
-        $request = (new GetServingConfigRequest())
-            ->setName($formattedName);
+        $request = (new GetServingConfigRequest())->setName($formattedName);
         $response = $gapicClient->getServingConfig($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -353,17 +373,19 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->servingConfigName('[PROJECT]', '[LOCATION]', '[CATALOG]', '[SERVING_CONFIG]');
-        $request = (new GetServingConfigRequest())
-            ->setName($formattedName);
+        $request = (new GetServingConfigRequest())->setName($formattedName);
         try {
             $gapicClient->getServingConfig($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -388,17 +410,14 @@ class ServingConfigServiceClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $servingConfigsElement = new ServingConfig();
-        $servingConfigs = [
-            $servingConfigsElement,
-        ];
+        $servingConfigs = [$servingConfigsElement];
         $expectedResponse = new ListServingConfigsResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setServingConfigs($servingConfigs);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->catalogName('[PROJECT]', '[LOCATION]', '[CATALOG]');
-        $request = (new ListServingConfigsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListServingConfigsRequest())->setParent($formattedParent);
         $response = $gapicClient->listServingConfigs($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -425,17 +444,19 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->catalogName('[PROJECT]', '[LOCATION]', '[CATALOG]');
-        $request = (new ListServingConfigsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListServingConfigsRequest())->setParent($formattedParent);
         try {
             $gapicClient->listServingConfigs($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -464,6 +485,7 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $priceRerankingLevel = 'priceRerankingLevel1240955890';
         $diversityLevel = 'diversityLevel1294448926';
         $enableCategoryFilterLevel = 'enableCategoryFilterLevel-215507998';
+        $ignoreRecsDenylist = false;
         $expectedResponse = new ServingConfig();
         $expectedResponse->setName($name);
         $expectedResponse->setDisplayName($displayName);
@@ -471,13 +493,17 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $expectedResponse->setPriceRerankingLevel($priceRerankingLevel);
         $expectedResponse->setDiversityLevel($diversityLevel);
         $expectedResponse->setEnableCategoryFilterLevel($enableCategoryFilterLevel);
+        $expectedResponse->setIgnoreRecsDenylist($ignoreRecsDenylist);
         $transport->addResponse($expectedResponse);
         // Mock request
-        $formattedServingConfig = $gapicClient->servingConfigName('[PROJECT]', '[LOCATION]', '[CATALOG]', '[SERVING_CONFIG]');
+        $formattedServingConfig = $gapicClient->servingConfigName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[CATALOG]',
+            '[SERVING_CONFIG]'
+        );
         $controlId = 'controlId637416253';
-        $request = (new RemoveControlRequest())
-            ->setServingConfig($formattedServingConfig)
-            ->setControlId($controlId);
+        $request = (new RemoveControlRequest())->setServingConfig($formattedServingConfig)->setControlId($controlId);
         $response = $gapicClient->removeControl($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -503,19 +529,25 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
-        $formattedServingConfig = $gapicClient->servingConfigName('[PROJECT]', '[LOCATION]', '[CATALOG]', '[SERVING_CONFIG]');
+        $formattedServingConfig = $gapicClient->servingConfigName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[CATALOG]',
+            '[SERVING_CONFIG]'
+        );
         $controlId = 'controlId637416253';
-        $request = (new RemoveControlRequest())
-            ->setServingConfig($formattedServingConfig)
-            ->setControlId($controlId);
+        $request = (new RemoveControlRequest())->setServingConfig($formattedServingConfig)->setControlId($controlId);
         try {
             $gapicClient->removeControl($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -544,6 +576,7 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $priceRerankingLevel = 'priceRerankingLevel1240955890';
         $diversityLevel = 'diversityLevel1294448926';
         $enableCategoryFilterLevel = 'enableCategoryFilterLevel-215507998';
+        $ignoreRecsDenylist = false;
         $expectedResponse = new ServingConfig();
         $expectedResponse->setName($name);
         $expectedResponse->setDisplayName($displayName);
@@ -551,6 +584,7 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $expectedResponse->setPriceRerankingLevel($priceRerankingLevel);
         $expectedResponse->setDiversityLevel($diversityLevel);
         $expectedResponse->setEnableCategoryFilterLevel($enableCategoryFilterLevel);
+        $expectedResponse->setIgnoreRecsDenylist($ignoreRecsDenylist);
         $transport->addResponse($expectedResponse);
         // Mock request
         $servingConfig = new ServingConfig();
@@ -558,8 +592,7 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $servingConfig->setDisplayName($servingConfigDisplayName);
         $servingConfigSolutionTypes = [];
         $servingConfig->setSolutionTypes($servingConfigSolutionTypes);
-        $request = (new UpdateServingConfigRequest())
-            ->setServingConfig($servingConfig);
+        $request = (new UpdateServingConfigRequest())->setServingConfig($servingConfig);
         $response = $gapicClient->updateServingConfig($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -583,12 +616,15 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $servingConfig = new ServingConfig();
@@ -596,8 +632,7 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $servingConfig->setDisplayName($servingConfigDisplayName);
         $servingConfigSolutionTypes = [];
         $servingConfig->setSolutionTypes($servingConfigSolutionTypes);
-        $request = (new UpdateServingConfigRequest())
-            ->setServingConfig($servingConfig);
+        $request = (new UpdateServingConfigRequest())->setServingConfig($servingConfig);
         try {
             $gapicClient->updateServingConfig($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -626,6 +661,7 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $priceRerankingLevel = 'priceRerankingLevel1240955890';
         $diversityLevel = 'diversityLevel1294448926';
         $enableCategoryFilterLevel = 'enableCategoryFilterLevel-215507998';
+        $ignoreRecsDenylist = false;
         $expectedResponse = new ServingConfig();
         $expectedResponse->setName($name);
         $expectedResponse->setDisplayName($displayName);
@@ -633,13 +669,17 @@ class ServingConfigServiceClientTest extends GeneratedTest
         $expectedResponse->setPriceRerankingLevel($priceRerankingLevel);
         $expectedResponse->setDiversityLevel($diversityLevel);
         $expectedResponse->setEnableCategoryFilterLevel($enableCategoryFilterLevel);
+        $expectedResponse->setIgnoreRecsDenylist($ignoreRecsDenylist);
         $transport->addResponse($expectedResponse);
         // Mock request
-        $formattedServingConfig = $gapicClient->servingConfigName('[PROJECT]', '[LOCATION]', '[CATALOG]', '[SERVING_CONFIG]');
+        $formattedServingConfig = $gapicClient->servingConfigName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[CATALOG]',
+            '[SERVING_CONFIG]'
+        );
         $controlId = 'controlId637416253';
-        $request = (new AddControlRequest())
-            ->setServingConfig($formattedServingConfig)
-            ->setControlId($controlId);
+        $request = (new AddControlRequest())->setServingConfig($formattedServingConfig)->setControlId($controlId);
         $response = $gapicClient->addControlAsync($request)->wait();
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();

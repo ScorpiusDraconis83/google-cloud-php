@@ -18,13 +18,13 @@ class ComplianceNote extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string title = 1;</code>
      */
-    private $title = '';
+    protected $title = '';
     /**
      * A description about this compliance check.
      *
      * Generated from protobuf field <code>string description = 2;</code>
      */
-    private $description = '';
+    protected $description = '';
     /**
      * The OS and config versions the benchmark applies to.
      *
@@ -36,20 +36,21 @@ class ComplianceNote extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string rationale = 4;</code>
      */
-    private $rationale = '';
+    protected $rationale = '';
     /**
      * A description of remediation steps if the compliance check fails.
      *
      * Generated from protobuf field <code>string remediation = 5;</code>
      */
-    private $remediation = '';
+    protected $remediation = '';
     /**
      * Serialized scan instructions with a predefined format.
      *
      * Generated from protobuf field <code>bytes scan_instructions = 7;</code>
      */
-    private $scan_instructions = '';
+    protected $scan_instructions = '';
     protected $compliance_type;
+    protected $potential_impact;
 
     /**
      * Constructor.
@@ -70,6 +71,7 @@ class ComplianceNote extends \Google\Protobuf\Internal\Message
      *     @type \Grafeas\V1\ComplianceNote\CisBenchmark $cis_benchmark
      *     @type string $scan_instructions
      *           Serialized scan instructions with a predefined format.
+     *     @type string $impact
      * }
      */
     public function __construct($data = NULL) {
@@ -261,11 +263,46 @@ class ComplianceNote extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Generated from protobuf field <code>string impact = 8;</code>
+     * @return string
+     */
+    public function getImpact()
+    {
+        return $this->readOneof(8);
+    }
+
+    public function hasImpact()
+    {
+        return $this->hasOneof(8);
+    }
+
+    /**
+     * Generated from protobuf field <code>string impact = 8;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setImpact($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->writeOneof(8, $var);
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getComplianceType()
     {
         return $this->whichOneof("compliance_type");
+    }
+
+    /**
+     * @return string
+     */
+    public function getPotentialImpact()
+    {
+        return $this->whichOneof("potential_impact");
     }
 
 }

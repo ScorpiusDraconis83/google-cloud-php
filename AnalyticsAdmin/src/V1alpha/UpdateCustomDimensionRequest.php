@@ -20,7 +20,7 @@ class UpdateCustomDimensionRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.analytics.admin.v1alpha.CustomDimension custom_dimension = 1;</code>
      */
-    private $custom_dimension = null;
+    protected $custom_dimension = null;
     /**
      * Required. The list of fields to be updated. Omitted fields will not be
      * updated. To replace the entire entity, use one path with the string "*" to
@@ -28,7 +28,24 @@ class UpdateCustomDimensionRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.FieldMask update_mask = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $update_mask = null;
+    protected $update_mask = null;
+
+    /**
+     * @param \Google\Analytics\Admin\V1alpha\CustomDimension $customDimension The CustomDimension to update
+     * @param \Google\Protobuf\FieldMask                      $updateMask      Required. The list of fields to be updated. Omitted fields will not be
+     *                                                                         updated. To replace the entire entity, use one path with the string "*" to
+     *                                                                         match all fields.
+     *
+     * @return \Google\Analytics\Admin\V1alpha\UpdateCustomDimensionRequest
+     *
+     * @experimental
+     */
+    public static function build(\Google\Analytics\Admin\V1alpha\CustomDimension $customDimension, \Google\Protobuf\FieldMask $updateMask): self
+    {
+        return (new self())
+            ->setCustomDimension($customDimension)
+            ->setUpdateMask($updateMask);
+    }
 
     /**
      * Constructor.

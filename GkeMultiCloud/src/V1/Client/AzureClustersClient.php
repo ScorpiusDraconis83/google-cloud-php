@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\GkeMultiCloud\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -62,8 +61,10 @@ use Google\Cloud\GkeMultiCloud\V1\ListAzureClustersRequest;
 use Google\Cloud\GkeMultiCloud\V1\ListAzureNodePoolsRequest;
 use Google\Cloud\GkeMultiCloud\V1\UpdateAzureClusterRequest;
 use Google\Cloud\GkeMultiCloud\V1\UpdateAzureNodePoolRequest;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The AzureClusters API provides a single centrally managed service
@@ -77,25 +78,25 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createAzureClientAsync(CreateAzureClientRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createAzureClusterAsync(CreateAzureClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createAzureNodePoolAsync(CreateAzureNodePoolRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAzureClientAsync(DeleteAzureClientRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAzureClusterAsync(DeleteAzureClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAzureNodePoolAsync(DeleteAzureNodePoolRequest $request, array $optionalArgs = [])
- * @method PromiseInterface generateAzureAccessTokenAsync(GenerateAzureAccessTokenRequest $request, array $optionalArgs = [])
- * @method PromiseInterface generateAzureClusterAgentTokenAsync(GenerateAzureClusterAgentTokenRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAzureClientAsync(GetAzureClientRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAzureClusterAsync(GetAzureClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAzureJsonWebKeysAsync(GetAzureJsonWebKeysRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAzureNodePoolAsync(GetAzureNodePoolRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAzureOpenIdConfigAsync(GetAzureOpenIdConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAzureServerConfigAsync(GetAzureServerConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAzureClientsAsync(ListAzureClientsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAzureClustersAsync(ListAzureClustersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAzureNodePoolsAsync(ListAzureNodePoolsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateAzureClusterAsync(UpdateAzureClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateAzureNodePoolAsync(UpdateAzureNodePoolRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createAzureClientAsync(CreateAzureClientRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createAzureClusterAsync(CreateAzureClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createAzureNodePoolAsync(CreateAzureNodePoolRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteAzureClientAsync(DeleteAzureClientRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteAzureClusterAsync(DeleteAzureClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteAzureNodePoolAsync(DeleteAzureNodePoolRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<GenerateAzureAccessTokenResponse> generateAzureAccessTokenAsync(GenerateAzureAccessTokenRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<GenerateAzureClusterAgentTokenResponse> generateAzureClusterAgentTokenAsync(GenerateAzureClusterAgentTokenRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AzureClient> getAzureClientAsync(GetAzureClientRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AzureCluster> getAzureClusterAsync(GetAzureClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AzureJsonWebKeys> getAzureJsonWebKeysAsync(GetAzureJsonWebKeysRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AzureNodePool> getAzureNodePoolAsync(GetAzureNodePoolRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AzureOpenIdConfig> getAzureOpenIdConfigAsync(GetAzureOpenIdConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AzureServerConfig> getAzureServerConfigAsync(GetAzureServerConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAzureClientsAsync(ListAzureClientsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAzureClustersAsync(ListAzureClustersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAzureNodePoolsAsync(ListAzureNodePoolsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateAzureClusterAsync(UpdateAzureClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateAzureNodePoolAsync(UpdateAzureNodePoolRequest $request, array $optionalArgs = [])
  */
 final class AzureClustersClient
 {
@@ -122,9 +123,7 @@ final class AzureClustersClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private $operationsClient;
 
@@ -170,10 +169,31 @@ final class AzureClustersClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -225,8 +245,12 @@ final class AzureClustersClient
      *
      * @return string The formatted azure_node_pool resource.
      */
-    public static function azureNodePoolName(string $project, string $location, string $azureCluster, string $azureNodePool): string
-    {
+    public static function azureNodePoolName(
+        string $project,
+        string $location,
+        string $azureCluster,
+        string $azureNodePool
+    ): string {
         return self::getPathTemplate('azureNodePool')->render([
             'project' => $project,
             'location' => $location,
@@ -285,14 +309,14 @@ final class AzureClustersClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -314,6 +338,12 @@ final class AzureClustersClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -347,6 +377,9 @@ final class AzureClustersClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -589,8 +622,10 @@ final class AzureClustersClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function generateAzureAccessToken(GenerateAzureAccessTokenRequest $request, array $callOptions = []): GenerateAzureAccessTokenResponse
-    {
+    public function generateAzureAccessToken(
+        GenerateAzureAccessTokenRequest $request,
+        array $callOptions = []
+    ): GenerateAzureAccessTokenResponse {
         return $this->startApiCall('GenerateAzureAccessToken', $request, $callOptions)->wait();
     }
 
@@ -616,8 +651,10 @@ final class AzureClustersClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function generateAzureClusterAgentToken(GenerateAzureClusterAgentTokenRequest $request, array $callOptions = []): GenerateAzureClusterAgentTokenResponse
-    {
+    public function generateAzureClusterAgentToken(
+        GenerateAzureClusterAgentTokenRequest $request,
+        array $callOptions = []
+    ): GenerateAzureClusterAgentTokenResponse {
         return $this->startApiCall('GenerateAzureClusterAgentToken', $request, $callOptions)->wait();
     }
 
@@ -754,8 +791,10 @@ final class AzureClustersClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getAzureOpenIdConfig(GetAzureOpenIdConfigRequest $request, array $callOptions = []): AzureOpenIdConfig
-    {
+    public function getAzureOpenIdConfig(
+        GetAzureOpenIdConfigRequest $request,
+        array $callOptions = []
+    ): AzureOpenIdConfig {
         return $this->startApiCall('GetAzureOpenIdConfig', $request, $callOptions)->wait();
     }
 
@@ -781,8 +820,10 @@ final class AzureClustersClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getAzureServerConfig(GetAzureServerConfigRequest $request, array $callOptions = []): AzureServerConfig
-    {
+    public function getAzureServerConfig(
+        GetAzureServerConfigRequest $request,
+        array $callOptions = []
+    ): AzureServerConfig {
         return $this->startApiCall('GetAzureServerConfig', $request, $callOptions)->wait();
     }
 

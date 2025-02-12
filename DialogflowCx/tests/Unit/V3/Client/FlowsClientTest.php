@@ -24,7 +24,6 @@ namespace Google\Cloud\Dialogflow\Cx\Tests\Unit\V3\Client;
 
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\Testing\GeneratedTest;
 use Google\ApiCore\Testing\MockTransport;
 use Google\Cloud\Dialogflow\Cx\V3\Client\FlowsClient;
@@ -47,6 +46,7 @@ use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\ListLocationsResponse;
 use Google\Cloud\Location\Location;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\GetOperationRequest;
 use Google\LongRunning\Operation;
 use Google\Protobuf\Any;
@@ -96,10 +96,12 @@ class FlowsClientTest extends GeneratedTest
         $name = 'name3373707';
         $displayName = 'displayName1615086568';
         $description = 'description-1724546052';
+        $locked = true;
         $expectedResponse = new Flow();
         $expectedResponse->setName($name);
         $expectedResponse->setDisplayName($displayName);
         $expectedResponse->setDescription($description);
+        $expectedResponse->setLocked($locked);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->agentName('[PROJECT]', '[LOCATION]', '[AGENT]');
@@ -359,10 +361,12 @@ class FlowsClientTest extends GeneratedTest
         $name2 = 'name2-1052831874';
         $displayName = 'displayName1615086568';
         $description = 'description-1724546052';
+        $locked = true;
         $expectedResponse = new Flow();
         $expectedResponse->setName($name2);
         $expectedResponse->setDisplayName($displayName);
         $expectedResponse->setDescription($description);
+        $expectedResponse->setLocked($locked);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->flowName('[PROJECT]', '[LOCATION]', '[AGENT]', '[FLOW]');
@@ -810,10 +814,12 @@ class FlowsClientTest extends GeneratedTest
         $name = 'name3373707';
         $displayName = 'displayName1615086568';
         $description = 'description-1724546052';
+        $locked = true;
         $expectedResponse = new Flow();
         $expectedResponse->setName($name);
         $expectedResponse->setDisplayName($displayName);
         $expectedResponse->setDescription($description);
+        $expectedResponse->setLocked($locked);
         $transport->addResponse($expectedResponse);
         // Mock request
         $flow = new Flow();
@@ -1076,10 +1082,12 @@ class FlowsClientTest extends GeneratedTest
         $name = 'name3373707';
         $displayName = 'displayName1615086568';
         $description = 'description-1724546052';
+        $locked = true;
         $expectedResponse = new Flow();
         $expectedResponse->setName($name);
         $expectedResponse->setDisplayName($displayName);
         $expectedResponse->setDescription($description);
+        $expectedResponse->setLocked($locked);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->agentName('[PROJECT]', '[LOCATION]', '[AGENT]');

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ use Google\Cloud\AppEngine\V1\GetIngressRuleRequest;
 use Google\Cloud\AppEngine\V1\ListIngressRulesRequest;
 use Google\Cloud\AppEngine\V1\UpdateIngressRuleRequest;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Firewall resources are used to define a collection of access control rules
@@ -57,12 +58,12 @@ use GuzzleHttp\Promise\PromiseInterface;
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
  *
- * @method PromiseInterface batchUpdateIngressRulesAsync(BatchUpdateIngressRulesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createIngressRuleAsync(CreateIngressRuleRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteIngressRuleAsync(DeleteIngressRuleRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIngressRuleAsync(GetIngressRuleRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listIngressRulesAsync(ListIngressRulesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateIngressRuleAsync(UpdateIngressRuleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<BatchUpdateIngressRulesResponse> batchUpdateIngressRulesAsync(BatchUpdateIngressRulesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<FirewallRule> createIngressRuleAsync(CreateIngressRuleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteIngressRuleAsync(DeleteIngressRuleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<FirewallRule> getIngressRuleAsync(GetIngressRuleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listIngressRulesAsync(ListIngressRulesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<FirewallRule> updateIngressRuleAsync(UpdateIngressRuleRequest $request, array $optionalArgs = [])
  */
 final class FirewallClient
 {
@@ -130,6 +131,12 @@ final class FirewallClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -163,6 +170,9 @@ final class FirewallClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -193,6 +203,8 @@ final class FirewallClient
      *
      * The async variant is {@see FirewallClient::batchUpdateIngressRulesAsync()} .
      *
+     * @example samples/V1/FirewallClient/batch_update_ingress_rules.php
+     *
      * @param BatchUpdateIngressRulesRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
      *     Optional.
@@ -207,8 +219,10 @@ final class FirewallClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function batchUpdateIngressRules(BatchUpdateIngressRulesRequest $request, array $callOptions = []): BatchUpdateIngressRulesResponse
-    {
+    public function batchUpdateIngressRules(
+        BatchUpdateIngressRulesRequest $request,
+        array $callOptions = []
+    ): BatchUpdateIngressRulesResponse {
         return $this->startApiCall('BatchUpdateIngressRules', $request, $callOptions)->wait();
     }
 
@@ -216,6 +230,8 @@ final class FirewallClient
      * Creates a firewall rule for the application.
      *
      * The async variant is {@see FirewallClient::createIngressRuleAsync()} .
+     *
+     * @example samples/V1/FirewallClient/create_ingress_rule.php
      *
      * @param CreateIngressRuleRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -241,6 +257,8 @@ final class FirewallClient
      *
      * The async variant is {@see FirewallClient::deleteIngressRuleAsync()} .
      *
+     * @example samples/V1/FirewallClient/delete_ingress_rule.php
+     *
      * @param DeleteIngressRuleRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -262,6 +280,8 @@ final class FirewallClient
      * Gets the specified firewall rule.
      *
      * The async variant is {@see FirewallClient::getIngressRuleAsync()} .
+     *
+     * @example samples/V1/FirewallClient/get_ingress_rule.php
      *
      * @param GetIngressRuleRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -287,6 +307,8 @@ final class FirewallClient
      *
      * The async variant is {@see FirewallClient::listIngressRulesAsync()} .
      *
+     * @example samples/V1/FirewallClient/list_ingress_rules.php
+     *
      * @param ListIngressRulesRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
      *     Optional.
@@ -310,6 +332,8 @@ final class FirewallClient
      * Updates the specified firewall rule.
      *
      * The async variant is {@see FirewallClient::updateIngressRuleAsync()} .
+     *
+     * @example samples/V1/FirewallClient/update_ingress_rule.php
      *
      * @param UpdateIngressRuleRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {

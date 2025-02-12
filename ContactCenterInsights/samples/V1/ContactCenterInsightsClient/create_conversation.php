@@ -24,11 +24,14 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START contactcenterinsights_v1_generated_ContactCenterInsights_CreateConversation_sync]
 use Google\ApiCore\ApiException;
-use Google\Cloud\ContactCenterInsights\V1\ContactCenterInsightsClient;
+use Google\Cloud\ContactCenterInsights\V1\Client\ContactCenterInsightsClient;
 use Google\Cloud\ContactCenterInsights\V1\Conversation;
+use Google\Cloud\ContactCenterInsights\V1\CreateConversationRequest;
 
 /**
  * Creates a conversation.
+ * Note that this method does not support audio transcription or redaction.
+ * Use `conversations.upload` instead.
  *
  * @param string $formattedParent The parent resource of the conversation. Please see
  *                                {@see ContactCenterInsightsClient::locationName()} for help formatting this field.
@@ -38,13 +41,16 @@ function create_conversation_sample(string $formattedParent): void
     // Create a client.
     $contactCenterInsightsClient = new ContactCenterInsightsClient();
 
-    // Prepare any non-scalar elements to be passed along with the request.
+    // Prepare the request message.
     $conversation = new Conversation();
+    $request = (new CreateConversationRequest())
+        ->setParent($formattedParent)
+        ->setConversation($conversation);
 
     // Call the API and handle any network failures.
     try {
         /** @var Conversation $response */
-        $response = $contactCenterInsightsClient->createConversation($formattedParent, $conversation);
+        $response = $contactCenterInsightsClient->createConversation($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

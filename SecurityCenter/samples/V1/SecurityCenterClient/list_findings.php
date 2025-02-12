@@ -25,8 +25,9 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // [START securitycenter_v1_generated_SecurityCenter_ListFindings_sync]
 use Google\ApiCore\ApiException;
 use Google\ApiCore\PagedListResponse;
+use Google\Cloud\SecurityCenter\V1\Client\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\ListFindingsRequest;
 use Google\Cloud\SecurityCenter\V1\ListFindingsResponse\ListFindingsResult;
-use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
 
 /**
  * Lists an organization or source's findings.
@@ -35,12 +36,12 @@ use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
  * Example: /v1/organizations/{organization_id}/sources/-/findings
  *
  * @param string $formattedParent Name of the source the findings belong to. Its format is
- *                                "organizations/[organization_id]/sources/[source_id],
- *                                folders/[folder_id]/sources/[source_id], or
- *                                projects/[project_id]/sources/[source_id]". To list across all sources
+ *                                `organizations/[organization_id]/sources/[source_id]`,
+ *                                `folders/[folder_id]/sources/[source_id]`, or
+ *                                `projects/[project_id]/sources/[source_id]`. To list across all sources
  *                                provide a source_id of `-`. For example:
- *                                organizations/{organization_id}/sources/-, folders/{folder_id}/sources/- or
- *                                projects/{projects_id}/sources/-
+ *                                `organizations/{organization_id}/sources/-`,
+ *                                `folders/{folder_id}/sources/-` or `projects/{projects_id}/sources/-`
  *                                Please see {@see SecurityCenterClient::sourceName()} for help formatting this field.
  */
 function list_findings_sample(string $formattedParent): void
@@ -48,10 +49,14 @@ function list_findings_sample(string $formattedParent): void
     // Create a client.
     $securityCenterClient = new SecurityCenterClient();
 
+    // Prepare the request message.
+    $request = (new ListFindingsRequest())
+        ->setParent($formattedParent);
+
     // Call the API and handle any network failures.
     try {
         /** @var PagedListResponse $response */
-        $response = $securityCenterClient->listFindings($formattedParent);
+        $response = $securityCenterClient->listFindings($request);
 
         /** @var ListFindingsResult $element */
         foreach ($response as $element) {

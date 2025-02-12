@@ -40,9 +40,12 @@ class PgQueryTest extends SpannerPgTestCase
 
     public static $timestampVal;
 
-    public static function setUpBeforeClass(): void
+    /**
+     * @beforeClass
+     */
+    public static function setUpTestFixtures(): void
     {
-        parent::setUpBeforeClass();
+        parent::setUpTestFixtures();
 
         self::$database->updateDdl(
             'CREATE TABLE ' . self::TABLE_NAME . ' (
@@ -55,6 +58,7 @@ class PgQueryTest extends SpannerPgTestCase
                 created_at timestamptz,
                 dt date,
                 data jsonb,
+                weight float4,
                 PRIMARY KEY (id)
             )'
         )->pollUntilComplete();
@@ -71,7 +75,8 @@ class PgQueryTest extends SpannerPgTestCase
                 'bytes_col' => new Bytes('hello'),
                 'created_at' => self::$timestampVal,
                 'data' => '{"a": "hello", "b": "world"}',
-                'dt' => '2020-01-01'
+                'dt' => '2020-01-01',
+                'weight' => 1.432
             ],
             [
                 'id' => 2,
@@ -81,7 +86,8 @@ class PgQueryTest extends SpannerPgTestCase
                 'age' => 26,
                 'created_at' => self::$timestampVal,
                 'data' => '{}',
-                'dt' => '2021-01-01'
+                'dt' => '2021-01-01',
+                'weight' => 1.234
             ]
         ]);
     }
@@ -200,32 +206,58 @@ class PgQueryTest extends SpannerPgTestCase
         $this->assertCount(2, iterator_to_array($res));
     }
 
-    public function testBindFloat64ParameterNull()
+    public function testBindFloat32Parameter()
     {
+        // Emulator as an issue with FLOAT32 for PG.
+        $this->skipEmulatorTests();
+        $db = self::$database;
+
+        $res = $db->execute('SELECT * FROM ' . self::TABLE_NAME . ' WHERE weight = $1', [
+            'parameters' => [
+                'p1' => 1.234
+            ],
+            'types' => [
+                'p1' => Database::TYPE_FLOAT32
+            ]
+        ]);
+
+        $this->assertCount(1, iterator_to_array($res));
+    }
+
+    public function testBindFloatParameterNull()
+    {
+        $res = self::$database->execute('SELECT * FROM ' . self::TABLE_NAME . ' WHERE rating IS NULL');
+        $currentFloat64NullCount = count(iterator_to_array($res));
+        $res = self::$database->execute('SELECT * FROM ' . self::TABLE_NAME . ' WHERE weight IS NULL');
+        $currentFloat32NullCount = count(iterator_to_array($res));
         // insert a value with a float param binded to null
         self::$database->runTransaction(function (Transaction $t) {
             $t->executeUpdate(
-                'INSERT INTO ' . self::TABLE_NAME . '(id, name, registered, rating, age) '
-                . 'VALUES($1, $2, $3, $4, $5)',
+                'INSERT INTO ' . self::TABLE_NAME . '(id, name, registered, rating, age, weight) '
+                . 'VALUES($1, $2, $3, $4, $5, $6)',
                 [
                     'parameters' => [
                         'p1' => 5,
                         'p2' => 'Vince',
                         'p3' => true,
                         'p4' => null,
-                        'p5' => 26
+                        'p5' => 26,
+                        'p6' => null
                     ],
                     'types' => [
-                        'p4' => Database::TYPE_FLOAT64
+                        'p4' => Database::TYPE_FLOAT64,
+                        'p6' => Database::TYPE_FLOAT32
                     ]
                 ]
             );
             $t->commit();
         });
 
-        $res = self::$database->execute('SELECT * FROM ' . self::TABLE_NAME . ' WHERE rating IS NULL');
+        $resFloat64NullCount = self::$database->execute('SELECT * FROM ' . self::TABLE_NAME . ' WHERE rating IS NULL');
+        $resFloat32NullCount = self::$database->execute('SELECT * FROM ' . self::TABLE_NAME . ' WHERE weight IS NULL');
 
-        $this->assertCount(1, iterator_to_array($res));
+        $this->assertCount(1 + $currentFloat64NullCount, iterator_to_array($resFloat64NullCount));
+        $this->assertCount(1 + $currentFloat32NullCount, iterator_to_array($resFloat32NullCount));
     }
 
     public function testBindStringParameter()
@@ -367,12 +399,13 @@ class PgQueryTest extends SpannerPgTestCase
                 'p1' => self::$timestampVal
             ]
         ]);
-
-        $this->assertCount(2, iterator_to_array($res));
-
-        $row = $res->rows()->current();
-        $this->assertInstanceOf(Timestamp::class, $row['created_at']);
-        $this->assertEquals(self::$timestampVal->get()->format('r'), $row['created_at']->get()->format('r'));
+        $rows = iterator_to_array($res);
+        $this->assertInstanceOf(Timestamp::class, $rows[0]['created_at']);
+        $this->assertEquals(
+            self::$timestampVal->get()->format('r'),
+            $rows[0]['created_at']->get()->format('r')
+        );
+        $this->assertCount(2, $rows);
     }
 
     public function testBindTimestampParameterNull()
@@ -412,12 +445,10 @@ class PgQueryTest extends SpannerPgTestCase
                 'p2' => new Date(new \DateTime('2021-01-01'))
             ]
         ]);
-
-        $this->assertCount(2, iterator_to_array($res));
-
-        $row = $res->rows()->current();
-        $this->assertInstanceOf(Date::class, $row['dt']);
-        $this->assertEquals('2020-01-01', $row['dt']->get()->format('Y-m-d'));
+        $rows = iterator_to_array($res);
+        $this->assertInstanceOf(Date::class, $rows[0]['dt']);
+        $this->assertEquals('2020-01-01', $rows[0]['dt']->get()->format('Y-m-d'));
+        $this->assertCount(2, $rows);
     }
 
     public function testBindDateParameterNull()
@@ -514,6 +545,40 @@ class PgQueryTest extends SpannerPgTestCase
         $res = self::$database->execute('SELECT * FROM ' . self::TABLE_NAME . ' WHERE data IS NULL');
 
         $this->assertCount($currentCount + 1, iterator_to_array($res));
+    }
+
+    public function testBindPgOidParameter()
+    {
+        // Emulator support for PG.OID is pending.
+        $this->skipEmulatorTests();
+        $db = self::$database;
+
+        $res = $db->execute('SELECT $1', [
+            'parameters' => [
+                'p1' => 1,
+            ],
+            'types' => [
+                'p1' => Database::TYPE_PG_OID
+            ]
+        ]);
+        $this->assertCount(1, iterator_to_array($res));
+    }
+
+    public function testBindPgOidParameterNull()
+    {
+        // Emulator support for PG.OID is pending.
+        $this->skipEmulatorTests();
+        $db = self::$database;
+
+        $res = $db->execute('SELECT $1', [
+            'parameters' => [
+                'p1' => null,
+            ],
+            'types' => [
+                'p1' => Database::TYPE_PG_OID
+            ]
+        ]);
+        $this->assertCount(1, iterator_to_array($res));
     }
 
     public function arrayTypesProvider()
@@ -613,14 +678,16 @@ class PgQueryTest extends SpannerPgTestCase
 
                     return $res;
                 }
-            ]
+            ],
+            // pg_oid
+            [[5,4,3,2,1]],
         ];
     }
 
     /**
      * @dataProvider arrayTypesProvider
      */
-    public function testBindArrayOfType($value, $result = null, $resultType = null, callable $filter = null)
+    public function testBindArrayOfType($value, $result = null, $resultType = null, ?callable $filter = null)
     {
         if (!$filter) {
             $filter = function ($val) {
@@ -651,6 +718,7 @@ class PgQueryTest extends SpannerPgTestCase
         return [
             [Database::TYPE_BOOL],
             [Database::TYPE_INT64],
+            [Database::TYPE_FLOAT32],
             [Database::TYPE_FLOAT64],
             [Database::TYPE_STRING],
             [Database::TYPE_BYTES],
@@ -658,6 +726,7 @@ class PgQueryTest extends SpannerPgTestCase
             [Database::TYPE_DATE],
             [Database::TYPE_PG_NUMERIC],
             [Database::TYPE_PG_JSONB],
+            [Database::TYPE_PG_OID],
         ];
     }
 
@@ -666,6 +735,8 @@ class PgQueryTest extends SpannerPgTestCase
      */
     public function testBindEmptyArrayOfType($type)
     {
+        // Emulator support for PG.OID is pending.
+        $this->skipEmulatorTests();
         $db = self::$database;
 
         $res = $db->execute('SELECT $1 as foo', [
@@ -687,6 +758,7 @@ class PgQueryTest extends SpannerPgTestCase
         return [
             [Database::TYPE_BOOL],
             [Database::TYPE_INT64],
+            [Database::TYPE_FLOAT32],
             [Database::TYPE_FLOAT64],
             [Database::TYPE_STRING],
             [Database::TYPE_BYTES],
@@ -694,6 +766,7 @@ class PgQueryTest extends SpannerPgTestCase
             [Database::TYPE_DATE],
             [Database::TYPE_PG_NUMERIC],
             [Database::TYPE_PG_JSONB],
+            [Database::TYPE_PG_OID],
         ];
     }
 
@@ -702,6 +775,8 @@ class PgQueryTest extends SpannerPgTestCase
      */
     public function testBindNullArrayOfType($type)
     {
+        // Emulator support for PG.OID is pending.
+        $this->skipEmulatorTests();
         $db = self::$database;
 
         $res = $db->execute('SELECT $1 as foo', [

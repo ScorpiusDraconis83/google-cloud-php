@@ -23,7 +23,24 @@ class GetDataRedactionSettingsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $name = '';
+    protected $name = '';
+
+    /**
+     * @param string $name Required. The name of the settings to lookup.
+     *                     Format:
+     *                     properties/{property}/dataStreams/{data_stream}/dataRedactionSettings
+     *                     Example: "properties/1000/dataStreams/2000/dataRedactionSettings"
+     *                     Please see {@see AnalyticsAdminServiceClient::dataRedactionSettingsName()} for help formatting this field.
+     *
+     * @return \Google\Analytics\Admin\V1alpha\GetDataRedactionSettingsRequest
+     *
+     * @experimental
+     */
+    public static function build(string $name): self
+    {
+        return (new self())
+            ->setName($name);
+    }
 
     /**
      * Constructor.

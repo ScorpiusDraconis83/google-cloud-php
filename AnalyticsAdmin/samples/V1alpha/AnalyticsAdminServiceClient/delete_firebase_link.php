@@ -23,14 +23,16 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteFirebaseLink_sync]
-use Google\Analytics\Admin\V1alpha\AnalyticsAdminServiceClient;
+use Google\Analytics\Admin\V1alpha\Client\AnalyticsAdminServiceClient;
+use Google\Analytics\Admin\V1alpha\DeleteFirebaseLinkRequest;
 use Google\ApiCore\ApiException;
 
 /**
  * Deletes a FirebaseLink on a property
  *
  * @param string $formattedName Format: properties/{property_id}/firebaseLinks/{firebase_link_id}
- *                              Example: properties/1234/firebaseLinks/5678
+ *
+ *                              Example: `properties/1234/firebaseLinks/5678`
  *                              Please see {@see AnalyticsAdminServiceClient::firebaseLinkName()} for help formatting this field.
  */
 function delete_firebase_link_sample(string $formattedName): void
@@ -38,9 +40,13 @@ function delete_firebase_link_sample(string $formattedName): void
     // Create a client.
     $analyticsAdminServiceClient = new AnalyticsAdminServiceClient();
 
+    // Prepare the request message.
+    $request = (new DeleteFirebaseLinkRequest())
+        ->setName($formattedName);
+
     // Call the API and handle any network failures.
     try {
-        $analyticsAdminServiceClient->deleteFirebaseLink($formattedName);
+        $analyticsAdminServiceClient->deleteFirebaseLink($request);
         printf('Call completed successfully.' . PHP_EOL);
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

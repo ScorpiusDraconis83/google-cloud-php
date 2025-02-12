@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ use Google\Cloud\ResourceSettings\V1\ListSettingsRequest;
 use Google\Cloud\ResourceSettings\V1\Setting;
 use Google\Cloud\ResourceSettings\V1\UpdateSettingRequest;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: An interface to interact with resource settings and setting values throughout
@@ -52,6 +53,9 @@ use GuzzleHttp\Promise\PromiseInterface;
  * resource is not in a Cloud Organization.
  * For all requests, returns a `google.rpc.Status` with
  * `google.rpc.Code.INVALID_ARGUMENT` if the request is malformed.
+ * (== deprecation_description Resource Settings is deprecated. As of November
+ * 7, 2023, no organizations will be onboarded for any of the enabled settings,
+ * and the service will be shut down on October 1, 2024. ==)
  *
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
@@ -61,9 +65,11 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface getSettingAsync(GetSettingRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listSettingsAsync(ListSettingsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateSettingAsync(UpdateSettingRequest $request, array $optionalArgs = [])
+ * @deprecated This class will be removed in the next major version update.
+ *
+ * @method PromiseInterface<Setting> getSettingAsync(GetSettingRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listSettingsAsync(ListSettingsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Setting> updateSettingAsync(UpdateSettingRequest $request, array $optionalArgs = [])
  */
 final class ResourceSettingsServiceClient
 {
@@ -90,9 +96,7 @@ final class ResourceSettingsServiceClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private static function getClientDefaults()
     {
@@ -107,7 +111,8 @@ final class ResourceSettingsServiceClient
             ],
             'transportConfig' => [
                 'rest' => [
-                    'restClientConfigPath' => __DIR__ . '/../resources/resource_settings_service_rest_client_config.php',
+                    'restClientConfigPath' =>
+                        __DIR__ . '/../resources/resource_settings_service_rest_client_config.php',
                 ],
             ],
         ];
@@ -196,14 +201,14 @@ final class ResourceSettingsServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -225,6 +230,12 @@ final class ResourceSettingsServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -258,6 +269,9 @@ final class ResourceSettingsServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -287,6 +301,8 @@ final class ResourceSettingsServiceClient
      *
      * The async variant is {@see ResourceSettingsServiceClient::getSettingAsync()} .
      *
+     * @example samples/V1/ResourceSettingsServiceClient/get_setting.php
+     *
      * @param GetSettingRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -310,6 +326,8 @@ final class ResourceSettingsServiceClient
      * Lists all the settings that are available on the Cloud resource `parent`.
      *
      * The async variant is {@see ResourceSettingsServiceClient::listSettingsAsync()} .
+     *
+     * @example samples/V1/ResourceSettingsServiceClient/list_settings.php
      *
      * @param ListSettingsRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -350,6 +368,8 @@ final class ResourceSettingsServiceClient
      *
      * The async variant is {@see ResourceSettingsServiceClient::updateSettingAsync()}
      * .
+     *
+     * @example samples/V1/ResourceSettingsServiceClient/update_setting.php
      *
      * @param UpdateSettingRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {

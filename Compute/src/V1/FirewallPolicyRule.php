@@ -16,7 +16,7 @@ use Google\Protobuf\Internal\GPBUtil;
 class FirewallPolicyRule extends \Google\Protobuf\Internal\Message
 {
     /**
-     * The Action to perform when the client connection triggers the rule. Valid actions are "allow", "deny" and "goto_next".
+     * The Action to perform when the client connection triggers the rule. Valid actions for firewall rules are: "allow", "deny", "apply_security_profile_group" and "goto_next". Valid actions for packet mirroring rules are: "mirror", "do_not_mirror" and "goto_next".
      *
      * Generated from protobuf field <code>optional string action = 187661878;</code>
      */
@@ -47,7 +47,7 @@ class FirewallPolicyRule extends \Google\Protobuf\Internal\Message
      */
     private $enable_logging = null;
     /**
-     * [Output only] Type of the resource. Always compute#firewallPolicyRule for firewall policy rules
+     * [Output only] Type of the resource. Returns compute#firewallPolicyRule for firewall rules and compute#packetMirroringRule for packet mirroring rules.
      *
      * Generated from protobuf field <code>optional string kind = 3292052;</code>
      */
@@ -59,7 +59,7 @@ class FirewallPolicyRule extends \Google\Protobuf\Internal\Message
      */
     private $match = null;
     /**
-     * An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest prority.
+     * An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest priority.
      *
      * Generated from protobuf field <code>optional int32 priority = 445151652;</code>
      */
@@ -76,6 +76,12 @@ class FirewallPolicyRule extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>optional int32 rule_tuple_count = 388342037;</code>
      */
     private $rule_tuple_count = null;
+    /**
+     * A fully-qualified URL of a SecurityProfile resource instance. Example: https://networksecurity.googleapis.com/v1/projects/{project}/locations/{location}/securityProfileGroups/my-security-profile-group Must be specified if action is one of 'apply_security_profile_group' or 'mirror'. Cannot be specified for other actions.
+     *
+     * Generated from protobuf field <code>optional string security_profile_group = 207411626;</code>
+     */
+    private $security_profile_group = null;
     /**
      * A list of network resource URLs to which this rule applies. This field allows you to control which network's VMs get this rule. If this field is left blank, all VMs within the organization will receive the rule.
      *
@@ -94,6 +100,12 @@ class FirewallPolicyRule extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>repeated string target_service_accounts = 457639710;</code>
      */
     private $target_service_accounts;
+    /**
+     * Boolean flag indicating if the traffic should be TLS decrypted. Can be set only if action = 'apply_security_profile_group' and cannot be set for other actions.
+     *
+     * Generated from protobuf field <code>optional bool tls_inspect = 43425488;</code>
+     */
+    private $tls_inspect = null;
 
     /**
      * Constructor.
@@ -102,7 +114,7 @@ class FirewallPolicyRule extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type string $action
-     *           The Action to perform when the client connection triggers the rule. Valid actions are "allow", "deny" and "goto_next".
+     *           The Action to perform when the client connection triggers the rule. Valid actions for firewall rules are: "allow", "deny", "apply_security_profile_group" and "goto_next". Valid actions for packet mirroring rules are: "mirror", "do_not_mirror" and "goto_next".
      *     @type string $description
      *           An optional description for this resource.
      *     @type string $direction
@@ -113,21 +125,25 @@ class FirewallPolicyRule extends \Google\Protobuf\Internal\Message
      *     @type bool $enable_logging
      *           Denotes whether to enable logging for a particular rule. If logging is enabled, logs will be exported to the configured export destination in Stackdriver. Logs may be exported to BigQuery or Pub/Sub. Note: you cannot enable logging on "goto_next" rules.
      *     @type string $kind
-     *           [Output only] Type of the resource. Always compute#firewallPolicyRule for firewall policy rules
+     *           [Output only] Type of the resource. Returns compute#firewallPolicyRule for firewall rules and compute#packetMirroringRule for packet mirroring rules.
      *     @type \Google\Cloud\Compute\V1\FirewallPolicyRuleMatcher $match
      *           A match condition that incoming traffic is evaluated against. If it evaluates to true, the corresponding 'action' is enforced.
      *     @type int $priority
-     *           An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest prority.
+     *           An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest priority.
      *     @type string $rule_name
      *           An optional name for the rule. This field is not a unique identifier and can be updated.
      *     @type int $rule_tuple_count
      *           [Output Only] Calculation of the complexity of a single firewall policy rule.
+     *     @type string $security_profile_group
+     *           A fully-qualified URL of a SecurityProfile resource instance. Example: https://networksecurity.googleapis.com/v1/projects/{project}/locations/{location}/securityProfileGroups/my-security-profile-group Must be specified if action is one of 'apply_security_profile_group' or 'mirror'. Cannot be specified for other actions.
      *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $target_resources
      *           A list of network resource URLs to which this rule applies. This field allows you to control which network's VMs get this rule. If this field is left blank, all VMs within the organization will receive the rule.
      *     @type array<\Google\Cloud\Compute\V1\FirewallPolicyRuleSecureTag>|\Google\Protobuf\Internal\RepeatedField $target_secure_tags
      *           A list of secure tags that controls which instances the firewall rule applies to. If targetSecureTag are specified, then the firewall rule applies only to instances in the VPC network that have one of those EFFECTIVE secure tags, if all the target_secure_tag are in INEFFECTIVE state, then this rule will be ignored. targetSecureTag may not be set at the same time as targetServiceAccounts. If neither targetServiceAccounts nor targetSecureTag are specified, the firewall rule applies to all instances on the specified network. Maximum number of target label tags allowed is 256.
      *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $target_service_accounts
      *           A list of service accounts indicating the sets of instances that are applied with this rule.
+     *     @type bool $tls_inspect
+     *           Boolean flag indicating if the traffic should be TLS decrypted. Can be set only if action = 'apply_security_profile_group' and cannot be set for other actions.
      * }
      */
     public function __construct($data = NULL) {
@@ -136,7 +152,7 @@ class FirewallPolicyRule extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The Action to perform when the client connection triggers the rule. Valid actions are "allow", "deny" and "goto_next".
+     * The Action to perform when the client connection triggers the rule. Valid actions for firewall rules are: "allow", "deny", "apply_security_profile_group" and "goto_next". Valid actions for packet mirroring rules are: "mirror", "do_not_mirror" and "goto_next".
      *
      * Generated from protobuf field <code>optional string action = 187661878;</code>
      * @return string
@@ -157,7 +173,7 @@ class FirewallPolicyRule extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The Action to perform when the client connection triggers the rule. Valid actions are "allow", "deny" and "goto_next".
+     * The Action to perform when the client connection triggers the rule. Valid actions for firewall rules are: "allow", "deny", "apply_security_profile_group" and "goto_next". Valid actions for packet mirroring rules are: "mirror", "do_not_mirror" and "goto_next".
      *
      * Generated from protobuf field <code>optional string action = 187661878;</code>
      * @param string $var
@@ -318,7 +334,7 @@ class FirewallPolicyRule extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * [Output only] Type of the resource. Always compute#firewallPolicyRule for firewall policy rules
+     * [Output only] Type of the resource. Returns compute#firewallPolicyRule for firewall rules and compute#packetMirroringRule for packet mirroring rules.
      *
      * Generated from protobuf field <code>optional string kind = 3292052;</code>
      * @return string
@@ -339,7 +355,7 @@ class FirewallPolicyRule extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * [Output only] Type of the resource. Always compute#firewallPolicyRule for firewall policy rules
+     * [Output only] Type of the resource. Returns compute#firewallPolicyRule for firewall rules and compute#packetMirroringRule for packet mirroring rules.
      *
      * Generated from protobuf field <code>optional string kind = 3292052;</code>
      * @param string $var
@@ -390,7 +406,7 @@ class FirewallPolicyRule extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest prority.
+     * An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest priority.
      *
      * Generated from protobuf field <code>optional int32 priority = 445151652;</code>
      * @return int
@@ -411,7 +427,7 @@ class FirewallPolicyRule extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest prority.
+     * An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest priority.
      *
      * Generated from protobuf field <code>optional int32 priority = 445151652;</code>
      * @param int $var
@@ -498,6 +514,42 @@ class FirewallPolicyRule extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * A fully-qualified URL of a SecurityProfile resource instance. Example: https://networksecurity.googleapis.com/v1/projects/{project}/locations/{location}/securityProfileGroups/my-security-profile-group Must be specified if action is one of 'apply_security_profile_group' or 'mirror'. Cannot be specified for other actions.
+     *
+     * Generated from protobuf field <code>optional string security_profile_group = 207411626;</code>
+     * @return string
+     */
+    public function getSecurityProfileGroup()
+    {
+        return isset($this->security_profile_group) ? $this->security_profile_group : '';
+    }
+
+    public function hasSecurityProfileGroup()
+    {
+        return isset($this->security_profile_group);
+    }
+
+    public function clearSecurityProfileGroup()
+    {
+        unset($this->security_profile_group);
+    }
+
+    /**
+     * A fully-qualified URL of a SecurityProfile resource instance. Example: https://networksecurity.googleapis.com/v1/projects/{project}/locations/{location}/securityProfileGroups/my-security-profile-group Must be specified if action is one of 'apply_security_profile_group' or 'mirror'. Cannot be specified for other actions.
+     *
+     * Generated from protobuf field <code>optional string security_profile_group = 207411626;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setSecurityProfileGroup($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->security_profile_group = $var;
+
+        return $this;
+    }
+
+    /**
      * A list of network resource URLs to which this rule applies. This field allows you to control which network's VMs get this rule. If this field is left blank, all VMs within the organization will receive the rule.
      *
      * Generated from protobuf field <code>repeated string target_resources = 528230647;</code>
@@ -571,6 +623,42 @@ class FirewallPolicyRule extends \Google\Protobuf\Internal\Message
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
         $this->target_service_accounts = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Boolean flag indicating if the traffic should be TLS decrypted. Can be set only if action = 'apply_security_profile_group' and cannot be set for other actions.
+     *
+     * Generated from protobuf field <code>optional bool tls_inspect = 43425488;</code>
+     * @return bool
+     */
+    public function getTlsInspect()
+    {
+        return isset($this->tls_inspect) ? $this->tls_inspect : false;
+    }
+
+    public function hasTlsInspect()
+    {
+        return isset($this->tls_inspect);
+    }
+
+    public function clearTlsInspect()
+    {
+        unset($this->tls_inspect);
+    }
+
+    /**
+     * Boolean flag indicating if the traffic should be TLS decrypted. Can be set only if action = 'apply_security_profile_group' and cannot be set for other actions.
+     *
+     * Generated from protobuf field <code>optional bool tls_inspect = 43425488;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setTlsInspect($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->tls_inspect = $var;
 
         return $this;
     }

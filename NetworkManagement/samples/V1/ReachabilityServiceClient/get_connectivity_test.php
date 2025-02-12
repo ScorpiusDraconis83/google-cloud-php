@@ -24,24 +24,30 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START networkmanagement_v1_generated_ReachabilityService_GetConnectivityTest_sync]
 use Google\ApiCore\ApiException;
+use Google\Cloud\NetworkManagement\V1\Client\ReachabilityServiceClient;
 use Google\Cloud\NetworkManagement\V1\ConnectivityTest;
-use Google\Cloud\NetworkManagement\V1\ReachabilityServiceClient;
+use Google\Cloud\NetworkManagement\V1\GetConnectivityTestRequest;
 
 /**
  * Gets the details of a specific Connectivity Test.
  *
- * @param string $name `ConnectivityTest` resource name using the form:
- *                     `projects/{project_id}/locations/global/connectivityTests/{test_id}`
+ * @param string $formattedName `ConnectivityTest` resource name using the form:
+ *                              `projects/{project_id}/locations/global/connectivityTests/{test_id}`
+ *                              Please see {@see ReachabilityServiceClient::connectivityTestName()} for help formatting this field.
  */
-function get_connectivity_test_sample(string $name): void
+function get_connectivity_test_sample(string $formattedName): void
 {
     // Create a client.
     $reachabilityServiceClient = new ReachabilityServiceClient();
 
+    // Prepare the request message.
+    $request = (new GetConnectivityTestRequest())
+        ->setName($formattedName);
+
     // Call the API and handle any network failures.
     try {
         /** @var ConnectivityTest $response */
-        $response = $reachabilityServiceClient->getConnectivityTest($name);
+        $response = $reachabilityServiceClient->getConnectivityTest($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());
@@ -59,8 +65,8 @@ function get_connectivity_test_sample(string $name): void
  */
 function callSample(): void
 {
-    $name = '[NAME]';
+    $formattedName = ReachabilityServiceClient::connectivityTestName('[PROJECT]', '[TEST]');
 
-    get_connectivity_test_sample($name);
+    get_connectivity_test_sample($formattedName);
 }
 // [END networkmanagement_v1_generated_ReachabilityService_GetConnectivityTest_sync]

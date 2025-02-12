@@ -1,4 +1,24 @@
 <?php
+/*
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * GENERATED CODE WARNING
+ * This file was automatically generated - do not edit!
+ */
 
 return [
     'interfaces' => [
@@ -18,6 +38,18 @@ return [
             'CreateConversation' => [
                 'callType' => \Google\ApiCore\Call::UNARY_CALL,
                 'responseType' => 'Google\Cloud\Dialogflow\V2\Conversation',
+                'headerParams' => [
+                    [
+                        'keyName' => 'parent',
+                        'fieldAccessors' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
+            'GenerateStatelessSuggestion' => [
+                'callType' => \Google\ApiCore\Call::UNARY_CALL,
+                'responseType' => 'Google\Cloud\Dialogflow\V2\GenerateStatelessSuggestionResponse',
                 'headerParams' => [
                     [
                         'keyName' => 'parent',
@@ -162,10 +194,13 @@ return [
                 'conversation' => 'projects/{project}/conversations/{conversation}',
                 'conversationModel' => 'projects/{project}/locations/{location}/conversationModels/{conversation_model}',
                 'conversationProfile' => 'projects/{project}/conversationProfiles/{conversation_profile}',
+                'dataStore' => 'projects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}',
                 'document' => 'projects/{project}/knowledgeBases/{knowledge_base}/documents/{document}',
+                'generator' => 'projects/{project}/locations/{location}/generators/{generator}',
                 'knowledgeBase' => 'projects/{project}/knowledgeBases/{knowledge_base}',
                 'location' => 'projects/{project}/locations/{location}',
                 'message' => 'projects/{project}/conversations/{conversation}/messages/{message}',
+                'phraseSet' => 'projects/{project}/locations/{location}/phraseSets/{phrase_set}',
                 'project' => 'projects/{project}',
                 'projectAgent' => 'projects/{project}/agent',
                 'projectConversation' => 'projects/{project}/conversations/{conversation}',
@@ -175,10 +210,12 @@ return [
                 'projectKnowledgeBase' => 'projects/{project}/knowledgeBases/{knowledge_base}',
                 'projectKnowledgeBaseDocument' => 'projects/{project}/knowledgeBases/{knowledge_base}/documents/{document}',
                 'projectLocationAgent' => 'projects/{project}/locations/{location}/agent',
+                'projectLocationCollectionDataStore' => 'projects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}',
                 'projectLocationConversation' => 'projects/{project}/locations/{location}/conversations/{conversation}',
                 'projectLocationConversationMessage' => 'projects/{project}/locations/{location}/conversations/{conversation}/messages/{message}',
                 'projectLocationConversationModel' => 'projects/{project}/locations/{location}/conversationModels/{conversation_model}',
                 'projectLocationConversationProfile' => 'projects/{project}/locations/{location}/conversationProfiles/{conversation_profile}',
+                'projectLocationDataStore' => 'projects/{project}/locations/{location}/dataStores/{data_store}',
                 'projectLocationKnowledgeBase' => 'projects/{project}/locations/{location}/knowledgeBases/{knowledge_base}',
                 'projectLocationKnowledgeBaseDocument' => 'projects/{project}/locations/{location}/knowledgeBases/{knowledge_base}/documents/{document}',
             ],

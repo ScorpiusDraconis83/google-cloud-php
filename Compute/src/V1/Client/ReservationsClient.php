@@ -48,6 +48,7 @@ use Google\Cloud\Compute\V1\TestPermissionsResponse;
 use Google\Cloud\Compute\V1\UpdateReservationRequest;
 use Google\Cloud\Compute\V1\ZoneOperationsClient;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The Reservations API.
@@ -55,16 +56,16 @@ use GuzzleHttp\Promise\PromiseInterface;
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
  *
- * @method PromiseInterface aggregatedListAsync(AggregatedListReservationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAsync(DeleteReservationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAsync(GetReservationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyReservationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface insertAsync(InsertReservationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAsync(ListReservationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface resizeAsync(ResizeReservationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyReservationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsReservationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateAsync(UpdateReservationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> aggregatedListAsync(AggregatedListReservationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteAsync(DeleteReservationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Reservation> getAsync(GetReservationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyReservationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> insertAsync(InsertReservationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAsync(ListReservationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> resizeAsync(ResizeReservationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyReservationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsReservationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateAsync(UpdateReservationRequest $request, array $optionalArgs = [])
  */
 final class ReservationsClient
 {
@@ -123,8 +124,8 @@ final class ReservationsClient
         return 'rest';
     }
 
-    /** Implements GapicClientTrait::getSupportedTransports. */
-    private static function getSupportedTransports()
+    /** Implements ClientOptionsTrait::supportedTransports. */
+    private static function supportedTransports()
     {
         return [
             'rest',
@@ -157,6 +158,9 @@ final class ReservationsClient
             'operationNameMethod' => 'getName',
             'operationStatusMethod' => 'getStatus',
             'operationStatusDoneValue' => \Google\Cloud\Compute\V1\Operation\Status::DONE,
+            'getOperationRequest' => '\Google\Cloud\Compute\V1\GetZoneOperationRequest',
+            'cancelOperationRequest' => null,
+            'deleteOperationRequest' => '\Google\Cloud\Compute\V1\DeleteZoneOperationRequest',
         ];
     }
 
@@ -196,6 +200,12 @@ final class ReservationsClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -226,6 +236,9 @@ final class ReservationsClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -249,9 +262,11 @@ final class ReservationsClient
     }
 
     /**
-     * Retrieves an aggregated list of reservations.
+     * Retrieves an aggregated list of reservations. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
      *
      * The async variant is {@see ReservationsClient::aggregatedListAsync()} .
+     *
+     * @example samples/V1/ReservationsClient/aggregated_list.php
      *
      * @param AggregatedListReservationsRequest $request     A request to house fields associated with the call.
      * @param array                             $callOptions {
@@ -277,6 +292,8 @@ final class ReservationsClient
      *
      * The async variant is {@see ReservationsClient::deleteAsync()} .
      *
+     * @example samples/V1/ReservationsClient/delete.php
+     *
      * @param DeleteReservationRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -300,6 +317,8 @@ final class ReservationsClient
      * Retrieves information about the specified reservation.
      *
      * The async variant is {@see ReservationsClient::getAsync()} .
+     *
+     * @example samples/V1/ReservationsClient/get.php
      *
      * @param GetReservationRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -325,6 +344,8 @@ final class ReservationsClient
      *
      * The async variant is {@see ReservationsClient::getIamPolicyAsync()} .
      *
+     * @example samples/V1/ReservationsClient/get_iam_policy.php
+     *
      * @param GetIamPolicyReservationRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
      *     Optional.
@@ -348,6 +369,8 @@ final class ReservationsClient
      * Creates a new reservation. For more information, read Reserving zonal resources.
      *
      * The async variant is {@see ReservationsClient::insertAsync()} .
+     *
+     * @example samples/V1/ReservationsClient/insert.php
      *
      * @param InsertReservationRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -373,6 +396,8 @@ final class ReservationsClient
      *
      * The async variant is {@see ReservationsClient::listAsync()} .
      *
+     * @example samples/V1/ReservationsClient/list.php
+     *
      * @param ListReservationsRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
      *     Optional.
@@ -396,6 +421,8 @@ final class ReservationsClient
      * Resizes the reservation (applicable to standalone reservations only). For more information, read Modifying reservations.
      *
      * The async variant is {@see ReservationsClient::resizeAsync()} .
+     *
+     * @example samples/V1/ReservationsClient/resize.php
      *
      * @param ResizeReservationRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -421,6 +448,8 @@ final class ReservationsClient
      *
      * The async variant is {@see ReservationsClient::setIamPolicyAsync()} .
      *
+     * @example samples/V1/ReservationsClient/set_iam_policy.php
+     *
      * @param SetIamPolicyReservationRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
      *     Optional.
@@ -445,6 +474,8 @@ final class ReservationsClient
      *
      * The async variant is {@see ReservationsClient::testIamPermissionsAsync()} .
      *
+     * @example samples/V1/ReservationsClient/test_iam_permissions.php
+     *
      * @param TestIamPermissionsReservationRequest $request     A request to house fields associated with the call.
      * @param array                                $callOptions {
      *     Optional.
@@ -468,6 +499,8 @@ final class ReservationsClient
      * Update share settings of the reservation.
      *
      * The async variant is {@see ReservationsClient::updateAsync()} .
+     *
+     * @example samples/V1/ReservationsClient/update.php
      *
      * @param UpdateReservationRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {

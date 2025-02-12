@@ -20,23 +20,34 @@ class Metric extends \Google\Protobuf\Internal\Message
     /**
      * The name of the metric. See the [API
      * Metrics](https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema#metrics)
-     * for the list of metric names.
-     * If `expression` is specified, `name` can be any string that you would like.
-     * For example if `expression` is `screenPageViews/sessions`, you could call
-     * that metric's name = `viewsPerSession`.
+     * for the list of metric names supported by core reporting methods such
+     * as `runReport` and `batchRunReports`. See
+     * [Realtime
+     * Metrics](https://developers.google.com/analytics/devguides/reporting/data/v1/realtime-api-schema#metrics)
+     * for the list of metric names supported by the `runRealtimeReport`
+     * method. See
+     * [Funnel
+     * Metrics](https://developers.google.com/analytics/devguides/reporting/data/v1/exploration-api-schema#metrics)
+     * for the list of metric names supported by the `runFunnelReport`
+     * method.
+     * If `expression` is specified, `name` can be any string that you would like
+     * within the allowed character set. For example if `expression` is
+     * `screenPageViews/sessions`, you could call that metric's name =
+     * `viewsPerSession`. Metric names that you choose must match the regular
+     * expression `^[a-zA-Z0-9_]$`.
      * Metrics are referenced by `name` in `metricFilter`, `orderBys`, and metric
      * `expression`.
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * A mathematical expression for derived metrics. For example, the metric
      * Event count per user is `eventCount/totalUsers`.
      *
      * Generated from protobuf field <code>string expression = 2;</code>
      */
-    private $expression = '';
+    protected $expression = '';
     /**
      * Indicates if a metric is invisible in the report response. If a metric is
      * invisible, the metric will not produce a column in the response, but can be
@@ -44,7 +55,7 @@ class Metric extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>bool invisible = 3;</code>
      */
-    private $invisible = false;
+    protected $invisible = false;
 
     /**
      * Constructor.
@@ -55,10 +66,21 @@ class Metric extends \Google\Protobuf\Internal\Message
      *     @type string $name
      *           The name of the metric. See the [API
      *           Metrics](https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema#metrics)
-     *           for the list of metric names.
-     *           If `expression` is specified, `name` can be any string that you would like.
-     *           For example if `expression` is `screenPageViews/sessions`, you could call
-     *           that metric's name = `viewsPerSession`.
+     *           for the list of metric names supported by core reporting methods such
+     *           as `runReport` and `batchRunReports`. See
+     *           [Realtime
+     *           Metrics](https://developers.google.com/analytics/devguides/reporting/data/v1/realtime-api-schema#metrics)
+     *           for the list of metric names supported by the `runRealtimeReport`
+     *           method. See
+     *           [Funnel
+     *           Metrics](https://developers.google.com/analytics/devguides/reporting/data/v1/exploration-api-schema#metrics)
+     *           for the list of metric names supported by the `runFunnelReport`
+     *           method.
+     *           If `expression` is specified, `name` can be any string that you would like
+     *           within the allowed character set. For example if `expression` is
+     *           `screenPageViews/sessions`, you could call that metric's name =
+     *           `viewsPerSession`. Metric names that you choose must match the regular
+     *           expression `^[a-zA-Z0-9_]$`.
      *           Metrics are referenced by `name` in `metricFilter`, `orderBys`, and metric
      *           `expression`.
      *     @type string $expression
@@ -78,10 +100,21 @@ class Metric extends \Google\Protobuf\Internal\Message
     /**
      * The name of the metric. See the [API
      * Metrics](https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema#metrics)
-     * for the list of metric names.
-     * If `expression` is specified, `name` can be any string that you would like.
-     * For example if `expression` is `screenPageViews/sessions`, you could call
-     * that metric's name = `viewsPerSession`.
+     * for the list of metric names supported by core reporting methods such
+     * as `runReport` and `batchRunReports`. See
+     * [Realtime
+     * Metrics](https://developers.google.com/analytics/devguides/reporting/data/v1/realtime-api-schema#metrics)
+     * for the list of metric names supported by the `runRealtimeReport`
+     * method. See
+     * [Funnel
+     * Metrics](https://developers.google.com/analytics/devguides/reporting/data/v1/exploration-api-schema#metrics)
+     * for the list of metric names supported by the `runFunnelReport`
+     * method.
+     * If `expression` is specified, `name` can be any string that you would like
+     * within the allowed character set. For example if `expression` is
+     * `screenPageViews/sessions`, you could call that metric's name =
+     * `viewsPerSession`. Metric names that you choose must match the regular
+     * expression `^[a-zA-Z0-9_]$`.
      * Metrics are referenced by `name` in `metricFilter`, `orderBys`, and metric
      * `expression`.
      *
@@ -96,10 +129,21 @@ class Metric extends \Google\Protobuf\Internal\Message
     /**
      * The name of the metric. See the [API
      * Metrics](https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema#metrics)
-     * for the list of metric names.
-     * If `expression` is specified, `name` can be any string that you would like.
-     * For example if `expression` is `screenPageViews/sessions`, you could call
-     * that metric's name = `viewsPerSession`.
+     * for the list of metric names supported by core reporting methods such
+     * as `runReport` and `batchRunReports`. See
+     * [Realtime
+     * Metrics](https://developers.google.com/analytics/devguides/reporting/data/v1/realtime-api-schema#metrics)
+     * for the list of metric names supported by the `runRealtimeReport`
+     * method. See
+     * [Funnel
+     * Metrics](https://developers.google.com/analytics/devguides/reporting/data/v1/exploration-api-schema#metrics)
+     * for the list of metric names supported by the `runFunnelReport`
+     * method.
+     * If `expression` is specified, `name` can be any string that you would like
+     * within the allowed character set. For example if `expression` is
+     * `screenPageViews/sessions`, you could call that metric's name =
+     * `viewsPerSession`. Metric names that you choose must match the regular
+     * expression `^[a-zA-Z0-9_]$`.
      * Metrics are referenced by `name` in `metricFilter`, `orderBys`, and metric
      * `expression`.
      *

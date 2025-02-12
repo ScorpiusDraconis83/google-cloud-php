@@ -28,6 +28,14 @@ class Type
      */
     const ACCELERATOR_OPTIMIZED_A3 = 158574526;
     /**
+     * Generated from protobuf enum <code>ACCELERATOR_OPTIMIZED_A3_MEGA = 156517459;</code>
+     */
+    const ACCELERATOR_OPTIMIZED_A3_MEGA = 156517459;
+    /**
+     * Generated from protobuf enum <code>ACCELERATOR_OPTIMIZED_A3_ULTRA = 27812811;</code>
+     */
+    const ACCELERATOR_OPTIMIZED_A3_ULTRA = 27812811;
+    /**
      * Generated from protobuf enum <code>COMPUTE_OPTIMIZED = 158349023;</code>
      */
     const COMPUTE_OPTIMIZED = 158349023;
@@ -52,6 +60,14 @@ class Type
      */
     const GENERAL_PURPOSE = 299793543;
     /**
+     * Generated from protobuf enum <code>GENERAL_PURPOSE_C4 = 301911817;</code>
+     */
+    const GENERAL_PURPOSE_C4 = 301911817;
+    /**
+     * Generated from protobuf enum <code>GENERAL_PURPOSE_C4A = 232460888;</code>
+     */
+    const GENERAL_PURPOSE_C4A = 232460888;
+    /**
      * Generated from protobuf enum <code>GENERAL_PURPOSE_E2 = 301911877;</code>
      */
     const GENERAL_PURPOSE_E2 = 301911877;
@@ -63,6 +79,10 @@ class Type
      * Generated from protobuf enum <code>GENERAL_PURPOSE_N2D = 232471400;</code>
      */
     const GENERAL_PURPOSE_N2D = 232471400;
+    /**
+     * Generated from protobuf enum <code>GENERAL_PURPOSE_N4 = 301912158;</code>
+     */
+    const GENERAL_PURPOSE_N4 = 301912158;
     /**
      * Generated from protobuf enum <code>GENERAL_PURPOSE_T2D = 232477166;</code>
      */
@@ -80,6 +100,22 @@ class Type
      */
     const MEMORY_OPTIMIZED_M3 = 276301372;
     /**
+     * Generated from protobuf enum <code>MEMORY_OPTIMIZED_X4_16TB = 183089120;</code>
+     */
+    const MEMORY_OPTIMIZED_X4_16TB = 183089120;
+    /**
+     * Generated from protobuf enum <code>MEMORY_OPTIMIZED_X4_24TB = 183116989;</code>
+     */
+    const MEMORY_OPTIMIZED_X4_24TB = 183116989;
+    /**
+     * Generated from protobuf enum <code>MEMORY_OPTIMIZED_X4_32TB = 183144858;</code>
+     */
+    const MEMORY_OPTIMIZED_X4_32TB = 183144858;
+    /**
+     * Generated from protobuf enum <code>STORAGE_OPTIMIZED_Z3 = 316796085;</code>
+     */
+    const STORAGE_OPTIMIZED_Z3 = 316796085;
+    /**
      * Generated from protobuf enum <code>TYPE_UNSPECIFIED = 437714322;</code>
      */
     const TYPE_UNSPECIFIED = 437714322;
@@ -88,19 +124,28 @@ class Type
         self::UNDEFINED_TYPE => 'UNDEFINED_TYPE',
         self::ACCELERATOR_OPTIMIZED => 'ACCELERATOR_OPTIMIZED',
         self::ACCELERATOR_OPTIMIZED_A3 => 'ACCELERATOR_OPTIMIZED_A3',
+        self::ACCELERATOR_OPTIMIZED_A3_MEGA => 'ACCELERATOR_OPTIMIZED_A3_MEGA',
+        self::ACCELERATOR_OPTIMIZED_A3_ULTRA => 'ACCELERATOR_OPTIMIZED_A3_ULTRA',
         self::COMPUTE_OPTIMIZED => 'COMPUTE_OPTIMIZED',
         self::COMPUTE_OPTIMIZED_C2D => 'COMPUTE_OPTIMIZED_C2D',
         self::COMPUTE_OPTIMIZED_C3 => 'COMPUTE_OPTIMIZED_C3',
         self::COMPUTE_OPTIMIZED_C3D => 'COMPUTE_OPTIMIZED_C3D',
         self::COMPUTE_OPTIMIZED_H3 => 'COMPUTE_OPTIMIZED_H3',
         self::GENERAL_PURPOSE => 'GENERAL_PURPOSE',
+        self::GENERAL_PURPOSE_C4 => 'GENERAL_PURPOSE_C4',
+        self::GENERAL_PURPOSE_C4A => 'GENERAL_PURPOSE_C4A',
         self::GENERAL_PURPOSE_E2 => 'GENERAL_PURPOSE_E2',
         self::GENERAL_PURPOSE_N2 => 'GENERAL_PURPOSE_N2',
         self::GENERAL_PURPOSE_N2D => 'GENERAL_PURPOSE_N2D',
+        self::GENERAL_PURPOSE_N4 => 'GENERAL_PURPOSE_N4',
         self::GENERAL_PURPOSE_T2D => 'GENERAL_PURPOSE_T2D',
         self::GRAPHICS_OPTIMIZED => 'GRAPHICS_OPTIMIZED',
         self::MEMORY_OPTIMIZED => 'MEMORY_OPTIMIZED',
         self::MEMORY_OPTIMIZED_M3 => 'MEMORY_OPTIMIZED_M3',
+        self::MEMORY_OPTIMIZED_X4_16TB => 'MEMORY_OPTIMIZED_X4_16TB',
+        self::MEMORY_OPTIMIZED_X4_24TB => 'MEMORY_OPTIMIZED_X4_24TB',
+        self::MEMORY_OPTIMIZED_X4_32TB => 'MEMORY_OPTIMIZED_X4_32TB',
+        self::STORAGE_OPTIMIZED_Z3 => 'STORAGE_OPTIMIZED_Z3',
         self::TYPE_UNSPECIFIED => 'TYPE_UNSPECIFIED',
     ];
 

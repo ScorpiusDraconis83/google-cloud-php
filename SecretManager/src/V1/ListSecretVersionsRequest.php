@@ -9,20 +9,22 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Request message for [SecretManagerService.ListSecretVersions][google.cloud.secretmanager.v1.SecretManagerService.ListSecretVersions].
+ * Request message for
+ * [SecretManagerService.ListSecretVersions][google.cloud.secretmanager.v1.SecretManagerService.ListSecretVersions].
  *
  * Generated from protobuf message <code>google.cloud.secretmanager.v1.ListSecretVersionsRequest</code>
  */
 class ListSecretVersionsRequest extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Required. The resource name of the [Secret][google.cloud.secretmanager.v1.Secret] associated with the
-     * [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] to list, in the format
-     * `projects/&#42;&#47;secrets/&#42;`.
+     * Required. The resource name of the
+     * [Secret][google.cloud.secretmanager.v1.Secret] associated with the
+     * [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] to list, in
+     * the format `projects/&#42;&#47;secrets/&#42;` or `projects/&#42;&#47;locations/&#42;&#47;secrets/&#42;`.
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * Optional. The maximum number of results to be returned in a single page. If
      * set to 0, the server decides the number of results to return. If the
@@ -30,14 +32,14 @@ class ListSecretVersionsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>int32 page_size = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $page_size = 0;
+    protected $page_size = 0;
     /**
      * Optional. Pagination token, returned earlier via
      * ListSecretVersionsResponse.next_page_token][].
      *
      * Generated from protobuf field <code>string page_token = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $page_token = '';
+    protected $page_token = '';
     /**
      * Optional. Filter string, adhering to the rules in
      * [List-operation
@@ -47,12 +49,13 @@ class ListSecretVersionsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string filter = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $filter = '';
+    protected $filter = '';
 
     /**
-     * @param string $parent Required. The resource name of the [Secret][google.cloud.secretmanager.v1.Secret] associated with the
-     *                       [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] to list, in the format
-     *                       `projects/&#42;/secrets/*`. Please see
+     * @param string $parent Required. The resource name of the
+     *                       [Secret][google.cloud.secretmanager.v1.Secret] associated with the
+     *                       [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] to list, in
+     *                       the format `projects/&#42;/secrets/*` or `projects/&#42;/locations/&#42;/secrets/*`. Please see
      *                       {@see SecretManagerServiceClient::secretName()} for help formatting this field.
      *
      * @return \Google\Cloud\SecretManager\V1\ListSecretVersionsRequest
@@ -72,9 +75,10 @@ class ListSecretVersionsRequest extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type string $parent
-     *           Required. The resource name of the [Secret][google.cloud.secretmanager.v1.Secret] associated with the
-     *           [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] to list, in the format
-     *           `projects/&#42;&#47;secrets/&#42;`.
+     *           Required. The resource name of the
+     *           [Secret][google.cloud.secretmanager.v1.Secret] associated with the
+     *           [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] to list, in
+     *           the format `projects/&#42;&#47;secrets/&#42;` or `projects/&#42;&#47;locations/&#42;&#47;secrets/&#42;`.
      *     @type int $page_size
      *           Optional. The maximum number of results to be returned in a single page. If
      *           set to 0, the server decides the number of results to return. If the
@@ -96,9 +100,10 @@ class ListSecretVersionsRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. The resource name of the [Secret][google.cloud.secretmanager.v1.Secret] associated with the
-     * [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] to list, in the format
-     * `projects/&#42;&#47;secrets/&#42;`.
+     * Required. The resource name of the
+     * [Secret][google.cloud.secretmanager.v1.Secret] associated with the
+     * [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] to list, in
+     * the format `projects/&#42;&#47;secrets/&#42;` or `projects/&#42;&#47;locations/&#42;&#47;secrets/&#42;`.
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      * @return string
@@ -109,9 +114,10 @@ class ListSecretVersionsRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. The resource name of the [Secret][google.cloud.secretmanager.v1.Secret] associated with the
-     * [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] to list, in the format
-     * `projects/&#42;&#47;secrets/&#42;`.
+     * Required. The resource name of the
+     * [Secret][google.cloud.secretmanager.v1.Secret] associated with the
+     * [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] to list, in
+     * the format `projects/&#42;&#47;secrets/&#42;` or `projects/&#42;&#47;locations/&#42;&#47;secrets/&#42;`.
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      * @param string $var

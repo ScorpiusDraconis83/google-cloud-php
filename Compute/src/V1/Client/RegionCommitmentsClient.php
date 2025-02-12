@@ -41,6 +41,7 @@ use Google\Cloud\Compute\V1\ListRegionCommitmentsRequest;
 use Google\Cloud\Compute\V1\RegionOperationsClient;
 use Google\Cloud\Compute\V1\UpdateRegionCommitmentRequest;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The RegionCommitments API.
@@ -48,11 +49,11 @@ use GuzzleHttp\Promise\PromiseInterface;
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
  *
- * @method PromiseInterface aggregatedListAsync(AggregatedListRegionCommitmentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAsync(GetRegionCommitmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface insertAsync(InsertRegionCommitmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAsync(ListRegionCommitmentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateAsync(UpdateRegionCommitmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> aggregatedListAsync(AggregatedListRegionCommitmentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Commitment> getAsync(GetRegionCommitmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> insertAsync(InsertRegionCommitmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAsync(ListRegionCommitmentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateAsync(UpdateRegionCommitmentRequest $request, array $optionalArgs = [])
  */
 final class RegionCommitmentsClient
 {
@@ -111,8 +112,8 @@ final class RegionCommitmentsClient
         return 'rest';
     }
 
-    /** Implements GapicClientTrait::getSupportedTransports. */
-    private static function getSupportedTransports()
+    /** Implements ClientOptionsTrait::supportedTransports. */
+    private static function supportedTransports()
     {
         return [
             'rest',
@@ -145,6 +146,9 @@ final class RegionCommitmentsClient
             'operationNameMethod' => 'getName',
             'operationStatusMethod' => 'getStatus',
             'operationStatusDoneValue' => \Google\Cloud\Compute\V1\Operation\Status::DONE,
+            'getOperationRequest' => '\Google\Cloud\Compute\V1\GetRegionOperationRequest',
+            'cancelOperationRequest' => null,
+            'deleteOperationRequest' => '\Google\Cloud\Compute\V1\DeleteRegionOperationRequest',
         ];
     }
 
@@ -184,6 +188,12 @@ final class RegionCommitmentsClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -214,6 +224,9 @@ final class RegionCommitmentsClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -237,9 +250,11 @@ final class RegionCommitmentsClient
     }
 
     /**
-     * Retrieves an aggregated list of commitments by region.
+     * Retrieves an aggregated list of commitments by region. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
      *
      * The async variant is {@see RegionCommitmentsClient::aggregatedListAsync()} .
+     *
+     * @example samples/V1/RegionCommitmentsClient/aggregated_list.php
      *
      * @param AggregatedListRegionCommitmentsRequest $request     A request to house fields associated with the call.
      * @param array                                  $callOptions {
@@ -265,6 +280,8 @@ final class RegionCommitmentsClient
      *
      * The async variant is {@see RegionCommitmentsClient::getAsync()} .
      *
+     * @example samples/V1/RegionCommitmentsClient/get.php
+     *
      * @param GetRegionCommitmentRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
      *     Optional.
@@ -288,6 +305,8 @@ final class RegionCommitmentsClient
      * Creates a commitment in the specified project using the data included in the request.
      *
      * The async variant is {@see RegionCommitmentsClient::insertAsync()} .
+     *
+     * @example samples/V1/RegionCommitmentsClient/insert.php
      *
      * @param InsertRegionCommitmentRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
@@ -313,6 +332,8 @@ final class RegionCommitmentsClient
      *
      * The async variant is {@see RegionCommitmentsClient::listAsync()} .
      *
+     * @example samples/V1/RegionCommitmentsClient/list.php
+     *
      * @param ListRegionCommitmentsRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -336,6 +357,8 @@ final class RegionCommitmentsClient
      * Updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: auto_renew.
      *
      * The async variant is {@see RegionCommitmentsClient::updateAsync()} .
+     *
+     * @example samples/V1/RegionCommitmentsClient/update.php
      *
      * @param UpdateRegionCommitmentRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {

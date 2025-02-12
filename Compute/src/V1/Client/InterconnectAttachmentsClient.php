@@ -43,6 +43,7 @@ use Google\Cloud\Compute\V1\PatchInterconnectAttachmentRequest;
 use Google\Cloud\Compute\V1\RegionOperationsClient;
 use Google\Cloud\Compute\V1\SetLabelsInterconnectAttachmentRequest;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The InterconnectAttachments API.
@@ -50,13 +51,13 @@ use GuzzleHttp\Promise\PromiseInterface;
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
  *
- * @method PromiseInterface aggregatedListAsync(AggregatedListInterconnectAttachmentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAsync(DeleteInterconnectAttachmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAsync(GetInterconnectAttachmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface insertAsync(InsertInterconnectAttachmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAsync(ListInterconnectAttachmentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface patchAsync(PatchInterconnectAttachmentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setLabelsAsync(SetLabelsInterconnectAttachmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> aggregatedListAsync(AggregatedListInterconnectAttachmentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteAsync(DeleteInterconnectAttachmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<InterconnectAttachment> getAsync(GetInterconnectAttachmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> insertAsync(InsertInterconnectAttachmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAsync(ListInterconnectAttachmentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> patchAsync(PatchInterconnectAttachmentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> setLabelsAsync(SetLabelsInterconnectAttachmentRequest $request, array $optionalArgs = [])
  */
 final class InterconnectAttachmentsClient
 {
@@ -115,8 +116,8 @@ final class InterconnectAttachmentsClient
         return 'rest';
     }
 
-    /** Implements GapicClientTrait::getSupportedTransports. */
-    private static function getSupportedTransports()
+    /** Implements ClientOptionsTrait::supportedTransports. */
+    private static function supportedTransports()
     {
         return [
             'rest',
@@ -149,6 +150,9 @@ final class InterconnectAttachmentsClient
             'operationNameMethod' => 'getName',
             'operationStatusMethod' => 'getStatus',
             'operationStatusDoneValue' => \Google\Cloud\Compute\V1\Operation\Status::DONE,
+            'getOperationRequest' => '\Google\Cloud\Compute\V1\GetRegionOperationRequest',
+            'cancelOperationRequest' => null,
+            'deleteOperationRequest' => '\Google\Cloud\Compute\V1\DeleteRegionOperationRequest',
         ];
     }
 
@@ -188,6 +192,12 @@ final class InterconnectAttachmentsClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -218,6 +228,9 @@ final class InterconnectAttachmentsClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -241,10 +254,12 @@ final class InterconnectAttachmentsClient
     }
 
     /**
-     * Retrieves an aggregated list of interconnect attachments.
+     * Retrieves an aggregated list of interconnect attachments. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
      *
      * The async variant is {@see InterconnectAttachmentsClient::aggregatedListAsync()}
      * .
+     *
+     * @example samples/V1/InterconnectAttachmentsClient/aggregated_list.php
      *
      * @param AggregatedListInterconnectAttachmentsRequest $request     A request to house fields associated with the call.
      * @param array                                        $callOptions {
@@ -270,6 +285,8 @@ final class InterconnectAttachmentsClient
      *
      * The async variant is {@see InterconnectAttachmentsClient::deleteAsync()} .
      *
+     * @example samples/V1/InterconnectAttachmentsClient/delete.php
+     *
      * @param DeleteInterconnectAttachmentRequest $request     A request to house fields associated with the call.
      * @param array                               $callOptions {
      *     Optional.
@@ -293,6 +310,8 @@ final class InterconnectAttachmentsClient
      * Returns the specified interconnect attachment.
      *
      * The async variant is {@see InterconnectAttachmentsClient::getAsync()} .
+     *
+     * @example samples/V1/InterconnectAttachmentsClient/get.php
      *
      * @param GetInterconnectAttachmentRequest $request     A request to house fields associated with the call.
      * @param array                            $callOptions {
@@ -318,6 +337,8 @@ final class InterconnectAttachmentsClient
      *
      * The async variant is {@see InterconnectAttachmentsClient::insertAsync()} .
      *
+     * @example samples/V1/InterconnectAttachmentsClient/insert.php
+     *
      * @param InsertInterconnectAttachmentRequest $request     A request to house fields associated with the call.
      * @param array                               $callOptions {
      *     Optional.
@@ -341,6 +362,8 @@ final class InterconnectAttachmentsClient
      * Retrieves the list of interconnect attachments contained within the specified region.
      *
      * The async variant is {@see InterconnectAttachmentsClient::listAsync()} .
+     *
+     * @example samples/V1/InterconnectAttachmentsClient/list.php
      *
      * @param ListInterconnectAttachmentsRequest $request     A request to house fields associated with the call.
      * @param array                              $callOptions {
@@ -366,6 +389,8 @@ final class InterconnectAttachmentsClient
      *
      * The async variant is {@see InterconnectAttachmentsClient::patchAsync()} .
      *
+     * @example samples/V1/InterconnectAttachmentsClient/patch.php
+     *
      * @param PatchInterconnectAttachmentRequest $request     A request to house fields associated with the call.
      * @param array                              $callOptions {
      *     Optional.
@@ -389,6 +414,8 @@ final class InterconnectAttachmentsClient
      * Sets the labels on an InterconnectAttachment. To learn more about labels, read the Labeling Resources documentation.
      *
      * The async variant is {@see InterconnectAttachmentsClient::setLabelsAsync()} .
+     *
+     * @example samples/V1/InterconnectAttachmentsClient/set_labels.php
      *
      * @param SetLabelsInterconnectAttachmentRequest $request     A request to house fields associated with the call.
      * @param array                                  $callOptions {

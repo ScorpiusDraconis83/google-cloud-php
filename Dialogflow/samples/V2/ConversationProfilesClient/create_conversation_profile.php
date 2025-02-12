@@ -24,13 +24,16 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START dialogflow_v2_generated_ConversationProfiles_CreateConversationProfile_sync]
 use Google\ApiCore\ApiException;
+use Google\Cloud\Dialogflow\V2\Client\ConversationProfilesClient;
 use Google\Cloud\Dialogflow\V2\ConversationProfile;
-use Google\Cloud\Dialogflow\V2\ConversationProfilesClient;
+use Google\Cloud\Dialogflow\V2\CreateConversationProfileRequest;
 
 /**
  * Creates a conversation profile in the specified project.
  *
- * [ConversationProfile.CreateTime][] and [ConversationProfile.UpdateTime][]
+ * [ConversationProfile.create_time][google.cloud.dialogflow.v2.ConversationProfile.create_time]
+ * and
+ * [ConversationProfile.update_time][google.cloud.dialogflow.v2.ConversationProfile.update_time]
  * aren't populated in the response. You can retrieve them via
  * [GetConversationProfile][google.cloud.dialogflow.v2.ConversationProfiles.GetConversationProfile]
  * API.
@@ -47,17 +50,17 @@ function create_conversation_profile_sample(
     // Create a client.
     $conversationProfilesClient = new ConversationProfilesClient();
 
-    // Prepare any non-scalar elements to be passed along with the request.
+    // Prepare the request message.
     $conversationProfile = (new ConversationProfile())
         ->setDisplayName($conversationProfileDisplayName);
+    $request = (new CreateConversationProfileRequest())
+        ->setParent($formattedParent)
+        ->setConversationProfile($conversationProfile);
 
     // Call the API and handle any network failures.
     try {
         /** @var ConversationProfile $response */
-        $response = $conversationProfilesClient->createConversationProfile(
-            $formattedParent,
-            $conversationProfile
-        );
+        $response = $conversationProfilesClient->createConversationProfile($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

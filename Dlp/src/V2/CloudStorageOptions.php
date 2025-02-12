@@ -21,7 +21,7 @@ class CloudStorageOptions extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.privacy.dlp.v2.CloudStorageOptions.FileSet file_set = 1;</code>
      */
-    private $file_set = null;
+    protected $file_set = null;
     /**
      * Max number of bytes to scan from a file. If a scanned file's size is bigger
      * than this value then the rest of the bytes are omitted. Only one of
@@ -29,11 +29,11 @@ class CloudStorageOptions extends \Google\Protobuf\Internal\Message
      * This field can't be set if de-identification is requested. For certain file
      * types, setting this field has no effect. For more information, see [Limits
      * on bytes scanned per
-     * file](https://cloud.google.com/dlp/docs/supported-file-types#max-byte-size-per-file).
+     * file](https://cloud.google.com/sensitive-data-protection/docs/supported-file-types#max-byte-size-per-file).
      *
      * Generated from protobuf field <code>int64 bytes_limit_per_file = 4;</code>
      */
-    private $bytes_limit_per_file = 0;
+    protected $bytes_limit_per_file = 0;
     /**
      * Max percentage of bytes to scan from a file. The rest are omitted. The
      * number of bytes scanned is rounded down. Must be between 0 and 100,
@@ -42,11 +42,11 @@ class CloudStorageOptions extends \Google\Protobuf\Internal\Message
      * This field can't be set if de-identification is requested. For certain file
      * types, setting this field has no effect. For more information, see [Limits
      * on bytes scanned per
-     * file](https://cloud.google.com/dlp/docs/supported-file-types#max-byte-size-per-file).
+     * file](https://cloud.google.com/sensitive-data-protection/docs/supported-file-types#max-byte-size-per-file).
      *
      * Generated from protobuf field <code>int32 bytes_limit_per_file_percent = 8;</code>
      */
-    private $bytes_limit_per_file_percent = 0;
+    protected $bytes_limit_per_file_percent = 0;
     /**
      * List of file type groups to include in the scan.
      * If empty, all files are scanned and available data format processors
@@ -60,9 +60,11 @@ class CloudStorageOptions extends \Google\Protobuf\Internal\Message
      */
     private $file_types;
     /**
+     * How to sample the data.
+     *
      * Generated from protobuf field <code>.google.privacy.dlp.v2.CloudStorageOptions.SampleMethod sample_method = 6;</code>
      */
-    private $sample_method = 0;
+    protected $sample_method = 0;
     /**
      * Limits the number of files to scan to this percentage of the input FileSet.
      * Number of files scanned is rounded down. Must be between 0 and 100,
@@ -70,7 +72,7 @@ class CloudStorageOptions extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>int32 files_limit_percent = 7;</code>
      */
-    private $files_limit_percent = 0;
+    protected $files_limit_percent = 0;
 
     /**
      * Constructor.
@@ -87,7 +89,7 @@ class CloudStorageOptions extends \Google\Protobuf\Internal\Message
      *           This field can't be set if de-identification is requested. For certain file
      *           types, setting this field has no effect. For more information, see [Limits
      *           on bytes scanned per
-     *           file](https://cloud.google.com/dlp/docs/supported-file-types#max-byte-size-per-file).
+     *           file](https://cloud.google.com/sensitive-data-protection/docs/supported-file-types#max-byte-size-per-file).
      *     @type int $bytes_limit_per_file_percent
      *           Max percentage of bytes to scan from a file. The rest are omitted. The
      *           number of bytes scanned is rounded down. Must be between 0 and 100,
@@ -96,7 +98,7 @@ class CloudStorageOptions extends \Google\Protobuf\Internal\Message
      *           This field can't be set if de-identification is requested. For certain file
      *           types, setting this field has no effect. For more information, see [Limits
      *           on bytes scanned per
-     *           file](https://cloud.google.com/dlp/docs/supported-file-types#max-byte-size-per-file).
+     *           file](https://cloud.google.com/sensitive-data-protection/docs/supported-file-types#max-byte-size-per-file).
      *     @type array<int>|\Google\Protobuf\Internal\RepeatedField $file_types
      *           List of file type groups to include in the scan.
      *           If empty, all files are scanned and available data format processors
@@ -106,6 +108,7 @@ class CloudStorageOptions extends \Google\Protobuf\Internal\Message
      *           does not support image inspection and no file_types were specified.
      *           Image inspection is restricted to 'global', 'us', 'asia', and 'europe'.
      *     @type int $sample_method
+     *           How to sample the data.
      *     @type int $files_limit_percent
      *           Limits the number of files to scan to this percentage of the input FileSet.
      *           Number of files scanned is rounded down. Must be between 0 and 100,
@@ -160,7 +163,7 @@ class CloudStorageOptions extends \Google\Protobuf\Internal\Message
      * This field can't be set if de-identification is requested. For certain file
      * types, setting this field has no effect. For more information, see [Limits
      * on bytes scanned per
-     * file](https://cloud.google.com/dlp/docs/supported-file-types#max-byte-size-per-file).
+     * file](https://cloud.google.com/sensitive-data-protection/docs/supported-file-types#max-byte-size-per-file).
      *
      * Generated from protobuf field <code>int64 bytes_limit_per_file = 4;</code>
      * @return int|string
@@ -177,7 +180,7 @@ class CloudStorageOptions extends \Google\Protobuf\Internal\Message
      * This field can't be set if de-identification is requested. For certain file
      * types, setting this field has no effect. For more information, see [Limits
      * on bytes scanned per
-     * file](https://cloud.google.com/dlp/docs/supported-file-types#max-byte-size-per-file).
+     * file](https://cloud.google.com/sensitive-data-protection/docs/supported-file-types#max-byte-size-per-file).
      *
      * Generated from protobuf field <code>int64 bytes_limit_per_file = 4;</code>
      * @param int|string $var
@@ -199,7 +202,7 @@ class CloudStorageOptions extends \Google\Protobuf\Internal\Message
      * This field can't be set if de-identification is requested. For certain file
      * types, setting this field has no effect. For more information, see [Limits
      * on bytes scanned per
-     * file](https://cloud.google.com/dlp/docs/supported-file-types#max-byte-size-per-file).
+     * file](https://cloud.google.com/sensitive-data-protection/docs/supported-file-types#max-byte-size-per-file).
      *
      * Generated from protobuf field <code>int32 bytes_limit_per_file_percent = 8;</code>
      * @return int
@@ -217,7 +220,7 @@ class CloudStorageOptions extends \Google\Protobuf\Internal\Message
      * This field can't be set if de-identification is requested. For certain file
      * types, setting this field has no effect. For more information, see [Limits
      * on bytes scanned per
-     * file](https://cloud.google.com/dlp/docs/supported-file-types#max-byte-size-per-file).
+     * file](https://cloud.google.com/sensitive-data-protection/docs/supported-file-types#max-byte-size-per-file).
      *
      * Generated from protobuf field <code>int32 bytes_limit_per_file_percent = 8;</code>
      * @param int $var
@@ -270,6 +273,8 @@ class CloudStorageOptions extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * How to sample the data.
+     *
      * Generated from protobuf field <code>.google.privacy.dlp.v2.CloudStorageOptions.SampleMethod sample_method = 6;</code>
      * @return int
      */
@@ -279,6 +284,8 @@ class CloudStorageOptions extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * How to sample the data.
+     *
      * Generated from protobuf field <code>.google.privacy.dlp.v2.CloudStorageOptions.SampleMethod sample_method = 6;</code>
      * @param int $var
      * @return $this

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\VMMigration\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -94,8 +93,10 @@ use Google\Cloud\VMMigration\V1\UpdateSourceRequest;
 use Google\Cloud\VMMigration\V1\UpdateTargetProjectRequest;
 use Google\Cloud\VMMigration\V1\UpgradeApplianceRequest;
 use Google\Cloud\VMMigration\V1\UtilizationReport;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: VM Migration Service
@@ -108,54 +109,54 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface addGroupMigrationAsync(AddGroupMigrationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface cancelCloneJobAsync(CancelCloneJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface cancelCutoverJobAsync(CancelCutoverJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createCloneJobAsync(CreateCloneJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createCutoverJobAsync(CreateCutoverJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createDatacenterConnectorAsync(CreateDatacenterConnectorRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createGroupAsync(CreateGroupRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createMigratingVmAsync(CreateMigratingVmRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createSourceAsync(CreateSourceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createTargetProjectAsync(CreateTargetProjectRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createUtilizationReportAsync(CreateUtilizationReportRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteDatacenterConnectorAsync(DeleteDatacenterConnectorRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteGroupAsync(DeleteGroupRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteMigratingVmAsync(DeleteMigratingVmRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteSourceAsync(DeleteSourceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteTargetProjectAsync(DeleteTargetProjectRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteUtilizationReportAsync(DeleteUtilizationReportRequest $request, array $optionalArgs = [])
- * @method PromiseInterface fetchInventoryAsync(FetchInventoryRequest $request, array $optionalArgs = [])
- * @method PromiseInterface finalizeMigrationAsync(FinalizeMigrationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getCloneJobAsync(GetCloneJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getCutoverJobAsync(GetCutoverJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getDatacenterConnectorAsync(GetDatacenterConnectorRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getGroupAsync(GetGroupRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getMigratingVmAsync(GetMigratingVmRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getReplicationCycleAsync(GetReplicationCycleRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getSourceAsync(GetSourceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getTargetProjectAsync(GetTargetProjectRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getUtilizationReportAsync(GetUtilizationReportRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listCloneJobsAsync(ListCloneJobsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listCutoverJobsAsync(ListCutoverJobsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listDatacenterConnectorsAsync(ListDatacenterConnectorsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listGroupsAsync(ListGroupsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listMigratingVmsAsync(ListMigratingVmsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listReplicationCyclesAsync(ListReplicationCyclesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listSourcesAsync(ListSourcesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listTargetProjectsAsync(ListTargetProjectsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listUtilizationReportsAsync(ListUtilizationReportsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface pauseMigrationAsync(PauseMigrationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface removeGroupMigrationAsync(RemoveGroupMigrationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface resumeMigrationAsync(ResumeMigrationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface startMigrationAsync(StartMigrationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateGroupAsync(UpdateGroupRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateMigratingVmAsync(UpdateMigratingVmRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateSourceAsync(UpdateSourceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateTargetProjectAsync(UpdateTargetProjectRequest $request, array $optionalArgs = [])
- * @method PromiseInterface upgradeApplianceAsync(UpgradeApplianceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> addGroupMigrationAsync(AddGroupMigrationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> cancelCloneJobAsync(CancelCloneJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> cancelCutoverJobAsync(CancelCutoverJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createCloneJobAsync(CreateCloneJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createCutoverJobAsync(CreateCutoverJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createDatacenterConnectorAsync(CreateDatacenterConnectorRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createGroupAsync(CreateGroupRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createMigratingVmAsync(CreateMigratingVmRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createSourceAsync(CreateSourceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createTargetProjectAsync(CreateTargetProjectRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createUtilizationReportAsync(CreateUtilizationReportRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteDatacenterConnectorAsync(DeleteDatacenterConnectorRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteGroupAsync(DeleteGroupRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteMigratingVmAsync(DeleteMigratingVmRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteSourceAsync(DeleteSourceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteTargetProjectAsync(DeleteTargetProjectRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteUtilizationReportAsync(DeleteUtilizationReportRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<FetchInventoryResponse> fetchInventoryAsync(FetchInventoryRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> finalizeMigrationAsync(FinalizeMigrationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CloneJob> getCloneJobAsync(GetCloneJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CutoverJob> getCutoverJobAsync(GetCutoverJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DatacenterConnector> getDatacenterConnectorAsync(GetDatacenterConnectorRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Group> getGroupAsync(GetGroupRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<MigratingVm> getMigratingVmAsync(GetMigratingVmRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ReplicationCycle> getReplicationCycleAsync(GetReplicationCycleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Source> getSourceAsync(GetSourceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TargetProject> getTargetProjectAsync(GetTargetProjectRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<UtilizationReport> getUtilizationReportAsync(GetUtilizationReportRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listCloneJobsAsync(ListCloneJobsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listCutoverJobsAsync(ListCutoverJobsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listDatacenterConnectorsAsync(ListDatacenterConnectorsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listGroupsAsync(ListGroupsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listMigratingVmsAsync(ListMigratingVmsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listReplicationCyclesAsync(ListReplicationCyclesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listSourcesAsync(ListSourcesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listTargetProjectsAsync(ListTargetProjectsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listUtilizationReportsAsync(ListUtilizationReportsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> pauseMigrationAsync(PauseMigrationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> removeGroupMigrationAsync(RemoveGroupMigrationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> resumeMigrationAsync(ResumeMigrationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> startMigrationAsync(StartMigrationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateGroupAsync(UpdateGroupRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateMigratingVmAsync(UpdateMigratingVmRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateSourceAsync(UpdateSourceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateTargetProjectAsync(UpdateTargetProjectRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> upgradeApplianceAsync(UpgradeApplianceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
  */
 final class VmMigrationClient
 {
@@ -182,9 +183,7 @@ final class VmMigrationClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private $operationsClient;
 
@@ -230,10 +229,31 @@ final class VmMigrationClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -248,8 +268,13 @@ final class VmMigrationClient
      *
      * @return string The formatted clone_job resource.
      */
-    public static function cloneJobName(string $project, string $location, string $source, string $migratingVm, string $cloneJob): string
-    {
+    public static function cloneJobName(
+        string $project,
+        string $location,
+        string $source,
+        string $migratingVm,
+        string $cloneJob
+    ): string {
         return self::getPathTemplate('cloneJob')->render([
             'project' => $project,
             'location' => $location,
@@ -271,8 +296,13 @@ final class VmMigrationClient
      *
      * @return string The formatted cutover_job resource.
      */
-    public static function cutoverJobName(string $project, string $location, string $source, string $migratingVm, string $cutoverJob): string
-    {
+    public static function cutoverJobName(
+        string $project,
+        string $location,
+        string $source,
+        string $migratingVm,
+        string $cutoverJob
+    ): string {
         return self::getPathTemplate('cutoverJob')->render([
             'project' => $project,
             'location' => $location,
@@ -293,8 +323,12 @@ final class VmMigrationClient
      *
      * @return string The formatted datacenter_connector resource.
      */
-    public static function datacenterConnectorName(string $project, string $location, string $source, string $datacenterConnector): string
-    {
+    public static function datacenterConnectorName(
+        string $project,
+        string $location,
+        string $source,
+        string $datacenterConnector
+    ): string {
         return self::getPathTemplate('datacenterConnector')->render([
             'project' => $project,
             'location' => $location,
@@ -350,8 +384,12 @@ final class VmMigrationClient
      *
      * @return string The formatted migrating_vm resource.
      */
-    public static function migratingVmName(string $project, string $location, string $source, string $migratingVm): string
-    {
+    public static function migratingVmName(
+        string $project,
+        string $location,
+        string $source,
+        string $migratingVm
+    ): string {
         return self::getPathTemplate('migratingVm')->render([
             'project' => $project,
             'location' => $location,
@@ -372,8 +410,13 @@ final class VmMigrationClient
      *
      * @return string The formatted replication_cycle resource.
      */
-    public static function replicationCycleName(string $project, string $location, string $source, string $migratingVm, string $replicationCycle): string
-    {
+    public static function replicationCycleName(
+        string $project,
+        string $location,
+        string $source,
+        string $migratingVm,
+        string $replicationCycle
+    ): string {
         return self::getPathTemplate('replicationCycle')->render([
             'project' => $project,
             'location' => $location,
@@ -432,8 +475,12 @@ final class VmMigrationClient
      *
      * @return string The formatted utilization_report resource.
      */
-    public static function utilizationReportName(string $project, string $location, string $source, string $utilizationReport): string
-    {
+    public static function utilizationReportName(
+        string $project,
+        string $location,
+        string $source,
+        string $utilizationReport
+    ): string {
         return self::getPathTemplate('utilizationReport')->render([
             'project' => $project,
             'location' => $location,
@@ -463,14 +510,14 @@ final class VmMigrationClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -492,6 +539,12 @@ final class VmMigrationClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -525,6 +578,9 @@ final class VmMigrationClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -701,8 +757,10 @@ final class VmMigrationClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createDatacenterConnector(CreateDatacenterConnectorRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function createDatacenterConnector(
+        CreateDatacenterConnectorRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('CreateDatacenterConnector', $request, $callOptions)->wait();
     }
 
@@ -834,8 +892,10 @@ final class VmMigrationClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createUtilizationReport(CreateUtilizationReportRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function createUtilizationReport(
+        CreateUtilizationReportRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('CreateUtilizationReport', $request, $callOptions)->wait();
     }
 
@@ -861,8 +921,10 @@ final class VmMigrationClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function deleteDatacenterConnector(DeleteDatacenterConnectorRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function deleteDatacenterConnector(
+        DeleteDatacenterConnectorRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('DeleteDatacenterConnector', $request, $callOptions)->wait();
     }
 
@@ -994,8 +1056,10 @@ final class VmMigrationClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function deleteUtilizationReport(DeleteUtilizationReportRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function deleteUtilizationReport(
+        DeleteUtilizationReportRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('DeleteUtilizationReport', $request, $callOptions)->wait();
     }
 
@@ -1129,8 +1193,10 @@ final class VmMigrationClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getDatacenterConnector(GetDatacenterConnectorRequest $request, array $callOptions = []): DatacenterConnector
-    {
+    public function getDatacenterConnector(
+        GetDatacenterConnectorRequest $request,
+        array $callOptions = []
+    ): DatacenterConnector {
         return $this->startApiCall('GetDatacenterConnector', $request, $callOptions)->wait();
     }
 
@@ -1288,8 +1354,10 @@ final class VmMigrationClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getUtilizationReport(GetUtilizationReportRequest $request, array $callOptions = []): UtilizationReport
-    {
+    public function getUtilizationReport(
+        GetUtilizationReportRequest $request,
+        array $callOptions = []
+    ): UtilizationReport {
         return $this->startApiCall('GetUtilizationReport', $request, $callOptions)->wait();
     }
 
@@ -1366,8 +1434,10 @@ final class VmMigrationClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listDatacenterConnectors(ListDatacenterConnectorsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listDatacenterConnectors(
+        ListDatacenterConnectorsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListDatacenterConnectors', $request, $callOptions);
     }
 
@@ -1444,8 +1514,10 @@ final class VmMigrationClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listReplicationCycles(ListReplicationCyclesRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listReplicationCycles(
+        ListReplicationCyclesRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListReplicationCycles', $request, $callOptions);
     }
 
@@ -1525,8 +1597,10 @@ final class VmMigrationClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listUtilizationReports(ListUtilizationReportsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listUtilizationReports(
+        ListUtilizationReportsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListUtilizationReports', $request, $callOptions);
     }
 
@@ -1579,8 +1653,10 @@ final class VmMigrationClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function removeGroupMigration(RemoveGroupMigrationRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function removeGroupMigration(
+        RemoveGroupMigrationRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('RemoveGroupMigration', $request, $callOptions)->wait();
     }
 

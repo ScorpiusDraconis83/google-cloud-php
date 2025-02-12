@@ -25,14 +25,15 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // [START securitycenter_v1_generated_SecurityCenter_CreateBigQueryExport_sync]
 use Google\ApiCore\ApiException;
 use Google\Cloud\SecurityCenter\V1\BigQueryExport;
-use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\Client\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\CreateBigQueryExportRequest;
 
 /**
  * Creates a BigQuery export.
  *
  * @param string $formattedParent  The name of the parent resource of the new BigQuery export. Its
- *                                 format is "organizations/[organization_id]", "folders/[folder_id]", or
- *                                 "projects/[project_id]". Please see
+ *                                 format is `organizations/[organization_id]`, `folders/[folder_id]`, or
+ *                                 `projects/[project_id]`. Please see
  *                                 {@see SecurityCenterClient::projectName()} for help formatting this field.
  * @param string $bigQueryExportId Unique identifier provided by the client within the parent scope.
  *                                 It must consist of only lowercase letters, numbers, and hyphens, must start
@@ -44,17 +45,17 @@ function create_big_query_export_sample(string $formattedParent, string $bigQuer
     // Create a client.
     $securityCenterClient = new SecurityCenterClient();
 
-    // Prepare any non-scalar elements to be passed along with the request.
+    // Prepare the request message.
     $bigQueryExport = new BigQueryExport();
+    $request = (new CreateBigQueryExportRequest())
+        ->setParent($formattedParent)
+        ->setBigQueryExport($bigQueryExport)
+        ->setBigQueryExportId($bigQueryExportId);
 
     // Call the API and handle any network failures.
     try {
         /** @var BigQueryExport $response */
-        $response = $securityCenterClient->createBigQueryExport(
-            $formattedParent,
-            $bigQueryExport,
-            $bigQueryExportId
-        );
+        $response = $securityCenterClient->createBigQueryExport($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

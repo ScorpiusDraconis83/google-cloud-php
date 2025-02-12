@@ -21,44 +21,44 @@ class IamPolicyAnalysisQuery extends \Google\Protobuf\Internal\Message
      * This can only be an organization number (such as "organizations/123"), a
      * folder number (such as "folders/123"), a project ID (such as
      * "projects/my-project-id"), or a project number (such as "projects/12345").
-     * To know how to get organization id, visit [here
+     * To know how to get organization ID, visit [here
      * ](https://cloud.google.com/resource-manager/docs/creating-managing-organization#retrieving_your_organization_id).
-     * To know how to get folder or project id, visit [here
+     * To know how to get folder or project ID, visit [here
      * ](https://cloud.google.com/resource-manager/docs/creating-managing-folders#viewing_or_listing_folders_and_projects).
      *
      * Generated from protobuf field <code>string scope = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $scope = '';
+    protected $scope = '';
     /**
      * Optional. Specifies a resource for analysis.
      *
      * Generated from protobuf field <code>.google.cloud.asset.v1.IamPolicyAnalysisQuery.ResourceSelector resource_selector = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $resource_selector = null;
+    protected $resource_selector = null;
     /**
      * Optional. Specifies an identity for analysis.
      *
      * Generated from protobuf field <code>.google.cloud.asset.v1.IamPolicyAnalysisQuery.IdentitySelector identity_selector = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $identity_selector = null;
+    protected $identity_selector = null;
     /**
      * Optional. Specifies roles or permissions for analysis. This is optional.
      *
      * Generated from protobuf field <code>.google.cloud.asset.v1.IamPolicyAnalysisQuery.AccessSelector access_selector = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $access_selector = null;
+    protected $access_selector = null;
     /**
      * Optional. The query options.
      *
      * Generated from protobuf field <code>.google.cloud.asset.v1.IamPolicyAnalysisQuery.Options options = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $options = null;
+    protected $options = null;
     /**
      * Optional. The hypothetical context for IAM conditions evaluation.
      *
      * Generated from protobuf field <code>.google.cloud.asset.v1.IamPolicyAnalysisQuery.ConditionContext condition_context = 6 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $condition_context = null;
+    protected $condition_context = null;
 
     /**
      * Constructor.
@@ -72,9 +72,9 @@ class IamPolicyAnalysisQuery extends \Google\Protobuf\Internal\Message
      *           This can only be an organization number (such as "organizations/123"), a
      *           folder number (such as "folders/123"), a project ID (such as
      *           "projects/my-project-id"), or a project number (such as "projects/12345").
-     *           To know how to get organization id, visit [here
+     *           To know how to get organization ID, visit [here
      *           ](https://cloud.google.com/resource-manager/docs/creating-managing-organization#retrieving_your_organization_id).
-     *           To know how to get folder or project id, visit [here
+     *           To know how to get folder or project ID, visit [here
      *           ](https://cloud.google.com/resource-manager/docs/creating-managing-folders#viewing_or_listing_folders_and_projects).
      *     @type \Google\Cloud\Asset\V1\IamPolicyAnalysisQuery\ResourceSelector $resource_selector
      *           Optional. Specifies a resource for analysis.
@@ -99,9 +99,9 @@ class IamPolicyAnalysisQuery extends \Google\Protobuf\Internal\Message
      * This can only be an organization number (such as "organizations/123"), a
      * folder number (such as "folders/123"), a project ID (such as
      * "projects/my-project-id"), or a project number (such as "projects/12345").
-     * To know how to get organization id, visit [here
+     * To know how to get organization ID, visit [here
      * ](https://cloud.google.com/resource-manager/docs/creating-managing-organization#retrieving_your_organization_id).
-     * To know how to get folder or project id, visit [here
+     * To know how to get folder or project ID, visit [here
      * ](https://cloud.google.com/resource-manager/docs/creating-managing-folders#viewing_or_listing_folders_and_projects).
      *
      * Generated from protobuf field <code>string scope = 1 [(.google.api.field_behavior) = REQUIRED];</code>
@@ -118,9 +118,9 @@ class IamPolicyAnalysisQuery extends \Google\Protobuf\Internal\Message
      * This can only be an organization number (such as "organizations/123"), a
      * folder number (such as "folders/123"), a project ID (such as
      * "projects/my-project-id"), or a project number (such as "projects/12345").
-     * To know how to get organization id, visit [here
+     * To know how to get organization ID, visit [here
      * ](https://cloud.google.com/resource-manager/docs/creating-managing-organization#retrieving_your_organization_id).
-     * To know how to get folder or project id, visit [here
+     * To know how to get folder or project ID, visit [here
      * ](https://cloud.google.com/resource-manager/docs/creating-managing-folders#viewing_or_listing_folders_and_projects).
      *
      * Generated from protobuf field <code>string scope = 1 [(.google.api.field_behavior) = REQUIRED];</code>

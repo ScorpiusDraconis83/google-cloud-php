@@ -21,13 +21,30 @@ class CreateChannelGroupRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * Required. The ChannelGroup to create.
      *
      * Generated from protobuf field <code>.google.analytics.admin.v1alpha.ChannelGroup channel_group = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $channel_group = null;
+    protected $channel_group = null;
+
+    /**
+     * @param string                                       $parent       Required. The property for which to create a ChannelGroup.
+     *                                                                   Example format: properties/1234
+     *                                                                   Please see {@see AnalyticsAdminServiceClient::propertyName()} for help formatting this field.
+     * @param \Google\Analytics\Admin\V1alpha\ChannelGroup $channelGroup Required. The ChannelGroup to create.
+     *
+     * @return \Google\Analytics\Admin\V1alpha\CreateChannelGroupRequest
+     *
+     * @experimental
+     */
+    public static function build(string $parent, \Google\Analytics\Admin\V1alpha\ChannelGroup $channelGroup): self
+    {
+        return (new self())
+            ->setParent($parent)
+            ->setChannelGroup($channelGroup);
+    }
 
     /**
      * Constructor.

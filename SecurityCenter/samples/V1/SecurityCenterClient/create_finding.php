@@ -24,15 +24,16 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START securitycenter_v1_generated_SecurityCenter_CreateFinding_sync]
 use Google\ApiCore\ApiException;
+use Google\Cloud\SecurityCenter\V1\Client\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\CreateFindingRequest;
 use Google\Cloud\SecurityCenter\V1\Finding;
-use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
 
 /**
  * Creates a finding. The corresponding source must exist for finding creation
  * to succeed.
  *
  * @param string $formattedParent Resource name of the new finding's parent. Its format should be
- *                                "organizations/[organization_id]/sources/[source_id]". Please see
+ *                                `organizations/[organization_id]/sources/[source_id]`. Please see
  *                                {@see SecurityCenterClient::sourceName()} for help formatting this field.
  * @param string $findingId       Unique identifier provided by the client within the parent scope.
  *                                It must be alphanumeric and less than or equal to 32 characters and
@@ -43,13 +44,17 @@ function create_finding_sample(string $formattedParent, string $findingId): void
     // Create a client.
     $securityCenterClient = new SecurityCenterClient();
 
-    // Prepare any non-scalar elements to be passed along with the request.
+    // Prepare the request message.
     $finding = new Finding();
+    $request = (new CreateFindingRequest())
+        ->setParent($formattedParent)
+        ->setFindingId($findingId)
+        ->setFinding($finding);
 
     // Call the API and handle any network failures.
     try {
         /** @var Finding $response */
-        $response = $securityCenterClient->createFinding($formattedParent, $findingId, $finding);
+        $response = $securityCenterClient->createFinding($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

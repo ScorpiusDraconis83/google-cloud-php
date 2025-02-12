@@ -7,7 +7,7 @@ namespace Google\Cloud\Compute\V1\NetworkEndpointGroup;
 use UnexpectedValueException;
 
 /**
- * Type of network endpoints in this network endpoint group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS, PRIVATE_SERVICE_CONNECT.
+ * Type of network endpoints in this network endpoint group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS, PRIVATE_SERVICE_CONNECT, GCE_VM_IP_PORTMAP.
  *
  * Protobuf type <code>google.cloud.compute.v1.NetworkEndpointGroup.NetworkEndpointType</code>
  */
@@ -31,6 +31,12 @@ class NetworkEndpointType
      * Generated from protobuf enum <code>GCE_VM_IP_PORT = 501838375;</code>
      */
     const GCE_VM_IP_PORT = 501838375;
+    /**
+     * The network endpoint is represented by an IP, Port and Client Destination Port.
+     *
+     * Generated from protobuf enum <code>GCE_VM_IP_PORTMAP = 22819253;</code>
+     */
+    const GCE_VM_IP_PORTMAP = 22819253;
     /**
      * The network endpoint is represented by fully qualified domain name and port.
      *
@@ -66,6 +72,7 @@ class NetworkEndpointType
         self::UNDEFINED_NETWORK_ENDPOINT_TYPE => 'UNDEFINED_NETWORK_ENDPOINT_TYPE',
         self::GCE_VM_IP => 'GCE_VM_IP',
         self::GCE_VM_IP_PORT => 'GCE_VM_IP_PORT',
+        self::GCE_VM_IP_PORTMAP => 'GCE_VM_IP_PORTMAP',
         self::INTERNET_FQDN_PORT => 'INTERNET_FQDN_PORT',
         self::INTERNET_IP_PORT => 'INTERNET_IP_PORT',
         self::NON_GCP_PRIVATE_IP_PORT => 'NON_GCP_PRIVATE_IP_PORT',

@@ -21,26 +21,26 @@ class Note extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * A one sentence description of this note.
      *
      * Generated from protobuf field <code>string short_description = 2;</code>
      */
-    private $short_description = '';
+    protected $short_description = '';
     /**
      * A detailed description of this note.
      *
      * Generated from protobuf field <code>string long_description = 3;</code>
      */
-    private $long_description = '';
+    protected $long_description = '';
     /**
      * Output only. The type of analysis. This field can be used as a filter in
      * list requests.
      *
      * Generated from protobuf field <code>.grafeas.v1.NoteKind kind = 4;</code>
      */
-    private $kind = 0;
+    protected $kind = 0;
     /**
      * URLs associated with this note.
      *
@@ -52,21 +52,21 @@ class Note extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp expiration_time = 6;</code>
      */
-    private $expiration_time = null;
+    protected $expiration_time = null;
     /**
      * Output only. The time this note was created. This field can be used as a
      * filter in list requests.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp create_time = 7;</code>
      */
-    private $create_time = null;
+    protected $create_time = null;
     /**
      * Output only. The time this note was last updated. This field can be used as
      * a filter in list requests.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp update_time = 8;</code>
      */
-    private $update_time = null;
+    protected $update_time = null;
     /**
      * Other notes related to this note.
      *
@@ -125,6 +125,8 @@ class Note extends \Google\Protobuf\Internal\Message
      *           A note describing a dsse attestation note.
      *     @type \Grafeas\V1\VulnerabilityAssessmentNote $vulnerability_assessment
      *           A note describing a vulnerability assessment.
+     *     @type \Grafeas\V1\SBOMReferenceNote $sbom_reference
+     *           A note describing an SBOM reference.
      * }
      */
     public function __construct($data = NULL) {
@@ -741,6 +743,37 @@ class Note extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Grafeas\V1\VulnerabilityAssessmentNote::class);
         $this->writeOneof(20, $var);
+
+        return $this;
+    }
+
+    /**
+     * A note describing an SBOM reference.
+     *
+     * Generated from protobuf field <code>.grafeas.v1.SBOMReferenceNote sbom_reference = 21;</code>
+     * @return \Grafeas\V1\SBOMReferenceNote|null
+     */
+    public function getSbomReference()
+    {
+        return $this->readOneof(21);
+    }
+
+    public function hasSbomReference()
+    {
+        return $this->hasOneof(21);
+    }
+
+    /**
+     * A note describing an SBOM reference.
+     *
+     * Generated from protobuf field <code>.grafeas.v1.SBOMReferenceNote sbom_reference = 21;</code>
+     * @param \Grafeas\V1\SBOMReferenceNote $var
+     * @return $this
+     */
+    public function setSbomReference($var)
+    {
+        GPBUtil::checkMessage($var, \Grafeas\V1\SBOMReferenceNote::class);
+        $this->writeOneof(21, $var);
 
         return $this;
     }

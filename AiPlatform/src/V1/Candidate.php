@@ -20,20 +20,38 @@ class Candidate extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>int32 index = 1 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $index = 0;
+    protected $index = 0;
     /**
      * Output only. Content parts of the candidate.
      *
      * Generated from protobuf field <code>.google.cloud.aiplatform.v1.Content content = 2 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $content = null;
+    protected $content = null;
+    /**
+     * Output only. Confidence score of the candidate.
+     *
+     * Generated from protobuf field <code>double score = 8 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $score = 0.0;
+    /**
+     * Output only. Average log probability score of the candidate.
+     *
+     * Generated from protobuf field <code>double avg_logprobs = 9 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $avg_logprobs = 0.0;
+    /**
+     * Output only. Log-likelihood scores for the response tokens and top tokens
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.LogprobsResult logprobs_result = 10 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $logprobs_result = null;
     /**
      * Output only. The reason why the model stopped generating tokens.
      * If empty, the model has not stopped generating the tokens.
      *
      * Generated from protobuf field <code>.google.cloud.aiplatform.v1.Candidate.FinishReason finish_reason = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $finish_reason = 0;
+    protected $finish_reason = 0;
     /**
      * Output only. List of ratings for the safety of a response candidate.
      * There is at most one rating per category.
@@ -47,13 +65,19 @@ class Candidate extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>optional string finish_message = 5 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $finish_message = null;
+    protected $finish_message = null;
     /**
      * Output only. Source attribution of the generated content.
      *
      * Generated from protobuf field <code>.google.cloud.aiplatform.v1.CitationMetadata citation_metadata = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $citation_metadata = null;
+    protected $citation_metadata = null;
+    /**
+     * Output only. Metadata specifies sources used to ground generated content.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.GroundingMetadata grounding_metadata = 7 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $grounding_metadata = null;
 
     /**
      * Constructor.
@@ -65,6 +89,12 @@ class Candidate extends \Google\Protobuf\Internal\Message
      *           Output only. Index of the candidate.
      *     @type \Google\Cloud\AIPlatform\V1\Content $content
      *           Output only. Content parts of the candidate.
+     *     @type float $score
+     *           Output only. Confidence score of the candidate.
+     *     @type float $avg_logprobs
+     *           Output only. Average log probability score of the candidate.
+     *     @type \Google\Cloud\AIPlatform\V1\LogprobsResult $logprobs_result
+     *           Output only. Log-likelihood scores for the response tokens and top tokens
      *     @type int $finish_reason
      *           Output only. The reason why the model stopped generating tokens.
      *           If empty, the model has not stopped generating the tokens.
@@ -76,6 +106,8 @@ class Candidate extends \Google\Protobuf\Internal\Message
      *           more detail. This is only filled when `finish_reason` is set.
      *     @type \Google\Cloud\AIPlatform\V1\CitationMetadata $citation_metadata
      *           Output only. Source attribution of the generated content.
+     *     @type \Google\Cloud\AIPlatform\V1\GroundingMetadata $grounding_metadata
+     *           Output only. Metadata specifies sources used to ground generated content.
      * }
      */
     public function __construct($data = NULL) {
@@ -141,6 +173,94 @@ class Candidate extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\AIPlatform\V1\Content::class);
         $this->content = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Confidence score of the candidate.
+     *
+     * Generated from protobuf field <code>double score = 8 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return float
+     */
+    public function getScore()
+    {
+        return $this->score;
+    }
+
+    /**
+     * Output only. Confidence score of the candidate.
+     *
+     * Generated from protobuf field <code>double score = 8 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param float $var
+     * @return $this
+     */
+    public function setScore($var)
+    {
+        GPBUtil::checkDouble($var);
+        $this->score = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Average log probability score of the candidate.
+     *
+     * Generated from protobuf field <code>double avg_logprobs = 9 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return float
+     */
+    public function getAvgLogprobs()
+    {
+        return $this->avg_logprobs;
+    }
+
+    /**
+     * Output only. Average log probability score of the candidate.
+     *
+     * Generated from protobuf field <code>double avg_logprobs = 9 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param float $var
+     * @return $this
+     */
+    public function setAvgLogprobs($var)
+    {
+        GPBUtil::checkDouble($var);
+        $this->avg_logprobs = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Log-likelihood scores for the response tokens and top tokens
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.LogprobsResult logprobs_result = 10 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return \Google\Cloud\AIPlatform\V1\LogprobsResult|null
+     */
+    public function getLogprobsResult()
+    {
+        return $this->logprobs_result;
+    }
+
+    public function hasLogprobsResult()
+    {
+        return isset($this->logprobs_result);
+    }
+
+    public function clearLogprobsResult()
+    {
+        unset($this->logprobs_result);
+    }
+
+    /**
+     * Output only. Log-likelihood scores for the response tokens and top tokens
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.LogprobsResult logprobs_result = 10 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param \Google\Cloud\AIPlatform\V1\LogprobsResult $var
+     * @return $this
+     */
+    public function setLogprobsResult($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\AIPlatform\V1\LogprobsResult::class);
+        $this->logprobs_result = $var;
 
         return $this;
     }
@@ -271,6 +391,42 @@ class Candidate extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\AIPlatform\V1\CitationMetadata::class);
         $this->citation_metadata = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Metadata specifies sources used to ground generated content.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.GroundingMetadata grounding_metadata = 7 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return \Google\Cloud\AIPlatform\V1\GroundingMetadata|null
+     */
+    public function getGroundingMetadata()
+    {
+        return $this->grounding_metadata;
+    }
+
+    public function hasGroundingMetadata()
+    {
+        return isset($this->grounding_metadata);
+    }
+
+    public function clearGroundingMetadata()
+    {
+        unset($this->grounding_metadata);
+    }
+
+    /**
+     * Output only. Metadata specifies sources used to ground generated content.
+     *
+     * Generated from protobuf field <code>.google.cloud.aiplatform.v1.GroundingMetadata grounding_metadata = 7 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param \Google\Cloud\AIPlatform\V1\GroundingMetadata $var
+     * @return $this
+     */
+    public function setGroundingMetadata($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\AIPlatform\V1\GroundingMetadata::class);
+        $this->grounding_metadata = $var;
 
         return $this;
     }

@@ -20,7 +20,7 @@ class IpConfiguration extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.BoolValue ipv4_enabled = 1;</code>
      */
-    private $ipv4_enabled = null;
+    protected $ipv4_enabled = null;
     /**
      * The resource link for the VPC network from which the Cloud SQL instance is
      * accessible for private IP. For example,
@@ -29,19 +29,20 @@ class IpConfiguration extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string private_network = 2;</code>
      */
-    private $private_network = '';
+    protected $private_network = '';
     /**
+     * Use `ssl_mode` instead.
      * Whether SSL/TLS connections over IP are enforced.
      * If set to false, then allow both non-SSL/non-TLS and SSL/TLS connections.
      * For SSL/TLS connections, the client certificate won't be verified. If
      * set to true, then only allow connections encrypted with SSL/TLS and with
      * valid client certificates. If you want to enforce SSL/TLS without enforcing
      * the requirement for valid client certificates, then use the `ssl_mode` flag
-     * instead of the legacy `require_ssl` flag.
+     * instead of the `require_ssl` flag.
      *
      * Generated from protobuf field <code>.google.protobuf.BoolValue require_ssl = 3;</code>
      */
-    private $require_ssl = null;
+    protected $require_ssl = null;
     /**
      * The list of external networks that are allowed to connect to the instance
      * using the IP. In 'CIDR' notation, also known as 'slash' notation (for
@@ -60,40 +61,47 @@ class IpConfiguration extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string allocated_ip_range = 6;</code>
      */
-    private $allocated_ip_range = '';
+    protected $allocated_ip_range = '';
     /**
      * Controls connectivity to private IP instances from Google services,
      * such as BigQuery.
      *
      * Generated from protobuf field <code>.google.protobuf.BoolValue enable_private_path_for_google_cloud_services = 7;</code>
      */
-    private $enable_private_path_for_google_cloud_services = null;
+    protected $enable_private_path_for_google_cloud_services = null;
     /**
-     * Specify how SSL/TLS is enforced in database connections. This flag is
-     * supported only for PostgreSQL. Use the legacy `require_ssl` flag for
-     * enforcing SSL/TLS in MySQL and SQL Server. But, for PostgreSQL, use the
-     * `ssl_mode` flag instead of the legacy `require_ssl` flag. To avoid the
-     * conflict between those flags in PostgreSQL, only the following value pairs
-     * are valid:
+     * Specify how SSL/TLS is enforced in database connections. If you must use
+     * the `require_ssl` flag for backward compatibility, then only the following
+     * value pairs are valid:
+     * For PostgreSQL and MySQL:
      * * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false`
      * * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false`
      * * `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
-     * Note that the value of `ssl_mode` gets priority over the value of the
-     * legacy `require_ssl`. For example, for the pair `ssl_mode=ENCRYPTED_ONLY,
-     * require_ssl=false`, the `ssl_mode=ENCRYPTED_ONLY` means "only accepts SSL
-     * connection", while the `require_ssl=false` means "both non-SSL and SSL
-     * connections are allowed". The database respects `ssl_mode` in this case
-     * and only accepts SSL connections.
+     * For SQL Server:
+     * * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false`
+     * * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=true`
+     * The value of `ssl_mode` has priority over the value of `require_ssl`.
+     * For example, for the pair `ssl_mode=ENCRYPTED_ONLY` and
+     * `require_ssl=false`, `ssl_mode=ENCRYPTED_ONLY` means accept only SSL
+     * connections, while `require_ssl=false` means accept both non-SSL
+     * and SSL connections. In this case, MySQL and PostgreSQL databases respect
+     * `ssl_mode` and accepts only SSL connections.
      *
      * Generated from protobuf field <code>.google.cloud.sql.v1.IpConfiguration.SslMode ssl_mode = 8;</code>
      */
-    private $ssl_mode = 0;
+    protected $ssl_mode = 0;
     /**
      * PSC settings for this instance.
      *
      * Generated from protobuf field <code>optional .google.cloud.sql.v1.PscConfig psc_config = 9;</code>
      */
-    private $psc_config = null;
+    protected $psc_config = null;
+    /**
+     * Specify what type of CA is used for the server certificate.
+     *
+     * Generated from protobuf field <code>optional .google.cloud.sql.v1.IpConfiguration.CaMode server_ca_mode = 10;</code>
+     */
+    protected $server_ca_mode = null;
 
     /**
      * Constructor.
@@ -109,13 +117,14 @@ class IpConfiguration extends \Google\Protobuf\Internal\Message
      *           `/projects/myProject/global/networks/default`. This setting can
      *           be updated, but it cannot be removed after it is set.
      *     @type \Google\Protobuf\BoolValue $require_ssl
+     *           Use `ssl_mode` instead.
      *           Whether SSL/TLS connections over IP are enforced.
      *           If set to false, then allow both non-SSL/non-TLS and SSL/TLS connections.
      *           For SSL/TLS connections, the client certificate won't be verified. If
      *           set to true, then only allow connections encrypted with SSL/TLS and with
      *           valid client certificates. If you want to enforce SSL/TLS without enforcing
      *           the requirement for valid client certificates, then use the `ssl_mode` flag
-     *           instead of the legacy `require_ssl` flag.
+     *           instead of the `require_ssl` flag.
      *     @type array<\Google\Cloud\Sql\V1\AclEntry>|\Google\Protobuf\Internal\RepeatedField $authorized_networks
      *           The list of external networks that are allowed to connect to the instance
      *           using the IP. In 'CIDR' notation, also known as 'slash' notation (for
@@ -131,23 +140,26 @@ class IpConfiguration extends \Google\Protobuf\Internal\Message
      *           Controls connectivity to private IP instances from Google services,
      *           such as BigQuery.
      *     @type int $ssl_mode
-     *           Specify how SSL/TLS is enforced in database connections. This flag is
-     *           supported only for PostgreSQL. Use the legacy `require_ssl` flag for
-     *           enforcing SSL/TLS in MySQL and SQL Server. But, for PostgreSQL, use the
-     *           `ssl_mode` flag instead of the legacy `require_ssl` flag. To avoid the
-     *           conflict between those flags in PostgreSQL, only the following value pairs
-     *           are valid:
+     *           Specify how SSL/TLS is enforced in database connections. If you must use
+     *           the `require_ssl` flag for backward compatibility, then only the following
+     *           value pairs are valid:
+     *           For PostgreSQL and MySQL:
      *           * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false`
      *           * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false`
      *           * `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
-     *           Note that the value of `ssl_mode` gets priority over the value of the
-     *           legacy `require_ssl`. For example, for the pair `ssl_mode=ENCRYPTED_ONLY,
-     *           require_ssl=false`, the `ssl_mode=ENCRYPTED_ONLY` means "only accepts SSL
-     *           connection", while the `require_ssl=false` means "both non-SSL and SSL
-     *           connections are allowed". The database respects `ssl_mode` in this case
-     *           and only accepts SSL connections.
+     *           For SQL Server:
+     *           * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false`
+     *           * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=true`
+     *           The value of `ssl_mode` has priority over the value of `require_ssl`.
+     *           For example, for the pair `ssl_mode=ENCRYPTED_ONLY` and
+     *           `require_ssl=false`, `ssl_mode=ENCRYPTED_ONLY` means accept only SSL
+     *           connections, while `require_ssl=false` means accept both non-SSL
+     *           and SSL connections. In this case, MySQL and PostgreSQL databases respect
+     *           `ssl_mode` and accepts only SSL connections.
      *     @type \Google\Cloud\Sql\V1\PscConfig $psc_config
      *           PSC settings for this instance.
+     *     @type int $server_ca_mode
+     *           Specify what type of CA is used for the server certificate.
      * }
      */
     public function __construct($data = NULL) {
@@ -184,7 +196,7 @@ class IpConfiguration extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.google.protobuf.BoolValue ipv4_enabled = 1;</code>
      * @return bool|null
      */
-    public function getIpv4EnabledValue()
+    public function getIpv4EnabledUnwrapped()
     {
         return $this->readWrapperValue("ipv4_enabled");
     }
@@ -213,7 +225,7 @@ class IpConfiguration extends \Google\Protobuf\Internal\Message
      * @param bool|null $var
      * @return $this
      */
-    public function setIpv4EnabledValue($var)
+    public function setIpv4EnabledUnwrapped($var)
     {
         $this->writeWrapperValue("ipv4_enabled", $var);
         return $this;}
@@ -251,13 +263,14 @@ class IpConfiguration extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Use `ssl_mode` instead.
      * Whether SSL/TLS connections over IP are enforced.
      * If set to false, then allow both non-SSL/non-TLS and SSL/TLS connections.
      * For SSL/TLS connections, the client certificate won't be verified. If
      * set to true, then only allow connections encrypted with SSL/TLS and with
      * valid client certificates. If you want to enforce SSL/TLS without enforcing
      * the requirement for valid client certificates, then use the `ssl_mode` flag
-     * instead of the legacy `require_ssl` flag.
+     * instead of the `require_ssl` flag.
      *
      * Generated from protobuf field <code>.google.protobuf.BoolValue require_ssl = 3;</code>
      * @return \Google\Protobuf\BoolValue|null
@@ -280,30 +293,32 @@ class IpConfiguration extends \Google\Protobuf\Internal\Message
     /**
      * Returns the unboxed value from <code>getRequireSsl()</code>
 
+     * Use `ssl_mode` instead.
      * Whether SSL/TLS connections over IP are enforced.
      * If set to false, then allow both non-SSL/non-TLS and SSL/TLS connections.
      * For SSL/TLS connections, the client certificate won't be verified. If
      * set to true, then only allow connections encrypted with SSL/TLS and with
      * valid client certificates. If you want to enforce SSL/TLS without enforcing
      * the requirement for valid client certificates, then use the `ssl_mode` flag
-     * instead of the legacy `require_ssl` flag.
+     * instead of the `require_ssl` flag.
      *
      * Generated from protobuf field <code>.google.protobuf.BoolValue require_ssl = 3;</code>
      * @return bool|null
      */
-    public function getRequireSslValue()
+    public function getRequireSslUnwrapped()
     {
         return $this->readWrapperValue("require_ssl");
     }
 
     /**
+     * Use `ssl_mode` instead.
      * Whether SSL/TLS connections over IP are enforced.
      * If set to false, then allow both non-SSL/non-TLS and SSL/TLS connections.
      * For SSL/TLS connections, the client certificate won't be verified. If
      * set to true, then only allow connections encrypted with SSL/TLS and with
      * valid client certificates. If you want to enforce SSL/TLS without enforcing
      * the requirement for valid client certificates, then use the `ssl_mode` flag
-     * instead of the legacy `require_ssl` flag.
+     * instead of the `require_ssl` flag.
      *
      * Generated from protobuf field <code>.google.protobuf.BoolValue require_ssl = 3;</code>
      * @param \Google\Protobuf\BoolValue $var
@@ -320,19 +335,20 @@ class IpConfiguration extends \Google\Protobuf\Internal\Message
     /**
      * Sets the field by wrapping a primitive type in a Google\Protobuf\BoolValue object.
 
+     * Use `ssl_mode` instead.
      * Whether SSL/TLS connections over IP are enforced.
      * If set to false, then allow both non-SSL/non-TLS and SSL/TLS connections.
      * For SSL/TLS connections, the client certificate won't be verified. If
      * set to true, then only allow connections encrypted with SSL/TLS and with
      * valid client certificates. If you want to enforce SSL/TLS without enforcing
      * the requirement for valid client certificates, then use the `ssl_mode` flag
-     * instead of the legacy `require_ssl` flag.
+     * instead of the `require_ssl` flag.
      *
      * Generated from protobuf field <code>.google.protobuf.BoolValue require_ssl = 3;</code>
      * @param bool|null $var
      * @return $this
      */
-    public function setRequireSslValue($var)
+    public function setRequireSslUnwrapped($var)
     {
         $this->writeWrapperValue("require_ssl", $var);
         return $this;}
@@ -434,7 +450,7 @@ class IpConfiguration extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.google.protobuf.BoolValue enable_private_path_for_google_cloud_services = 7;</code>
      * @return bool|null
      */
-    public function getEnablePrivatePathForGoogleCloudServicesValue()
+    public function getEnablePrivatePathForGoogleCloudServicesUnwrapped()
     {
         return $this->readWrapperValue("enable_private_path_for_google_cloud_services");
     }
@@ -465,27 +481,28 @@ class IpConfiguration extends \Google\Protobuf\Internal\Message
      * @param bool|null $var
      * @return $this
      */
-    public function setEnablePrivatePathForGoogleCloudServicesValue($var)
+    public function setEnablePrivatePathForGoogleCloudServicesUnwrapped($var)
     {
         $this->writeWrapperValue("enable_private_path_for_google_cloud_services", $var);
         return $this;}
 
     /**
-     * Specify how SSL/TLS is enforced in database connections. This flag is
-     * supported only for PostgreSQL. Use the legacy `require_ssl` flag for
-     * enforcing SSL/TLS in MySQL and SQL Server. But, for PostgreSQL, use the
-     * `ssl_mode` flag instead of the legacy `require_ssl` flag. To avoid the
-     * conflict between those flags in PostgreSQL, only the following value pairs
-     * are valid:
+     * Specify how SSL/TLS is enforced in database connections. If you must use
+     * the `require_ssl` flag for backward compatibility, then only the following
+     * value pairs are valid:
+     * For PostgreSQL and MySQL:
      * * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false`
      * * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false`
      * * `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
-     * Note that the value of `ssl_mode` gets priority over the value of the
-     * legacy `require_ssl`. For example, for the pair `ssl_mode=ENCRYPTED_ONLY,
-     * require_ssl=false`, the `ssl_mode=ENCRYPTED_ONLY` means "only accepts SSL
-     * connection", while the `require_ssl=false` means "both non-SSL and SSL
-     * connections are allowed". The database respects `ssl_mode` in this case
-     * and only accepts SSL connections.
+     * For SQL Server:
+     * * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false`
+     * * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=true`
+     * The value of `ssl_mode` has priority over the value of `require_ssl`.
+     * For example, for the pair `ssl_mode=ENCRYPTED_ONLY` and
+     * `require_ssl=false`, `ssl_mode=ENCRYPTED_ONLY` means accept only SSL
+     * connections, while `require_ssl=false` means accept both non-SSL
+     * and SSL connections. In this case, MySQL and PostgreSQL databases respect
+     * `ssl_mode` and accepts only SSL connections.
      *
      * Generated from protobuf field <code>.google.cloud.sql.v1.IpConfiguration.SslMode ssl_mode = 8;</code>
      * @return int
@@ -496,21 +513,22 @@ class IpConfiguration extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Specify how SSL/TLS is enforced in database connections. This flag is
-     * supported only for PostgreSQL. Use the legacy `require_ssl` flag for
-     * enforcing SSL/TLS in MySQL and SQL Server. But, for PostgreSQL, use the
-     * `ssl_mode` flag instead of the legacy `require_ssl` flag. To avoid the
-     * conflict between those flags in PostgreSQL, only the following value pairs
-     * are valid:
+     * Specify how SSL/TLS is enforced in database connections. If you must use
+     * the `require_ssl` flag for backward compatibility, then only the following
+     * value pairs are valid:
+     * For PostgreSQL and MySQL:
      * * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false`
      * * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false`
      * * `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
-     * Note that the value of `ssl_mode` gets priority over the value of the
-     * legacy `require_ssl`. For example, for the pair `ssl_mode=ENCRYPTED_ONLY,
-     * require_ssl=false`, the `ssl_mode=ENCRYPTED_ONLY` means "only accepts SSL
-     * connection", while the `require_ssl=false` means "both non-SSL and SSL
-     * connections are allowed". The database respects `ssl_mode` in this case
-     * and only accepts SSL connections.
+     * For SQL Server:
+     * * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false`
+     * * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=true`
+     * The value of `ssl_mode` has priority over the value of `require_ssl`.
+     * For example, for the pair `ssl_mode=ENCRYPTED_ONLY` and
+     * `require_ssl=false`, `ssl_mode=ENCRYPTED_ONLY` means accept only SSL
+     * connections, while `require_ssl=false` means accept both non-SSL
+     * and SSL connections. In this case, MySQL and PostgreSQL databases respect
+     * `ssl_mode` and accepts only SSL connections.
      *
      * Generated from protobuf field <code>.google.cloud.sql.v1.IpConfiguration.SslMode ssl_mode = 8;</code>
      * @param int $var
@@ -556,6 +574,42 @@ class IpConfiguration extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\Sql\V1\PscConfig::class);
         $this->psc_config = $var;
+
+        return $this;
+    }
+
+    /**
+     * Specify what type of CA is used for the server certificate.
+     *
+     * Generated from protobuf field <code>optional .google.cloud.sql.v1.IpConfiguration.CaMode server_ca_mode = 10;</code>
+     * @return int
+     */
+    public function getServerCaMode()
+    {
+        return isset($this->server_ca_mode) ? $this->server_ca_mode : 0;
+    }
+
+    public function hasServerCaMode()
+    {
+        return isset($this->server_ca_mode);
+    }
+
+    public function clearServerCaMode()
+    {
+        unset($this->server_ca_mode);
+    }
+
+    /**
+     * Specify what type of CA is used for the server certificate.
+     *
+     * Generated from protobuf field <code>optional .google.cloud.sql.v1.IpConfiguration.CaMode server_ca_mode = 10;</code>
+     * @param int $var
+     * @return $this
+     */
+    public function setServerCaMode($var)
+    {
+        GPBUtil::checkEnum($var, \Google\Cloud\Sql\V1\IpConfiguration\CaMode::class);
+        $this->server_ca_mode = $var;
 
         return $this;
     }

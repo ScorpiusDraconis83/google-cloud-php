@@ -25,9 +25,9 @@ use Google\Cloud\Core\GrpcRequestWrapper;
 use Google\Cloud\Core\GrpcTrait;
 use Google\Cloud\Core\LongRunning\OperationResponseTrait;
 use Google\Cloud\Spanner\Admin\Database\V1\Backup;
+use Google\Cloud\Spanner\Admin\Database\V1\CopyBackupMetadata;
 use Google\Cloud\Spanner\Admin\Database\V1\CreateBackupEncryptionConfig;
 use Google\Cloud\Spanner\Admin\Database\V1\CreateBackupMetadata;
-use Google\Cloud\Spanner\Admin\Database\V1\CopyBackupMetadata;
 use Google\Cloud\Spanner\Admin\Database\V1\CreateDatabaseMetadata;
 use Google\Cloud\Spanner\Admin\Database\V1\Database;
 use Google\Cloud\Spanner\Admin\Database\V1\DatabaseAdminClient;
@@ -44,15 +44,19 @@ use Google\Cloud\Spanner\Admin\Instance\V1\InstanceConfig;
 use Google\Cloud\Spanner\Admin\Instance\V1\UpdateInstanceConfigMetadata;
 use Google\Cloud\Spanner\Admin\Instance\V1\UpdateInstanceMetadata;
 use Google\Cloud\Spanner\Operation;
+use Google\Cloud\Spanner\RequestHeaderTrait;
 use Google\Cloud\Spanner\SpannerClient as ManualSpannerClient;
+use Google\Cloud\Spanner\V1\BatchWriteRequest\MutationGroup as MutationGroupProto;
 use Google\Cloud\Spanner\V1\CreateSessionRequest;
 use Google\Cloud\Spanner\V1\DeleteSessionRequest;
+use Google\Cloud\Spanner\V1\DirectedReadOptions;
 use Google\Cloud\Spanner\V1\ExecuteBatchDmlRequest\Statement;
 use Google\Cloud\Spanner\V1\ExecuteSqlRequest\QueryOptions;
 use Google\Cloud\Spanner\V1\KeySet;
 use Google\Cloud\Spanner\V1\Mutation;
 use Google\Cloud\Spanner\V1\Mutation\Delete;
 use Google\Cloud\Spanner\V1\Mutation\Write;
+use Google\Cloud\Spanner\V1\PartialResultSet;
 use Google\Cloud\Spanner\V1\PartitionOptions;
 use Google\Cloud\Spanner\V1\RequestOptions;
 use Google\Cloud\Spanner\V1\Session;
@@ -63,13 +67,13 @@ use Google\Cloud\Spanner\V1\TransactionOptions\PBReadOnly;
 use Google\Cloud\Spanner\V1\TransactionOptions\ReadWrite;
 use Google\Cloud\Spanner\V1\TransactionSelector;
 use Google\Cloud\Spanner\V1\Type;
-use Google\Protobuf;
 use Google\Protobuf\FieldMask;
 use Google\Protobuf\GPBEmpty;
+use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\ListValue;
 use Google\Protobuf\Struct;
-use Google\Protobuf\Value;
 use Google\Protobuf\Timestamp;
+use Google\Protobuf\Value;
 use GuzzleHttp\Promise\PromiseInterface;
 
 /**
@@ -82,6 +86,7 @@ class Grpc implements ConnectionInterface
     use EmulatorTrait;
     use GrpcTrait;
     use OperationResponseTrait;
+    use RequestHeaderTrait;
 
     /**
      * @var InstanceAdminClient|null
@@ -209,6 +214,11 @@ class Grpc implements ConnectionInterface
     private $credentialsWrapper;
 
     /**
+     * @var bool
+     */
+    private $larEnabled;
+
+    /**
      * @param array $config [optional]
      */
     public function __construct(array $config = [])
@@ -226,6 +236,38 @@ class Grpc implements ConnectionInterface
             },
             'google.protobuf.Timestamp' => function ($v) {
                 return $this->formatTimestampFromApi($v);
+            }
+        ], [], [], [
+            // A custom encoder that short-circuits the encodeMessage in Serializer class,
+            // but only if the argument is of the type PartialResultSet.
+            PartialResultSet::class => function ($msg) {
+                $data = json_decode($msg->serializeToJsonString(), true);
+
+                // We only override metadata fields, if it actually exists in the response.
+                // This is specially important for large data sets which is received in chunks.
+                // Metadata is only received in the first 'chunk' and we don't want to set empty metadata fields
+                // when metadata was not returned from the server.
+                if (isset($data['metadata'])) {
+                    // The transaction id is serialized as a base64 encoded string in $data. So, we
+                    // add a step to get the transaction id using a getter instead of the serialized value.
+                    // The null-safe operator is used to handle edge cases where the relevant fields are not present.
+                    $data['metadata']['transaction']['id'] = (string) $msg?->getMetadata()?->getTransaction()?->getId();
+
+                    // Helps convert metadata enum values from string types to their respective code/annotation
+                    // pairs. Ex: INT64 is converted to {code: 2, typeAnnotation: 0}.
+                    $fields = $msg->getMetadata()?->getRowType()?->getFields();
+                    $data['metadata']['rowType']['fields'] = $this->getFieldDataFromRepeatedFields($fields);
+                }
+
+                // These fields in stats should be an int
+                if (isset($data['stats']['rowCountLowerBound'])) {
+                    $data['stats']['rowCountLowerBound'] = (int) $data['stats']['rowCountLowerBound'];
+                }
+                if (isset($data['stats']['rowCountExact'])) {
+                    $data['stats']['rowCountExact'] = (int) $data['stats']['rowCountExact'];
+                }
+
+                return $data;
             }
         ]);
         //@codeCoverageIgnoreEnd
@@ -269,6 +311,7 @@ class Grpc implements ConnectionInterface
         //@codeCoverageIgnoreEnd
 
         $this->grpcConfig = $grpcConfig;
+        $this->larEnabled = $this->pluck('routeToLeader', $config, false) ?? true;
     }
 
     /**
@@ -543,7 +586,7 @@ class Grpc implements ConnectionInterface
         $instanceName = $this->pluck('instance', $args);
         if (isset($args['encryptionConfig'])) {
             $args['encryptionConfig'] = $this->serializer->decodeMessage(
-                new RestoreDatabaseEncryptionConfig,
+                new RestoreDatabaseEncryptionConfig(),
                 $this->pluck('encryptionConfig', $args)
             );
         }
@@ -589,7 +632,7 @@ class Grpc implements ConnectionInterface
         $instanceName = $this->pluck('instance', $args);
         if (isset($args['encryptionConfig'])) {
             $args['encryptionConfig'] = $this->serializer->decodeMessage(
-                new CreateBackupEncryptionConfig,
+                new CreateBackupEncryptionConfig(),
                 $this->pluck('encryptionConfig', $args)
             );
         }
@@ -668,7 +711,7 @@ class Grpc implements ConnectionInterface
         $instanceName = $this->pluck('instance', $args);
         if (isset($args['encryptionConfig'])) {
             $args['encryptionConfig'] = $this->serializer->decodeMessage(
-                new EncryptionConfig,
+                new EncryptionConfig(),
                 $this->pluck('encryptionConfig', $args)
             );
         }
@@ -795,7 +838,7 @@ class Grpc implements ConnectionInterface
         $session = $this->pluck('session', $args, false);
         if ($session) {
             $args['session'] = $this->serializer->decodeMessage(
-                new Session,
+                new Session(),
                 array_filter(
                     $session,
                     function ($value) {
@@ -805,6 +848,7 @@ class Grpc implements ConnectionInterface
             );
         }
 
+        $args = $this->addLarHeader($args, $this->larEnabled);
         return $this->send([$this->spannerClient, 'createSession'], [
             $databaseName,
             $this->addResourcePrefixHeader($args, $databaseName)
@@ -824,6 +868,7 @@ class Grpc implements ConnectionInterface
     {
         $databaseName = $this->pluck('database', $args);
         $opts = $this->addResourcePrefixHeader([], $databaseName);
+        $opts = $this->addLarHeader($opts, $this->larEnabled);
         $opts['credentialsWrapper'] = $this->credentialsWrapper;
         $transport = $this->spannerClient->getTransport();
 
@@ -854,11 +899,12 @@ class Grpc implements ConnectionInterface
     public function batchCreateSessions(array $args)
     {
         $args['sessionTemplate'] = $this->serializer->decodeMessage(
-            new Session,
+            new Session(),
             $this->pluck('sessionTemplate', $args)
         );
 
         $databaseName = $this->pluck('database', $args);
+        $args = $this->addLarHeader($args, $this->larEnabled);
         return $this->send([$this->spannerClient, 'batchCreateSessions'], [
             $databaseName,
             $this->pluck('sessionCount', $args),
@@ -872,6 +918,7 @@ class Grpc implements ConnectionInterface
     public function getSession(array $args)
     {
         $databaseName = $this->pluck('database', $args);
+        $args = $this->addLarHeader($args, $this->larEnabled);
         return $this->send([$this->spannerClient, 'getSession'], [
             $this->pluck('name', $args),
             $this->addResourcePrefixHeader($args, $databaseName)
@@ -941,10 +988,11 @@ class Grpc implements ConnectionInterface
             $queryOptions += ['optimizerStatisticsPackage' => $envQueryOptimizerStatisticsPackage];
         }
         $queryOptions += $this->defaultQueryOptions;
+        $this->setDirectedReadOptions($args);
 
         if ($queryOptions) {
             $args['queryOptions'] = $this->serializer->decodeMessage(
-                new QueryOptions,
+                new QueryOptions(),
                 $queryOptions
             );
         }
@@ -952,11 +1000,12 @@ class Grpc implements ConnectionInterface
         $requestOptions = $this->pluck('requestOptions', $args, false) ?: [];
         if ($requestOptions) {
             $args['requestOptions'] = $this->serializer->decodeMessage(
-                new RequestOptions,
+                new RequestOptions(),
                 $requestOptions
             );
         }
 
+        $args = $this->conditionallyUnsetLarHeader($args, $this->larEnabled);
         return $this->send([$this->spannerClient, 'executeStreamingSql'], [
             $this->pluck('session', $args),
             $this->pluck('sql', $args),
@@ -971,19 +1020,20 @@ class Grpc implements ConnectionInterface
     public function streamingRead(array $args)
     {
         $keySet = $this->pluck('keySet', $args);
-        $keySet = $this->serializer->decodeMessage(new KeySet, $this->formatKeySet($keySet));
+        $keySet = $this->serializer->decodeMessage(new KeySet(), $this->formatKeySet($keySet));
 
         $requestOptions = $this->pluck('requestOptions', $args, false) ?: [];
         if ($requestOptions) {
             $args['requestOptions'] = $this->serializer->decodeMessage(
-                new RequestOptions,
+                new RequestOptions(),
                 $requestOptions
             );
         }
-
+        $this->setDirectedReadOptions($args);
         $args['transaction'] = $this->createTransactionSelector($args);
 
         $databaseName = $this->pluck('database', $args);
+        $args = $this->conditionallyUnsetLarHeader($args, $this->larEnabled);
         return $this->send([$this->spannerClient, 'streamingRead'], [
             $this->pluck('session', $args),
             $this->pluck('table', $args),
@@ -1000,17 +1050,18 @@ class Grpc implements ConnectionInterface
     {
         $databaseName = $this->pluck('database', $args);
         $args['transaction'] = $this->createTransactionSelector($args);
+        $args = $this->addLarHeader($args, $this->larEnabled);
 
         $statements = [];
         foreach ($this->pluck('statements', $args) as $statement) {
             $statement = $this->formatSqlParams($statement);
-            $statements[] = $this->serializer->decodeMessage(new Statement, $statement);
+            $statements[] = $this->serializer->decodeMessage(new Statement(), $statement);
         }
 
         $requestOptions = $this->pluck('requestOptions', $args, false) ?: [];
         if ($requestOptions) {
             $args['requestOptions'] = $this->serializer->decodeMessage(
-                new RequestOptions,
+                new RequestOptions(),
                 $requestOptions
             );
         }
@@ -1029,7 +1080,7 @@ class Grpc implements ConnectionInterface
      */
     public function beginTransaction(array $args)
     {
-        $options = new TransactionOptions;
+        $options = new TransactionOptions();
         $transactionOptions = $this->formatTransactionOptions($this->pluck('transactionOptions', $args));
         if (isset($transactionOptions['readOnly'])) {
             $readOnlyClass = PHP_VERSION_ID >= 80100
@@ -1043,15 +1094,24 @@ class Grpc implements ConnectionInterface
         } elseif (isset($transactionOptions['readWrite'])) {
             $readWrite = new ReadWrite();
             $options->setReadWrite($readWrite);
+            $args = $this->addLarHeader($args, $this->larEnabled);
         } elseif (isset($transactionOptions['partitionedDml'])) {
             $pdml = new PartitionedDml();
             $options->setPartitionedDml($pdml);
+            $args = $this->addLarHeader($args, $this->larEnabled);
+        }
+
+        // NOTE: if set for read-only actions, will throw exception
+        if (isset($transactionOptions['excludeTxnFromChangeStreams'])) {
+            $options->setExcludeTxnFromChangeStreams(
+                $transactionOptions['excludeTxnFromChangeStreams']
+            );
         }
 
         $requestOptions = $this->pluck('requestOptions', $args, false) ?: [];
         if ($requestOptions) {
             $args['requestOptions'] = $this->serializer->decodeMessage(
-                new RequestOptions,
+                new RequestOptions(),
                 $requestOptions
             );
         }
@@ -1071,55 +1131,15 @@ class Grpc implements ConnectionInterface
     {
         $inputMutations = $this->pluck('mutations', $args);
 
-        $mutations = [];
-        if (is_array($inputMutations)) {
-            foreach ($inputMutations as $mutation) {
-                $type = array_keys($mutation)[0];
-                $data = $mutation[$type];
-
-                switch ($type) {
-                    case Operation::OP_DELETE:
-                        if (isset($data['keySet'])) {
-                            $data['keySet'] = $this->formatKeySet($data['keySet']);
-                        }
-
-                        $operation = $this->serializer->decodeMessage(
-                            new Delete,
-                            $data
-                        );
-                        break;
-                    default:
-                        $operation = new Write;
-                        $operation->setTable($data['table']);
-                        $operation->setColumns($data['columns']);
-
-                        $modifiedData = [];
-                        foreach ($data['values'] as $key => $param) {
-                            $modifiedData[$key] = $this->fieldValue($param);
-                        }
-
-                        $list = new ListValue;
-                        $list->setValues($modifiedData);
-                        $values = [$list];
-                        $operation->setValues($values);
-
-                        break;
-                }
-
-                $setterName = $this->mutationSetters[$type];
-                $mutation = new Mutation;
-                $mutation->$setterName($operation);
-                $mutations[] = $mutation;
-            }
-        }
+        $mutations = $this->parseMutations($inputMutations);
 
         if (isset($args['singleUseTransaction'])) {
             $readWrite = $this->serializer->decodeMessage(
-                new ReadWrite,
+                new ReadWrite(),
                 []
             );
 
-            $options = new TransactionOptions;
+            $options = new TransactionOptions();
             $options->setReadWrite($readWrite);
             $args['singleUseTransaction'] = $options;
         }
@@ -1127,15 +1147,50 @@ class Grpc implements ConnectionInterface
         $requestOptions = $this->pluck('requestOptions', $args, false) ?: [];
         if ($requestOptions) {
             $args['requestOptions'] = $this->serializer->decodeMessage(
-                new RequestOptions,
+                new RequestOptions(),
                 $requestOptions
             );
         }
 
         $databaseName = $this->pluck('database', $args);
+        $args = $this->addLarHeader($args, $this->larEnabled);
         return $this->send([$this->spannerClient, 'commit'], [
             $this->pluck('session', $args),
             $mutations,
+            $this->addResourcePrefixHeader($args, $databaseName)
+        ]);
+    }
+
+    /**
+     * @param array $args
+     * @return \Generator
+     */
+    public function batchWrite(array $args)
+    {
+        $databaseName = $this->pluck('database', $args);
+        $mutationGroups = $this->pluck('mutationGroups', $args);
+        $requestOptions = $this->pluck('requestOptions', $args, false) ?: [];
+
+        array_walk(
+            $mutationGroups,
+            fn (&$x) => $x['mutations'] = $this->parseMutations($x['mutations'])
+        );
+
+        $mutationGroups = array_map(
+            fn ($x) => $this->serializer->decodeMessage(new MutationGroupProto(), $x),
+            $mutationGroups
+        );
+
+        if ($requestOptions) {
+            $args['requestOptions'] = $this->serializer->decodeMessage(
+                new RequestOptions(),
+                $requestOptions
+            );
+        }
+
+        return $this->send([$this->spannerClient, 'batchWrite'], [
+            $this->pluck('session', $args),
+            $mutationGroups,
             $this->addResourcePrefixHeader($args, $databaseName)
         ]);
     }
@@ -1146,6 +1201,7 @@ class Grpc implements ConnectionInterface
     public function rollback(array $args)
     {
         $databaseName = $this->pluck('database', $args);
+        $args = $this->addLarHeader($args, $this->larEnabled);
         return $this->send([$this->spannerClient, 'rollback'], [
             $this->pluck('session', $args),
             $this->pluck('transactionId', $args),
@@ -1160,9 +1216,10 @@ class Grpc implements ConnectionInterface
     {
         $args = $this->formatSqlParams($args);
         $args['transaction'] = $this->createTransactionSelector($args);
+        $args = $this->addLarHeader($args, $this->larEnabled);
 
         $args['partitionOptions'] = $this->serializer->decodeMessage(
-            new PartitionOptions,
+            new PartitionOptions(),
             $this->pluck('partitionOptions', $args, false) ?: []
         );
 
@@ -1180,12 +1237,13 @@ class Grpc implements ConnectionInterface
     public function partitionRead(array $args)
     {
         $keySet = $this->pluck('keySet', $args);
-        $keySet = $this->serializer->decodeMessage(new KeySet, $this->formatKeySet($keySet));
+        $keySet = $this->serializer->decodeMessage(new KeySet(), $this->formatKeySet($keySet));
 
         $args['transaction'] = $this->createTransactionSelector($args);
+        $args = $this->addLarHeader($args, $this->larEnabled);
 
         $args['partitionOptions'] = $this->serializer->decodeMessage(
-            new PartitionOptions,
+            new PartitionOptions(),
             $this->pluck('partitionOptions', $args, false) ?: []
         );
 
@@ -1267,13 +1325,13 @@ class Grpc implements ConnectionInterface
             foreach ($params as $key => $param) {
                 $modifiedParams[$key] = $this->fieldValue($param);
             }
-            $args['params'] = new Struct;
+            $args['params'] = new Struct();
             $args['params']->setFields($modifiedParams);
         }
 
         if (isset($args['paramTypes']) && is_array($args['paramTypes'])) {
             foreach ($args['paramTypes'] as $key => $param) {
-                $args['paramTypes'][$key] = $this->serializer->decodeMessage(new Type, $param);
+                $args['paramTypes'][$key] = $this->serializer->decodeMessage(new Type(), $param);
             }
         }
 
@@ -1318,7 +1376,7 @@ class Grpc implements ConnectionInterface
      */
     private function createTransactionSelector(array &$args)
     {
-        $selector = new TransactionSelector;
+        $selector = new TransactionSelector();
         if (isset($args['transaction'])) {
             $transaction = $this->pluck('transaction', $args);
 
@@ -1439,7 +1497,7 @@ class Grpc implements ConnectionInterface
      */
     private function fieldValue($param)
     {
-        $field = new Value;
+        $field = new Value();
         $value = $this->formatValueForApi($param);
 
         $setter = null;
@@ -1462,7 +1520,7 @@ class Grpc implements ConnectionInterface
                 foreach ($param as $key => $value) {
                     $modifiedParams[$key] = $this->fieldValue($value);
                 }
-                $value = new Struct;
+                $value = new Struct();
                 $value->setFields($modifiedParams);
 
                 break;
@@ -1472,7 +1530,7 @@ class Grpc implements ConnectionInterface
                 foreach ($param as $item) {
                     $modifiedParams[] = $this->fieldValue($item);
                 }
-                $list = new ListValue;
+                $list = new ListValue();
                 $list->setValues($modifiedParams);
                 $value = $list;
 
@@ -1507,22 +1565,6 @@ class Grpc implements ConnectionInterface
         }
 
         return $transactionOptions;
-    }
-
-    /**
-     * Add the `google-cloud-resource-prefix` header value to the request.
-     *
-     * @param array $args
-     * @param string $value
-     * @return array
-     */
-    private function addResourcePrefixHeader(array $args, $value)
-    {
-        $args['headers'] = [
-            'google-cloud-resource-prefix' => [$value]
-        ];
-
-        return $args;
     }
 
     /**
@@ -1582,7 +1624,7 @@ class Grpc implements ConnectionInterface
         }
 
         $className = $mapper['message'];
-        $response = new $className;
+        $response = new $className();
         $response->mergeFromString($message['value']);
         return $this->serializer->encodeMessage($response);
     }
@@ -1596,5 +1638,136 @@ class Grpc implements ConnectionInterface
         }
 
         return null;
+    }
+
+    /**
+     * Set DirectedReadOptions if provided.
+     *
+     * @param array $args
+     */
+    private function setDirectedReadOptions(array &$args)
+    {
+        $directedReadOptions = $this->pluck('directedReadOptions', $args, false);
+        if (!empty($directedReadOptions)) {
+            $args['directedReadOptions'] = $this->serializer->decodeMessage(
+                new DirectedReadOptions(),
+                $directedReadOptions
+            );
+        }
+    }
+
+    /**
+     * Utiltiy method to take in a Google\Cloud\Spanner\V1\Type value and return
+     * the data as an array. The method takes care of array and struct elements.
+     *
+     * @param Type $type The "type" object
+     *
+     * @return array The formatted data.
+     */
+    private function getTypeData(Type $type): array
+    {
+        $data = [
+            'code' => $type->getCode(),
+            'typeAnnotation' => $type->getTypeAnnotation(),
+            'protoTypeFqn' => $type->getProtoTypeFqn()
+        ];
+
+        // If this is a struct field, then recursisevly call getTypeData
+        if ($type->hasStructType()) {
+            $nestedType = $type->getStructType();
+            $fields = $nestedType->getFields();
+            $data['structType'] = [
+                'fields' => $this->getFieldDataFromRepeatedFields($fields)
+            ];
+        }
+        // If this is an array field, then recursisevly call getTypeData
+        if ($type->hasArrayElementType()) {
+            $nestedType = $type->getArrayElementType();
+            $data['arrayElementType'] = $this->getTypeData($nestedType);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Utility method to return "fields data" in the format:
+     * [
+     *   "name" => ""
+     *   "type" => []
+     * ].
+     *
+     * The type is converted from a string like INT64 to ["code" => 2, "typeAnnotation" => 0]
+     * conforming with the Google\Cloud\Spanner\V1\TypeCode class.
+     *
+     * @param ?RepeatedField $fields The array contain list of fields.
+     *
+     * @return array The formatted fields data.
+     */
+    private function getFieldDataFromRepeatedFields(?RepeatedField $fields): array
+    {
+        if (is_null($fields)) {
+            return [];
+        }
+
+        $fieldsData = [];
+        foreach ($fields as $key => $field) {
+            $type = $field->getType();
+            $typeData = $this->getTypeData($type);
+
+            $fieldsData[$key] = [
+                'name' => $field->getName(),
+                'type' => $typeData
+            ];
+        }
+
+        return $fieldsData;
+    }
+
+    private function parseMutations($rawMutations)
+    {
+        if (!is_array($rawMutations)) {
+            return [];
+        }
+
+        $mutations = [];
+        foreach ($rawMutations as $mutation) {
+            $type = array_keys($mutation)[0];
+            $data = $mutation[$type];
+
+            switch ($type) {
+                case Operation::OP_DELETE:
+                    if (isset($data['keySet'])) {
+                        $data['keySet'] = $this->formatKeySet($data['keySet']);
+                    }
+
+                    $operation = $this->serializer->decodeMessage(
+                        new Delete(),
+                        $data
+                    );
+                    break;
+                default:
+                    $operation = new Write();
+                    $operation->setTable($data['table']);
+                    $operation->setColumns($data['columns']);
+
+                    $modifiedData = [];
+                    foreach ($data['values'] as $key => $param) {
+                        $modifiedData[$key] = $this->fieldValue($param);
+                    }
+
+                    $list = new ListValue();
+                    $list->setValues($modifiedData);
+                    $values = [$list];
+                    $operation->setValues($values);
+
+                    break;
+            }
+
+            $setterName = $this->mutationSetters[$type];
+            $mutation = new Mutation();
+            $mutation->$setterName($operation);
+            $mutations[] = $mutation;
+        }
+        return $mutations;
     }
 }

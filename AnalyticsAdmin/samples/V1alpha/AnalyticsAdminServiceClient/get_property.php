@@ -23,12 +23,13 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetProperty_sync]
-use Google\Analytics\Admin\V1alpha\AnalyticsAdminServiceClient;
+use Google\Analytics\Admin\V1alpha\Client\AnalyticsAdminServiceClient;
+use Google\Analytics\Admin\V1alpha\GetPropertyRequest;
 use Google\Analytics\Admin\V1alpha\Property;
 use Google\ApiCore\ApiException;
 
 /**
- * Lookup for a single "GA4" Property.
+ * Lookup for a single GA Property.
  *
  * @param string $formattedName The name of the property to lookup.
  *                              Format: properties/{property_id}
@@ -40,10 +41,14 @@ function get_property_sample(string $formattedName): void
     // Create a client.
     $analyticsAdminServiceClient = new AnalyticsAdminServiceClient();
 
+    // Prepare the request message.
+    $request = (new GetPropertyRequest())
+        ->setName($formattedName);
+
     // Call the API and handle any network failures.
     try {
         /** @var Property $response */
-        $response = $analyticsAdminServiceClient->getProperty($formattedName);
+        $response = $analyticsAdminServiceClient->getProperty($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

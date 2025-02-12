@@ -25,16 +25,17 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // [START securitycenter_v1_generated_SecurityCenter_GroupAssets_sync]
 use Google\ApiCore\ApiException;
 use Google\ApiCore\PagedListResponse;
+use Google\Cloud\SecurityCenter\V1\Client\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\GroupAssetsRequest;
 use Google\Cloud\SecurityCenter\V1\GroupResult;
-use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
 
 /**
  * Filters an organization's assets and  groups them by their specified
  * properties.
  *
  * @param string $formattedParent The name of the parent to group the assets by. Its format is
- *                                "organizations/[organization_id]", "folders/[folder_id]", or
- *                                "projects/[project_id]". Please see
+ *                                `organizations/[organization_id]`, `folders/[folder_id]`, or
+ *                                `projects/[project_id]`. Please see
  *                                {@see SecurityCenterClient::projectName()} for help formatting this field.
  * @param string $groupBy         Expression that defines what assets fields to use for grouping.
  *                                The string value should follow SQL syntax: comma separated list of fields.
@@ -60,10 +61,15 @@ function group_assets_sample(string $formattedParent, string $groupBy): void
     // Create a client.
     $securityCenterClient = new SecurityCenterClient();
 
+    // Prepare the request message.
+    $request = (new GroupAssetsRequest())
+        ->setParent($formattedParent)
+        ->setGroupBy($groupBy);
+
     // Call the API and handle any network failures.
     try {
         /** @var PagedListResponse $response */
-        $response = $securityCenterClient->groupAssets($formattedParent, $groupBy);
+        $response = $securityCenterClient->groupAssets($request);
 
         /** @var GroupResult $element */
         foreach ($response as $element) {

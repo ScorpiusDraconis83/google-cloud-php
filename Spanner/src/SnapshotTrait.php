@@ -19,7 +19,6 @@ namespace Google\Cloud\Spanner;
 
 use Google\Cloud\Spanner\Session\Session;
 use Google\Cloud\Spanner\Session\SessionPoolInterface;
-use Google\Cloud\Spanner\Timestamp;
 
 /**
  * Common methods for Read-Only transactions (i.e. Snapshots)
@@ -42,6 +41,10 @@ trait SnapshotTrait
      *     @type string $id The Transaction ID. If no ID is provided,
      *           the Transaction will be a Single-Use Transaction.
      *     @type Timestamp $readTimestamp The read timestamp.
+     *     @type array $directedReadOptions Directed read options.
+     *           {@see \Google\Cloud\Spanner\V1\DirectedReadOptions}
+     *           If using the `replicaSelection::type` setting, utilize the constants available in
+     *           {@see \Google\Cloud\Spanner\V1\DirectedReadOptions\ReplicaSelection\Type} to set a value.
      * }
      */
     private function initialize(
@@ -68,6 +71,7 @@ trait SnapshotTrait
             : self::TYPE_SINGLE_USE;
 
         $this->context = SessionPoolInterface::CONTEXT_READ;
+        $this->directedReadOptions = $options['directedReadOptions'] ?? [];
         $this->options = $options;
     }
 

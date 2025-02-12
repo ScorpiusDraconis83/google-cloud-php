@@ -43,6 +43,7 @@ use Google\Cloud\Compute\V1\PatchAutoscalerRequest;
 use Google\Cloud\Compute\V1\UpdateAutoscalerRequest;
 use Google\Cloud\Compute\V1\ZoneOperationsClient;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The Autoscalers API.
@@ -50,13 +51,13 @@ use GuzzleHttp\Promise\PromiseInterface;
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
  *
- * @method PromiseInterface aggregatedListAsync(AggregatedListAutoscalersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAsync(DeleteAutoscalerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAsync(GetAutoscalerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface insertAsync(InsertAutoscalerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAsync(ListAutoscalersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface patchAsync(PatchAutoscalerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateAsync(UpdateAutoscalerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> aggregatedListAsync(AggregatedListAutoscalersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteAsync(DeleteAutoscalerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Autoscaler> getAsync(GetAutoscalerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> insertAsync(InsertAutoscalerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAsync(ListAutoscalersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> patchAsync(PatchAutoscalerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateAsync(UpdateAutoscalerRequest $request, array $optionalArgs = [])
  */
 final class AutoscalersClient
 {
@@ -115,8 +116,8 @@ final class AutoscalersClient
         return 'rest';
     }
 
-    /** Implements GapicClientTrait::getSupportedTransports. */
-    private static function getSupportedTransports()
+    /** Implements ClientOptionsTrait::supportedTransports. */
+    private static function supportedTransports()
     {
         return [
             'rest',
@@ -149,6 +150,9 @@ final class AutoscalersClient
             'operationNameMethod' => 'getName',
             'operationStatusMethod' => 'getStatus',
             'operationStatusDoneValue' => \Google\Cloud\Compute\V1\Operation\Status::DONE,
+            'getOperationRequest' => '\Google\Cloud\Compute\V1\GetZoneOperationRequest',
+            'cancelOperationRequest' => null,
+            'deleteOperationRequest' => '\Google\Cloud\Compute\V1\DeleteZoneOperationRequest',
         ];
     }
 
@@ -188,6 +192,12 @@ final class AutoscalersClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -218,6 +228,9 @@ final class AutoscalersClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -241,9 +254,11 @@ final class AutoscalersClient
     }
 
     /**
-     * Retrieves an aggregated list of autoscalers.
+     * Retrieves an aggregated list of autoscalers. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
      *
      * The async variant is {@see AutoscalersClient::aggregatedListAsync()} .
+     *
+     * @example samples/V1/AutoscalersClient/aggregated_list.php
      *
      * @param AggregatedListAutoscalersRequest $request     A request to house fields associated with the call.
      * @param array                            $callOptions {
@@ -269,6 +284,8 @@ final class AutoscalersClient
      *
      * The async variant is {@see AutoscalersClient::deleteAsync()} .
      *
+     * @example samples/V1/AutoscalersClient/delete.php
+     *
      * @param DeleteAutoscalerRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
      *     Optional.
@@ -292,6 +309,8 @@ final class AutoscalersClient
      * Returns the specified autoscaler resource.
      *
      * The async variant is {@see AutoscalersClient::getAsync()} .
+     *
+     * @example samples/V1/AutoscalersClient/get.php
      *
      * @param GetAutoscalerRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -317,6 +336,8 @@ final class AutoscalersClient
      *
      * The async variant is {@see AutoscalersClient::insertAsync()} .
      *
+     * @example samples/V1/AutoscalersClient/insert.php
+     *
      * @param InsertAutoscalerRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
      *     Optional.
@@ -340,6 +361,8 @@ final class AutoscalersClient
      * Retrieves a list of autoscalers contained within the specified zone.
      *
      * The async variant is {@see AutoscalersClient::listAsync()} .
+     *
+     * @example samples/V1/AutoscalersClient/list.php
      *
      * @param ListAutoscalersRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -365,6 +388,8 @@ final class AutoscalersClient
      *
      * The async variant is {@see AutoscalersClient::patchAsync()} .
      *
+     * @example samples/V1/AutoscalersClient/patch.php
+     *
      * @param PatchAutoscalerRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -388,6 +413,8 @@ final class AutoscalersClient
      * Updates an autoscaler in the specified project using the data included in the request.
      *
      * The async variant is {@see AutoscalersClient::updateAsync()} .
+     *
+     * @example samples/V1/AutoscalersClient/update.php
      *
      * @param UpdateAutoscalerRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {

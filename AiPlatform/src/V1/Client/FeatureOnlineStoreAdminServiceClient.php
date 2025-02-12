@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\AIPlatform\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -60,8 +59,10 @@ use Google\Cloud\Iam\V1\TestIamPermissionsResponse;
 use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\Location;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The service that handles CRUD and List for resources for
@@ -75,24 +76,24 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createFeatureOnlineStoreAsync(CreateFeatureOnlineStoreRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createFeatureViewAsync(CreateFeatureViewRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteFeatureOnlineStoreAsync(DeleteFeatureOnlineStoreRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteFeatureViewAsync(DeleteFeatureViewRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getFeatureOnlineStoreAsync(GetFeatureOnlineStoreRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getFeatureViewAsync(GetFeatureViewRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getFeatureViewSyncAsync(GetFeatureViewSyncRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listFeatureOnlineStoresAsync(ListFeatureOnlineStoresRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listFeatureViewSyncsAsync(ListFeatureViewSyncsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listFeatureViewsAsync(ListFeatureViewsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface syncFeatureViewAsync(SyncFeatureViewRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateFeatureOnlineStoreAsync(UpdateFeatureOnlineStoreRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateFeatureViewAsync(UpdateFeatureViewRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createFeatureOnlineStoreAsync(CreateFeatureOnlineStoreRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createFeatureViewAsync(CreateFeatureViewRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteFeatureOnlineStoreAsync(DeleteFeatureOnlineStoreRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteFeatureViewAsync(DeleteFeatureViewRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<FeatureOnlineStore> getFeatureOnlineStoreAsync(GetFeatureOnlineStoreRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<FeatureView> getFeatureViewAsync(GetFeatureViewRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<FeatureViewSync> getFeatureViewSyncAsync(GetFeatureViewSyncRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listFeatureOnlineStoresAsync(ListFeatureOnlineStoresRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listFeatureViewSyncsAsync(ListFeatureViewSyncsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listFeatureViewsAsync(ListFeatureViewsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<SyncFeatureViewResponse> syncFeatureViewAsync(SyncFeatureViewRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateFeatureOnlineStoreAsync(UpdateFeatureOnlineStoreRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateFeatureViewAsync(UpdateFeatureViewRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
  */
 final class FeatureOnlineStoreAdminServiceClient
 {
@@ -119,9 +120,7 @@ final class FeatureOnlineStoreAdminServiceClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private $operationsClient;
 
@@ -131,14 +130,16 @@ final class FeatureOnlineStoreAdminServiceClient
             'serviceName' => self::SERVICE_NAME,
             'apiEndpoint' => self::SERVICE_ADDRESS . ':' . self::DEFAULT_SERVICE_PORT,
             'clientConfig' => __DIR__ . '/../resources/feature_online_store_admin_service_client_config.json',
-            'descriptorsConfigPath' => __DIR__ . '/../resources/feature_online_store_admin_service_descriptor_config.php',
+            'descriptorsConfigPath' =>
+                __DIR__ . '/../resources/feature_online_store_admin_service_descriptor_config.php',
             'gcpApiConfigPath' => __DIR__ . '/../resources/feature_online_store_admin_service_grpc_config.json',
             'credentialsConfig' => [
                 'defaultScopes' => self::$serviceScopes,
             ],
             'transportConfig' => [
                 'rest' => [
-                    'restClientConfigPath' => __DIR__ . '/../resources/feature_online_store_admin_service_rest_client_config.php',
+                    'restClientConfigPath' =>
+                        __DIR__ . '/../resources/feature_online_store_admin_service_rest_client_config.php',
                 ],
             ],
         ];
@@ -167,10 +168,31 @@ final class FeatureOnlineStoreAdminServiceClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -203,8 +225,12 @@ final class FeatureOnlineStoreAdminServiceClient
      *
      * @return string The formatted feature_view resource.
      */
-    public static function featureViewName(string $project, string $location, string $featureOnlineStore, string $featureView): string
-    {
+    public static function featureViewName(
+        string $project,
+        string $location,
+        string $featureOnlineStore,
+        string $featureView
+    ): string {
         return self::getPathTemplate('featureView')->render([
             'project' => $project,
             'location' => $location,
@@ -224,8 +250,12 @@ final class FeatureOnlineStoreAdminServiceClient
      *
      * @return string The formatted feature_view_sync resource.
      */
-    public static function featureViewSyncName(string $project, string $location, string $featureOnlineStore, string $featureView): string
-    {
+    public static function featureViewSyncName(
+        string $project,
+        string $location,
+        string $featureOnlineStore,
+        string $featureView
+    ): string {
         return self::getPathTemplate('featureViewSync')->render([
             'project' => $project,
             'location' => $location,
@@ -266,14 +296,14 @@ final class FeatureOnlineStoreAdminServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -295,6 +325,12 @@ final class FeatureOnlineStoreAdminServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -328,6 +364,9 @@ final class FeatureOnlineStoreAdminServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -372,8 +411,10 @@ final class FeatureOnlineStoreAdminServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createFeatureOnlineStore(CreateFeatureOnlineStoreRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function createFeatureOnlineStore(
+        CreateFeatureOnlineStoreRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('CreateFeatureOnlineStore', $request, $callOptions)->wait();
     }
 
@@ -427,8 +468,10 @@ final class FeatureOnlineStoreAdminServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function deleteFeatureOnlineStore(DeleteFeatureOnlineStoreRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function deleteFeatureOnlineStore(
+        DeleteFeatureOnlineStoreRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('DeleteFeatureOnlineStore', $request, $callOptions)->wait();
     }
 
@@ -481,8 +524,10 @@ final class FeatureOnlineStoreAdminServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getFeatureOnlineStore(GetFeatureOnlineStoreRequest $request, array $callOptions = []): FeatureOnlineStore
-    {
+    public function getFeatureOnlineStore(
+        GetFeatureOnlineStoreRequest $request,
+        array $callOptions = []
+    ): FeatureOnlineStore {
         return $this->startApiCall('GetFeatureOnlineStore', $request, $callOptions)->wait();
     }
 
@@ -562,8 +607,10 @@ final class FeatureOnlineStoreAdminServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listFeatureOnlineStores(ListFeatureOnlineStoresRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listFeatureOnlineStores(
+        ListFeatureOnlineStoresRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListFeatureOnlineStores', $request, $callOptions);
     }
 
@@ -589,8 +636,10 @@ final class FeatureOnlineStoreAdminServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listFeatureViewSyncs(ListFeatureViewSyncsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listFeatureViewSyncs(
+        ListFeatureViewSyncsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListFeatureViewSyncs', $request, $callOptions);
     }
 
@@ -670,8 +719,10 @@ final class FeatureOnlineStoreAdminServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateFeatureOnlineStore(UpdateFeatureOnlineStoreRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function updateFeatureOnlineStore(
+        UpdateFeatureOnlineStoreRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('UpdateFeatureOnlineStore', $request, $callOptions)->wait();
     }
 
@@ -843,8 +894,10 @@ final class FeatureOnlineStoreAdminServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function testIamPermissions(TestIamPermissionsRequest $request, array $callOptions = []): TestIamPermissionsResponse
-    {
+    public function testIamPermissions(
+        TestIamPermissionsRequest $request,
+        array $callOptions = []
+    ): TestIamPermissionsResponse {
         return $this->startApiCall('TestIamPermissions', $request, $callOptions)->wait();
     }
 }

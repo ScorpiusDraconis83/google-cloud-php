@@ -23,7 +23,7 @@ class Cluster extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Immutable. The location where this cluster's nodes and storage reside. For
      * best performance, clients should be located as close as possible to this
@@ -32,33 +32,39 @@ class Cluster extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string location = 2 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.resource_reference) = {</code>
      */
-    private $location = '';
+    protected $location = '';
     /**
      * Output only. The current state of the cluster.
      *
      * Generated from protobuf field <code>.google.bigtable.admin.v2.Cluster.State state = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $state = 0;
+    protected $state = 0;
     /**
      * The number of nodes allocated to this cluster. More nodes enable higher
      * throughput and more consistent performance.
      *
      * Generated from protobuf field <code>int32 serve_nodes = 4;</code>
      */
-    private $serve_nodes = 0;
+    protected $serve_nodes = 0;
+    /**
+     * Immutable. The node scaling factor of this cluster.
+     *
+     * Generated from protobuf field <code>.google.bigtable.admin.v2.Cluster.NodeScalingFactor node_scaling_factor = 9 [(.google.api.field_behavior) = IMMUTABLE];</code>
+     */
+    protected $node_scaling_factor = 0;
     /**
      * Immutable. The type of storage used by this cluster to serve its
      * parent instance's tables, unless explicitly overridden.
      *
      * Generated from protobuf field <code>.google.bigtable.admin.v2.StorageType default_storage_type = 5 [(.google.api.field_behavior) = IMMUTABLE];</code>
      */
-    private $default_storage_type = 0;
+    protected $default_storage_type = 0;
     /**
      * Immutable. The encryption configuration for CMEK-protected clusters.
      *
      * Generated from protobuf field <code>.google.bigtable.admin.v2.Cluster.EncryptionConfig encryption_config = 6 [(.google.api.field_behavior) = IMMUTABLE];</code>
      */
-    private $encryption_config = null;
+    protected $encryption_config = null;
     protected $config;
 
     /**
@@ -80,6 +86,8 @@ class Cluster extends \Google\Protobuf\Internal\Message
      *     @type int $serve_nodes
      *           The number of nodes allocated to this cluster. More nodes enable higher
      *           throughput and more consistent performance.
+     *     @type int $node_scaling_factor
+     *           Immutable. The node scaling factor of this cluster.
      *     @type \Google\Cloud\Bigtable\Admin\V2\Cluster\ClusterConfig $cluster_config
      *           Configuration for this cluster.
      *     @type int $default_storage_type
@@ -204,6 +212,32 @@ class Cluster extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkInt32($var);
         $this->serve_nodes = $var;
+
+        return $this;
+    }
+
+    /**
+     * Immutable. The node scaling factor of this cluster.
+     *
+     * Generated from protobuf field <code>.google.bigtable.admin.v2.Cluster.NodeScalingFactor node_scaling_factor = 9 [(.google.api.field_behavior) = IMMUTABLE];</code>
+     * @return int
+     */
+    public function getNodeScalingFactor()
+    {
+        return $this->node_scaling_factor;
+    }
+
+    /**
+     * Immutable. The node scaling factor of this cluster.
+     *
+     * Generated from protobuf field <code>.google.bigtable.admin.v2.Cluster.NodeScalingFactor node_scaling_factor = 9 [(.google.api.field_behavior) = IMMUTABLE];</code>
+     * @param int $var
+     * @return $this
+     */
+    public function setNodeScalingFactor($var)
+    {
+        GPBUtil::checkEnum($var, \Google\Cloud\Bigtable\Admin\V2\Cluster\NodeScalingFactor::class);
+        $this->node_scaling_factor = $var;
 
         return $this;
     }

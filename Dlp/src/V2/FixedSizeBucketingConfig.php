@@ -20,7 +20,9 @@ use Google\Protobuf\Internal\GPBUtil;
  * If the bound Value type differs from the type of data
  * being transformed, we will first attempt converting the type of the data to
  * be transformed to match the type of the bound before comparing.
- * See https://cloud.google.com/dlp/docs/concepts-bucketing to learn more.
+ * See
+ * https://cloud.google.com/sensitive-data-protection/docs/concepts-bucketing to
+ * learn more.
  *
  * Generated from protobuf message <code>google.privacy.dlp.v2.FixedSizeBucketingConfig</code>
  */
@@ -33,7 +35,7 @@ class FixedSizeBucketingConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.privacy.dlp.v2.Value lower_bound = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $lower_bound = null;
+    protected $lower_bound = null;
     /**
      * Required. Upper bound value of buckets. All values greater than upper_bound
      * are grouped together into a single bucket; for example if `upper_bound` =
@@ -41,7 +43,7 @@ class FixedSizeBucketingConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.privacy.dlp.v2.Value upper_bound = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $upper_bound = null;
+    protected $upper_bound = null;
     /**
      * Required. Size of each bucket (except for minimum and maximum buckets). So
      * if `lower_bound` = 10, `upper_bound` = 89, and `bucket_size` = 10, then the
@@ -50,7 +52,7 @@ class FixedSizeBucketingConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>double bucket_size = 3 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $bucket_size = 0.0;
+    protected $bucket_size = 0.0;
 
     /**
      * Constructor.

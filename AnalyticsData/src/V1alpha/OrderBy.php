@@ -9,7 +9,9 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * The sort options.
+ * Order bys define how rows will be sorted in the response. For example,
+ * ordering rows by descending event count is one ordering, and ordering rows by
+ * the event name string is a different ordering.
  *
  * Generated from protobuf message <code>google.analytics.data.v1alpha.OrderBy</code>
  */
@@ -20,7 +22,7 @@ class OrderBy extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>bool desc = 4;</code>
      */
-    private $desc = false;
+    protected $desc = false;
     protected $one_order_by;
 
     /**
@@ -33,8 +35,6 @@ class OrderBy extends \Google\Protobuf\Internal\Message
      *           Sorts results by a metric's values.
      *     @type \Google\Analytics\Data\V1alpha\OrderBy\DimensionOrderBy $dimension
      *           Sorts results by a dimension's values.
-     *     @type \Google\Analytics\Data\V1alpha\OrderBy\PivotOrderBy $pivot
-     *           Sorts results by a metric's values within a pivot column group.
      *     @type bool $desc
      *           If true, sorts by descending order.
      * }
@@ -102,37 +102,6 @@ class OrderBy extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Analytics\Data\V1alpha\OrderBy\DimensionOrderBy::class);
         $this->writeOneof(2, $var);
-
-        return $this;
-    }
-
-    /**
-     * Sorts results by a metric's values within a pivot column group.
-     *
-     * Generated from protobuf field <code>.google.analytics.data.v1alpha.OrderBy.PivotOrderBy pivot = 3;</code>
-     * @return \Google\Analytics\Data\V1alpha\OrderBy\PivotOrderBy|null
-     */
-    public function getPivot()
-    {
-        return $this->readOneof(3);
-    }
-
-    public function hasPivot()
-    {
-        return $this->hasOneof(3);
-    }
-
-    /**
-     * Sorts results by a metric's values within a pivot column group.
-     *
-     * Generated from protobuf field <code>.google.analytics.data.v1alpha.OrderBy.PivotOrderBy pivot = 3;</code>
-     * @param \Google\Analytics\Data\V1alpha\OrderBy\PivotOrderBy $var
-     * @return $this
-     */
-    public function setPivot($var)
-    {
-        GPBUtil::checkMessage($var, \Google\Analytics\Data\V1alpha\OrderBy\PivotOrderBy::class);
-        $this->writeOneof(3, $var);
 
         return $this;
     }

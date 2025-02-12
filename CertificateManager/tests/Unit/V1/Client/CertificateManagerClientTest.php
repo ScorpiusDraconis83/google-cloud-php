@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ namespace Google\Cloud\CertificateManager\Tests\Unit\V1\Client;
 
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\Testing\GeneratedTest;
 use Google\ApiCore\Testing\MockTransport;
 use Google\Cloud\CertificateManager\V1\Certificate;
@@ -39,17 +38,20 @@ use Google\Cloud\CertificateManager\V1\CreateCertificateMapEntryRequest;
 use Google\Cloud\CertificateManager\V1\CreateCertificateMapRequest;
 use Google\Cloud\CertificateManager\V1\CreateCertificateRequest;
 use Google\Cloud\CertificateManager\V1\CreateDnsAuthorizationRequest;
+use Google\Cloud\CertificateManager\V1\CreateTrustConfigRequest;
 use Google\Cloud\CertificateManager\V1\DeleteCertificateIssuanceConfigRequest;
 use Google\Cloud\CertificateManager\V1\DeleteCertificateMapEntryRequest;
 use Google\Cloud\CertificateManager\V1\DeleteCertificateMapRequest;
 use Google\Cloud\CertificateManager\V1\DeleteCertificateRequest;
 use Google\Cloud\CertificateManager\V1\DeleteDnsAuthorizationRequest;
+use Google\Cloud\CertificateManager\V1\DeleteTrustConfigRequest;
 use Google\Cloud\CertificateManager\V1\DnsAuthorization;
 use Google\Cloud\CertificateManager\V1\GetCertificateIssuanceConfigRequest;
 use Google\Cloud\CertificateManager\V1\GetCertificateMapEntryRequest;
 use Google\Cloud\CertificateManager\V1\GetCertificateMapRequest;
 use Google\Cloud\CertificateManager\V1\GetCertificateRequest;
 use Google\Cloud\CertificateManager\V1\GetDnsAuthorizationRequest;
+use Google\Cloud\CertificateManager\V1\GetTrustConfigRequest;
 use Google\Cloud\CertificateManager\V1\ListCertificateIssuanceConfigsRequest;
 use Google\Cloud\CertificateManager\V1\ListCertificateIssuanceConfigsResponse;
 use Google\Cloud\CertificateManager\V1\ListCertificateMapEntriesRequest;
@@ -60,14 +62,19 @@ use Google\Cloud\CertificateManager\V1\ListCertificatesRequest;
 use Google\Cloud\CertificateManager\V1\ListCertificatesResponse;
 use Google\Cloud\CertificateManager\V1\ListDnsAuthorizationsRequest;
 use Google\Cloud\CertificateManager\V1\ListDnsAuthorizationsResponse;
+use Google\Cloud\CertificateManager\V1\ListTrustConfigsRequest;
+use Google\Cloud\CertificateManager\V1\ListTrustConfigsResponse;
+use Google\Cloud\CertificateManager\V1\TrustConfig;
 use Google\Cloud\CertificateManager\V1\UpdateCertificateMapEntryRequest;
 use Google\Cloud\CertificateManager\V1\UpdateCertificateMapRequest;
 use Google\Cloud\CertificateManager\V1\UpdateCertificateRequest;
 use Google\Cloud\CertificateManager\V1\UpdateDnsAuthorizationRequest;
+use Google\Cloud\CertificateManager\V1\UpdateTrustConfigRequest;
 use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\ListLocationsResponse;
 use Google\Cloud\Location\Location;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\GetOperationRequest;
 use Google\LongRunning\Operation;
 use Google\Protobuf\Any;
@@ -93,7 +100,9 @@ class CertificateManagerClientTest extends GeneratedTest
     /** @return CredentialsWrapper */
     private function createCredentials()
     {
-        return $this->getMockBuilder(CredentialsWrapper::class)->disableOriginalConstructor()->getMock();
+        return $this->getMockBuilder(CredentialsWrapper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /** @return CertificateManagerClient */
@@ -157,7 +166,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(0, count($operationsRequestsEmpty));
         $actualApiFuncCall = $apiRequests[0]->getFuncCall();
         $actualApiRequestObject = $apiRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/CreateCertificate', $actualApiFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/CreateCertificate',
+            $actualApiFuncCall
+        );
         $actualValue = $actualApiRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $actualValue = $actualApiRequestObject->getCertificateId();
@@ -207,12 +219,15 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
@@ -304,7 +319,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(0, count($operationsRequestsEmpty));
         $actualApiFuncCall = $apiRequests[0]->getFuncCall();
         $actualApiRequestObject = $apiRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/CreateCertificateIssuanceConfig', $actualApiFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/CreateCertificateIssuanceConfig',
+            $actualApiFuncCall
+        );
         $actualValue = $actualApiRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $actualValue = $actualApiRequestObject->getCertificateIssuanceConfigId();
@@ -354,12 +372,15 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
@@ -449,7 +470,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(0, count($operationsRequestsEmpty));
         $actualApiFuncCall = $apiRequests[0]->getFuncCall();
         $actualApiRequestObject = $apiRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/CreateCertificateMap', $actualApiFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/CreateCertificateMap',
+            $actualApiFuncCall
+        );
         $actualValue = $actualApiRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $actualValue = $actualApiRequestObject->getCertificateMapId();
@@ -499,12 +523,15 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
@@ -588,7 +615,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(0, count($operationsRequestsEmpty));
         $actualApiFuncCall = $apiRequests[0]->getFuncCall();
         $actualApiRequestObject = $apiRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/CreateCertificateMapEntry', $actualApiFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/CreateCertificateMapEntry',
+            $actualApiFuncCall
+        );
         $actualValue = $actualApiRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $actualValue = $actualApiRequestObject->getCertificateMapEntryId();
@@ -638,12 +668,15 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->certificateMapName('[PROJECT]', '[LOCATION]', '[CERTIFICATE_MAP]');
@@ -729,7 +762,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(0, count($operationsRequestsEmpty));
         $actualApiFuncCall = $apiRequests[0]->getFuncCall();
         $actualApiRequestObject = $apiRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/CreateDnsAuthorization', $actualApiFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/CreateDnsAuthorization',
+            $actualApiFuncCall
+        );
         $actualValue = $actualApiRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $actualValue = $actualApiRequestObject->getDnsAuthorizationId();
@@ -779,12 +815,15 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
@@ -801,6 +840,151 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertNull($response->getResult());
         $expectedOperationsRequestObject = new GetOperationRequest();
         $expectedOperationsRequestObject->setName('operations/createDnsAuthorizationTest');
+        try {
+            $response->pollUntilComplete([
+                'initialPollDelayMillis' => 1,
+            ]);
+            // If the pollUntilComplete() method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stubs are exhausted
+        $transport->popReceivedCalls();
+        $operationsTransport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+        $this->assertTrue($operationsTransport->isExhausted());
+    }
+
+    /** @test */
+    public function createTrustConfigTest()
+    {
+        $operationsTransport = $this->createTransport();
+        $operationsClient = new OperationsClient([
+            'apiEndpoint' => '',
+            'transport' => $operationsTransport,
+            'credentials' => $this->createCredentials(),
+        ]);
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+            'operationsClient' => $operationsClient,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $this->assertTrue($operationsTransport->isExhausted());
+        // Mock response
+        $incompleteOperation = new Operation();
+        $incompleteOperation->setName('operations/createTrustConfigTest');
+        $incompleteOperation->setDone(false);
+        $transport->addResponse($incompleteOperation);
+        $name = 'name3373707';
+        $description = 'description-1724546052';
+        $etag = 'etag3123477';
+        $expectedResponse = new TrustConfig();
+        $expectedResponse->setName($name);
+        $expectedResponse->setDescription($description);
+        $expectedResponse->setEtag($etag);
+        $anyResponse = new Any();
+        $anyResponse->setValue($expectedResponse->serializeToString());
+        $completeOperation = new Operation();
+        $completeOperation->setName('operations/createTrustConfigTest');
+        $completeOperation->setDone(true);
+        $completeOperation->setResponse($anyResponse);
+        $operationsTransport->addResponse($completeOperation);
+        // Mock request
+        $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
+        $trustConfigId = 'trustConfigId-1311884783';
+        $trustConfig = new TrustConfig();
+        $request = (new CreateTrustConfigRequest())
+            ->setParent($formattedParent)
+            ->setTrustConfigId($trustConfigId)
+            ->setTrustConfig($trustConfig);
+        $response = $gapicClient->createTrustConfig($request);
+        $this->assertFalse($response->isDone());
+        $this->assertNull($response->getResult());
+        $apiRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($apiRequests));
+        $operationsRequestsEmpty = $operationsTransport->popReceivedCalls();
+        $this->assertSame(0, count($operationsRequestsEmpty));
+        $actualApiFuncCall = $apiRequests[0]->getFuncCall();
+        $actualApiRequestObject = $apiRequests[0]->getRequestObject();
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/CreateTrustConfig',
+            $actualApiFuncCall
+        );
+        $actualValue = $actualApiRequestObject->getParent();
+        $this->assertProtobufEquals($formattedParent, $actualValue);
+        $actualValue = $actualApiRequestObject->getTrustConfigId();
+        $this->assertProtobufEquals($trustConfigId, $actualValue);
+        $actualValue = $actualApiRequestObject->getTrustConfig();
+        $this->assertProtobufEquals($trustConfig, $actualValue);
+        $expectedOperationsRequestObject = new GetOperationRequest();
+        $expectedOperationsRequestObject->setName('operations/createTrustConfigTest');
+        $response->pollUntilComplete([
+            'initialPollDelayMillis' => 1,
+        ]);
+        $this->assertTrue($response->isDone());
+        $this->assertEquals($expectedResponse, $response->getResult());
+        $apiRequestsEmpty = $transport->popReceivedCalls();
+        $this->assertSame(0, count($apiRequestsEmpty));
+        $operationsRequests = $operationsTransport->popReceivedCalls();
+        $this->assertSame(1, count($operationsRequests));
+        $actualOperationsFuncCall = $operationsRequests[0]->getFuncCall();
+        $actualOperationsRequestObject = $operationsRequests[0]->getRequestObject();
+        $this->assertSame('/google.longrunning.Operations/GetOperation', $actualOperationsFuncCall);
+        $this->assertEquals($expectedOperationsRequestObject, $actualOperationsRequestObject);
+        $this->assertTrue($transport->isExhausted());
+        $this->assertTrue($operationsTransport->isExhausted());
+    }
+
+    /** @test */
+    public function createTrustConfigExceptionTest()
+    {
+        $operationsTransport = $this->createTransport();
+        $operationsClient = new OperationsClient([
+            'apiEndpoint' => '',
+            'transport' => $operationsTransport,
+            'credentials' => $this->createCredentials(),
+        ]);
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+            'operationsClient' => $operationsClient,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $this->assertTrue($operationsTransport->isExhausted());
+        // Mock response
+        $incompleteOperation = new Operation();
+        $incompleteOperation->setName('operations/createTrustConfigTest');
+        $incompleteOperation->setDone(false);
+        $transport->addResponse($incompleteOperation);
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $operationsTransport->addResponse(null, $status);
+        // Mock request
+        $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
+        $trustConfigId = 'trustConfigId-1311884783';
+        $trustConfig = new TrustConfig();
+        $request = (new CreateTrustConfigRequest())
+            ->setParent($formattedParent)
+            ->setTrustConfigId($trustConfigId)
+            ->setTrustConfig($trustConfig);
+        $response = $gapicClient->createTrustConfig($request);
+        $this->assertFalse($response->isDone());
+        $this->assertNull($response->getResult());
+        $expectedOperationsRequestObject = new GetOperationRequest();
+        $expectedOperationsRequestObject->setName('operations/createTrustConfigTest');
         try {
             $response->pollUntilComplete([
                 'initialPollDelayMillis' => 1,
@@ -849,8 +1033,7 @@ class CertificateManagerClientTest extends GeneratedTest
         $operationsTransport->addResponse($completeOperation);
         // Mock request
         $formattedName = $gapicClient->certificateName('[PROJECT]', '[LOCATION]', '[CERTIFICATE]');
-        $request = (new DeleteCertificateRequest())
-            ->setName($formattedName);
+        $request = (new DeleteCertificateRequest())->setName($formattedName);
         $response = $gapicClient->deleteCertificate($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -860,7 +1043,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(0, count($operationsRequestsEmpty));
         $actualApiFuncCall = $apiRequests[0]->getFuncCall();
         $actualApiRequestObject = $apiRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificate', $actualApiFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificate',
+            $actualApiFuncCall
+        );
         $actualValue = $actualApiRequestObject->getName();
         $this->assertProtobufEquals($formattedName, $actualValue);
         $expectedOperationsRequestObject = new GetOperationRequest();
@@ -906,17 +1092,19 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->certificateName('[PROJECT]', '[LOCATION]', '[CERTIFICATE]');
-        $request = (new DeleteCertificateRequest())
-            ->setName($formattedName);
+        $request = (new DeleteCertificateRequest())->setName($formattedName);
         $response = $gapicClient->deleteCertificate($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -969,9 +1157,12 @@ class CertificateManagerClientTest extends GeneratedTest
         $completeOperation->setResponse($anyResponse);
         $operationsTransport->addResponse($completeOperation);
         // Mock request
-        $formattedName = $gapicClient->certificateIssuanceConfigName('[PROJECT]', '[LOCATION]', '[CERTIFICATE_ISSUANCE_CONFIG]');
-        $request = (new DeleteCertificateIssuanceConfigRequest())
-            ->setName($formattedName);
+        $formattedName = $gapicClient->certificateIssuanceConfigName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[CERTIFICATE_ISSUANCE_CONFIG]'
+        );
+        $request = (new DeleteCertificateIssuanceConfigRequest())->setName($formattedName);
         $response = $gapicClient->deleteCertificateIssuanceConfig($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -981,7 +1172,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(0, count($operationsRequestsEmpty));
         $actualApiFuncCall = $apiRequests[0]->getFuncCall();
         $actualApiRequestObject = $apiRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificateIssuanceConfig', $actualApiFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificateIssuanceConfig',
+            $actualApiFuncCall
+        );
         $actualValue = $actualApiRequestObject->getName();
         $this->assertProtobufEquals($formattedName, $actualValue);
         $expectedOperationsRequestObject = new GetOperationRequest();
@@ -1027,17 +1221,23 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
-        $formattedName = $gapicClient->certificateIssuanceConfigName('[PROJECT]', '[LOCATION]', '[CERTIFICATE_ISSUANCE_CONFIG]');
-        $request = (new DeleteCertificateIssuanceConfigRequest())
-            ->setName($formattedName);
+        $formattedName = $gapicClient->certificateIssuanceConfigName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[CERTIFICATE_ISSUANCE_CONFIG]'
+        );
+        $request = (new DeleteCertificateIssuanceConfigRequest())->setName($formattedName);
         $response = $gapicClient->deleteCertificateIssuanceConfig($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -1091,8 +1291,7 @@ class CertificateManagerClientTest extends GeneratedTest
         $operationsTransport->addResponse($completeOperation);
         // Mock request
         $formattedName = $gapicClient->certificateMapName('[PROJECT]', '[LOCATION]', '[CERTIFICATE_MAP]');
-        $request = (new DeleteCertificateMapRequest())
-            ->setName($formattedName);
+        $request = (new DeleteCertificateMapRequest())->setName($formattedName);
         $response = $gapicClient->deleteCertificateMap($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -1102,7 +1301,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(0, count($operationsRequestsEmpty));
         $actualApiFuncCall = $apiRequests[0]->getFuncCall();
         $actualApiRequestObject = $apiRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificateMap', $actualApiFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificateMap',
+            $actualApiFuncCall
+        );
         $actualValue = $actualApiRequestObject->getName();
         $this->assertProtobufEquals($formattedName, $actualValue);
         $expectedOperationsRequestObject = new GetOperationRequest();
@@ -1148,17 +1350,19 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->certificateMapName('[PROJECT]', '[LOCATION]', '[CERTIFICATE_MAP]');
-        $request = (new DeleteCertificateMapRequest())
-            ->setName($formattedName);
+        $request = (new DeleteCertificateMapRequest())->setName($formattedName);
         $response = $gapicClient->deleteCertificateMap($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -1211,9 +1415,13 @@ class CertificateManagerClientTest extends GeneratedTest
         $completeOperation->setResponse($anyResponse);
         $operationsTransport->addResponse($completeOperation);
         // Mock request
-        $formattedName = $gapicClient->certificateMapEntryName('[PROJECT]', '[LOCATION]', '[CERTIFICATE_MAP]', '[CERTIFICATE_MAP_ENTRY]');
-        $request = (new DeleteCertificateMapEntryRequest())
-            ->setName($formattedName);
+        $formattedName = $gapicClient->certificateMapEntryName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[CERTIFICATE_MAP]',
+            '[CERTIFICATE_MAP_ENTRY]'
+        );
+        $request = (new DeleteCertificateMapEntryRequest())->setName($formattedName);
         $response = $gapicClient->deleteCertificateMapEntry($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -1223,7 +1431,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(0, count($operationsRequestsEmpty));
         $actualApiFuncCall = $apiRequests[0]->getFuncCall();
         $actualApiRequestObject = $apiRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificateMapEntry', $actualApiFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/DeleteCertificateMapEntry',
+            $actualApiFuncCall
+        );
         $actualValue = $actualApiRequestObject->getName();
         $this->assertProtobufEquals($formattedName, $actualValue);
         $expectedOperationsRequestObject = new GetOperationRequest();
@@ -1269,17 +1480,24 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
-        $formattedName = $gapicClient->certificateMapEntryName('[PROJECT]', '[LOCATION]', '[CERTIFICATE_MAP]', '[CERTIFICATE_MAP_ENTRY]');
-        $request = (new DeleteCertificateMapEntryRequest())
-            ->setName($formattedName);
+        $formattedName = $gapicClient->certificateMapEntryName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[CERTIFICATE_MAP]',
+            '[CERTIFICATE_MAP_ENTRY]'
+        );
+        $request = (new DeleteCertificateMapEntryRequest())->setName($formattedName);
         $response = $gapicClient->deleteCertificateMapEntry($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -1333,8 +1551,7 @@ class CertificateManagerClientTest extends GeneratedTest
         $operationsTransport->addResponse($completeOperation);
         // Mock request
         $formattedName = $gapicClient->dnsAuthorizationName('[PROJECT]', '[LOCATION]', '[DNS_AUTHORIZATION]');
-        $request = (new DeleteDnsAuthorizationRequest())
-            ->setName($formattedName);
+        $request = (new DeleteDnsAuthorizationRequest())->setName($formattedName);
         $response = $gapicClient->deleteDnsAuthorization($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -1344,7 +1561,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(0, count($operationsRequestsEmpty));
         $actualApiFuncCall = $apiRequests[0]->getFuncCall();
         $actualApiRequestObject = $apiRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/DeleteDnsAuthorization', $actualApiFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/DeleteDnsAuthorization',
+            $actualApiFuncCall
+        );
         $actualValue = $actualApiRequestObject->getName();
         $this->assertProtobufEquals($formattedName, $actualValue);
         $expectedOperationsRequestObject = new GetOperationRequest();
@@ -1390,22 +1610,149 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->dnsAuthorizationName('[PROJECT]', '[LOCATION]', '[DNS_AUTHORIZATION]');
-        $request = (new DeleteDnsAuthorizationRequest())
-            ->setName($formattedName);
+        $request = (new DeleteDnsAuthorizationRequest())->setName($formattedName);
         $response = $gapicClient->deleteDnsAuthorization($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
         $expectedOperationsRequestObject = new GetOperationRequest();
         $expectedOperationsRequestObject->setName('operations/deleteDnsAuthorizationTest');
+        try {
+            $response->pollUntilComplete([
+                'initialPollDelayMillis' => 1,
+            ]);
+            // If the pollUntilComplete() method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stubs are exhausted
+        $transport->popReceivedCalls();
+        $operationsTransport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+        $this->assertTrue($operationsTransport->isExhausted());
+    }
+
+    /** @test */
+    public function deleteTrustConfigTest()
+    {
+        $operationsTransport = $this->createTransport();
+        $operationsClient = new OperationsClient([
+            'apiEndpoint' => '',
+            'transport' => $operationsTransport,
+            'credentials' => $this->createCredentials(),
+        ]);
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+            'operationsClient' => $operationsClient,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $this->assertTrue($operationsTransport->isExhausted());
+        // Mock response
+        $incompleteOperation = new Operation();
+        $incompleteOperation->setName('operations/deleteTrustConfigTest');
+        $incompleteOperation->setDone(false);
+        $transport->addResponse($incompleteOperation);
+        $expectedResponse = new GPBEmpty();
+        $anyResponse = new Any();
+        $anyResponse->setValue($expectedResponse->serializeToString());
+        $completeOperation = new Operation();
+        $completeOperation->setName('operations/deleteTrustConfigTest');
+        $completeOperation->setDone(true);
+        $completeOperation->setResponse($anyResponse);
+        $operationsTransport->addResponse($completeOperation);
+        // Mock request
+        $formattedName = $gapicClient->trustConfigName('[PROJECT]', '[LOCATION]', '[TRUST_CONFIG]');
+        $request = (new DeleteTrustConfigRequest())->setName($formattedName);
+        $response = $gapicClient->deleteTrustConfig($request);
+        $this->assertFalse($response->isDone());
+        $this->assertNull($response->getResult());
+        $apiRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($apiRequests));
+        $operationsRequestsEmpty = $operationsTransport->popReceivedCalls();
+        $this->assertSame(0, count($operationsRequestsEmpty));
+        $actualApiFuncCall = $apiRequests[0]->getFuncCall();
+        $actualApiRequestObject = $apiRequests[0]->getRequestObject();
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/DeleteTrustConfig',
+            $actualApiFuncCall
+        );
+        $actualValue = $actualApiRequestObject->getName();
+        $this->assertProtobufEquals($formattedName, $actualValue);
+        $expectedOperationsRequestObject = new GetOperationRequest();
+        $expectedOperationsRequestObject->setName('operations/deleteTrustConfigTest');
+        $response->pollUntilComplete([
+            'initialPollDelayMillis' => 1,
+        ]);
+        $this->assertTrue($response->isDone());
+        $this->assertEquals($expectedResponse, $response->getResult());
+        $apiRequestsEmpty = $transport->popReceivedCalls();
+        $this->assertSame(0, count($apiRequestsEmpty));
+        $operationsRequests = $operationsTransport->popReceivedCalls();
+        $this->assertSame(1, count($operationsRequests));
+        $actualOperationsFuncCall = $operationsRequests[0]->getFuncCall();
+        $actualOperationsRequestObject = $operationsRequests[0]->getRequestObject();
+        $this->assertSame('/google.longrunning.Operations/GetOperation', $actualOperationsFuncCall);
+        $this->assertEquals($expectedOperationsRequestObject, $actualOperationsRequestObject);
+        $this->assertTrue($transport->isExhausted());
+        $this->assertTrue($operationsTransport->isExhausted());
+    }
+
+    /** @test */
+    public function deleteTrustConfigExceptionTest()
+    {
+        $operationsTransport = $this->createTransport();
+        $operationsClient = new OperationsClient([
+            'apiEndpoint' => '',
+            'transport' => $operationsTransport,
+            'credentials' => $this->createCredentials(),
+        ]);
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+            'operationsClient' => $operationsClient,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $this->assertTrue($operationsTransport->isExhausted());
+        // Mock response
+        $incompleteOperation = new Operation();
+        $incompleteOperation->setName('operations/deleteTrustConfigTest');
+        $incompleteOperation->setDone(false);
+        $transport->addResponse($incompleteOperation);
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $operationsTransport->addResponse(null, $status);
+        // Mock request
+        $formattedName = $gapicClient->trustConfigName('[PROJECT]', '[LOCATION]', '[TRUST_CONFIG]');
+        $request = (new DeleteTrustConfigRequest())->setName($formattedName);
+        $response = $gapicClient->deleteTrustConfig($request);
+        $this->assertFalse($response->isDone());
+        $this->assertNull($response->getResult());
+        $expectedOperationsRequestObject = new GetOperationRequest();
+        $expectedOperationsRequestObject->setName('operations/deleteTrustConfigTest');
         try {
             $response->pollUntilComplete([
                 'initialPollDelayMillis' => 1,
@@ -1442,8 +1789,7 @@ class CertificateManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->certificateName('[PROJECT]', '[LOCATION]', '[CERTIFICATE]');
-        $request = (new GetCertificateRequest())
-            ->setName($formattedName);
+        $request = (new GetCertificateRequest())->setName($formattedName);
         $response = $gapicClient->getCertificate($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1467,17 +1813,19 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->certificateName('[PROJECT]', '[LOCATION]', '[CERTIFICATE]');
-        $request = (new GetCertificateRequest())
-            ->setName($formattedName);
+        $request = (new GetCertificateRequest())->setName($formattedName);
         try {
             $gapicClient->getCertificate($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1509,16 +1857,22 @@ class CertificateManagerClientTest extends GeneratedTest
         $expectedResponse->setRotationWindowPercentage($rotationWindowPercentage);
         $transport->addResponse($expectedResponse);
         // Mock request
-        $formattedName = $gapicClient->certificateIssuanceConfigName('[PROJECT]', '[LOCATION]', '[CERTIFICATE_ISSUANCE_CONFIG]');
-        $request = (new GetCertificateIssuanceConfigRequest())
-            ->setName($formattedName);
+        $formattedName = $gapicClient->certificateIssuanceConfigName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[CERTIFICATE_ISSUANCE_CONFIG]'
+        );
+        $request = (new GetCertificateIssuanceConfigRequest())->setName($formattedName);
         $response = $gapicClient->getCertificateIssuanceConfig($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/GetCertificateIssuanceConfig', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/GetCertificateIssuanceConfig',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getName();
         $this->assertProtobufEquals($formattedName, $actualValue);
         $this->assertTrue($transport->isExhausted());
@@ -1535,17 +1889,23 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
-        $formattedName = $gapicClient->certificateIssuanceConfigName('[PROJECT]', '[LOCATION]', '[CERTIFICATE_ISSUANCE_CONFIG]');
-        $request = (new GetCertificateIssuanceConfigRequest())
-            ->setName($formattedName);
+        $formattedName = $gapicClient->certificateIssuanceConfigName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[CERTIFICATE_ISSUANCE_CONFIG]'
+        );
+        $request = (new GetCertificateIssuanceConfigRequest())->setName($formattedName);
         try {
             $gapicClient->getCertificateIssuanceConfig($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1576,8 +1936,7 @@ class CertificateManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->certificateMapName('[PROJECT]', '[LOCATION]', '[CERTIFICATE_MAP]');
-        $request = (new GetCertificateMapRequest())
-            ->setName($formattedName);
+        $request = (new GetCertificateMapRequest())->setName($formattedName);
         $response = $gapicClient->getCertificateMap($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1601,17 +1960,19 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->certificateMapName('[PROJECT]', '[LOCATION]', '[CERTIFICATE_MAP]');
-        $request = (new GetCertificateMapRequest())
-            ->setName($formattedName);
+        $request = (new GetCertificateMapRequest())->setName($formattedName);
         try {
             $gapicClient->getCertificateMap($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1643,16 +2004,23 @@ class CertificateManagerClientTest extends GeneratedTest
         $expectedResponse->setHostname($hostname);
         $transport->addResponse($expectedResponse);
         // Mock request
-        $formattedName = $gapicClient->certificateMapEntryName('[PROJECT]', '[LOCATION]', '[CERTIFICATE_MAP]', '[CERTIFICATE_MAP_ENTRY]');
-        $request = (new GetCertificateMapEntryRequest())
-            ->setName($formattedName);
+        $formattedName = $gapicClient->certificateMapEntryName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[CERTIFICATE_MAP]',
+            '[CERTIFICATE_MAP_ENTRY]'
+        );
+        $request = (new GetCertificateMapEntryRequest())->setName($formattedName);
         $response = $gapicClient->getCertificateMapEntry($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/GetCertificateMapEntry', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/GetCertificateMapEntry',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getName();
         $this->assertProtobufEquals($formattedName, $actualValue);
         $this->assertTrue($transport->isExhausted());
@@ -1669,17 +2037,24 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
-        $formattedName = $gapicClient->certificateMapEntryName('[PROJECT]', '[LOCATION]', '[CERTIFICATE_MAP]', '[CERTIFICATE_MAP_ENTRY]');
-        $request = (new GetCertificateMapEntryRequest())
-            ->setName($formattedName);
+        $formattedName = $gapicClient->certificateMapEntryName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[CERTIFICATE_MAP]',
+            '[CERTIFICATE_MAP_ENTRY]'
+        );
+        $request = (new GetCertificateMapEntryRequest())->setName($formattedName);
         try {
             $gapicClient->getCertificateMapEntry($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1712,15 +2087,17 @@ class CertificateManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->dnsAuthorizationName('[PROJECT]', '[LOCATION]', '[DNS_AUTHORIZATION]');
-        $request = (new GetDnsAuthorizationRequest())
-            ->setName($formattedName);
+        $request = (new GetDnsAuthorizationRequest())->setName($formattedName);
         $response = $gapicClient->getDnsAuthorization($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/GetDnsAuthorization', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/GetDnsAuthorization',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getName();
         $this->assertProtobufEquals($formattedName, $actualValue);
         $this->assertTrue($transport->isExhausted());
@@ -1737,19 +2114,90 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->dnsAuthorizationName('[PROJECT]', '[LOCATION]', '[DNS_AUTHORIZATION]');
-        $request = (new GetDnsAuthorizationRequest())
-            ->setName($formattedName);
+        $request = (new GetDnsAuthorizationRequest())->setName($formattedName);
         try {
             $gapicClient->getDnsAuthorization($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function getTrustConfigTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $name2 = 'name2-1052831874';
+        $description = 'description-1724546052';
+        $etag = 'etag3123477';
+        $expectedResponse = new TrustConfig();
+        $expectedResponse->setName($name2);
+        $expectedResponse->setDescription($description);
+        $expectedResponse->setEtag($etag);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedName = $gapicClient->trustConfigName('[PROJECT]', '[LOCATION]', '[TRUST_CONFIG]');
+        $request = (new GetTrustConfigRequest())->setName($formattedName);
+        $response = $gapicClient->getTrustConfig($request);
+        $this->assertEquals($expectedResponse, $response);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/GetTrustConfig', $actualFuncCall);
+        $actualValue = $actualRequestObject->getName();
+        $this->assertProtobufEquals($formattedName, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function getTrustConfigExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedName = $gapicClient->trustConfigName('[PROJECT]', '[LOCATION]', '[TRUST_CONFIG]');
+        $request = (new GetTrustConfigRequest())->setName($formattedName);
+        try {
+            $gapicClient->getTrustConfig($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -1772,17 +2220,14 @@ class CertificateManagerClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $certificateIssuanceConfigsElement = new CertificateIssuanceConfig();
-        $certificateIssuanceConfigs = [
-            $certificateIssuanceConfigsElement,
-        ];
+        $certificateIssuanceConfigs = [$certificateIssuanceConfigsElement];
         $expectedResponse = new ListCertificateIssuanceConfigsResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setCertificateIssuanceConfigs($certificateIssuanceConfigs);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
-        $request = (new ListCertificateIssuanceConfigsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListCertificateIssuanceConfigsRequest())->setParent($formattedParent);
         $response = $gapicClient->listCertificateIssuanceConfigs($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -1792,7 +2237,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/ListCertificateIssuanceConfigs', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/ListCertificateIssuanceConfigs',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $this->assertTrue($transport->isExhausted());
@@ -1809,17 +2257,19 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
-        $request = (new ListCertificateIssuanceConfigsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListCertificateIssuanceConfigsRequest())->setParent($formattedParent);
         try {
             $gapicClient->listCertificateIssuanceConfigs($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1844,17 +2294,14 @@ class CertificateManagerClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $certificateMapEntriesElement = new CertificateMapEntry();
-        $certificateMapEntries = [
-            $certificateMapEntriesElement,
-        ];
+        $certificateMapEntries = [$certificateMapEntriesElement];
         $expectedResponse = new ListCertificateMapEntriesResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setCertificateMapEntries($certificateMapEntries);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->certificateMapName('[PROJECT]', '[LOCATION]', '[CERTIFICATE_MAP]');
-        $request = (new ListCertificateMapEntriesRequest())
-            ->setParent($formattedParent);
+        $request = (new ListCertificateMapEntriesRequest())->setParent($formattedParent);
         $response = $gapicClient->listCertificateMapEntries($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -1864,7 +2311,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/ListCertificateMapEntries', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/ListCertificateMapEntries',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $this->assertTrue($transport->isExhausted());
@@ -1881,17 +2331,19 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->certificateMapName('[PROJECT]', '[LOCATION]', '[CERTIFICATE_MAP]');
-        $request = (new ListCertificateMapEntriesRequest())
-            ->setParent($formattedParent);
+        $request = (new ListCertificateMapEntriesRequest())->setParent($formattedParent);
         try {
             $gapicClient->listCertificateMapEntries($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1916,17 +2368,14 @@ class CertificateManagerClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $certificateMapsElement = new CertificateMap();
-        $certificateMaps = [
-            $certificateMapsElement,
-        ];
+        $certificateMaps = [$certificateMapsElement];
         $expectedResponse = new ListCertificateMapsResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setCertificateMaps($certificateMaps);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
-        $request = (new ListCertificateMapsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListCertificateMapsRequest())->setParent($formattedParent);
         $response = $gapicClient->listCertificateMaps($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -1936,7 +2385,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/ListCertificateMaps', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/ListCertificateMaps',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $this->assertTrue($transport->isExhausted());
@@ -1953,17 +2405,19 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
-        $request = (new ListCertificateMapsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListCertificateMapsRequest())->setParent($formattedParent);
         try {
             $gapicClient->listCertificateMaps($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1988,17 +2442,14 @@ class CertificateManagerClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $certificatesElement = new Certificate();
-        $certificates = [
-            $certificatesElement,
-        ];
+        $certificates = [$certificatesElement];
         $expectedResponse = new ListCertificatesResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setCertificates($certificates);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
-        $request = (new ListCertificatesRequest())
-            ->setParent($formattedParent);
+        $request = (new ListCertificatesRequest())->setParent($formattedParent);
         $response = $gapicClient->listCertificates($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -2025,17 +2476,19 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
-        $request = (new ListCertificatesRequest())
-            ->setParent($formattedParent);
+        $request = (new ListCertificatesRequest())->setParent($formattedParent);
         try {
             $gapicClient->listCertificates($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2060,17 +2513,14 @@ class CertificateManagerClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $dnsAuthorizationsElement = new DnsAuthorization();
-        $dnsAuthorizations = [
-            $dnsAuthorizationsElement,
-        ];
+        $dnsAuthorizations = [$dnsAuthorizationsElement];
         $expectedResponse = new ListDnsAuthorizationsResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setDnsAuthorizations($dnsAuthorizations);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
-        $request = (new ListDnsAuthorizationsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListDnsAuthorizationsRequest())->setParent($formattedParent);
         $response = $gapicClient->listDnsAuthorizations($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -2080,7 +2530,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(1, count($actualRequests));
         $actualFuncCall = $actualRequests[0]->getFuncCall();
         $actualRequestObject = $actualRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/ListDnsAuthorizations', $actualFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/ListDnsAuthorizations',
+            $actualFuncCall
+        );
         $actualValue = $actualRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $this->assertTrue($transport->isExhausted());
@@ -2097,19 +2550,92 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
-        $request = (new ListDnsAuthorizationsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListDnsAuthorizationsRequest())->setParent($formattedParent);
         try {
             $gapicClient->listDnsAuthorizations($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function listTrustConfigsTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $nextPageToken = '';
+        $trustConfigsElement = new TrustConfig();
+        $trustConfigs = [$trustConfigsElement];
+        $expectedResponse = new ListTrustConfigsResponse();
+        $expectedResponse->setNextPageToken($nextPageToken);
+        $expectedResponse->setTrustConfigs($trustConfigs);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
+        $request = (new ListTrustConfigsRequest())->setParent($formattedParent);
+        $response = $gapicClient->listTrustConfigs($request);
+        $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
+        $resources = iterator_to_array($response->iterateAllElements());
+        $this->assertSame(1, count($resources));
+        $this->assertEquals($expectedResponse->getTrustConfigs()[0], $resources[0]);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/ListTrustConfigs', $actualFuncCall);
+        $actualValue = $actualRequestObject->getParent();
+        $this->assertProtobufEquals($formattedParent, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function listTrustConfigsExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
+        $request = (new ListTrustConfigsRequest())->setParent($formattedParent);
+        try {
+            $gapicClient->listTrustConfigs($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -2159,9 +2685,7 @@ class CertificateManagerClientTest extends GeneratedTest
         // Mock request
         $certificate = new Certificate();
         $updateMask = new FieldMask();
-        $request = (new UpdateCertificateRequest())
-            ->setCertificate($certificate)
-            ->setUpdateMask($updateMask);
+        $request = (new UpdateCertificateRequest())->setCertificate($certificate)->setUpdateMask($updateMask);
         $response = $gapicClient->updateCertificate($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -2171,7 +2695,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(0, count($operationsRequestsEmpty));
         $actualApiFuncCall = $apiRequests[0]->getFuncCall();
         $actualApiRequestObject = $apiRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/UpdateCertificate', $actualApiFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/UpdateCertificate',
+            $actualApiFuncCall
+        );
         $actualValue = $actualApiRequestObject->getCertificate();
         $this->assertProtobufEquals($certificate, $actualValue);
         $actualValue = $actualApiRequestObject->getUpdateMask();
@@ -2219,19 +2746,20 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $certificate = new Certificate();
         $updateMask = new FieldMask();
-        $request = (new UpdateCertificateRequest())
-            ->setCertificate($certificate)
-            ->setUpdateMask($updateMask);
+        $request = (new UpdateCertificateRequest())->setCertificate($certificate)->setUpdateMask($updateMask);
         $response = $gapicClient->updateCertificate($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -2290,9 +2818,7 @@ class CertificateManagerClientTest extends GeneratedTest
         // Mock request
         $certificateMap = new CertificateMap();
         $updateMask = new FieldMask();
-        $request = (new UpdateCertificateMapRequest())
-            ->setCertificateMap($certificateMap)
-            ->setUpdateMask($updateMask);
+        $request = (new UpdateCertificateMapRequest())->setCertificateMap($certificateMap)->setUpdateMask($updateMask);
         $response = $gapicClient->updateCertificateMap($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -2302,7 +2828,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(0, count($operationsRequestsEmpty));
         $actualApiFuncCall = $apiRequests[0]->getFuncCall();
         $actualApiRequestObject = $apiRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/UpdateCertificateMap', $actualApiFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/UpdateCertificateMap',
+            $actualApiFuncCall
+        );
         $actualValue = $actualApiRequestObject->getCertificateMap();
         $this->assertProtobufEquals($certificateMap, $actualValue);
         $actualValue = $actualApiRequestObject->getUpdateMask();
@@ -2350,19 +2879,20 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $certificateMap = new CertificateMap();
         $updateMask = new FieldMask();
-        $request = (new UpdateCertificateMapRequest())
-            ->setCertificateMap($certificateMap)
-            ->setUpdateMask($updateMask);
+        $request = (new UpdateCertificateMapRequest())->setCertificateMap($certificateMap)->setUpdateMask($updateMask);
         $response = $gapicClient->updateCertificateMap($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -2435,7 +2965,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(0, count($operationsRequestsEmpty));
         $actualApiFuncCall = $apiRequests[0]->getFuncCall();
         $actualApiRequestObject = $apiRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/UpdateCertificateMapEntry', $actualApiFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/UpdateCertificateMapEntry',
+            $actualApiFuncCall
+        );
         $actualValue = $actualApiRequestObject->getCertificateMapEntry();
         $this->assertProtobufEquals($certificateMapEntry, $actualValue);
         $actualValue = $actualApiRequestObject->getUpdateMask();
@@ -2483,12 +3016,15 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $certificateMapEntry = new CertificateMapEntry();
@@ -2570,7 +3106,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(0, count($operationsRequestsEmpty));
         $actualApiFuncCall = $apiRequests[0]->getFuncCall();
         $actualApiRequestObject = $apiRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/UpdateDnsAuthorization', $actualApiFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/UpdateDnsAuthorization',
+            $actualApiFuncCall
+        );
         $actualValue = $actualApiRequestObject->getDnsAuthorization();
         $this->assertProtobufEquals($dnsAuthorization, $actualValue);
         $actualValue = $actualApiRequestObject->getUpdateMask();
@@ -2618,12 +3157,15 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $dnsAuthorization = new DnsAuthorization();
@@ -2638,6 +3180,141 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertNull($response->getResult());
         $expectedOperationsRequestObject = new GetOperationRequest();
         $expectedOperationsRequestObject->setName('operations/updateDnsAuthorizationTest');
+        try {
+            $response->pollUntilComplete([
+                'initialPollDelayMillis' => 1,
+            ]);
+            // If the pollUntilComplete() method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stubs are exhausted
+        $transport->popReceivedCalls();
+        $operationsTransport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+        $this->assertTrue($operationsTransport->isExhausted());
+    }
+
+    /** @test */
+    public function updateTrustConfigTest()
+    {
+        $operationsTransport = $this->createTransport();
+        $operationsClient = new OperationsClient([
+            'apiEndpoint' => '',
+            'transport' => $operationsTransport,
+            'credentials' => $this->createCredentials(),
+        ]);
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+            'operationsClient' => $operationsClient,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $this->assertTrue($operationsTransport->isExhausted());
+        // Mock response
+        $incompleteOperation = new Operation();
+        $incompleteOperation->setName('operations/updateTrustConfigTest');
+        $incompleteOperation->setDone(false);
+        $transport->addResponse($incompleteOperation);
+        $name = 'name3373707';
+        $description = 'description-1724546052';
+        $etag = 'etag3123477';
+        $expectedResponse = new TrustConfig();
+        $expectedResponse->setName($name);
+        $expectedResponse->setDescription($description);
+        $expectedResponse->setEtag($etag);
+        $anyResponse = new Any();
+        $anyResponse->setValue($expectedResponse->serializeToString());
+        $completeOperation = new Operation();
+        $completeOperation->setName('operations/updateTrustConfigTest');
+        $completeOperation->setDone(true);
+        $completeOperation->setResponse($anyResponse);
+        $operationsTransport->addResponse($completeOperation);
+        // Mock request
+        $trustConfig = new TrustConfig();
+        $updateMask = new FieldMask();
+        $request = (new UpdateTrustConfigRequest())->setTrustConfig($trustConfig)->setUpdateMask($updateMask);
+        $response = $gapicClient->updateTrustConfig($request);
+        $this->assertFalse($response->isDone());
+        $this->assertNull($response->getResult());
+        $apiRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($apiRequests));
+        $operationsRequestsEmpty = $operationsTransport->popReceivedCalls();
+        $this->assertSame(0, count($operationsRequestsEmpty));
+        $actualApiFuncCall = $apiRequests[0]->getFuncCall();
+        $actualApiRequestObject = $apiRequests[0]->getRequestObject();
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/UpdateTrustConfig',
+            $actualApiFuncCall
+        );
+        $actualValue = $actualApiRequestObject->getTrustConfig();
+        $this->assertProtobufEquals($trustConfig, $actualValue);
+        $actualValue = $actualApiRequestObject->getUpdateMask();
+        $this->assertProtobufEquals($updateMask, $actualValue);
+        $expectedOperationsRequestObject = new GetOperationRequest();
+        $expectedOperationsRequestObject->setName('operations/updateTrustConfigTest');
+        $response->pollUntilComplete([
+            'initialPollDelayMillis' => 1,
+        ]);
+        $this->assertTrue($response->isDone());
+        $this->assertEquals($expectedResponse, $response->getResult());
+        $apiRequestsEmpty = $transport->popReceivedCalls();
+        $this->assertSame(0, count($apiRequestsEmpty));
+        $operationsRequests = $operationsTransport->popReceivedCalls();
+        $this->assertSame(1, count($operationsRequests));
+        $actualOperationsFuncCall = $operationsRequests[0]->getFuncCall();
+        $actualOperationsRequestObject = $operationsRequests[0]->getRequestObject();
+        $this->assertSame('/google.longrunning.Operations/GetOperation', $actualOperationsFuncCall);
+        $this->assertEquals($expectedOperationsRequestObject, $actualOperationsRequestObject);
+        $this->assertTrue($transport->isExhausted());
+        $this->assertTrue($operationsTransport->isExhausted());
+    }
+
+    /** @test */
+    public function updateTrustConfigExceptionTest()
+    {
+        $operationsTransport = $this->createTransport();
+        $operationsClient = new OperationsClient([
+            'apiEndpoint' => '',
+            'transport' => $operationsTransport,
+            'credentials' => $this->createCredentials(),
+        ]);
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+            'operationsClient' => $operationsClient,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $this->assertTrue($operationsTransport->isExhausted());
+        // Mock response
+        $incompleteOperation = new Operation();
+        $incompleteOperation->setName('operations/updateTrustConfigTest');
+        $incompleteOperation->setDone(false);
+        $transport->addResponse($incompleteOperation);
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $operationsTransport->addResponse(null, $status);
+        // Mock request
+        $trustConfig = new TrustConfig();
+        $updateMask = new FieldMask();
+        $request = (new UpdateTrustConfigRequest())->setTrustConfig($trustConfig)->setUpdateMask($updateMask);
+        $response = $gapicClient->updateTrustConfig($request);
+        $this->assertFalse($response->isDone());
+        $this->assertNull($response->getResult());
+        $expectedOperationsRequestObject = new GetOperationRequest();
+        $expectedOperationsRequestObject->setName('operations/updateTrustConfigTest');
         try {
             $response->pollUntilComplete([
                 'initialPollDelayMillis' => 1,
@@ -2694,12 +3371,15 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new GetLocationRequest();
         try {
@@ -2726,9 +3406,7 @@ class CertificateManagerClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $locationsElement = new Location();
-        $locations = [
-            $locationsElement,
-        ];
+        $locations = [$locationsElement];
         $expectedResponse = new ListLocationsResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setLocations($locations);
@@ -2758,12 +3436,15 @@ class CertificateManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new ListLocationsRequest();
         try {
@@ -2831,7 +3512,10 @@ class CertificateManagerClientTest extends GeneratedTest
         $this->assertSame(0, count($operationsRequestsEmpty));
         $actualApiFuncCall = $apiRequests[0]->getFuncCall();
         $actualApiRequestObject = $apiRequests[0]->getRequestObject();
-        $this->assertSame('/google.cloud.certificatemanager.v1.CertificateManager/CreateCertificate', $actualApiFuncCall);
+        $this->assertSame(
+            '/google.cloud.certificatemanager.v1.CertificateManager/CreateCertificate',
+            $actualApiFuncCall
+        );
         $actualValue = $actualApiRequestObject->getParent();
         $this->assertProtobufEquals($formattedParent, $actualValue);
         $actualValue = $actualApiRequestObject->getCertificateId();

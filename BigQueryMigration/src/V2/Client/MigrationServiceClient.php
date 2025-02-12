@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ use Google\Cloud\BigQuery\Migration\V2\MigrationSubtask;
 use Google\Cloud\BigQuery\Migration\V2\MigrationWorkflow;
 use Google\Cloud\BigQuery\Migration\V2\StartMigrationWorkflowRequest;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Service to handle EDW migrations.
@@ -55,13 +56,13 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createMigrationWorkflowAsync(CreateMigrationWorkflowRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteMigrationWorkflowAsync(DeleteMigrationWorkflowRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getMigrationSubtaskAsync(GetMigrationSubtaskRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getMigrationWorkflowAsync(GetMigrationWorkflowRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listMigrationSubtasksAsync(ListMigrationSubtasksRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listMigrationWorkflowsAsync(ListMigrationWorkflowsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface startMigrationWorkflowAsync(StartMigrationWorkflowRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<MigrationWorkflow> createMigrationWorkflowAsync(CreateMigrationWorkflowRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteMigrationWorkflowAsync(DeleteMigrationWorkflowRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<MigrationSubtask> getMigrationSubtaskAsync(GetMigrationSubtaskRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<MigrationWorkflow> getMigrationWorkflowAsync(GetMigrationWorkflowRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listMigrationSubtasksAsync(ListMigrationSubtasksRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listMigrationWorkflowsAsync(ListMigrationWorkflowsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> startMigrationWorkflowAsync(StartMigrationWorkflowRequest $request, array $optionalArgs = [])
  */
 final class MigrationServiceClient
 {
@@ -88,9 +89,7 @@ final class MigrationServiceClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private static function getClientDefaults()
     {
@@ -139,8 +138,12 @@ final class MigrationServiceClient
      *
      * @return string The formatted migration_subtask resource.
      */
-    public static function migrationSubtaskName(string $project, string $location, string $workflow, string $subtask): string
-    {
+    public static function migrationSubtaskName(
+        string $project,
+        string $location,
+        string $workflow,
+        string $subtask
+    ): string {
         return self::getPathTemplate('migrationSubtask')->render([
             'project' => $project,
             'location' => $location,
@@ -182,14 +185,14 @@ final class MigrationServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -211,6 +214,12 @@ final class MigrationServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -244,6 +253,9 @@ final class MigrationServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -287,8 +299,10 @@ final class MigrationServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createMigrationWorkflow(CreateMigrationWorkflowRequest $request, array $callOptions = []): MigrationWorkflow
-    {
+    public function createMigrationWorkflow(
+        CreateMigrationWorkflowRequest $request,
+        array $callOptions = []
+    ): MigrationWorkflow {
         return $this->startApiCall('CreateMigrationWorkflow', $request, $callOptions)->wait();
     }
 
@@ -365,8 +379,10 @@ final class MigrationServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getMigrationWorkflow(GetMigrationWorkflowRequest $request, array $callOptions = []): MigrationWorkflow
-    {
+    public function getMigrationWorkflow(
+        GetMigrationWorkflowRequest $request,
+        array $callOptions = []
+    ): MigrationWorkflow {
         return $this->startApiCall('GetMigrationWorkflow', $request, $callOptions)->wait();
     }
 
@@ -392,8 +408,10 @@ final class MigrationServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listMigrationSubtasks(ListMigrationSubtasksRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listMigrationSubtasks(
+        ListMigrationSubtasksRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListMigrationSubtasks', $request, $callOptions);
     }
 
@@ -419,8 +437,10 @@ final class MigrationServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listMigrationWorkflows(ListMigrationWorkflowsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listMigrationWorkflows(
+        ListMigrationWorkflowsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListMigrationWorkflows', $request, $callOptions);
     }
 

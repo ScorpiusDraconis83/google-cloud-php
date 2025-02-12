@@ -17,7 +17,8 @@
 
 namespace Google\Cloud\Bigtable\Tests\System;
 
-use Google\Cloud\Bigtable\Admin\V2\BigtableInstanceAdminClient;
+use Google\Cloud\Bigtable\Admin\V2\Client\BigtableInstanceAdminClient;
+use Google\Cloud\Bigtable\Admin\V2\ListInstancesRequest;
 use Google\Cloud\Bigtable\Admin\V2\ListInstancesResponse;
 use PHPUnit\Framework\TestCase;
 
@@ -30,7 +31,7 @@ class BigtableInstanceAdminClientTest extends TestCase
 
     public function clientProvider()
     {
-        self::setUpBeforeClass();
+        self::setUpTestFixtures();
 
         return [
             [self::$restClient],
@@ -38,7 +39,10 @@ class BigtableInstanceAdminClientTest extends TestCase
         ];
     }
 
-    public static function setUpBeforeClass(): void
+    /**
+     * @beforeClass
+     */
+    public static function setUpTestFixtures(): void
     {
         if (self::$hasSetUp) {
             return;
@@ -67,9 +71,9 @@ class BigtableInstanceAdminClientTest extends TestCase
      */
     public function testListInstances(BigtableInstanceAdminClient $client)
     {
-        $response = $client->listInstances(
-            $client->projectName(self::$projectId)
-        );
+        $project = $client::projectName(self::$projectId);
+        $request = new ListInstancesRequest(['parent' => $project]);
+        $response = $client->listInstances($request);
 
         $this->assertInstanceOf(ListInstancesResponse::class, $response);
     }

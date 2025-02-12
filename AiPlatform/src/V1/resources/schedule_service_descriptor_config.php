@@ -1,4 +1,24 @@
 <?php
+/*
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * GENERATED CODE WARNING
+ * This file was automatically generated - do not edit!
+ */
 
 return [
     'interfaces' => [
@@ -184,8 +204,12 @@ return [
                 'location' => 'projects/{project}/locations/{location}',
                 'metadataStore' => 'projects/{project}/locations/{location}/metadataStores/{metadata_store}',
                 'network' => 'projects/{project}/global/networks/{network}',
+                'notebookExecutionJob' => 'projects/{project}/locations/{location}/notebookExecutionJobs/{notebook_execution_job}',
+                'notebookRuntimeTemplate' => 'projects/{project}/locations/{location}/notebookRuntimeTemplates/{notebook_runtime_template}',
                 'pipelineJob' => 'projects/{project}/locations/{location}/pipelineJobs/{pipeline_job}',
+                'reservation' => 'projects/{project_id_or_number}/zones/{zone}/reservations/{reservation_name}',
                 'schedule' => 'projects/{project}/locations/{location}/schedules/{schedule}',
+                'subnetwork' => 'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
             ],
         ],
     ],

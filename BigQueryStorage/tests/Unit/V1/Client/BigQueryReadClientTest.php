@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,9 @@ class BigQueryReadClientTest extends GeneratedTest
     /** @return CredentialsWrapper */
     private function createCredentials()
     {
-        return $this->getMockBuilder(CredentialsWrapper::class)->disableOriginalConstructor()->getMock();
+        return $this->getMockBuilder(CredentialsWrapper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /** @return BigQueryReadClient */
@@ -91,9 +93,7 @@ class BigQueryReadClientTest extends GeneratedTest
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
         $readSession = new ReadSession();
-        $request = (new CreateReadSessionRequest())
-            ->setParent($formattedParent)
-            ->setReadSession($readSession);
+        $request = (new CreateReadSessionRequest())->setParent($formattedParent)->setReadSession($readSession);
         $response = $gapicClient->createReadSession($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -119,19 +119,20 @@ class BigQueryReadClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
         $readSession = new ReadSession();
-        $request = (new CreateReadSessionRequest())
-            ->setParent($formattedParent)
-            ->setReadSession($readSession);
+        $request = (new CreateReadSessionRequest())->setParent($formattedParent)->setReadSession($readSession);
         try {
             $gapicClient->createReadSession($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -155,21 +156,26 @@ class BigQueryReadClientTest extends GeneratedTest
         $this->assertTrue($transport->isExhausted());
         // Mock response
         $rowCount = 1340416618;
+        $uncompressedByteSize = 2094376525;
         $expectedResponse = new ReadRowsResponse();
         $expectedResponse->setRowCount($rowCount);
+        $expectedResponse->setUncompressedByteSize($uncompressedByteSize);
         $transport->addResponse($expectedResponse);
         $rowCount2 = 349815907;
+        $uncompressedByteSize2 = 1643824294;
         $expectedResponse2 = new ReadRowsResponse();
         $expectedResponse2->setRowCount($rowCount2);
+        $expectedResponse2->setUncompressedByteSize($uncompressedByteSize2);
         $transport->addResponse($expectedResponse2);
         $rowCount3 = 349815906;
+        $uncompressedByteSize3 = 1643824295;
         $expectedResponse3 = new ReadRowsResponse();
         $expectedResponse3->setRowCount($rowCount3);
+        $expectedResponse3->setUncompressedByteSize($uncompressedByteSize3);
         $transport->addResponse($expectedResponse3);
         // Mock request
         $formattedReadStream = $gapicClient->readStreamName('[PROJECT]', '[LOCATION]', '[SESSION]', '[STREAM]');
-        $request = (new ReadRowsRequest())
-            ->setReadStream($formattedReadStream);
+        $request = (new ReadRowsRequest())->setReadStream($formattedReadStream);
         $serverStream = $gapicClient->readRows($request);
         $this->assertInstanceOf(ServerStream::class, $serverStream);
         $responses = iterator_to_array($serverStream->readAll());
@@ -198,18 +204,20 @@ class BigQueryReadClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->setStreamingStatus($status);
         $this->assertTrue($transport->isExhausted());
         // Mock request
         $formattedReadStream = $gapicClient->readStreamName('[PROJECT]', '[LOCATION]', '[SESSION]', '[STREAM]');
-        $request = (new ReadRowsRequest())
-            ->setReadStream($formattedReadStream);
+        $request = (new ReadRowsRequest())->setReadStream($formattedReadStream);
         $serverStream = $gapicClient->readRows($request);
         $results = $serverStream->readAll();
         try {
@@ -238,8 +246,7 @@ class BigQueryReadClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->readStreamName('[PROJECT]', '[LOCATION]', '[SESSION]', '[STREAM]');
-        $request = (new SplitReadStreamRequest())
-            ->setName($formattedName);
+        $request = (new SplitReadStreamRequest())->setName($formattedName);
         $response = $gapicClient->splitReadStream($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -263,17 +270,19 @@ class BigQueryReadClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->readStreamName('[PROJECT]', '[LOCATION]', '[SESSION]', '[STREAM]');
-        $request = (new SplitReadStreamRequest())
-            ->setName($formattedName);
+        $request = (new SplitReadStreamRequest())->setName($formattedName);
         try {
             $gapicClient->splitReadStream($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -313,9 +322,7 @@ class BigQueryReadClientTest extends GeneratedTest
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
         $readSession = new ReadSession();
-        $request = (new CreateReadSessionRequest())
-            ->setParent($formattedParent)
-            ->setReadSession($readSession);
+        $request = (new CreateReadSessionRequest())->setParent($formattedParent)->setReadSession($readSession);
         $response = $gapicClient->createReadSessionAsync($request)->wait();
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();

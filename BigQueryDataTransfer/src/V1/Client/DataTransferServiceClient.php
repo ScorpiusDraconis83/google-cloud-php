@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,11 +53,13 @@ use Google\Cloud\BigQuery\DataTransfer\V1\StartManualTransferRunsRequest;
 use Google\Cloud\BigQuery\DataTransfer\V1\StartManualTransferRunsResponse;
 use Google\Cloud\BigQuery\DataTransfer\V1\TransferConfig;
 use Google\Cloud\BigQuery\DataTransfer\V1\TransferRun;
+use Google\Cloud\BigQuery\DataTransfer\V1\UnenrollDataSourcesRequest;
 use Google\Cloud\BigQuery\DataTransfer\V1\UpdateTransferConfigRequest;
 use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\Location;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: This API allows users to manage their data transfers into BigQuery.
@@ -70,23 +72,24 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface checkValidCredsAsync(CheckValidCredsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createTransferConfigAsync(CreateTransferConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteTransferConfigAsync(DeleteTransferConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteTransferRunAsync(DeleteTransferRunRequest $request, array $optionalArgs = [])
- * @method PromiseInterface enrollDataSourcesAsync(EnrollDataSourcesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getDataSourceAsync(GetDataSourceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getTransferConfigAsync(GetTransferConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getTransferRunAsync(GetTransferRunRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listDataSourcesAsync(ListDataSourcesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listTransferConfigsAsync(ListTransferConfigsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listTransferLogsAsync(ListTransferLogsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listTransferRunsAsync(ListTransferRunsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface scheduleTransferRunsAsync(ScheduleTransferRunsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface startManualTransferRunsAsync(StartManualTransferRunsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateTransferConfigAsync(UpdateTransferConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CheckValidCredsResponse> checkValidCredsAsync(CheckValidCredsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TransferConfig> createTransferConfigAsync(CreateTransferConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteTransferConfigAsync(DeleteTransferConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteTransferRunAsync(DeleteTransferRunRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> enrollDataSourcesAsync(EnrollDataSourcesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DataSource> getDataSourceAsync(GetDataSourceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TransferConfig> getTransferConfigAsync(GetTransferConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TransferRun> getTransferRunAsync(GetTransferRunRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listDataSourcesAsync(ListDataSourcesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listTransferConfigsAsync(ListTransferConfigsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listTransferLogsAsync(ListTransferLogsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listTransferRunsAsync(ListTransferRunsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ScheduleTransferRunsResponse> scheduleTransferRunsAsync(ScheduleTransferRunsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<StartManualTransferRunsResponse> startManualTransferRunsAsync(StartManualTransferRunsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> unenrollDataSourcesAsync(UnenrollDataSourcesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TransferConfig> updateTransferConfigAsync(UpdateTransferConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
  */
 final class DataTransferServiceClient
 {
@@ -113,9 +116,7 @@ final class DataTransferServiceClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private static function getClientDefaults()
     {
@@ -231,8 +232,11 @@ final class DataTransferServiceClient
      *
      * @return string The formatted project_location_transfer_config resource.
      */
-    public static function projectLocationTransferConfigName(string $project, string $location, string $transferConfig): string
-    {
+    public static function projectLocationTransferConfigName(
+        string $project,
+        string $location,
+        string $transferConfig
+    ): string {
         return self::getPathTemplate('projectLocationTransferConfig')->render([
             'project' => $project,
             'location' => $location,
@@ -251,8 +255,12 @@ final class DataTransferServiceClient
      *
      * @return string The formatted project_location_transfer_config_run resource.
      */
-    public static function projectLocationTransferConfigRunName(string $project, string $location, string $transferConfig, string $run): string
-    {
+    public static function projectLocationTransferConfigRunName(
+        string $project,
+        string $location,
+        string $transferConfig,
+        string $run
+    ): string {
         return self::getPathTemplate('projectLocationTransferConfigRun')->render([
             'project' => $project,
             'location' => $location,
@@ -355,14 +363,14 @@ final class DataTransferServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -384,6 +392,12 @@ final class DataTransferServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -417,6 +431,9 @@ final class DataTransferServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -444,6 +461,8 @@ final class DataTransferServiceClient
      *
      * The async variant is {@see DataTransferServiceClient::checkValidCredsAsync()} .
      *
+     * @example samples/V1/DataTransferServiceClient/check_valid_creds.php
+     *
      * @param CheckValidCredsRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -468,6 +487,8 @@ final class DataTransferServiceClient
      *
      * The async variant is
      * {@see DataTransferServiceClient::createTransferConfigAsync()} .
+     *
+     * @example samples/V1/DataTransferServiceClient/create_transfer_config.php
      *
      * @param CreateTransferConfigRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
@@ -495,6 +516,8 @@ final class DataTransferServiceClient
      * The async variant is
      * {@see DataTransferServiceClient::deleteTransferConfigAsync()} .
      *
+     * @example samples/V1/DataTransferServiceClient/delete_transfer_config.php
+     *
      * @param DeleteTransferConfigRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -517,6 +540,8 @@ final class DataTransferServiceClient
      *
      * The async variant is {@see DataTransferServiceClient::deleteTransferRunAsync()}
      * .
+     *
+     * @example samples/V1/DataTransferServiceClient/delete_transfer_run.php
      *
      * @param DeleteTransferRunRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -548,6 +573,8 @@ final class DataTransferServiceClient
      * The async variant is {@see DataTransferServiceClient::enrollDataSourcesAsync()}
      * .
      *
+     * @example samples/V1/DataTransferServiceClient/enroll_data_sources.php
+     *
      * @param EnrollDataSourcesRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -569,6 +596,8 @@ final class DataTransferServiceClient
      * Retrieves a supported data source and returns its settings.
      *
      * The async variant is {@see DataTransferServiceClient::getDataSourceAsync()} .
+     *
+     * @example samples/V1/DataTransferServiceClient/get_data_source.php
      *
      * @param GetDataSourceRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -595,6 +624,8 @@ final class DataTransferServiceClient
      * The async variant is {@see DataTransferServiceClient::getTransferConfigAsync()}
      * .
      *
+     * @example samples/V1/DataTransferServiceClient/get_transfer_config.php
+     *
      * @param GetTransferConfigRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -619,6 +650,8 @@ final class DataTransferServiceClient
      *
      * The async variant is {@see DataTransferServiceClient::getTransferRunAsync()} .
      *
+     * @example samples/V1/DataTransferServiceClient/get_transfer_run.php
+     *
      * @param GetTransferRunRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -642,6 +675,8 @@ final class DataTransferServiceClient
      * Lists supported data sources and returns their settings.
      *
      * The async variant is {@see DataTransferServiceClient::listDataSourcesAsync()} .
+     *
+     * @example samples/V1/DataTransferServiceClient/list_data_sources.php
      *
      * @param ListDataSourcesRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -669,6 +704,8 @@ final class DataTransferServiceClient
      * The async variant is
      * {@see DataTransferServiceClient::listTransferConfigsAsync()} .
      *
+     * @example samples/V1/DataTransferServiceClient/list_transfer_configs.php
+     *
      * @param ListTransferConfigsRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
      *     Optional.
@@ -693,6 +730,8 @@ final class DataTransferServiceClient
      *
      * The async variant is {@see DataTransferServiceClient::listTransferLogsAsync()} .
      *
+     * @example samples/V1/DataTransferServiceClient/list_transfer_logs.php
+     *
      * @param ListTransferLogsRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
      *     Optional.
@@ -716,6 +755,8 @@ final class DataTransferServiceClient
      * Returns information about running and completed transfer runs.
      *
      * The async variant is {@see DataTransferServiceClient::listTransferRunsAsync()} .
+     *
+     * @example samples/V1/DataTransferServiceClient/list_transfer_runs.php
      *
      * @param ListTransferRunsRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -746,6 +787,8 @@ final class DataTransferServiceClient
      * The async variant is
      * {@see DataTransferServiceClient::scheduleTransferRunsAsync()} .
      *
+     * @example samples/V1/DataTransferServiceClient/schedule_transfer_runs.php
+     *
      * @param ScheduleTransferRunsRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -762,8 +805,10 @@ final class DataTransferServiceClient
      *
      * @deprecated This method will be removed in the next major version update.
      */
-    public function scheduleTransferRuns(ScheduleTransferRunsRequest $request, array $callOptions = []): ScheduleTransferRunsResponse
-    {
+    public function scheduleTransferRuns(
+        ScheduleTransferRunsRequest $request,
+        array $callOptions = []
+    ): ScheduleTransferRunsResponse {
         return $this->startApiCall('ScheduleTransferRuns', $request, $callOptions)->wait();
     }
 
@@ -775,6 +820,8 @@ final class DataTransferServiceClient
      *
      * The async variant is
      * {@see DataTransferServiceClient::startManualTransferRunsAsync()} .
+     *
+     * @example samples/V1/DataTransferServiceClient/start_manual_transfer_runs.php
      *
      * @param StartManualTransferRunsRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
@@ -790,9 +837,40 @@ final class DataTransferServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function startManualTransferRuns(StartManualTransferRunsRequest $request, array $callOptions = []): StartManualTransferRunsResponse
-    {
+    public function startManualTransferRuns(
+        StartManualTransferRunsRequest $request,
+        array $callOptions = []
+    ): StartManualTransferRunsResponse {
         return $this->startApiCall('StartManualTransferRuns', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Unenroll data sources in a user project. This allows users to remove
+     * transfer configurations for these data sources. They will no longer appear
+     * in the ListDataSources RPC and will also no longer appear in the [BigQuery
+     * UI](https://console.cloud.google.com/bigquery). Data transfers
+     * configurations of unenrolled data sources will not be scheduled.
+     *
+     * The async variant is
+     * {@see DataTransferServiceClient::unenrollDataSourcesAsync()} .
+     *
+     * @example samples/V1/DataTransferServiceClient/unenroll_data_sources.php
+     *
+     * @param UnenrollDataSourcesRequest $request     A request to house fields associated with the call.
+     * @param array                      $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function unenrollDataSources(UnenrollDataSourcesRequest $request, array $callOptions = []): void
+    {
+        $this->startApiCall('UnenrollDataSources', $request, $callOptions)->wait();
     }
 
     /**
@@ -801,6 +879,8 @@ final class DataTransferServiceClient
      *
      * The async variant is
      * {@see DataTransferServiceClient::updateTransferConfigAsync()} .
+     *
+     * @example samples/V1/DataTransferServiceClient/update_transfer_config.php
      *
      * @param UpdateTransferConfigRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
@@ -826,6 +906,8 @@ final class DataTransferServiceClient
      *
      * The async variant is {@see DataTransferServiceClient::getLocationAsync()} .
      *
+     * @example samples/V1/DataTransferServiceClient/get_location.php
+     *
      * @param GetLocationRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -849,6 +931,8 @@ final class DataTransferServiceClient
      * Lists information about the supported locations for this service.
      *
      * The async variant is {@see DataTransferServiceClient::listLocationsAsync()} .
+     *
+     * @example samples/V1/DataTransferServiceClient/list_locations.php
      *
      * @param ListLocationsRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {

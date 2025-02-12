@@ -17,11 +17,15 @@
 
 namespace Google\Cloud\Dev\Tests\Unit\DocFx;
 
-use PHPUnit\Framework\TestCase;
 use Google\Cloud\Dev\DocFx\Node\ClassNode;
 use Google\Cloud\Dev\DocFx\Node\MethodNode;
 use Google\Cloud\Dev\DocFx\Node\XrefTrait;
 use Google\Cloud\Dev\DocFx\Node\FencedCodeBlockTrait;
+use Google\Cloud\Dev\DocFx\XrefValidationTrait;
+use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Symfony\Component\Console\Output\OutputInterface;
 use SimpleXMLElement;
 
 /**
@@ -29,10 +33,12 @@ use SimpleXMLElement;
  */
 class NodeTest extends TestCase
 {
+    use ProphecyTrait;
+
     public function testNestedParameters()
     {
         $nestedParamsXml = file_get_contents(__DIR__ . '/../../fixtures/phpdoc/nestedparams.xml');
-        $method = new MethodNode(new SimpleXMLElement($nestedParamsXml));
+        $method = new MethodNode(new SimpleXMLElement($nestedParamsXml), '', []);
 
         $params = $method->getParameters();
 
@@ -75,7 +81,7 @@ class NodeTest extends TestCase
     public function testProtoRefInParameters()
     {
         $nestedParamsXml = file_get_contents(__DIR__ . '/../../fixtures/phpdoc/nestedparams.xml');
-        $method = new MethodNode(new SimpleXMLElement($nestedParamsXml));
+        $method = new MethodNode(new SimpleXMLElement($nestedParamsXml), '', []);
 
         $params = $method->getParameters();
 
@@ -120,7 +126,7 @@ class NodeTest extends TestCase
 </docblock>
 </method>
 EOF;
-        $method = new MethodNode(new SimpleXMLElement($serviceXml));
+        $method = new MethodNode(new SimpleXMLElement($serviceXml), '', []);
 
         $content = $method->getContent();
         $this->assertStringContainsString(
@@ -132,6 +138,42 @@ EOF;
         );
     }
 
+    public function testReplaceGuzzleExternalLink()
+    {
+        $guzzlePromiseClassName = '\GuzzleHttp\Promise\PromiseInterface';
+        $expected = '<a href="https://docs.aws.amazon.com/aws-sdk-php/v3/api/class-GuzzleHttp.Promise.Promise.html">GuzzleHttp\Promise\PromiseInterface</a>';
+        $xref = new class {
+            use XrefTrait;
+
+            public function replace(string $uid) {
+                return $this->replaceUidWithLink($uid);
+            }
+        };
+
+        $result = $xref->replace($guzzlePromiseClassName);
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testReplaceGenericPromiseClass()
+    {
+        $guzzlePromiseClassName = '\GuzzleHttp\Promise\PromiseInterface';
+        $googleReference = '\Google\Cloud\AdvisoryNotifications\V1\Notification';
+        $uid = $guzzlePromiseClassName . '<' . $googleReference . '>';
+
+        $expected = '<a href="https://docs.aws.amazon.com/aws-sdk-php/v3/api/class-GuzzleHttp.Promise.Promise.html">GuzzleHttp\Promise\PromiseInterface</a>';
+        $expected .= '&lt;<xref uid="' . $googleReference . '">Google\Cloud\AdvisoryNotifications\V1\Notification</xref>&gt;';
+        $xref = new class {
+            use XrefTrait;
+
+            public function replace(string $uid) {
+                return $this->replaceUidWithLink($uid);
+            }
+        };
+
+        $result = $xref->replace($uid);
+        $this->assertEquals($expected, $result);
+    }
+
     /**
      * @dataProvider provideReplaceProtoRefWithXref
      */
@@ -139,6 +181,11 @@ EOF;
     {
         $xref = new class {
             use XrefTrait;
+            private $protoPackages = [
+                'google.cloud.aiplatform.v1' => 'Google\\Cloud\\AIPlatform\\V1',
+                'google.bigtable.admin.v2' => 'Google\\Cloud\\Bigtable\\Admin\\V2',
+                'google.logging.v2' => 'Google\\Cloud\\Logging\\V2',
+            ];
             public function replace(string $description) {
                 return $this->replaceProtoRef($description);
             }
@@ -171,7 +218,7 @@ EOF;
             [
                 // service method reference
                 '[projects.locations.endpoints.predict][google.cloud.aiplatform.v1.PredictionService.Predict]',
-                '<xref uid="\Google\Cloud\Aiplatform\V1\PredictionServiceClient::predict()">projects.locations.endpoints.predict</xref>',
+                '<xref uid="\Google\Cloud\AIPlatform\V1\Client\PredictionServiceClient::predict()">projects.locations.endpoints.predict</xref>',
             ],
             [
                 // nested class reference
@@ -186,7 +233,7 @@ EOF;
             [
                 // service methods without a "service" suffix
                 '[ListBackups][google.bigtable.admin.v2.BigtableTableAdmin.ListBackups]',
-                '<xref uid="\Google\Bigtable\Admin\V2\BigtableTableAdminClient::listBackups()">ListBackups</xref>'
+                '<xref uid="\Google\Cloud\Bigtable\Admin\V2\Client\BigtableTableAdminClient::listBackups()">ListBackups</xref>'
             ],
             [
                 // Enum constants
@@ -196,34 +243,34 @@ EOF;
             [
                 // Numbers in the class name
                 'Output only. The service account that will be used by the Log Router to access your Cloud KMS key. Before enabling CMEK for Log Router, you must first assign the cloudkms.cryptoKeyEncrypterDecrypter role to the service account that the Log Router will use to access your Cloud KMS key. Use [GetCmekSettings][google.logging.v2.ConfigServiceV2.GetCmekSettings] to obtain the service account ID. See [Enabling CMEK for Log Router](https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.',
-                'Output only. The service account that will be used by the Log Router to access your Cloud KMS key. Before enabling CMEK for Log Router, you must first assign the cloudkms.cryptoKeyEncrypterDecrypter role to the service account that the Log Router will use to access your Cloud KMS key. Use <xref uid="\Google\Logging\V2\ConfigServiceV2Client::getCmekSettings()">GetCmekSettings</xref> to obtain the service account ID. See [Enabling CMEK for Log Router](https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.'
+                'Output only. The service account that will be used by the Log Router to access your Cloud KMS key. Before enabling CMEK for Log Router, you must first assign the cloudkms.cryptoKeyEncrypterDecrypter role to the service account that the Log Router will use to access your Cloud KMS key. Use <xref uid="\Google\Cloud\Logging\V2\ConfigServiceV2Client::getCmekSettings()">GetCmekSettings</xref> to obtain the service account ID. See [Enabling CMEK for Log Router](https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.'
             ],
             [
                 // Separation between links using newlines
                 'Required. The [Model\'s][google.cloud.aiplatform.v1.BatchPredictionJob.model]' . PHP_EOL
                 . '[PredictSchemata\'s][google.cloud.aiplatform.v1.Model.predict_schemata]' . PHP_EOL
                 . '[instance_schema_uri][google.cloud.aiplatform.v1.PredictSchemata.instance_schema_uri].',
-                'Required. The <xref uid="\Google\Cloud\Aiplatform\V1\BatchPredictionJob::getModel()">Model\'s</xref>' . PHP_EOL
-                . '<xref uid="\Google\Cloud\Aiplatform\V1\Model::getPredictSchemata()">PredictSchemata\'s</xref>' . PHP_EOL
-                . '<xref uid="\Google\Cloud\Aiplatform\V1\PredictSchemata::getInstanceSchemaUri()">instance_schema_uri</xref>.'
+                'Required. The <xref uid="\Google\Cloud\AIPlatform\V1\BatchPredictionJob::getModel()">Model\'s</xref>' . PHP_EOL
+                . '<xref uid="\Google\Cloud\AIPlatform\V1\Model::getPredictSchemata()">PredictSchemata\'s</xref>' . PHP_EOL
+                . '<xref uid="\Google\Cloud\AIPlatform\V1\PredictSchemata::getInstanceSchemaUri()">instance_schema_uri</xref>.'
             ],
             [
                 // Separation within links using newlines
                 'Required. The [Model\'s]' . PHP_EOL . '[google.cloud.aiplatform.v1.BatchPredictionJob.model]'
                 . ' [PredictSchemata\'s]' . PHP_EOL . '[google.cloud.aiplatform.v1.Model.predict_schemata]'
                 . ' [instance_schema_uri]' . PHP_EOL . '[google.cloud.aiplatform.v1.PredictSchemata.instance_schema_uri].',
-                'Required. The <xref uid="\Google\Cloud\Aiplatform\V1\BatchPredictionJob::getModel()">Model\'s</xref>'
-                . ' <xref uid="\Google\Cloud\Aiplatform\V1\Model::getPredictSchemata()">PredictSchemata\'s</xref>'
-                . ' <xref uid="\Google\Cloud\Aiplatform\V1\PredictSchemata::getInstanceSchemaUri()">instance_schema_uri</xref>.'
+                'Required. The <xref uid="\Google\Cloud\AIPlatform\V1\BatchPredictionJob::getModel()">Model\'s</xref>'
+                . ' <xref uid="\Google\Cloud\AIPlatform\V1\Model::getPredictSchemata()">PredictSchemata\'s</xref>'
+                . ' <xref uid="\Google\Cloud\AIPlatform\V1\PredictSchemata::getInstanceSchemaUri()">instance_schema_uri</xref>.'
             ],
             [
                 // Separation within links using a space - some APIs do this :/
                 'Required. The [Model\'s] [google.cloud.aiplatform.v1.BatchPredictionJob.model]'
                 . ' [PredictSchemata\'s] [google.cloud.aiplatform.v1.Model.predict_schemata]'
                 . ' [instance_schema_uri] [google.cloud.aiplatform.v1.PredictSchemata.instance_schema_uri].',
-                'Required. The <xref uid="\Google\Cloud\Aiplatform\V1\BatchPredictionJob::getModel()">Model\'s</xref>'
-                . ' <xref uid="\Google\Cloud\Aiplatform\V1\Model::getPredictSchemata()">PredictSchemata\'s</xref>'
-                . ' <xref uid="\Google\Cloud\Aiplatform\V1\PredictSchemata::getInstanceSchemaUri()">instance_schema_uri</xref>.'
+                'Required. The <xref uid="\Google\Cloud\AIPlatform\V1\BatchPredictionJob::getModel()">Model\'s</xref>'
+                . ' <xref uid="\Google\Cloud\AIPlatform\V1\Model::getPredictSchemata()">PredictSchemata\'s</xref>'
+                . ' <xref uid="\Google\Cloud\AIPlatform\V1\PredictSchemata::getInstanceSchemaUri()">instance_schema_uri</xref>.'
             ],
             [
                 'Testing that a code sample like $foo["bar"]["baz"] does not get replaced',
@@ -237,30 +284,27 @@ EOF;
         $description = '[ListBackups][google.bigtable.admin.v2.BigtableTableAdmin.ListBackups]';
         $protoPackages = ['google.bigtable.admin.v2' => 'Google\\Cloud\\Bigtable\\Admin\\V2'];
 
-        $xref = new class {
+        $xref = new class($protoPackages) {
             use XrefTrait;
-            public $protoPackages;
+            public function __construct(private array $protoPackages) {
+            }
             public function replace(string $description) {
                 return $this->replaceProtoRef($description);
             }
         };
 
-        $xref->protoPackages = $protoPackages;
-
         $this->assertEquals(
-            '<xref uid="\Google\Cloud\Bigtable\Admin\V2\BigtableTableAdminClient::listBackups()">ListBackups</xref>',
+            '<xref uid="\Google\Cloud\Bigtable\Admin\V2\Client\BigtableTableAdminClient::listBackups()">ListBackups</xref>',
             $xref->replace($description)
         );
 
         $classNode = new ClassNode(new SimpleXMLElement(sprintf(
             '<class><docblock><description>%s</description></docblock></class>',
             $description
-        )));
-
-        $classNode->setProtoPackages($protoPackages);
+        )), $protoPackages);
 
         $this->assertEquals(
-            '<xref uid="\Google\Cloud\Bigtable\Admin\V2\BigtableTableAdminClient::listBackups()">ListBackups</xref>',
+            '<xref uid="\Google\Cloud\Bigtable\Admin\V2\Client\BigtableTableAdminClient::listBackups()">ListBackups</xref>',
             $classNode->getContent()
         );
     }
@@ -431,6 +475,70 @@ EOF;
             ['V1p1zeta1', ''],
             ['V1z1beta', ''],
             ['Foo', ''],
+        ];
+    }
+
+    /**
+     * @dataProvider provideInvalidXrefs
+     */
+    public function testInvalidXrefs(string $description, array $invalidXrefs = [])
+    {
+        $classXml = '<class><full_name>TestClass</full_name><docblock><description>%s</description></docblock></class>';
+        $class = new ClassNode(new SimpleXMLElement(sprintf($classXml, $description)));
+
+        $validator = new class () {
+            use XrefValidationTrait {
+                getInvalidXrefs as public;
+            }
+        };
+
+        $this->assertEquals($invalidXrefs, $validator->getInvalidXrefs($class->getContent()));
+    }
+
+    public function provideInvalidXrefs()
+    {
+        return [
+            ['{@see \DoesntExist}'], // class doesn't exist, but is still a valid xref
+            ['{@see \SimpleXMLElement::method()}'], // method doesn't exist, but is still a valid xref
+            ['{@see \SimpleXMLElement::addAttribute()}'], // valid method
+            ['{@see \SimpleXMLElement::OUTPUT_FOO}'],  // constant doesn't exist, but is still a valid xref
+            [sprintf('{@see \%s::OUTPUT_NORMAL}', OutputInterface::class)], // valid constant
+            ['Take a look at {@see https://foo.bar} for more.'], // valid
+            ['{@see Foo\Bar}', ['Foo\Bar']], // invalid
+            ['Take a look at {@see Foo\Bar} for more.', ['Foo\Bar']], // invalid
+            [
+                '{@see \Google\Cloud\PubSub\Google\Cloud\PubSub\Foo}',
+                ['\Google\Cloud\PubSub\Google\Cloud\PubSub\Foo']
+            ], // invalid
+        ];
+    }
+
+    /**
+     * @dataProvider provideBrokenXrefs
+     */
+    public function testBrokenXrefs(string $description, array $brokenXrefs = [])
+    {
+        $classXml = '<class><full_name>TestClass</full_name><docblock><description>%s</description></docblock></class>';
+        $class = new ClassNode(new SimpleXMLElement(sprintf($classXml, $description)));
+
+        $validator = new class () {
+            use XrefValidationTrait {
+                getBrokenXrefs as public;
+            }
+        };
+
+        $this->assertEquals($brokenXrefs, $validator->getBrokenXrefs($class->getContent()));
+    }
+
+    public function provideBrokenXrefs()
+    {
+        return [
+            ['{@see \OutputInterface}', ['\OutputInterface']], // invalid class (doesn't exist)
+            ['{@see \SimpleXMLElement}.'], // valid class
+            ['{@see \SimpleXMLElement::method()}', ['\SimpleXMLElement::method()']], // invalid method (doesn't exist)
+            ['{@see \SimpleXMLElement::addAttribute()}'], // valid method
+            ['{@see \SimpleXMLElement::OUTPUT_FOO}', ['\SimpleXMLElement::OUTPUT_FOO']],  // invalid constant (doesn't exist)
+            [sprintf('{@see \%s::OUTPUT_NORMAL}', OutputInterface::class)], // valid constant
         ];
     }
 }

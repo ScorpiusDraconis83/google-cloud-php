@@ -23,7 +23,7 @@ class GovernedResource extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string full_resource_name = 1;</code>
      */
-    private $full_resource_name = '';
+    protected $full_resource_name = '';
     /**
      * The [full resource name]
      * (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
@@ -32,7 +32,7 @@ class GovernedResource extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string parent = 2;</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * The project that this resource belongs to, in the format of
      * projects/{PROJECT_NUMBER}. This field is available when the resource
@@ -40,7 +40,7 @@ class GovernedResource extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string project = 5;</code>
      */
-    private $project = '';
+    protected $project = '';
     /**
      * The folder(s) that this resource belongs to, in the format of
      * folders/{FOLDER_NUMBER}. This field is available when the resource
@@ -56,7 +56,25 @@ class GovernedResource extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string organization = 7;</code>
      */
-    private $organization = '';
+    protected $organization = '';
+    /**
+     * The asset type of the
+     * [AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource.full_resource_name][google.cloud.asset.v1.AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource.full_resource_name]
+     * Example:
+     * `cloudresourcemanager.googleapis.com/Project`
+     * See [Cloud Asset Inventory Supported Asset
+     * Types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
+     * for all supported asset types.
+     *
+     * Generated from protobuf field <code>string asset_type = 8;</code>
+     */
+    protected $asset_type = '';
+    /**
+     * The effective tags on this resource.
+     *
+     * Generated from protobuf field <code>repeated .google.cloud.asset.v1.EffectiveTagDetails effective_tags = 9;</code>
+     */
+    private $effective_tags;
 
     /**
      * Constructor.
@@ -85,6 +103,16 @@ class GovernedResource extends \Google\Protobuf\Internal\Message
      *           The organization that this resource belongs to, in the format of
      *           organizations/{ORGANIZATION_NUMBER}. This field is available when the
      *           resource belongs (directly or cascadingly) to an organization.
+     *     @type string $asset_type
+     *           The asset type of the
+     *           [AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource.full_resource_name][google.cloud.asset.v1.AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource.full_resource_name]
+     *           Example:
+     *           `cloudresourcemanager.googleapis.com/Project`
+     *           See [Cloud Asset Inventory Supported Asset
+     *           Types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
+     *           for all supported asset types.
+     *     @type array<\Google\Cloud\Asset\V1\EffectiveTagDetails>|\Google\Protobuf\Internal\RepeatedField $effective_tags
+     *           The effective tags on this resource.
      * }
      */
     public function __construct($data = NULL) {
@@ -244,8 +272,70 @@ class GovernedResource extends \Google\Protobuf\Internal\Message
         return $this;
     }
 
+    /**
+     * The asset type of the
+     * [AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource.full_resource_name][google.cloud.asset.v1.AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource.full_resource_name]
+     * Example:
+     * `cloudresourcemanager.googleapis.com/Project`
+     * See [Cloud Asset Inventory Supported Asset
+     * Types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
+     * for all supported asset types.
+     *
+     * Generated from protobuf field <code>string asset_type = 8;</code>
+     * @return string
+     */
+    public function getAssetType()
+    {
+        return $this->asset_type;
+    }
+
+    /**
+     * The asset type of the
+     * [AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource.full_resource_name][google.cloud.asset.v1.AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource.full_resource_name]
+     * Example:
+     * `cloudresourcemanager.googleapis.com/Project`
+     * See [Cloud Asset Inventory Supported Asset
+     * Types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
+     * for all supported asset types.
+     *
+     * Generated from protobuf field <code>string asset_type = 8;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setAssetType($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->asset_type = $var;
+
+        return $this;
+    }
+
+    /**
+     * The effective tags on this resource.
+     *
+     * Generated from protobuf field <code>repeated .google.cloud.asset.v1.EffectiveTagDetails effective_tags = 9;</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getEffectiveTags()
+    {
+        return $this->effective_tags;
+    }
+
+    /**
+     * The effective tags on this resource.
+     *
+     * Generated from protobuf field <code>repeated .google.cloud.asset.v1.EffectiveTagDetails effective_tags = 9;</code>
+     * @param array<\Google\Cloud\Asset\V1\EffectiveTagDetails>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setEffectiveTags($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Google\Cloud\Asset\V1\EffectiveTagDetails::class);
+        $this->effective_tags = $arr;
+
+        return $this;
+    }
+
 }
 
-// Adding a class alias for backwards compatibility with the previous class name.
-class_alias(GovernedResource::class, \Google\Cloud\Asset\V1\AnalyzeOrgPolicyGovernedAssetsResponse_GovernedResource::class);
 

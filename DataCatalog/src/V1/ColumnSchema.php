@@ -23,14 +23,14 @@ class ColumnSchema extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string column = 6 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $column = '';
+    protected $column = '';
     /**
      * Required. Type of the column.
      * Must be a UTF-8 string with the maximum size of 128 bytes.
      *
      * Generated from protobuf field <code>string type = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $type = '';
+    protected $type = '';
     /**
      * Optional. Description of the column. Default value is an empty string.
      * The description must be a UTF-8 string with the maximum size of 2000
@@ -38,7 +38,7 @@ class ColumnSchema extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string description = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $description = '';
+    protected $description = '';
     /**
      * Optional. A column's mode indicates whether values in this column are
      * required, nullable, or repeated.
@@ -47,25 +47,25 @@ class ColumnSchema extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string mode = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $mode = '';
+    protected $mode = '';
     /**
      * Optional. Default value for the column.
      *
      * Generated from protobuf field <code>string default_value = 8 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $default_value = '';
+    protected $default_value = '';
     /**
      * Optional. Ordinal position
      *
      * Generated from protobuf field <code>int32 ordinal_position = 9 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $ordinal_position = 0;
+    protected $ordinal_position = 0;
     /**
      * Optional. Most important inclusion of this column.
      *
      * Generated from protobuf field <code>.google.cloud.datacatalog.v1.ColumnSchema.IndexingType highest_indexing_type = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $highest_indexing_type = 0;
+    protected $highest_indexing_type = 0;
     /**
      * Optional. Schema of sub-columns. A column can have zero or more
      * sub-columns.
@@ -74,12 +74,23 @@ class ColumnSchema extends \Google\Protobuf\Internal\Message
      */
     private $subcolumns;
     /**
+     * Optional. The subtype of the RANGE, if the type of this field is RANGE. If
+     * the type is RANGE, this field is required. Possible values for the field
+     * element type of a RANGE include:
+     * * DATE
+     * * DATETIME
+     * * TIMESTAMP
+     *
+     * Generated from protobuf field <code>.google.cloud.datacatalog.v1.ColumnSchema.FieldElementType range_element_type = 19 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $range_element_type = null;
+    /**
      * Optional. Garbage collection policy for the column or column family.
      * Applies to systems like Cloud Bigtable.
      *
      * Generated from protobuf field <code>string gc_rule = 11 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $gc_rule = '';
+    protected $gc_rule = '';
     protected $system_spec;
 
     /**
@@ -115,6 +126,13 @@ class ColumnSchema extends \Google\Protobuf\Internal\Message
      *           sub-columns.
      *     @type \Google\Cloud\DataCatalog\V1\ColumnSchema\LookerColumnSpec $looker_column_spec
      *           Looker specific column info of this column.
+     *     @type \Google\Cloud\DataCatalog\V1\ColumnSchema\FieldElementType $range_element_type
+     *           Optional. The subtype of the RANGE, if the type of this field is RANGE. If
+     *           the type is RANGE, this field is required. Possible values for the field
+     *           element type of a RANGE include:
+     *           * DATE
+     *           * DATETIME
+     *           * TIMESTAMP
      *     @type string $gc_rule
      *           Optional. Garbage collection policy for the column or column family.
      *           Applies to systems like Cloud Bigtable.
@@ -378,6 +396,52 @@ class ColumnSchema extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\DataCatalog\V1\ColumnSchema\LookerColumnSpec::class);
         $this->writeOneof(18, $var);
+
+        return $this;
+    }
+
+    /**
+     * Optional. The subtype of the RANGE, if the type of this field is RANGE. If
+     * the type is RANGE, this field is required. Possible values for the field
+     * element type of a RANGE include:
+     * * DATE
+     * * DATETIME
+     * * TIMESTAMP
+     *
+     * Generated from protobuf field <code>.google.cloud.datacatalog.v1.ColumnSchema.FieldElementType range_element_type = 19 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\DataCatalog\V1\ColumnSchema\FieldElementType|null
+     */
+    public function getRangeElementType()
+    {
+        return $this->range_element_type;
+    }
+
+    public function hasRangeElementType()
+    {
+        return isset($this->range_element_type);
+    }
+
+    public function clearRangeElementType()
+    {
+        unset($this->range_element_type);
+    }
+
+    /**
+     * Optional. The subtype of the RANGE, if the type of this field is RANGE. If
+     * the type is RANGE, this field is required. Possible values for the field
+     * element type of a RANGE include:
+     * * DATE
+     * * DATETIME
+     * * TIMESTAMP
+     *
+     * Generated from protobuf field <code>.google.cloud.datacatalog.v1.ColumnSchema.FieldElementType range_element_type = 19 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\DataCatalog\V1\ColumnSchema\FieldElementType $var
+     * @return $this
+     */
+    public function setRangeElementType($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\DataCatalog\V1\ColumnSchema\FieldElementType::class);
+        $this->range_element_type = $var;
 
         return $this;
     }

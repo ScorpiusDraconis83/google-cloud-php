@@ -33,8 +33,8 @@ class Page extends \Google\Protobuf\Internal\Message
      * [Pages.UpdatePage][google.cloud.dialogflow.cx.v3.Pages.UpdatePage] method.
      * [Pages.CreatePage][google.cloud.dialogflow.cx.v3.Pages.CreatePage]
      * populates the name automatically.
-     * Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-     * ID>/flows/<Flow ID>/pages/<Page ID>`.
+     * Format:
+     * `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/pages/<PageID>`.
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
@@ -45,6 +45,12 @@ class Page extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>string display_name = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
     protected $display_name = '';
+    /**
+     * The description of the page. The maximum length is 500 characters.
+     *
+     * Generated from protobuf field <code>string description = 19;</code>
+     */
+    protected $description = '';
     /**
      * The fulfillment to call when the session is entering the page.
      *
@@ -70,11 +76,10 @@ class Page extends \Google\Protobuf\Internal\Message
      *     transition route group -> flow's transition routes.
      * *   If multiple transition route groups within a page contain the same
      *     intent, then the first group in the ordered list takes precedence.
-     * Format:`projects/<Project ID>/locations/<Location ID>/agents/<Agent
-     * ID>/flows/<Flow ID>/transitionRouteGroups/<TransitionRouteGroup ID>`
-     * or `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-     * ID>/transitionRouteGroups/<TransitionRouteGroup ID>` for agent-level
-     * groups.
+     * Format:`projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/transitionRouteGroups/<TransitionRouteGroupID>`
+     * or
+     * `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/transitionRouteGroups/<TransitionRouteGroupID>`
+     * for agent-level groups.
      *
      * Generated from protobuf field <code>repeated string transition_route_groups = 11 [(.google.api.resource_reference) = {</code>
      */
@@ -137,10 +142,12 @@ class Page extends \Google\Protobuf\Internal\Message
      *           [Pages.UpdatePage][google.cloud.dialogflow.cx.v3.Pages.UpdatePage] method.
      *           [Pages.CreatePage][google.cloud.dialogflow.cx.v3.Pages.CreatePage]
      *           populates the name automatically.
-     *           Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-     *           ID>/flows/<Flow ID>/pages/<Page ID>`.
+     *           Format:
+     *           `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/pages/<PageID>`.
      *     @type string $display_name
      *           Required. The human-readable name of the page, unique within the flow.
+     *     @type string $description
+     *           The description of the page. The maximum length is 500 characters.
      *     @type \Google\Cloud\Dialogflow\Cx\V3\Fulfillment $entry_fulfillment
      *           The fulfillment to call when the session is entering the page.
      *     @type \Google\Cloud\Dialogflow\Cx\V3\Form $form
@@ -158,11 +165,10 @@ class Page extends \Google\Protobuf\Internal\Message
      *               transition route group -> flow's transition routes.
      *           *   If multiple transition route groups within a page contain the same
      *               intent, then the first group in the ordered list takes precedence.
-     *           Format:`projects/<Project ID>/locations/<Location ID>/agents/<Agent
-     *           ID>/flows/<Flow ID>/transitionRouteGroups/<TransitionRouteGroup ID>`
-     *           or `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-     *           ID>/transitionRouteGroups/<TransitionRouteGroup ID>` for agent-level
-     *           groups.
+     *           Format:`projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/transitionRouteGroups/<TransitionRouteGroupID>`
+     *           or
+     *           `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/transitionRouteGroups/<TransitionRouteGroupID>`
+     *           for agent-level groups.
      *     @type array<\Google\Cloud\Dialogflow\Cx\V3\TransitionRoute>|\Google\Protobuf\Internal\RepeatedField $transition_routes
      *           A list of transitions for the transition rules of this page.
      *           They route the conversation to another page in the same flow, or another
@@ -205,8 +211,8 @@ class Page extends \Google\Protobuf\Internal\Message
      * [Pages.UpdatePage][google.cloud.dialogflow.cx.v3.Pages.UpdatePage] method.
      * [Pages.CreatePage][google.cloud.dialogflow.cx.v3.Pages.CreatePage]
      * populates the name automatically.
-     * Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-     * ID>/flows/<Flow ID>/pages/<Page ID>`.
+     * Format:
+     * `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/pages/<PageID>`.
      *
      * Generated from protobuf field <code>string name = 1;</code>
      * @return string
@@ -222,8 +228,8 @@ class Page extends \Google\Protobuf\Internal\Message
      * [Pages.UpdatePage][google.cloud.dialogflow.cx.v3.Pages.UpdatePage] method.
      * [Pages.CreatePage][google.cloud.dialogflow.cx.v3.Pages.CreatePage]
      * populates the name automatically.
-     * Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-     * ID>/flows/<Flow ID>/pages/<Page ID>`.
+     * Format:
+     * `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/pages/<PageID>`.
      *
      * Generated from protobuf field <code>string name = 1;</code>
      * @param string $var
@@ -259,6 +265,32 @@ class Page extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->display_name = $var;
+
+        return $this;
+    }
+
+    /**
+     * The description of the page. The maximum length is 500 characters.
+     *
+     * Generated from protobuf field <code>string description = 19;</code>
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * The description of the page. The maximum length is 500 characters.
+     *
+     * Generated from protobuf field <code>string description = 19;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setDescription($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->description = $var;
 
         return $this;
     }
@@ -349,11 +381,10 @@ class Page extends \Google\Protobuf\Internal\Message
      *     transition route group -> flow's transition routes.
      * *   If multiple transition route groups within a page contain the same
      *     intent, then the first group in the ordered list takes precedence.
-     * Format:`projects/<Project ID>/locations/<Location ID>/agents/<Agent
-     * ID>/flows/<Flow ID>/transitionRouteGroups/<TransitionRouteGroup ID>`
-     * or `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-     * ID>/transitionRouteGroups/<TransitionRouteGroup ID>` for agent-level
-     * groups.
+     * Format:`projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/transitionRouteGroups/<TransitionRouteGroupID>`
+     * or
+     * `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/transitionRouteGroups/<TransitionRouteGroupID>`
+     * for agent-level groups.
      *
      * Generated from protobuf field <code>repeated string transition_route_groups = 11 [(.google.api.resource_reference) = {</code>
      * @return \Google\Protobuf\Internal\RepeatedField
@@ -375,11 +406,10 @@ class Page extends \Google\Protobuf\Internal\Message
      *     transition route group -> flow's transition routes.
      * *   If multiple transition route groups within a page contain the same
      *     intent, then the first group in the ordered list takes precedence.
-     * Format:`projects/<Project ID>/locations/<Location ID>/agents/<Agent
-     * ID>/flows/<Flow ID>/transitionRouteGroups/<TransitionRouteGroup ID>`
-     * or `projects/<Project ID>/locations/<Location ID>/agents/<Agent
-     * ID>/transitionRouteGroups/<TransitionRouteGroup ID>` for agent-level
-     * groups.
+     * Format:`projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/flows/<FlowID>/transitionRouteGroups/<TransitionRouteGroupID>`
+     * or
+     * `projects/<ProjectID>/locations/<LocationID>/agents/<AgentID>/transitionRouteGroups/<TransitionRouteGroupID>`
+     * for agent-level groups.
      *
      * Generated from protobuf field <code>repeated string transition_route_groups = 11 [(.google.api.resource_reference) = {</code>
      * @param array<string>|\Google\Protobuf\Internal\RepeatedField $var

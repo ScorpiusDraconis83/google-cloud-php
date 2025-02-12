@@ -9,8 +9,9 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Custom view of service telemetry. Currently a place-holder pending final
- * design.
+ * Use a custom service to designate a service that you want to monitor
+ * when none of the other service types (like App Engine, Cloud Run, or
+ * a GKE type) matches your intended service.
  *
  * Generated from protobuf message <code>google.monitoring.v3.Service.Custom</code>
  */
@@ -32,6 +33,4 @@ class Custom extends \Google\Protobuf\Internal\Message
 
 }
 
-// Adding a class alias for backwards compatibility with the previous class name.
-class_alias(Custom::class, \Google\Cloud\Monitoring\V3\Service_Custom::class);
 

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ use Google\Cloud\Monitoring\V3\ListMonitoredResourceDescriptorsRequest;
 use Google\Cloud\Monitoring\V3\ListTimeSeriesRequest;
 use Google\Cloud\Monitoring\V3\TimeSeries;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Manages metric descriptors, monitored resource descriptors, and
@@ -58,15 +59,15 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createMetricDescriptorAsync(CreateMetricDescriptorRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createServiceTimeSeriesAsync(CreateTimeSeriesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createTimeSeriesAsync(CreateTimeSeriesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteMetricDescriptorAsync(DeleteMetricDescriptorRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getMetricDescriptorAsync(GetMetricDescriptorRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getMonitoredResourceDescriptorAsync(GetMonitoredResourceDescriptorRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listMetricDescriptorsAsync(ListMetricDescriptorsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listMonitoredResourceDescriptorsAsync(ListMonitoredResourceDescriptorsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listTimeSeriesAsync(ListTimeSeriesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<MetricDescriptor> createMetricDescriptorAsync(CreateMetricDescriptorRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> createServiceTimeSeriesAsync(CreateTimeSeriesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> createTimeSeriesAsync(CreateTimeSeriesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteMetricDescriptorAsync(DeleteMetricDescriptorRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<MetricDescriptor> getMetricDescriptorAsync(GetMetricDescriptorRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<MonitoredResourceDescriptor> getMonitoredResourceDescriptorAsync(GetMonitoredResourceDescriptorRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listMetricDescriptorsAsync(ListMetricDescriptorsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listMonitoredResourceDescriptorsAsync(ListMonitoredResourceDescriptorsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listTimeSeriesAsync(ListTimeSeriesRequest $request, array $optionalArgs = [])
  */
 final class MetricServiceClient
 {
@@ -160,8 +161,10 @@ final class MetricServiceClient
      *
      * @return string The formatted folder_monitored_resource_descriptor resource.
      */
-    public static function folderMonitoredResourceDescriptorName(string $folder, string $monitoredResourceDescriptor): string
-    {
+    public static function folderMonitoredResourceDescriptorName(
+        string $folder,
+        string $monitoredResourceDescriptor
+    ): string {
         return self::getPathTemplate('folderMonitoredResourceDescriptor')->render([
             'folder' => $folder,
             'monitored_resource_descriptor' => $monitoredResourceDescriptor,
@@ -243,8 +246,10 @@ final class MetricServiceClient
      *
      * @return string The formatted organization_monitored_resource_descriptor resource.
      */
-    public static function organizationMonitoredResourceDescriptorName(string $organization, string $monitoredResourceDescriptor): string
-    {
+    public static function organizationMonitoredResourceDescriptorName(
+        string $organization,
+        string $monitoredResourceDescriptor
+    ): string {
         return self::getPathTemplate('organizationMonitoredResourceDescriptor')->render([
             'organization' => $organization,
             'monitored_resource_descriptor' => $monitoredResourceDescriptor,
@@ -292,8 +297,10 @@ final class MetricServiceClient
      *
      * @return string The formatted project_monitored_resource_descriptor resource.
      */
-    public static function projectMonitoredResourceDescriptorName(string $project, string $monitoredResourceDescriptor): string
-    {
+    public static function projectMonitoredResourceDescriptorName(
+        string $project,
+        string $monitoredResourceDescriptor
+    ): string {
         return self::getPathTemplate('projectMonitoredResourceDescriptor')->render([
             'project' => $project,
             'monitored_resource_descriptor' => $monitoredResourceDescriptor,
@@ -338,14 +345,14 @@ final class MetricServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -367,6 +374,12 @@ final class MetricServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -400,6 +413,9 @@ final class MetricServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -423,12 +439,15 @@ final class MetricServiceClient
 
     /**
      * Creates a new metric descriptor.
-     * The creation is executed asynchronously and callers may check the returned
-     * operation to track its progress.
+     * The creation is executed asynchronously.
      * User-created metric descriptors define
      * [custom metrics](https://cloud.google.com/monitoring/custom-metrics).
+     * The metric descriptor is updated if it already exists,
+     * except that metric labels are never removed.
      *
      * The async variant is {@see MetricServiceClient::createMetricDescriptorAsync()} .
+     *
+     * @example samples/V3/MetricServiceClient/create_metric_descriptor.php
      *
      * @param CreateMetricDescriptorRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
@@ -444,8 +463,10 @@ final class MetricServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createMetricDescriptor(CreateMetricDescriptorRequest $request, array $callOptions = []): MetricDescriptor
-    {
+    public function createMetricDescriptor(
+        CreateMetricDescriptorRequest $request,
+        array $callOptions = []
+    ): MetricDescriptor {
         return $this->startApiCall('CreateMetricDescriptor', $request, $callOptions)->wait();
     }
 
@@ -462,6 +483,8 @@ final class MetricServiceClient
      *
      * The async variant is {@see MetricServiceClient::createServiceTimeSeriesAsync()}
      * .
+     *
+     * @example samples/V3/MetricServiceClient/create_service_time_series.php
      *
      * @param CreateTimeSeriesRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -485,8 +508,13 @@ final class MetricServiceClient
      * The response is empty if all time series in the request were written.
      * If any time series could not be written, a corresponding failure message is
      * included in the error response.
+     * This method does not support
+     * [resource locations constraint of an organization
+     * policy](https://cloud.google.com/resource-manager/docs/organization-policy/defining-locations#setting_the_organization_policy).
      *
      * The async variant is {@see MetricServiceClient::createTimeSeriesAsync()} .
+     *
+     * @example samples/V3/MetricServiceClient/create_time_series.php
      *
      * @param CreateTimeSeriesRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -512,6 +540,8 @@ final class MetricServiceClient
      *
      * The async variant is {@see MetricServiceClient::deleteMetricDescriptorAsync()} .
      *
+     * @example samples/V3/MetricServiceClient/delete_metric_descriptor.php
+     *
      * @param DeleteMetricDescriptorRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -530,9 +560,11 @@ final class MetricServiceClient
     }
 
     /**
-     * Gets a single metric descriptor. This method does not require a Workspace.
+     * Gets a single metric descriptor.
      *
      * The async variant is {@see MetricServiceClient::getMetricDescriptorAsync()} .
+     *
+     * @example samples/V3/MetricServiceClient/get_metric_descriptor.php
      *
      * @param GetMetricDescriptorRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -554,10 +586,12 @@ final class MetricServiceClient
     }
 
     /**
-     * Gets a single monitored resource descriptor. This method does not require a Workspace.
+     * Gets a single monitored resource descriptor.
      *
      * The async variant is
      * {@see MetricServiceClient::getMonitoredResourceDescriptorAsync()} .
+     *
+     * @example samples/V3/MetricServiceClient/get_monitored_resource_descriptor.php
      *
      * @param GetMonitoredResourceDescriptorRequest $request     A request to house fields associated with the call.
      * @param array                                 $callOptions {
@@ -573,15 +607,19 @@ final class MetricServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getMonitoredResourceDescriptor(GetMonitoredResourceDescriptorRequest $request, array $callOptions = []): MonitoredResourceDescriptor
-    {
+    public function getMonitoredResourceDescriptor(
+        GetMonitoredResourceDescriptorRequest $request,
+        array $callOptions = []
+    ): MonitoredResourceDescriptor {
         return $this->startApiCall('GetMonitoredResourceDescriptor', $request, $callOptions)->wait();
     }
 
     /**
-     * Lists metric descriptors that match a filter. This method does not require a Workspace.
+     * Lists metric descriptors that match a filter.
      *
      * The async variant is {@see MetricServiceClient::listMetricDescriptorsAsync()} .
+     *
+     * @example samples/V3/MetricServiceClient/list_metric_descriptors.php
      *
      * @param ListMetricDescriptorsRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
@@ -597,16 +635,20 @@ final class MetricServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listMetricDescriptors(ListMetricDescriptorsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listMetricDescriptors(
+        ListMetricDescriptorsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListMetricDescriptors', $request, $callOptions);
     }
 
     /**
-     * Lists monitored resource descriptors that match a filter. This method does not require a Workspace.
+     * Lists monitored resource descriptors that match a filter.
      *
      * The async variant is
      * {@see MetricServiceClient::listMonitoredResourceDescriptorsAsync()} .
+     *
+     * @example samples/V3/MetricServiceClient/list_monitored_resource_descriptors.php
      *
      * @param ListMonitoredResourceDescriptorsRequest $request     A request to house fields associated with the call.
      * @param array                                   $callOptions {
@@ -622,15 +664,19 @@ final class MetricServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listMonitoredResourceDescriptors(ListMonitoredResourceDescriptorsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listMonitoredResourceDescriptors(
+        ListMonitoredResourceDescriptorsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListMonitoredResourceDescriptors', $request, $callOptions);
     }
 
     /**
-     * Lists time series that match a filter. This method does not require a Workspace.
+     * Lists time series that match a filter.
      *
      * The async variant is {@see MetricServiceClient::listTimeSeriesAsync()} .
+     *
+     * @example samples/V3/MetricServiceClient/list_time_series.php
      *
      * @param ListTimeSeriesRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {

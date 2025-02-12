@@ -25,23 +25,23 @@ class BillingAccount extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = OUTPUT_ONLY, (.google.api.resource_reference) = {</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Output only. True if the billing account is open, and will therefore be
      * charged for any usage on associated projects. False if the billing account
-     * is closed, and therefore projects associated with it will be unable to use
-     * paid services.
+     * is closed, and therefore projects associated with it are unable to use paid
+     * services.
      *
      * Generated from protobuf field <code>bool open = 2 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $open = false;
+    protected $open = false;
     /**
      * The display name given to the billing account, such as `My Billing
      * Account`. This name is displayed in the Google Cloud Console.
      *
      * Generated from protobuf field <code>string display_name = 3;</code>
      */
-    private $display_name = '';
+    protected $display_name = '';
     /**
      * If this account is a
      * [subaccount](https://cloud.google.com/billing/docs/concepts), then this
@@ -51,7 +51,7 @@ class BillingAccount extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string master_billing_account = 4;</code>
      */
-    private $master_billing_account = '';
+    protected $master_billing_account = '';
     /**
      * Output only. The billing account's parent resource identifier.
      * Use the `MoveBillingAccount` method to update the account's parent resource
@@ -64,7 +64,20 @@ class BillingAccount extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string parent = 6 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $parent = '';
+    protected $parent = '';
+    /**
+     * Optional. The currency in which the billing account is billed and charged,
+     * represented as an ISO 4217 code such as `USD`.
+     * Billing account currency is determined at the time of billing account
+     * creation and cannot be updated subsequently, so this field should not be
+     * set on update requests. In addition, a subaccount always matches the
+     * currency of its parent billing account, so this field should not be set on
+     * subaccount creation requests. Clients can read this field to determine the
+     * currency of an existing billing account.
+     *
+     * Generated from protobuf field <code>string currency_code = 7 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $currency_code = '';
 
     /**
      * Constructor.
@@ -80,8 +93,8 @@ class BillingAccount extends \Google\Protobuf\Internal\Message
      *     @type bool $open
      *           Output only. True if the billing account is open, and will therefore be
      *           charged for any usage on associated projects. False if the billing account
-     *           is closed, and therefore projects associated with it will be unable to use
-     *           paid services.
+     *           is closed, and therefore projects associated with it are unable to use paid
+     *           services.
      *     @type string $display_name
      *           The display name given to the billing account, such as `My Billing
      *           Account`. This name is displayed in the Google Cloud Console.
@@ -100,6 +113,15 @@ class BillingAccount extends \Google\Protobuf\Internal\Message
      *               `organizations/12345678`
      *             - `billingAccounts/{billing_account_id}`, for example,
      *               `billingAccounts/012345-567890-ABCDEF`
+     *     @type string $currency_code
+     *           Optional. The currency in which the billing account is billed and charged,
+     *           represented as an ISO 4217 code such as `USD`.
+     *           Billing account currency is determined at the time of billing account
+     *           creation and cannot be updated subsequently, so this field should not be
+     *           set on update requests. In addition, a subaccount always matches the
+     *           currency of its parent billing account, so this field should not be set on
+     *           subaccount creation requests. Clients can read this field to determine the
+     *           currency of an existing billing account.
      * }
      */
     public function __construct($data = NULL) {
@@ -142,8 +164,8 @@ class BillingAccount extends \Google\Protobuf\Internal\Message
     /**
      * Output only. True if the billing account is open, and will therefore be
      * charged for any usage on associated projects. False if the billing account
-     * is closed, and therefore projects associated with it will be unable to use
-     * paid services.
+     * is closed, and therefore projects associated with it are unable to use paid
+     * services.
      *
      * Generated from protobuf field <code>bool open = 2 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      * @return bool
@@ -156,8 +178,8 @@ class BillingAccount extends \Google\Protobuf\Internal\Message
     /**
      * Output only. True if the billing account is open, and will therefore be
      * charged for any usage on associated projects. False if the billing account
-     * is closed, and therefore projects associated with it will be unable to use
-     * paid services.
+     * is closed, and therefore projects associated with it are unable to use paid
+     * services.
      *
      * Generated from protobuf field <code>bool open = 2 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      * @param bool $var
@@ -269,6 +291,46 @@ class BillingAccount extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->parent = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. The currency in which the billing account is billed and charged,
+     * represented as an ISO 4217 code such as `USD`.
+     * Billing account currency is determined at the time of billing account
+     * creation and cannot be updated subsequently, so this field should not be
+     * set on update requests. In addition, a subaccount always matches the
+     * currency of its parent billing account, so this field should not be set on
+     * subaccount creation requests. Clients can read this field to determine the
+     * currency of an existing billing account.
+     *
+     * Generated from protobuf field <code>string currency_code = 7 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return string
+     */
+    public function getCurrencyCode()
+    {
+        return $this->currency_code;
+    }
+
+    /**
+     * Optional. The currency in which the billing account is billed and charged,
+     * represented as an ISO 4217 code such as `USD`.
+     * Billing account currency is determined at the time of billing account
+     * creation and cannot be updated subsequently, so this field should not be
+     * set on update requests. In addition, a subaccount always matches the
+     * currency of its parent billing account, so this field should not be set on
+     * subaccount creation requests. Clients can read this field to determine the
+     * currency of an existing billing account.
+     *
+     * Generated from protobuf field <code>string currency_code = 7 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setCurrencyCode($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->currency_code = $var;
 
         return $this;
     }

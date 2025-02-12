@@ -22,19 +22,19 @@ class DeployJobRunMetadata extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.deploy.v1.CloudRunMetadata cloud_run = 1 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $cloud_run = null;
+    protected $cloud_run = null;
     /**
      * Output only. Custom Target metadata associated with a `DeployJobRun`.
      *
      * Generated from protobuf field <code>.google.cloud.deploy.v1.CustomTargetDeployMetadata custom_target = 2 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $custom_target = null;
+    protected $custom_target = null;
     /**
-     * Output only. Custom metadata provided by user defined deploy operation.
+     * Output only. Custom metadata provided by user-defined deploy operation.
      *
      * Generated from protobuf field <code>.google.cloud.deploy.v1.CustomMetadata custom = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $custom = null;
+    protected $custom = null;
 
     /**
      * Constructor.
@@ -48,7 +48,7 @@ class DeployJobRunMetadata extends \Google\Protobuf\Internal\Message
      *     @type \Google\Cloud\Deploy\V1\CustomTargetDeployMetadata $custom_target
      *           Output only. Custom Target metadata associated with a `DeployJobRun`.
      *     @type \Google\Cloud\Deploy\V1\CustomMetadata $custom
-     *           Output only. Custom metadata provided by user defined deploy operation.
+     *           Output only. Custom metadata provided by user-defined deploy operation.
      * }
      */
     public function __construct($data = NULL) {
@@ -131,7 +131,7 @@ class DeployJobRunMetadata extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Output only. Custom metadata provided by user defined deploy operation.
+     * Output only. Custom metadata provided by user-defined deploy operation.
      *
      * Generated from protobuf field <code>.google.cloud.deploy.v1.CustomMetadata custom = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      * @return \Google\Cloud\Deploy\V1\CustomMetadata|null
@@ -152,7 +152,7 @@ class DeployJobRunMetadata extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Output only. Custom metadata provided by user defined deploy operation.
+     * Output only. Custom metadata provided by user-defined deploy operation.
      *
      * Generated from protobuf field <code>.google.cloud.deploy.v1.CustomMetadata custom = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      * @param \Google\Cloud\Deploy\V1\CustomMetadata $var

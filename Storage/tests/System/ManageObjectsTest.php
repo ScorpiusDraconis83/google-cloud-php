@@ -284,6 +284,77 @@ class ManageObjectsTest extends StorageTestCase
 
         $this->assertEquals($name, $composedObject->name());
         $this->assertEquals($expectedContent, $composedObject->downloadAsString());
+        return $composedObject;
+    }
+
+    public function testSoftDeleteObject()
+    {
+        $softDeleteBucketName = "soft-delete-bucket-" . uniqid();
+        $softDeleteBucket = self::createBucket(
+            self::$client,
+            $softDeleteBucketName,
+            [
+                'location' => 'us-west1',
+                'softDeletePolicy' => ['retentionDurationSeconds' => 8 * 24 * 60 * 60]
+            ]
+        );
+        $object = $softDeleteBucket->upload(self::DATA, ['name' => uniqid(self::TESTING_PREFIX)]);
+        $this->assertStorageObjectExists($softDeleteBucket, $object);
+        $generation = $object->info()['generation'];
+
+        $object->delete();
+
+        $this->assertStorageObjectNotExists($softDeleteBucket, $object);
+        $this->assertStorageObjectExists($softDeleteBucket, $object, [
+            'softDeleted' => true,
+            'generation' => $generation
+        ]);
+
+        $restoredObject = $softDeleteBucket->restore($object->name(), $generation);
+        $this->assertNotEquals($generation, $restoredObject->info()['generation']);
+
+        $this->assertStorageObjectExists($softDeleteBucket, $restoredObject);
+    }
+
+    public function testSoftDeleteHNSObject()
+    {
+        $softDeleteBucketName = "soft-delete-hns-bucket-" . uniqid();
+        $softDeleteHNSBucket = self::createBucket(
+            self::$client,
+            $softDeleteBucketName,
+            [
+                'location' => 'us-west1',
+                'softDeletePolicy' => ['retentionDurationSeconds' => 8 * 24 * 60 * 60],
+                'hierarchicalNamespace' => ['enabled' => true,],
+                'iamConfiguration' => ['uniformBucketLevelAccess' => ['enabled' => true]]
+            ]
+        );
+        $object = $softDeleteHNSBucket->upload(self::DATA, ['name' => uniqid(self::TESTING_PREFIX)]);
+        $this->assertStorageObjectExists($softDeleteHNSBucket, $object);
+        $generation = $object->info()['generation'];
+        $objectName = $object->info()['name'];
+        $options = [
+            'softDeleted' => true,
+            'generation' => $generation
+        ];
+
+        $object->delete();
+
+        $deletedObject = $softDeleteHNSBucket->object($objectName, $options);
+        $restoreToken = $deletedObject->info($options)['restoreToken'];
+
+        $this->assertStorageObjectNotExists($softDeleteHNSBucket, $object);
+        $this->assertStorageObjectExists($softDeleteHNSBucket, $object, [
+            'softDeleted' => true,
+            'generation' => $generation
+        ]);
+
+        $restoredObject = $softDeleteHNSBucket->restore($object->name(), $generation, [
+            'restoreToken' => $restoreToken
+        ]);
+        $this->assertNotEquals($generation, $restoredObject->info()['generation']);
+
+        $this->assertStorageObjectExists($softDeleteHNSBucket, $restoredObject);
     }
 
     public function testRotatesCustomerSuppliedEncrpytion()
@@ -413,5 +484,33 @@ class ManageObjectsTest extends StorageTestCase
 
             $this->assertSame($expectedContent, $actualContent);
         }
+    }
+
+    /**
+     * Asserts that a provided StorageObject exists.
+     *
+     * A StorageObject can be created via several methods, including but not limited to:
+     * Directly via constructor such as during object creation,
+     * Or lazily by providing name to bucket object,
+     * Or by listing objects in a bucket.
+     */
+    private function assertStorageObjectExists($bucket, $object, $options = [], $isPresent = true)
+    {
+        // validate provided object exists
+        $this->assertEquals($isPresent, $object->exists($options));
+        // validate object returned from $bucket->object() exists
+        $object = $bucket->object($object->name(), $options);
+        $this->assertEquals($isPresent, $object->exists($options));
+        // validate object exists in $bucket->objects() exists
+        $objects = $bucket->objects($options);
+        $objects = array_map(function ($o) {
+            return $o->name();
+        }, iterator_to_array($objects));
+        $this->assertEquals($isPresent, in_array($object->name(), $objects));
+    }
+
+    private function assertStorageObjectNotExists($bucket, $object, $options = [])
+    {
+        $this->assertStorageObjectExists($bucket, $object, $options, false);
     }
 }

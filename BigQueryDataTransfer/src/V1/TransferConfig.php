@@ -21,7 +21,7 @@ use Google\Protobuf\Internal\GPBUtil;
 class TransferConfig extends \Google\Protobuf\Internal\Message
 {
     /**
-     * The resource name of the transfer config.
+     * Identifier. The resource name of the transfer config.
      * Transfer config names have the form either
      * `projects/{project_id}/locations/{region}/transferConfigs/{config_id}` or
      * `projects/{project_id}/transferConfigs/{config_id}`,
@@ -29,15 +29,15 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      * guaranteed or required. The name is ignored when creating a transfer
      * config.
      *
-     * Generated from protobuf field <code>string name = 1;</code>
+     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = IDENTIFIER];</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * User specified display name for the data transfer.
      *
      * Generated from protobuf field <code>string display_name = 3;</code>
      */
-    private $display_name = '';
+    protected $display_name = '';
     /**
      * Data source ID. This cannot be changed once data transfer is created. The
      * full list of available data source IDs can be returned through an API call:
@@ -45,7 +45,7 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string data_source_id = 5;</code>
      */
-    private $data_source_id = '';
+    protected $data_source_id = '';
     /**
      * Parameters specific to each data source. For more information see the
      * bq tab in the 'Setting up a data transfer' section for each data source.
@@ -54,12 +54,11 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.Struct params = 9;</code>
      */
-    private $params = null;
+    protected $params = null;
     /**
      * Data transfer schedule.
      * If the data source does not support a custom schedule, this should be
-     * empty. If it is empty, the default value for the data source will be
-     * used.
+     * empty. If it is empty, the default value for the data source will be used.
      * The specified times are in UTC.
      * Examples of valid format:
      * `1st,3rd monday of month 15:30`,
@@ -72,77 +71,85 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string schedule = 7;</code>
      */
-    private $schedule = '';
+    protected $schedule = '';
     /**
      * Options customizing the data transfer schedule.
      *
      * Generated from protobuf field <code>.google.cloud.bigquery.datatransfer.v1.ScheduleOptions schedule_options = 24;</code>
      */
-    private $schedule_options = null;
+    protected $schedule_options = null;
+    /**
+     * Options customizing different types of data transfer schedule.
+     * This field replaces "schedule" and "schedule_options" fields.
+     * ScheduleOptionsV2 cannot be used together with ScheduleOptions/Schedule.
+     *
+     * Generated from protobuf field <code>.google.cloud.bigquery.datatransfer.v1.ScheduleOptionsV2 schedule_options_v2 = 31;</code>
+     */
+    protected $schedule_options_v2 = null;
     /**
      * The number of days to look back to automatically refresh the data.
      * For example, if `data_refresh_window_days = 10`, then every day
      * BigQuery reingests data for [today-10, today-1], rather than ingesting data
      * for just [today-1].
-     * Only valid if the data source supports the feature. Set the value to  0
+     * Only valid if the data source supports the feature. Set the value to 0
      * to use the default value.
      *
      * Generated from protobuf field <code>int32 data_refresh_window_days = 12;</code>
      */
-    private $data_refresh_window_days = 0;
+    protected $data_refresh_window_days = 0;
     /**
-     * Is this config disabled. When set to true, no runs are scheduled
-     * for a given transfer.
+     * Is this config disabled. When set to true, no runs will be scheduled for
+     * this transfer config.
      *
      * Generated from protobuf field <code>bool disabled = 13;</code>
      */
-    private $disabled = false;
+    protected $disabled = false;
     /**
      * Output only. Data transfer modification time. Ignored by server on input.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp update_time = 4 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $update_time = null;
+    protected $update_time = null;
     /**
      * Output only. Next time when data transfer will run.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp next_run_time = 8 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $next_run_time = null;
+    protected $next_run_time = null;
     /**
      * Output only. State of the most recently updated transfer run.
      *
      * Generated from protobuf field <code>.google.cloud.bigquery.datatransfer.v1.TransferState state = 10 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $state = 0;
+    protected $state = 0;
     /**
      * Deprecated. Unique ID of the user on whose behalf transfer is done.
      *
      * Generated from protobuf field <code>int64 user_id = 11;</code>
      */
-    private $user_id = 0;
+    protected $user_id = 0;
     /**
      * Output only. Region in which BigQuery dataset is located.
      *
      * Generated from protobuf field <code>string dataset_region = 14 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $dataset_region = '';
+    protected $dataset_region = '';
     /**
      * Pub/Sub topic where notifications will be sent after transfer runs
      * associated with this transfer config finish.
      * The format for specifying a pubsub topic is:
-     * `projects/{project}/topics/{topic}`
+     * `projects/{project_id}/topics/{topic_id}`
      *
      * Generated from protobuf field <code>string notification_pubsub_topic = 15;</code>
      */
-    private $notification_pubsub_topic = '';
+    protected $notification_pubsub_topic = '';
     /**
      * Email notifications will be sent according to these preferences
      * to the email address of the user who owns this transfer config.
      *
      * Generated from protobuf field <code>.google.cloud.bigquery.datatransfer.v1.EmailPreferences email_preferences = 18;</code>
      */
-    private $email_preferences = null;
+    protected $email_preferences = null;
     /**
      * Output only. Information about the user whose credentials are used to
      * transfer data. Populated only for `transferConfigs.get` requests. In case
@@ -150,7 +157,7 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>optional .google.cloud.bigquery.datatransfer.v1.UserInfo owner_info = 27 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $owner_info = null;
+    protected $owner_info = null;
     /**
      * The encryption configuration part. Currently, it is only used for the
      * optional KMS key name. The BigQuery service account of your project must be
@@ -160,7 +167,14 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.bigquery.datatransfer.v1.EncryptionConfiguration encryption_configuration = 28;</code>
      */
-    private $encryption_configuration = null;
+    protected $encryption_configuration = null;
+    /**
+     * Output only. Error code with detailed information about reason of the
+     * latest config failure.
+     *
+     * Generated from protobuf field <code>.google.rpc.Status error = 32 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $error = null;
     protected $destination;
 
     /**
@@ -170,7 +184,7 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type string $name
-     *           The resource name of the transfer config.
+     *           Identifier. The resource name of the transfer config.
      *           Transfer config names have the form either
      *           `projects/{project_id}/locations/{region}/transferConfigs/{config_id}` or
      *           `projects/{project_id}/transferConfigs/{config_id}`,
@@ -193,8 +207,7 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      *     @type string $schedule
      *           Data transfer schedule.
      *           If the data source does not support a custom schedule, this should be
-     *           empty. If it is empty, the default value for the data source will be
-     *           used.
+     *           empty. If it is empty, the default value for the data source will be used.
      *           The specified times are in UTC.
      *           Examples of valid format:
      *           `1st,3rd monday of month 15:30`,
@@ -206,16 +219,20 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      *           data source; refer to the documentation for your data source.
      *     @type \Google\Cloud\BigQuery\DataTransfer\V1\ScheduleOptions $schedule_options
      *           Options customizing the data transfer schedule.
+     *     @type \Google\Cloud\BigQuery\DataTransfer\V1\ScheduleOptionsV2 $schedule_options_v2
+     *           Options customizing different types of data transfer schedule.
+     *           This field replaces "schedule" and "schedule_options" fields.
+     *           ScheduleOptionsV2 cannot be used together with ScheduleOptions/Schedule.
      *     @type int $data_refresh_window_days
      *           The number of days to look back to automatically refresh the data.
      *           For example, if `data_refresh_window_days = 10`, then every day
      *           BigQuery reingests data for [today-10, today-1], rather than ingesting data
      *           for just [today-1].
-     *           Only valid if the data source supports the feature. Set the value to  0
+     *           Only valid if the data source supports the feature. Set the value to 0
      *           to use the default value.
      *     @type bool $disabled
-     *           Is this config disabled. When set to true, no runs are scheduled
-     *           for a given transfer.
+     *           Is this config disabled. When set to true, no runs will be scheduled for
+     *           this transfer config.
      *     @type \Google\Protobuf\Timestamp $update_time
      *           Output only. Data transfer modification time. Ignored by server on input.
      *     @type \Google\Protobuf\Timestamp $next_run_time
@@ -230,7 +247,7 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      *           Pub/Sub topic where notifications will be sent after transfer runs
      *           associated with this transfer config finish.
      *           The format for specifying a pubsub topic is:
-     *           `projects/{project}/topics/{topic}`
+     *           `projects/{project_id}/topics/{topic_id}`
      *     @type \Google\Cloud\BigQuery\DataTransfer\V1\EmailPreferences $email_preferences
      *           Email notifications will be sent according to these preferences
      *           to the email address of the user who owns this transfer config.
@@ -244,6 +261,9 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      *           granted permissions to use the key. Read methods will return the key name
      *           applied in effect. Write methods will apply the key if it is present, or
      *           otherwise try to apply project default keys if it is absent.
+     *     @type \Google\Rpc\Status $error
+     *           Output only. Error code with detailed information about reason of the
+     *           latest config failure.
      * }
      */
     public function __construct($data = NULL) {
@@ -252,7 +272,7 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The resource name of the transfer config.
+     * Identifier. The resource name of the transfer config.
      * Transfer config names have the form either
      * `projects/{project_id}/locations/{region}/transferConfigs/{config_id}` or
      * `projects/{project_id}/transferConfigs/{config_id}`,
@@ -260,7 +280,7 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      * guaranteed or required. The name is ignored when creating a transfer
      * config.
      *
-     * Generated from protobuf field <code>string name = 1;</code>
+     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = IDENTIFIER];</code>
      * @return string
      */
     public function getName()
@@ -269,7 +289,7 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The resource name of the transfer config.
+     * Identifier. The resource name of the transfer config.
      * Transfer config names have the form either
      * `projects/{project_id}/locations/{region}/transferConfigs/{config_id}` or
      * `projects/{project_id}/transferConfigs/{config_id}`,
@@ -277,7 +297,7 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      * guaranteed or required. The name is ignored when creating a transfer
      * config.
      *
-     * Generated from protobuf field <code>string name = 1;</code>
+     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = IDENTIFIER];</code>
      * @param string $var
      * @return $this
      */
@@ -421,8 +441,7 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
     /**
      * Data transfer schedule.
      * If the data source does not support a custom schedule, this should be
-     * empty. If it is empty, the default value for the data source will be
-     * used.
+     * empty. If it is empty, the default value for the data source will be used.
      * The specified times are in UTC.
      * Examples of valid format:
      * `1st,3rd monday of month 15:30`,
@@ -444,8 +463,7 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
     /**
      * Data transfer schedule.
      * If the data source does not support a custom schedule, this should be
-     * empty. If it is empty, the default value for the data source will be
-     * used.
+     * empty. If it is empty, the default value for the data source will be used.
      * The specified times are in UTC.
      * Examples of valid format:
      * `1st,3rd monday of month 15:30`,
@@ -505,11 +523,51 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Options customizing different types of data transfer schedule.
+     * This field replaces "schedule" and "schedule_options" fields.
+     * ScheduleOptionsV2 cannot be used together with ScheduleOptions/Schedule.
+     *
+     * Generated from protobuf field <code>.google.cloud.bigquery.datatransfer.v1.ScheduleOptionsV2 schedule_options_v2 = 31;</code>
+     * @return \Google\Cloud\BigQuery\DataTransfer\V1\ScheduleOptionsV2|null
+     */
+    public function getScheduleOptionsV2()
+    {
+        return $this->schedule_options_v2;
+    }
+
+    public function hasScheduleOptionsV2()
+    {
+        return isset($this->schedule_options_v2);
+    }
+
+    public function clearScheduleOptionsV2()
+    {
+        unset($this->schedule_options_v2);
+    }
+
+    /**
+     * Options customizing different types of data transfer schedule.
+     * This field replaces "schedule" and "schedule_options" fields.
+     * ScheduleOptionsV2 cannot be used together with ScheduleOptions/Schedule.
+     *
+     * Generated from protobuf field <code>.google.cloud.bigquery.datatransfer.v1.ScheduleOptionsV2 schedule_options_v2 = 31;</code>
+     * @param \Google\Cloud\BigQuery\DataTransfer\V1\ScheduleOptionsV2 $var
+     * @return $this
+     */
+    public function setScheduleOptionsV2($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\BigQuery\DataTransfer\V1\ScheduleOptionsV2::class);
+        $this->schedule_options_v2 = $var;
+
+        return $this;
+    }
+
+    /**
      * The number of days to look back to automatically refresh the data.
      * For example, if `data_refresh_window_days = 10`, then every day
      * BigQuery reingests data for [today-10, today-1], rather than ingesting data
      * for just [today-1].
-     * Only valid if the data source supports the feature. Set the value to  0
+     * Only valid if the data source supports the feature. Set the value to 0
      * to use the default value.
      *
      * Generated from protobuf field <code>int32 data_refresh_window_days = 12;</code>
@@ -525,7 +583,7 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      * For example, if `data_refresh_window_days = 10`, then every day
      * BigQuery reingests data for [today-10, today-1], rather than ingesting data
      * for just [today-1].
-     * Only valid if the data source supports the feature. Set the value to  0
+     * Only valid if the data source supports the feature. Set the value to 0
      * to use the default value.
      *
      * Generated from protobuf field <code>int32 data_refresh_window_days = 12;</code>
@@ -541,8 +599,8 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Is this config disabled. When set to true, no runs are scheduled
-     * for a given transfer.
+     * Is this config disabled. When set to true, no runs will be scheduled for
+     * this transfer config.
      *
      * Generated from protobuf field <code>bool disabled = 13;</code>
      * @return bool
@@ -553,8 +611,8 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Is this config disabled. When set to true, no runs are scheduled
-     * for a given transfer.
+     * Is this config disabled. When set to true, no runs will be scheduled for
+     * this transfer config.
      *
      * Generated from protobuf field <code>bool disabled = 13;</code>
      * @param bool $var
@@ -722,7 +780,7 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      * Pub/Sub topic where notifications will be sent after transfer runs
      * associated with this transfer config finish.
      * The format for specifying a pubsub topic is:
-     * `projects/{project}/topics/{topic}`
+     * `projects/{project_id}/topics/{topic_id}`
      *
      * Generated from protobuf field <code>string notification_pubsub_topic = 15;</code>
      * @return string
@@ -736,7 +794,7 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
      * Pub/Sub topic where notifications will be sent after transfer runs
      * associated with this transfer config finish.
      * The format for specifying a pubsub topic is:
-     * `projects/{project}/topics/{topic}`
+     * `projects/{project_id}/topics/{topic_id}`
      *
      * Generated from protobuf field <code>string notification_pubsub_topic = 15;</code>
      * @param string $var
@@ -868,6 +926,44 @@ class TransferConfig extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\BigQuery\DataTransfer\V1\EncryptionConfiguration::class);
         $this->encryption_configuration = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Error code with detailed information about reason of the
+     * latest config failure.
+     *
+     * Generated from protobuf field <code>.google.rpc.Status error = 32 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return \Google\Rpc\Status|null
+     */
+    public function getError()
+    {
+        return $this->error;
+    }
+
+    public function hasError()
+    {
+        return isset($this->error);
+    }
+
+    public function clearError()
+    {
+        unset($this->error);
+    }
+
+    /**
+     * Output only. Error code with detailed information about reason of the
+     * latest config failure.
+     *
+     * Generated from protobuf field <code>.google.rpc.Status error = 32 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param \Google\Rpc\Status $var
+     * @return $this
+     */
+    public function setError($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Rpc\Status::class);
+        $this->error = $var;
 
         return $this;
     }

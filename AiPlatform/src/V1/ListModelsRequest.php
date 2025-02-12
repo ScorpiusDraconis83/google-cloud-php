@@ -22,7 +22,7 @@ class ListModelsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * An expression for filtering the results of the request. For field names
      * both snake_case and camelCase are supported.
@@ -34,20 +34,22 @@ class ListModelsRequest extends \Google\Protobuf\Internal\Message
      *     * `labels.key=value` - key:value equality
      *     * `labels.key:* or labels:key - key existence
      *     * A key including a space must be quoted. `labels."a key"`.
+     *   * `base_model_name` only supports =
      * Some examples:
      *   * `model=1234`
      *   * `displayName="myDisplayName"`
      *   * `labels.myKey="myValue"`
+     *   * `baseModelName="text-bison"`
      *
      * Generated from protobuf field <code>string filter = 2;</code>
      */
-    private $filter = '';
+    protected $filter = '';
     /**
      * The standard list page size.
      *
      * Generated from protobuf field <code>int32 page_size = 3;</code>
      */
-    private $page_size = 0;
+    protected $page_size = 0;
     /**
      * The standard list page token.
      * Typically obtained via
@@ -58,13 +60,13 @@ class ListModelsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string page_token = 4;</code>
      */
-    private $page_token = '';
+    protected $page_token = '';
     /**
      * Mask specifying which fields to read.
      *
      * Generated from protobuf field <code>.google.protobuf.FieldMask read_mask = 5;</code>
      */
-    private $read_mask = null;
+    protected $read_mask = null;
     /**
      * A comma-separated list of fields to order by, sorted in ascending order.
      * Use "desc" after a field name for descending.
@@ -76,7 +78,7 @@ class ListModelsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string order_by = 6;</code>
      */
-    private $order_by = '';
+    protected $order_by = '';
 
     /**
      * @param string $parent Required. The resource name of the Location to list the Models from.
@@ -113,10 +115,12 @@ class ListModelsRequest extends \Google\Protobuf\Internal\Message
      *               * `labels.key=value` - key:value equality
      *               * `labels.key:* or labels:key - key existence
      *               * A key including a space must be quoted. `labels."a key"`.
+     *             * `base_model_name` only supports =
      *           Some examples:
      *             * `model=1234`
      *             * `displayName="myDisplayName"`
      *             * `labels.myKey="myValue"`
+     *             * `baseModelName="text-bison"`
      *     @type int $page_size
      *           The standard list page size.
      *     @type string $page_token
@@ -182,10 +186,12 @@ class ListModelsRequest extends \Google\Protobuf\Internal\Message
      *     * `labels.key=value` - key:value equality
      *     * `labels.key:* or labels:key - key existence
      *     * A key including a space must be quoted. `labels."a key"`.
+     *   * `base_model_name` only supports =
      * Some examples:
      *   * `model=1234`
      *   * `displayName="myDisplayName"`
      *   * `labels.myKey="myValue"`
+     *   * `baseModelName="text-bison"`
      *
      * Generated from protobuf field <code>string filter = 2;</code>
      * @return string
@@ -206,10 +212,12 @@ class ListModelsRequest extends \Google\Protobuf\Internal\Message
      *     * `labels.key=value` - key:value equality
      *     * `labels.key:* or labels:key - key existence
      *     * A key including a space must be quoted. `labels."a key"`.
+     *   * `base_model_name` only supports =
      * Some examples:
      *   * `model=1234`
      *   * `displayName="myDisplayName"`
      *   * `labels.myKey="myValue"`
+     *   * `baseModelName="text-bison"`
      *
      * Generated from protobuf field <code>string filter = 2;</code>
      * @param string $var

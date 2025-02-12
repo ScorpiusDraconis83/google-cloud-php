@@ -20,32 +20,40 @@ class SqlInstancesStartExternalSyncRequest extends \Google\Protobuf\Internal\Mes
      *
      * Generated from protobuf field <code>string instance = 1;</code>
      */
-    private $instance = '';
+    protected $instance = '';
     /**
      * ID of the project that contains the instance.
      *
      * Generated from protobuf field <code>string project = 2;</code>
      */
-    private $project = '';
+    protected $project = '';
     /**
      * External sync mode.
      *
      * Generated from protobuf field <code>.google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.ExternalSyncMode sync_mode = 3;</code>
      */
-    private $sync_mode = 0;
+    protected $sync_mode = 0;
     /**
      * Whether to skip the verification step (VESS).
      *
      * Generated from protobuf field <code>bool skip_verification = 4;</code>
      */
-    private $skip_verification = false;
+    protected $skip_verification = false;
     /**
      * Optional. Parallel level for initial data sync. Currently only applicable
      * for MySQL.
      *
      * Generated from protobuf field <code>.google.cloud.sql.v1.ExternalSyncParallelLevel sync_parallel_level = 7 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $sync_parallel_level = 0;
+    protected $sync_parallel_level = 0;
+    /**
+     * Optional. MigrationType configures the migration to use physical files or
+     * logical dump files. If not set, then the logical dump file configuration is
+     * used. Valid values are `LOGICAL` or `PHYSICAL`. Only applicable to MySQL.
+     *
+     * Generated from protobuf field <code>.google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.MigrationType migration_type = 8 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $migration_type = 0;
     protected $sync_config;
 
     /**
@@ -67,6 +75,10 @@ class SqlInstancesStartExternalSyncRequest extends \Google\Protobuf\Internal\Mes
      *     @type int $sync_parallel_level
      *           Optional. Parallel level for initial data sync. Currently only applicable
      *           for MySQL.
+     *     @type int $migration_type
+     *           Optional. MigrationType configures the migration to use physical files or
+     *           logical dump files. If not set, then the logical dump file configuration is
+     *           used. Valid values are `LOGICAL` or `PHYSICAL`. Only applicable to MySQL.
      * }
      */
     public function __construct($data = NULL) {
@@ -233,6 +245,36 @@ class SqlInstancesStartExternalSyncRequest extends \Google\Protobuf\Internal\Mes
     {
         GPBUtil::checkEnum($var, \Google\Cloud\Sql\V1\ExternalSyncParallelLevel::class);
         $this->sync_parallel_level = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. MigrationType configures the migration to use physical files or
+     * logical dump files. If not set, then the logical dump file configuration is
+     * used. Valid values are `LOGICAL` or `PHYSICAL`. Only applicable to MySQL.
+     *
+     * Generated from protobuf field <code>.google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.MigrationType migration_type = 8 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return int
+     */
+    public function getMigrationType()
+    {
+        return $this->migration_type;
+    }
+
+    /**
+     * Optional. MigrationType configures the migration to use physical files or
+     * logical dump files. If not set, then the logical dump file configuration is
+     * used. Valid values are `LOGICAL` or `PHYSICAL`. Only applicable to MySQL.
+     *
+     * Generated from protobuf field <code>.google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.MigrationType migration_type = 8 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param int $var
+     * @return $this
+     */
+    public function setMigrationType($var)
+    {
+        GPBUtil::checkEnum($var, \Google\Cloud\Sql\V1\SqlInstancesVerifyExternalSyncSettingsRequest\MigrationType::class);
+        $this->migration_type = $var;
 
         return $this;
     }

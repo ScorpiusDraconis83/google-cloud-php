@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\BareMetalSolution\V2\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -92,8 +91,10 @@ use Google\Cloud\BareMetalSolution\V2\VolumeSnapshot;
 use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\Location;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Performs management operations on Bare Metal Solution servers.
@@ -113,52 +114,52 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createNfsShareAsync(CreateNfsShareRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createProvisioningConfigAsync(CreateProvisioningConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createSSHKeyAsync(CreateSSHKeyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createVolumeSnapshotAsync(CreateVolumeSnapshotRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteNfsShareAsync(DeleteNfsShareRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteSSHKeyAsync(DeleteSSHKeyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteVolumeSnapshotAsync(DeleteVolumeSnapshotRequest $request, array $optionalArgs = [])
- * @method PromiseInterface detachLunAsync(DetachLunRequest $request, array $optionalArgs = [])
- * @method PromiseInterface disableInteractiveSerialConsoleAsync(DisableInteractiveSerialConsoleRequest $request, array $optionalArgs = [])
- * @method PromiseInterface enableInteractiveSerialConsoleAsync(EnableInteractiveSerialConsoleRequest $request, array $optionalArgs = [])
- * @method PromiseInterface evictLunAsync(EvictLunRequest $request, array $optionalArgs = [])
- * @method PromiseInterface evictVolumeAsync(EvictVolumeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getInstanceAsync(GetInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLunAsync(GetLunRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getNetworkAsync(GetNetworkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getNfsShareAsync(GetNfsShareRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getProvisioningConfigAsync(GetProvisioningConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getVolumeAsync(GetVolumeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getVolumeSnapshotAsync(GetVolumeSnapshotRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listInstancesAsync(ListInstancesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLunsAsync(ListLunsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listNetworkUsageAsync(ListNetworkUsageRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listNetworksAsync(ListNetworksRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listNfsSharesAsync(ListNfsSharesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listOSImagesAsync(ListOSImagesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listProvisioningQuotasAsync(ListProvisioningQuotasRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listSSHKeysAsync(ListSSHKeysRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listVolumeSnapshotsAsync(ListVolumeSnapshotsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listVolumesAsync(ListVolumesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface renameInstanceAsync(RenameInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface renameNetworkAsync(RenameNetworkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface renameNfsShareAsync(RenameNfsShareRequest $request, array $optionalArgs = [])
- * @method PromiseInterface renameVolumeAsync(RenameVolumeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface resetInstanceAsync(ResetInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface resizeVolumeAsync(ResizeVolumeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface restoreVolumeSnapshotAsync(RestoreVolumeSnapshotRequest $request, array $optionalArgs = [])
- * @method PromiseInterface startInstanceAsync(StartInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface stopInstanceAsync(StopInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface submitProvisioningConfigAsync(SubmitProvisioningConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateInstanceAsync(UpdateInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateNetworkAsync(UpdateNetworkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateNfsShareAsync(UpdateNfsShareRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateProvisioningConfigAsync(UpdateProvisioningConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateVolumeAsync(UpdateVolumeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createNfsShareAsync(CreateNfsShareRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ProvisioningConfig> createProvisioningConfigAsync(CreateProvisioningConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<SSHKey> createSSHKeyAsync(CreateSSHKeyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<VolumeSnapshot> createVolumeSnapshotAsync(CreateVolumeSnapshotRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteNfsShareAsync(DeleteNfsShareRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteSSHKeyAsync(DeleteSSHKeyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteVolumeSnapshotAsync(DeleteVolumeSnapshotRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> detachLunAsync(DetachLunRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> disableInteractiveSerialConsoleAsync(DisableInteractiveSerialConsoleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> enableInteractiveSerialConsoleAsync(EnableInteractiveSerialConsoleRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> evictLunAsync(EvictLunRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> evictVolumeAsync(EvictVolumeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Instance> getInstanceAsync(GetInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Lun> getLunAsync(GetLunRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Network> getNetworkAsync(GetNetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<NfsShare> getNfsShareAsync(GetNfsShareRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ProvisioningConfig> getProvisioningConfigAsync(GetProvisioningConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Volume> getVolumeAsync(GetVolumeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<VolumeSnapshot> getVolumeSnapshotAsync(GetVolumeSnapshotRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listInstancesAsync(ListInstancesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLunsAsync(ListLunsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ListNetworkUsageResponse> listNetworkUsageAsync(ListNetworkUsageRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listNetworksAsync(ListNetworksRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listNfsSharesAsync(ListNfsSharesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listOSImagesAsync(ListOSImagesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listProvisioningQuotasAsync(ListProvisioningQuotasRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listSSHKeysAsync(ListSSHKeysRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listVolumeSnapshotsAsync(ListVolumeSnapshotsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listVolumesAsync(ListVolumesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Instance> renameInstanceAsync(RenameInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Network> renameNetworkAsync(RenameNetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<NfsShare> renameNfsShareAsync(RenameNfsShareRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Volume> renameVolumeAsync(RenameVolumeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> resetInstanceAsync(ResetInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> resizeVolumeAsync(ResizeVolumeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> restoreVolumeSnapshotAsync(RestoreVolumeSnapshotRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> startInstanceAsync(StartInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> stopInstanceAsync(StopInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<SubmitProvisioningConfigResponse> submitProvisioningConfigAsync(SubmitProvisioningConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateInstanceAsync(UpdateInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateNetworkAsync(UpdateNetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateNfsShareAsync(UpdateNfsShareRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ProvisioningConfig> updateProvisioningConfigAsync(UpdateProvisioningConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateVolumeAsync(UpdateVolumeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
  */
 final class BareMetalSolutionClient
 {
@@ -185,9 +186,7 @@ final class BareMetalSolutionClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private $operationsClient;
 
@@ -233,10 +232,31 @@ final class BareMetalSolutionClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -287,8 +307,11 @@ final class BareMetalSolutionClient
      *
      * @return string The formatted interconnect_attachment resource.
      */
-    public static function interconnectAttachmentName(string $project, string $region, string $interconnectAttachment): string
-    {
+    public static function interconnectAttachmentName(
+        string $project,
+        string $region,
+        string $interconnectAttachment
+    ): string {
         return self::getPathTemplate('interconnectAttachment')->render([
             'project' => $project,
             'region' => $region,
@@ -420,8 +443,11 @@ final class BareMetalSolutionClient
      *
      * @return string The formatted server_network_template resource.
      */
-    public static function serverNetworkTemplateName(string $project, string $location, string $serverNetworkTemplate): string
-    {
+    public static function serverNetworkTemplateName(
+        string $project,
+        string $location,
+        string $serverNetworkTemplate
+    ): string {
         return self::getPathTemplate('serverNetworkTemplate')->render([
             'project' => $project,
             'location' => $location,
@@ -497,8 +523,12 @@ final class BareMetalSolutionClient
      *
      * @return string The formatted volume_snapshot resource.
      */
-    public static function volumeSnapshotName(string $project, string $location, string $volume, string $snapshot): string
-    {
+    public static function volumeSnapshotName(
+        string $project,
+        string $location,
+        string $volume,
+        string $snapshot
+    ): string {
         return self::getPathTemplate('volumeSnapshot')->render([
             'project' => $project,
             'location' => $location,
@@ -532,14 +562,14 @@ final class BareMetalSolutionClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -561,6 +591,12 @@ final class BareMetalSolutionClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -594,6 +630,9 @@ final class BareMetalSolutionClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -664,8 +703,10 @@ final class BareMetalSolutionClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createProvisioningConfig(CreateProvisioningConfigRequest $request, array $callOptions = []): ProvisioningConfig
-    {
+    public function createProvisioningConfig(
+        CreateProvisioningConfigRequest $request,
+        array $callOptions = []
+    ): ProvisioningConfig {
         return $this->startApiCall('CreateProvisioningConfig', $request, $callOptions)->wait();
     }
 
@@ -848,8 +889,10 @@ final class BareMetalSolutionClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function disableInteractiveSerialConsole(DisableInteractiveSerialConsoleRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function disableInteractiveSerialConsole(
+        DisableInteractiveSerialConsoleRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('DisableInteractiveSerialConsole', $request, $callOptions)->wait();
     }
 
@@ -875,8 +918,10 @@ final class BareMetalSolutionClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function enableInteractiveSerialConsole(EnableInteractiveSerialConsoleRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function enableInteractiveSerialConsole(
+        EnableInteractiveSerialConsoleRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('EnableInteractiveSerialConsole', $request, $callOptions)->wait();
     }
 
@@ -1060,8 +1105,10 @@ final class BareMetalSolutionClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getProvisioningConfig(GetProvisioningConfigRequest $request, array $callOptions = []): ProvisioningConfig
-    {
+    public function getProvisioningConfig(
+        GetProvisioningConfigRequest $request,
+        array $callOptions = []
+    ): ProvisioningConfig {
         return $this->startApiCall('GetProvisioningConfig', $request, $callOptions)->wait();
     }
 
@@ -1192,8 +1239,10 @@ final class BareMetalSolutionClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listNetworkUsage(ListNetworkUsageRequest $request, array $callOptions = []): ListNetworkUsageResponse
-    {
+    public function listNetworkUsage(
+        ListNetworkUsageRequest $request,
+        array $callOptions = []
+    ): ListNetworkUsageResponse {
         return $this->startApiCall('ListNetworkUsage', $request, $callOptions)->wait();
     }
 
@@ -1297,8 +1346,10 @@ final class BareMetalSolutionClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listProvisioningQuotas(ListProvisioningQuotasRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listProvisioningQuotas(
+        ListProvisioningQuotasRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListProvisioningQuotas', $request, $callOptions);
     }
 
@@ -1568,8 +1619,10 @@ final class BareMetalSolutionClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function restoreVolumeSnapshot(RestoreVolumeSnapshotRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function restoreVolumeSnapshot(
+        RestoreVolumeSnapshotRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('RestoreVolumeSnapshot', $request, $callOptions)->wait();
     }
 
@@ -1647,8 +1700,10 @@ final class BareMetalSolutionClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function submitProvisioningConfig(SubmitProvisioningConfigRequest $request, array $callOptions = []): SubmitProvisioningConfigResponse
-    {
+    public function submitProvisioningConfig(
+        SubmitProvisioningConfigRequest $request,
+        array $callOptions = []
+    ): SubmitProvisioningConfigResponse {
         return $this->startApiCall('SubmitProvisioningConfig', $request, $callOptions)->wait();
     }
 
@@ -1752,8 +1807,10 @@ final class BareMetalSolutionClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateProvisioningConfig(UpdateProvisioningConfigRequest $request, array $callOptions = []): ProvisioningConfig
-    {
+    public function updateProvisioningConfig(
+        UpdateProvisioningConfigRequest $request,
+        array $callOptions = []
+    ): ProvisioningConfig {
         return $this->startApiCall('UpdateProvisioningConfig', $request, $callOptions)->wait();
     }
 

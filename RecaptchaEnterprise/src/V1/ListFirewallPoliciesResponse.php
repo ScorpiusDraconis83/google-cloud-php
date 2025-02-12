@@ -9,7 +9,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Response to request to list firewall policies belonging to a key.
+ * Response to request to list firewall policies belonging to a project.
  *
  * Generated from protobuf message <code>google.cloud.recaptchaenterprise.v1.ListFirewallPoliciesResponse</code>
  */
@@ -27,7 +27,7 @@ class ListFirewallPoliciesResponse extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string next_page_token = 2;</code>
      */
-    private $next_page_token = '';
+    protected $next_page_token = '';
 
     /**
      * Constructor.

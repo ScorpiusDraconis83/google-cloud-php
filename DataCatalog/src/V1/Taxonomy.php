@@ -35,12 +35,12 @@ use Google\Protobuf\Internal\GPBUtil;
 class Taxonomy extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Output only. Resource name of this taxonomy in URL format.
+     * Identifier. Resource name of this taxonomy in URL format.
      * Note: Policy tag manager generates unique taxonomy IDs.
      *
-     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = IDENTIFIER];</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Required. User-defined name of this taxonomy.
      * The name can't start or end with spaces, must contain only Unicode letters,
@@ -50,7 +50,7 @@ class Taxonomy extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string display_name = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $display_name = '';
+    protected $display_name = '';
     /**
      * Optional. Description of this taxonomy. If not set, defaults to empty.
      * The description must contain only Unicode characters, tabs, newlines,
@@ -59,19 +59,19 @@ class Taxonomy extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string description = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $description = '';
+    protected $description = '';
     /**
      * Output only. Number of policy tags in this taxonomy.
      *
      * Generated from protobuf field <code>int32 policy_tag_count = 4 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $policy_tag_count = 0;
+    protected $policy_tag_count = 0;
     /**
      * Output only. Creation and modification timestamps of this taxonomy.
      *
      * Generated from protobuf field <code>.google.cloud.datacatalog.v1.SystemTimestamps taxonomy_timestamps = 5 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $taxonomy_timestamps = null;
+    protected $taxonomy_timestamps = null;
     /**
      * Optional. A list of policy types that are activated for this taxonomy. If
      * not set, defaults to an empty list.
@@ -86,7 +86,7 @@ class Taxonomy extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.datacatalog.v1.Taxonomy.Service service = 7 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $service = null;
+    protected $service = null;
 
     /**
      * Constructor.
@@ -95,7 +95,7 @@ class Taxonomy extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type string $name
-     *           Output only. Resource name of this taxonomy in URL format.
+     *           Identifier. Resource name of this taxonomy in URL format.
      *           Note: Policy tag manager generates unique taxonomy IDs.
      *     @type string $display_name
      *           Required. User-defined name of this taxonomy.
@@ -127,10 +127,10 @@ class Taxonomy extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Output only. Resource name of this taxonomy in URL format.
+     * Identifier. Resource name of this taxonomy in URL format.
      * Note: Policy tag manager generates unique taxonomy IDs.
      *
-     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = IDENTIFIER];</code>
      * @return string
      */
     public function getName()
@@ -139,10 +139,10 @@ class Taxonomy extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Output only. Resource name of this taxonomy in URL format.
+     * Identifier. Resource name of this taxonomy in URL format.
      * Note: Policy tag manager generates unique taxonomy IDs.
      *
-     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = IDENTIFIER];</code>
      * @param string $var
      * @return $this
      */

@@ -41,7 +41,7 @@ class ListOperationsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string parent = 4;</code>
      */
-    private $parent = '';
+    protected $parent = '';
 
     /**
      * @param string $projectId Deprecated. The Google Developers Console [project ID or project
@@ -61,6 +61,21 @@ class ListOperationsRequest extends \Google\Protobuf\Internal\Message
         return (new self())
             ->setProjectId($projectId)
             ->setZone($zone);
+    }
+
+    /**
+     * @param string $parent The parent (project and location) where the operations will be listed.
+     *                       Specified in the format `projects/&#42;/locations/*`.
+     *                       Location "-" matches all zones and all regions.
+     *
+     * @return \Google\Cloud\Container\V1\ListOperationsRequest
+     *
+     * @experimental
+     */
+    public static function buildFromParent(string $parent): self
+    {
+        return (new self())
+            ->setParent($parent);
     }
 
     /**

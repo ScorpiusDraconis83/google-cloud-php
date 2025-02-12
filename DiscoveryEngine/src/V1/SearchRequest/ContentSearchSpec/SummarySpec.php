@@ -20,7 +20,11 @@ class SummarySpec extends \Google\Protobuf\Internal\Message
      * The number of top results to generate the summary from. If the number
      * of results returned is less than `summaryResultCount`, the summary is
      * generated from all of the results.
-     * At most five results can be used to generate a summary.
+     * At most 10 results for documents mode, or 50 for chunks mode, can be
+     * used to generate a summary. The chunks mode is used when
+     * [SearchRequest.ContentSearchSpec.search_result_mode][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.search_result_mode]
+     * is set to
+     * [CHUNKS][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SearchResultMode.CHUNKS].
      *
      * Generated from protobuf field <code>int32 summary_result_count = 1;</code>
      */
@@ -73,12 +77,63 @@ class SummarySpec extends \Google\Protobuf\Internal\Message
      */
     protected $ignore_non_summary_seeking_query = false;
     /**
+     * Specifies whether to filter out queries that have low relevance. The
+     * default value is `false`.
+     * If this field is set to `false`, all search results are used regardless
+     * of relevance to generate answers. If set to `true`, only queries with
+     * high relevance search results will generate answers.
+     *
+     * Generated from protobuf field <code>bool ignore_low_relevant_content = 9;</code>
+     */
+    protected $ignore_low_relevant_content = false;
+    /**
+     * Optional. Specifies whether to filter out jail-breaking queries. The
+     * default value is `false`.
+     * Google employs search-query classification to detect jail-breaking
+     * queries. No summary is returned if the search query is classified as a
+     * jail-breaking query. A user might add instructions to the query to
+     * change the tone, style, language, content of the answer, or ask the
+     * model to act as a different entity, e.g. "Reply in the tone of a
+     * competing company's CEO". If this field is set to `true`, we skip
+     * generating summaries for jail-breaking queries and return fallback
+     * messages instead.
+     *
+     * Generated from protobuf field <code>bool ignore_jail_breaking_query = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $ignore_jail_breaking_query = false;
+    /**
+     * If specified, the spec will be used to modify the prompt provided to
+     * the LLM.
+     *
+     * Generated from protobuf field <code>.google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.ModelPromptSpec model_prompt_spec = 5;</code>
+     */
+    protected $model_prompt_spec = null;
+    /**
      * Language code for Summary. Use language tags defined by
-     * [BCP47][https://www.rfc-editor.org/rfc/bcp/bcp47.txt].
+     * [BCP47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt).
+     * Note: This is an experimental feature.
      *
      * Generated from protobuf field <code>string language_code = 6;</code>
      */
     protected $language_code = '';
+    /**
+     * If specified, the spec will be used to modify the model specification
+     * provided to the LLM.
+     *
+     * Generated from protobuf field <code>.google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.ModelSpec model_spec = 7;</code>
+     */
+    protected $model_spec = null;
+    /**
+     * If true, answer will be generated from most relevant chunks from top
+     * search results. This feature will improve summary quality.
+     * Note that with this feature enabled, not all top search results
+     * will be referenced and included in the reference list, so the citation
+     * source index only points to the search results listed in the reference
+     * list.
+     *
+     * Generated from protobuf field <code>bool use_semantic_chunks = 8;</code>
+     */
+    protected $use_semantic_chunks = false;
 
     /**
      * Constructor.
@@ -90,7 +145,11 @@ class SummarySpec extends \Google\Protobuf\Internal\Message
      *           The number of top results to generate the summary from. If the number
      *           of results returned is less than `summaryResultCount`, the summary is
      *           generated from all of the results.
-     *           At most five results can be used to generate a summary.
+     *           At most 10 results for documents mode, or 50 for chunks mode, can be
+     *           used to generate a summary. The chunks mode is used when
+     *           [SearchRequest.ContentSearchSpec.search_result_mode][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.search_result_mode]
+     *           is set to
+     *           [CHUNKS][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SearchResultMode.CHUNKS].
      *     @type bool $include_citations
      *           Specifies whether to include citations in the summary. The default
      *           value is `false`.
@@ -126,9 +185,40 @@ class SummarySpec extends \Google\Protobuf\Internal\Message
      *           navigational queries. If this field is set to `true`, we skip
      *           generating summaries for non-summary seeking queries and return
      *           fallback messages instead.
+     *     @type bool $ignore_low_relevant_content
+     *           Specifies whether to filter out queries that have low relevance. The
+     *           default value is `false`.
+     *           If this field is set to `false`, all search results are used regardless
+     *           of relevance to generate answers. If set to `true`, only queries with
+     *           high relevance search results will generate answers.
+     *     @type bool $ignore_jail_breaking_query
+     *           Optional. Specifies whether to filter out jail-breaking queries. The
+     *           default value is `false`.
+     *           Google employs search-query classification to detect jail-breaking
+     *           queries. No summary is returned if the search query is classified as a
+     *           jail-breaking query. A user might add instructions to the query to
+     *           change the tone, style, language, content of the answer, or ask the
+     *           model to act as a different entity, e.g. "Reply in the tone of a
+     *           competing company's CEO". If this field is set to `true`, we skip
+     *           generating summaries for jail-breaking queries and return fallback
+     *           messages instead.
+     *     @type \Google\Cloud\DiscoveryEngine\V1\SearchRequest\ContentSearchSpec\SummarySpec\ModelPromptSpec $model_prompt_spec
+     *           If specified, the spec will be used to modify the prompt provided to
+     *           the LLM.
      *     @type string $language_code
      *           Language code for Summary. Use language tags defined by
-     *           [BCP47][https://www.rfc-editor.org/rfc/bcp/bcp47.txt].
+     *           [BCP47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt).
+     *           Note: This is an experimental feature.
+     *     @type \Google\Cloud\DiscoveryEngine\V1\SearchRequest\ContentSearchSpec\SummarySpec\ModelSpec $model_spec
+     *           If specified, the spec will be used to modify the model specification
+     *           provided to the LLM.
+     *     @type bool $use_semantic_chunks
+     *           If true, answer will be generated from most relevant chunks from top
+     *           search results. This feature will improve summary quality.
+     *           Note that with this feature enabled, not all top search results
+     *           will be referenced and included in the reference list, so the citation
+     *           source index only points to the search results listed in the reference
+     *           list.
      * }
      */
     public function __construct($data = NULL) {
@@ -140,7 +230,11 @@ class SummarySpec extends \Google\Protobuf\Internal\Message
      * The number of top results to generate the summary from. If the number
      * of results returned is less than `summaryResultCount`, the summary is
      * generated from all of the results.
-     * At most five results can be used to generate a summary.
+     * At most 10 results for documents mode, or 50 for chunks mode, can be
+     * used to generate a summary. The chunks mode is used when
+     * [SearchRequest.ContentSearchSpec.search_result_mode][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.search_result_mode]
+     * is set to
+     * [CHUNKS][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SearchResultMode.CHUNKS].
      *
      * Generated from protobuf field <code>int32 summary_result_count = 1;</code>
      * @return int
@@ -154,7 +248,11 @@ class SummarySpec extends \Google\Protobuf\Internal\Message
      * The number of top results to generate the summary from. If the number
      * of results returned is less than `summaryResultCount`, the summary is
      * generated from all of the results.
-     * At most five results can be used to generate a summary.
+     * At most 10 results for documents mode, or 50 for chunks mode, can be
+     * used to generate a summary. The chunks mode is used when
+     * [SearchRequest.ContentSearchSpec.search_result_mode][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.search_result_mode]
+     * is set to
+     * [CHUNKS][google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SearchResultMode.CHUNKS].
      *
      * Generated from protobuf field <code>int32 summary_result_count = 1;</code>
      * @param int $var
@@ -305,8 +403,125 @@ class SummarySpec extends \Google\Protobuf\Internal\Message
     }
 
     /**
+     * Specifies whether to filter out queries that have low relevance. The
+     * default value is `false`.
+     * If this field is set to `false`, all search results are used regardless
+     * of relevance to generate answers. If set to `true`, only queries with
+     * high relevance search results will generate answers.
+     *
+     * Generated from protobuf field <code>bool ignore_low_relevant_content = 9;</code>
+     * @return bool
+     */
+    public function getIgnoreLowRelevantContent()
+    {
+        return $this->ignore_low_relevant_content;
+    }
+
+    /**
+     * Specifies whether to filter out queries that have low relevance. The
+     * default value is `false`.
+     * If this field is set to `false`, all search results are used regardless
+     * of relevance to generate answers. If set to `true`, only queries with
+     * high relevance search results will generate answers.
+     *
+     * Generated from protobuf field <code>bool ignore_low_relevant_content = 9;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setIgnoreLowRelevantContent($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->ignore_low_relevant_content = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Specifies whether to filter out jail-breaking queries. The
+     * default value is `false`.
+     * Google employs search-query classification to detect jail-breaking
+     * queries. No summary is returned if the search query is classified as a
+     * jail-breaking query. A user might add instructions to the query to
+     * change the tone, style, language, content of the answer, or ask the
+     * model to act as a different entity, e.g. "Reply in the tone of a
+     * competing company's CEO". If this field is set to `true`, we skip
+     * generating summaries for jail-breaking queries and return fallback
+     * messages instead.
+     *
+     * Generated from protobuf field <code>bool ignore_jail_breaking_query = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return bool
+     */
+    public function getIgnoreJailBreakingQuery()
+    {
+        return $this->ignore_jail_breaking_query;
+    }
+
+    /**
+     * Optional. Specifies whether to filter out jail-breaking queries. The
+     * default value is `false`.
+     * Google employs search-query classification to detect jail-breaking
+     * queries. No summary is returned if the search query is classified as a
+     * jail-breaking query. A user might add instructions to the query to
+     * change the tone, style, language, content of the answer, or ask the
+     * model to act as a different entity, e.g. "Reply in the tone of a
+     * competing company's CEO". If this field is set to `true`, we skip
+     * generating summaries for jail-breaking queries and return fallback
+     * messages instead.
+     *
+     * Generated from protobuf field <code>bool ignore_jail_breaking_query = 10 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setIgnoreJailBreakingQuery($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->ignore_jail_breaking_query = $var;
+
+        return $this;
+    }
+
+    /**
+     * If specified, the spec will be used to modify the prompt provided to
+     * the LLM.
+     *
+     * Generated from protobuf field <code>.google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.ModelPromptSpec model_prompt_spec = 5;</code>
+     * @return \Google\Cloud\DiscoveryEngine\V1\SearchRequest\ContentSearchSpec\SummarySpec\ModelPromptSpec|null
+     */
+    public function getModelPromptSpec()
+    {
+        return $this->model_prompt_spec;
+    }
+
+    public function hasModelPromptSpec()
+    {
+        return isset($this->model_prompt_spec);
+    }
+
+    public function clearModelPromptSpec()
+    {
+        unset($this->model_prompt_spec);
+    }
+
+    /**
+     * If specified, the spec will be used to modify the prompt provided to
+     * the LLM.
+     *
+     * Generated from protobuf field <code>.google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.ModelPromptSpec model_prompt_spec = 5;</code>
+     * @param \Google\Cloud\DiscoveryEngine\V1\SearchRequest\ContentSearchSpec\SummarySpec\ModelPromptSpec $var
+     * @return $this
+     */
+    public function setModelPromptSpec($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\DiscoveryEngine\V1\SearchRequest\ContentSearchSpec\SummarySpec\ModelPromptSpec::class);
+        $this->model_prompt_spec = $var;
+
+        return $this;
+    }
+
+    /**
      * Language code for Summary. Use language tags defined by
-     * [BCP47][https://www.rfc-editor.org/rfc/bcp/bcp47.txt].
+     * [BCP47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt).
+     * Note: This is an experimental feature.
      *
      * Generated from protobuf field <code>string language_code = 6;</code>
      * @return string
@@ -318,7 +533,8 @@ class SummarySpec extends \Google\Protobuf\Internal\Message
 
     /**
      * Language code for Summary. Use language tags defined by
-     * [BCP47][https://www.rfc-editor.org/rfc/bcp/bcp47.txt].
+     * [BCP47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt).
+     * Note: This is an experimental feature.
      *
      * Generated from protobuf field <code>string language_code = 6;</code>
      * @param string $var
@@ -328,6 +544,80 @@ class SummarySpec extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->language_code = $var;
+
+        return $this;
+    }
+
+    /**
+     * If specified, the spec will be used to modify the model specification
+     * provided to the LLM.
+     *
+     * Generated from protobuf field <code>.google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.ModelSpec model_spec = 7;</code>
+     * @return \Google\Cloud\DiscoveryEngine\V1\SearchRequest\ContentSearchSpec\SummarySpec\ModelSpec|null
+     */
+    public function getModelSpec()
+    {
+        return $this->model_spec;
+    }
+
+    public function hasModelSpec()
+    {
+        return isset($this->model_spec);
+    }
+
+    public function clearModelSpec()
+    {
+        unset($this->model_spec);
+    }
+
+    /**
+     * If specified, the spec will be used to modify the model specification
+     * provided to the LLM.
+     *
+     * Generated from protobuf field <code>.google.cloud.discoveryengine.v1.SearchRequest.ContentSearchSpec.SummarySpec.ModelSpec model_spec = 7;</code>
+     * @param \Google\Cloud\DiscoveryEngine\V1\SearchRequest\ContentSearchSpec\SummarySpec\ModelSpec $var
+     * @return $this
+     */
+    public function setModelSpec($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\DiscoveryEngine\V1\SearchRequest\ContentSearchSpec\SummarySpec\ModelSpec::class);
+        $this->model_spec = $var;
+
+        return $this;
+    }
+
+    /**
+     * If true, answer will be generated from most relevant chunks from top
+     * search results. This feature will improve summary quality.
+     * Note that with this feature enabled, not all top search results
+     * will be referenced and included in the reference list, so the citation
+     * source index only points to the search results listed in the reference
+     * list.
+     *
+     * Generated from protobuf field <code>bool use_semantic_chunks = 8;</code>
+     * @return bool
+     */
+    public function getUseSemanticChunks()
+    {
+        return $this->use_semantic_chunks;
+    }
+
+    /**
+     * If true, answer will be generated from most relevant chunks from top
+     * search results. This feature will improve summary quality.
+     * Note that with this feature enabled, not all top search results
+     * will be referenced and included in the reference list, so the citation
+     * source index only points to the search results listed in the reference
+     * list.
+     *
+     * Generated from protobuf field <code>bool use_semantic_chunks = 8;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setUseSemanticChunks($var)
+    {
+        GPBUtil::checkBool($var);
+        $this->use_semantic_chunks = $var;
 
         return $this;
     }

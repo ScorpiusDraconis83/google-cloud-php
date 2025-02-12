@@ -32,9 +32,12 @@ class SkaffoldModules extends \Google\Protobuf\Internal\Message
      *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $configs
      *           Optional. The Skaffold Config modules to use from the specified source.
      *     @type \Google\Cloud\Deploy\V1\SkaffoldModules\SkaffoldGitSource $git
-     *           Remote git repository containing the Skaffold Config modules.
+     *           Optional. Remote git repository containing the Skaffold Config modules.
      *     @type \Google\Cloud\Deploy\V1\SkaffoldModules\SkaffoldGCSSource $google_cloud_storage
-     *           Cloud Storage bucket containing the Skaffold Config modules.
+     *           Optional. Cloud Storage bucket containing the Skaffold Config modules.
+     *     @type \Google\Cloud\Deploy\V1\SkaffoldModules\SkaffoldGCBRepoSource $google_cloud_build_repo
+     *           Optional. Cloud Build V2 repository containing the Skaffold Config
+     *           modules.
      * }
      */
     public function __construct($data = NULL) {
@@ -69,9 +72,9 @@ class SkaffoldModules extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Remote git repository containing the Skaffold Config modules.
+     * Optional. Remote git repository containing the Skaffold Config modules.
      *
-     * Generated from protobuf field <code>.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGitSource git = 2;</code>
+     * Generated from protobuf field <code>.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGitSource git = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @return \Google\Cloud\Deploy\V1\SkaffoldModules\SkaffoldGitSource|null
      */
     public function getGit()
@@ -85,9 +88,9 @@ class SkaffoldModules extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Remote git repository containing the Skaffold Config modules.
+     * Optional. Remote git repository containing the Skaffold Config modules.
      *
-     * Generated from protobuf field <code>.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGitSource git = 2;</code>
+     * Generated from protobuf field <code>.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGitSource git = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @param \Google\Cloud\Deploy\V1\SkaffoldModules\SkaffoldGitSource $var
      * @return $this
      */
@@ -100,9 +103,9 @@ class SkaffoldModules extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Cloud Storage bucket containing the Skaffold Config modules.
+     * Optional. Cloud Storage bucket containing the Skaffold Config modules.
      *
-     * Generated from protobuf field <code>.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCSSource google_cloud_storage = 3;</code>
+     * Generated from protobuf field <code>.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCSSource google_cloud_storage = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @return \Google\Cloud\Deploy\V1\SkaffoldModules\SkaffoldGCSSource|null
      */
     public function getGoogleCloudStorage()
@@ -116,9 +119,9 @@ class SkaffoldModules extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Cloud Storage bucket containing the Skaffold Config modules.
+     * Optional. Cloud Storage bucket containing the Skaffold Config modules.
      *
-     * Generated from protobuf field <code>.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCSSource google_cloud_storage = 3;</code>
+     * Generated from protobuf field <code>.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCSSource google_cloud_storage = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      * @param \Google\Cloud\Deploy\V1\SkaffoldModules\SkaffoldGCSSource $var
      * @return $this
      */
@@ -126,6 +129,39 @@ class SkaffoldModules extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\Deploy\V1\SkaffoldModules\SkaffoldGCSSource::class);
         $this->writeOneof(3, $var);
+
+        return $this;
+    }
+
+    /**
+     * Optional. Cloud Build V2 repository containing the Skaffold Config
+     * modules.
+     *
+     * Generated from protobuf field <code>.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCBRepoSource google_cloud_build_repo = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\Deploy\V1\SkaffoldModules\SkaffoldGCBRepoSource|null
+     */
+    public function getGoogleCloudBuildRepo()
+    {
+        return $this->readOneof(4);
+    }
+
+    public function hasGoogleCloudBuildRepo()
+    {
+        return $this->hasOneof(4);
+    }
+
+    /**
+     * Optional. Cloud Build V2 repository containing the Skaffold Config
+     * modules.
+     *
+     * Generated from protobuf field <code>.google.cloud.deploy.v1.SkaffoldModules.SkaffoldGCBRepoSource google_cloud_build_repo = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\Deploy\V1\SkaffoldModules\SkaffoldGCBRepoSource $var
+     * @return $this
+     */
+    public function setGoogleCloudBuildRepo($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Deploy\V1\SkaffoldModules\SkaffoldGCBRepoSource::class);
+        $this->writeOneof(4, $var);
 
         return $this;
     }

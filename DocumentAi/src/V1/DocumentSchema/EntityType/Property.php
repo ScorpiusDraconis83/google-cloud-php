@@ -21,21 +21,27 @@ class Property extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    private $name = '';
+    protected $name = '';
+    /**
+     * User defined name for the property.
+     *
+     * Generated from protobuf field <code>string display_name = 6;</code>
+     */
+    protected $display_name = '';
     /**
      * A reference to the value type of the property.  This type is subject
      * to the same conventions as the `Entity.base_types` field.
      *
      * Generated from protobuf field <code>string value_type = 2;</code>
      */
-    private $value_type = '';
+    protected $value_type = '';
     /**
      * Occurrence type limits the number of instances an entity type appears
      * in the document.
      *
      * Generated from protobuf field <code>.google.cloud.documentai.v1.DocumentSchema.EntityType.Property.OccurrenceType occurrence_type = 3;</code>
      */
-    private $occurrence_type = 0;
+    protected $occurrence_type = 0;
 
     /**
      * Constructor.
@@ -46,6 +52,8 @@ class Property extends \Google\Protobuf\Internal\Message
      *     @type string $name
      *           The name of the property.  Follows the same guidelines as the
      *           EntityType name.
+     *     @type string $display_name
+     *           User defined name for the property.
      *     @type string $value_type
      *           A reference to the value type of the property.  This type is subject
      *           to the same conventions as the `Entity.base_types` field.
@@ -83,6 +91,32 @@ class Property extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->name = $var;
+
+        return $this;
+    }
+
+    /**
+     * User defined name for the property.
+     *
+     * Generated from protobuf field <code>string display_name = 6;</code>
+     * @return string
+     */
+    public function getDisplayName()
+    {
+        return $this->display_name;
+    }
+
+    /**
+     * User defined name for the property.
+     *
+     * Generated from protobuf field <code>string display_name = 6;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setDisplayName($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->display_name = $var;
 
         return $this;
     }

@@ -34,11 +34,29 @@ class LocationCategory
      */
     const ARGENTINA = 2;
     /**
+     * The infoType is typically used in Armenia.
+     *
+     * Generated from protobuf enum <code>ARMENIA = 51;</code>
+     */
+    const ARMENIA = 51;
+    /**
      * The infoType is typically used in Australia.
      *
      * Generated from protobuf enum <code>AUSTRALIA = 3;</code>
      */
     const AUSTRALIA = 3;
+    /**
+     * The infoType is typically used in Azerbaijan.
+     *
+     * Generated from protobuf enum <code>AZERBAIJAN = 48;</code>
+     */
+    const AZERBAIJAN = 48;
+    /**
+     * The infoType is typically used in Belarus.
+     *
+     * Generated from protobuf enum <code>BELARUS = 50;</code>
+     */
+    const BELARUS = 50;
     /**
      * The infoType is typically used in Belgium.
      *
@@ -148,6 +166,12 @@ class LocationCategory
      */
     const JAPAN = 20;
     /**
+     * The infoType is typically used in Kazakhstan.
+     *
+     * Generated from protobuf enum <code>KAZAKHSTAN = 47;</code>
+     */
+    const KAZAKHSTAN = 47;
+    /**
      * The infoType is typically used in Korea.
      *
      * Generated from protobuf enum <code>KOREA = 21;</code>
@@ -202,6 +226,12 @@ class LocationCategory
      */
     const PORTUGAL = 28;
     /**
+     * The infoType is typically used in Russia.
+     *
+     * Generated from protobuf enum <code>RUSSIA = 44;</code>
+     */
+    const RUSSIA = 44;
+    /**
      * The infoType is typically used in Singapore.
      *
      * Generated from protobuf enum <code>SINGAPORE = 29;</code>
@@ -250,6 +280,12 @@ class LocationCategory
      */
     const TURKEY = 35;
     /**
+     * The infoType is typically used in Ukraine.
+     *
+     * Generated from protobuf enum <code>UKRAINE = 45;</code>
+     */
+    const UKRAINE = 45;
+    /**
      * The infoType is typically used in the United Kingdom.
      *
      * Generated from protobuf enum <code>UNITED_KINGDOM = 36;</code>
@@ -268,6 +304,12 @@ class LocationCategory
      */
     const URUGUAY = 38;
     /**
+     * The infoType is typically used in Uzbekistan.
+     *
+     * Generated from protobuf enum <code>UZBEKISTAN = 46;</code>
+     */
+    const UZBEKISTAN = 46;
+    /**
      * The infoType is typically used in Venezuela.
      *
      * Generated from protobuf enum <code>VENEZUELA = 39;</code>
@@ -284,7 +326,10 @@ class LocationCategory
         self::LOCATION_UNSPECIFIED => 'LOCATION_UNSPECIFIED',
         self::PBGLOBAL => 'GLOBAL',
         self::ARGENTINA => 'ARGENTINA',
+        self::ARMENIA => 'ARMENIA',
         self::AUSTRALIA => 'AUSTRALIA',
+        self::AZERBAIJAN => 'AZERBAIJAN',
+        self::BELARUS => 'BELARUS',
         self::BELGIUM => 'BELGIUM',
         self::BRAZIL => 'BRAZIL',
         self::CANADA => 'CANADA',
@@ -303,6 +348,7 @@ class LocationCategory
         self::ISRAEL => 'ISRAEL',
         self::ITALY => 'ITALY',
         self::JAPAN => 'JAPAN',
+        self::KAZAKHSTAN => 'KAZAKHSTAN',
         self::KOREA => 'KOREA',
         self::MEXICO => 'MEXICO',
         self::THE_NETHERLANDS => 'THE_NETHERLANDS',
@@ -312,6 +358,7 @@ class LocationCategory
         self::PERU => 'PERU',
         self::POLAND => 'POLAND',
         self::PORTUGAL => 'PORTUGAL',
+        self::RUSSIA => 'RUSSIA',
         self::SINGAPORE => 'SINGAPORE',
         self::SOUTH_AFRICA => 'SOUTH_AFRICA',
         self::SPAIN => 'SPAIN',
@@ -320,9 +367,11 @@ class LocationCategory
         self::TAIWAN => 'TAIWAN',
         self::THAILAND => 'THAILAND',
         self::TURKEY => 'TURKEY',
+        self::UKRAINE => 'UKRAINE',
         self::UNITED_KINGDOM => 'UNITED_KINGDOM',
         self::UNITED_STATES => 'UNITED_STATES',
         self::URUGUAY => 'URUGUAY',
+        self::UZBEKISTAN => 'UZBEKISTAN',
         self::VENEZUELA => 'VENEZUELA',
         self::INTERNAL => 'INTERNAL',
     ];
@@ -352,6 +401,4 @@ class LocationCategory
     }
 }
 
-// Adding a class alias for backwards compatibility with the previous class name.
-class_alias(LocationCategory::class, \Google\Cloud\Dlp\V2\InfoTypeCategory_LocationCategory::class);
 

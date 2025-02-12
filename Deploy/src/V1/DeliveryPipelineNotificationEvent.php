@@ -22,19 +22,25 @@ class DeliveryPipelineNotificationEvent extends \Google\Protobuf\Internal\Messag
      *
      * Generated from protobuf field <code>string message = 1;</code>
      */
-    private $message = '';
+    protected $message = '';
+    /**
+     * Unique identifier of the `DeliveryPipeline`.
+     *
+     * Generated from protobuf field <code>string pipeline_uid = 4;</code>
+     */
+    protected $pipeline_uid = '';
     /**
      * The name of the `Delivery Pipeline`.
      *
      * Generated from protobuf field <code>string delivery_pipeline = 2;</code>
      */
-    private $delivery_pipeline = '';
+    protected $delivery_pipeline = '';
     /**
      * Type of this notification, e.g. for a Pub/Sub failure.
      *
      * Generated from protobuf field <code>.google.cloud.deploy.v1.Type type = 3;</code>
      */
-    private $type = 0;
+    protected $type = 0;
 
     /**
      * Constructor.
@@ -44,6 +50,8 @@ class DeliveryPipelineNotificationEvent extends \Google\Protobuf\Internal\Messag
      *
      *     @type string $message
      *           Debug message for when a notification fails to send.
+     *     @type string $pipeline_uid
+     *           Unique identifier of the `DeliveryPipeline`.
      *     @type string $delivery_pipeline
      *           The name of the `Delivery Pipeline`.
      *     @type int $type
@@ -77,6 +85,32 @@ class DeliveryPipelineNotificationEvent extends \Google\Protobuf\Internal\Messag
     {
         GPBUtil::checkString($var, True);
         $this->message = $var;
+
+        return $this;
+    }
+
+    /**
+     * Unique identifier of the `DeliveryPipeline`.
+     *
+     * Generated from protobuf field <code>string pipeline_uid = 4;</code>
+     * @return string
+     */
+    public function getPipelineUid()
+    {
+        return $this->pipeline_uid;
+    }
+
+    /**
+     * Unique identifier of the `DeliveryPipeline`.
+     *
+     * Generated from protobuf field <code>string pipeline_uid = 4;</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setPipelineUid($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->pipeline_uid = $var;
 
         return $this;
     }

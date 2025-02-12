@@ -22,11 +22,11 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      * or the name of the legacy placement resource, such as
      * `projects/&#42;&#47;locations/global/catalogs/default_catalog/placements/default_search`.
      * This field is used to identify the serving config name and the set
-     * of models that will be used to make the search.
+     * of models that are used to make the search.
      *
      * Generated from protobuf field <code>string placement = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $placement = '';
+    protected $placement = '';
     /**
      * The branch resource name, such as
      * `projects/&#42;&#47;locations/global/catalogs/default_catalog/branches/0`.
@@ -35,7 +35,7 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string branch = 2 [(.google.api.resource_reference) = {</code>
      */
-    private $branch = '';
+    protected $branch = '';
     /**
      * Raw search query.
      * If this field is empty, the request is considered a category browsing
@@ -45,7 +45,7 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string query = 3;</code>
      */
-    private $query = '';
+    protected $query = '';
     /**
      * Required. A unique identifier for tracking visitors. For example, this
      * could be implemented with an HTTP cookie, which should be able to uniquely
@@ -58,13 +58,13 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string visitor_id = 4 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $visitor_id = '';
+    protected $visitor_id = '';
     /**
      * User information.
      *
      * Generated from protobuf field <code>.google.cloud.retail.v2.UserInfo user_info = 5;</code>
      */
-    private $user_info = null;
+    protected $user_info = null;
     /**
      * Maximum number of [Product][google.cloud.retail.v2.Product]s to return. If
      * unspecified, defaults to a reasonable value. The maximum allowed value is
@@ -73,7 +73,7 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>int32 page_size = 7;</code>
      */
-    private $page_size = 0;
+    protected $page_size = 0;
     /**
      * A page token
      * [SearchResponse.next_page_token][google.cloud.retail.v2.SearchResponse.next_page_token],
@@ -87,7 +87,7 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string page_token = 8;</code>
      */
-    private $page_token = '';
+    protected $page_token = '';
     /**
      * A 0-indexed integer that specifies the current offset (that is, starting
      * result location, amongst the [Product][google.cloud.retail.v2.Product]s
@@ -98,43 +98,43 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>int32 offset = 9;</code>
      */
-    private $offset = 0;
+    protected $offset = 0;
     /**
      * The filter syntax consists of an expression language for constructing a
      * predicate from one or more fields of the products being filtered. Filter
-     * expression is case-sensitive. See more details at this [user
-     * guide](https://cloud.google.com/retail/docs/filter-and-order#filter).
+     * expression is case-sensitive. For more information, see
+     * [Filter](https://cloud.google.com/retail/docs/filter-and-order#filter).
      * If this field is unrecognizable, an INVALID_ARGUMENT is returned.
      *
      * Generated from protobuf field <code>string filter = 10;</code>
      */
-    private $filter = '';
+    protected $filter = '';
     /**
      * The default filter that is applied when a user performs a search without
      * checking any filters on the search page.
      * The filter applied to every search request when quality improvement such as
-     * query expansion is needed. For example, if a query does not have enough
-     * results, an expanded query with
-     * [SearchRequest.canonical_filter][google.cloud.retail.v2.SearchRequest.canonical_filter]
-     * will be returned as a supplement of the original query. This field is
-     * strongly recommended to achieve high search quality.
-     * See [SearchRequest.filter][google.cloud.retail.v2.SearchRequest.filter] for
-     * more details about filter syntax.
+     * query expansion is needed. In the case a query does not have a sufficient
+     * amount of results this filter will be used to determine whether or not to
+     * enable the query expansion flow. The original filter will still be used for
+     * the query expanded search.
+     * This field is strongly recommended to achieve high search quality.
+     * For more information about filter syntax, see
+     * [SearchRequest.filter][google.cloud.retail.v2.SearchRequest.filter].
      *
      * Generated from protobuf field <code>string canonical_filter = 28;</code>
      */
-    private $canonical_filter = '';
+    protected $canonical_filter = '';
     /**
      * The order in which products are returned. Products can be ordered by
      * a field in an [Product][google.cloud.retail.v2.Product] object. Leave it
-     * unset if ordered by relevance. OrderBy expression is case-sensitive. See
-     * more details at this [user
-     * guide](https://cloud.google.com/retail/docs/filter-and-order#order).
+     * unset if ordered by relevance. OrderBy expression is case-sensitive. For
+     * more information, see
+     * [Order](https://cloud.google.com/retail/docs/filter-and-order#order).
      * If this field is unrecognizable, an INVALID_ARGUMENT is returned.
      *
      * Generated from protobuf field <code>string order_by = 11;</code>
      */
-    private $order_by = '';
+    protected $order_by = '';
     /**
      * Facet specifications for faceted search. If empty, no facets are returned.
      * A maximum of 200 values are allowed. Otherwise, an INVALID_ARGUMENT error
@@ -154,8 +154,8 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      */
     protected $dynamic_facet_spec = null;
     /**
-     * Boost specification to boost certain products. See more details at this
-     * [user guide](https://cloud.google.com/retail/docs/boosting).
+     * Boost specification to boost certain products. For more information, see
+     * [Boost results](https://cloud.google.com/retail/docs/boosting).
      * Notice that if both
      * [ServingConfig.boost_control_ids][google.cloud.retail.v2.ServingConfig.boost_control_ids]
      * and
@@ -166,15 +166,15 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.retail.v2.SearchRequest.BoostSpec boost_spec = 13;</code>
      */
-    private $boost_spec = null;
+    protected $boost_spec = null;
     /**
      * The query expansion specification that specifies the conditions under which
-     * query expansion will occur. See more details at this [user
-     * guide](https://cloud.google.com/retail/docs/result-size#query_expansion).
+     * query expansion occurs. For more information, see [Query
+     * expansion](https://cloud.google.com/retail/docs/result-size#query_expansion).
      *
      * Generated from protobuf field <code>.google.cloud.retail.v2.SearchRequest.QueryExpansionSpec query_expansion_spec = 14;</code>
      */
-    private $query_expansion_spec = null;
+    protected $query_expansion_spec = null;
     /**
      * The keys to fetch and rollup the matching
      * [variant][google.cloud.retail.v2.Product.Type.VARIANT]
@@ -247,7 +247,7 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      */
     private $variant_rollup_keys;
     /**
-     * The categories associated with a category page. Required for category
+     * The categories associated with a category page. Must be set for category
      * navigation queries to achieve good search quality. The format should be
      * the same as
      * [UserEvent.page_categories][google.cloud.retail.v2.UserEvent.page_categories];
@@ -267,7 +267,7 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.retail.v2.SearchRequest.SearchMode search_mode = 31;</code>
      */
-    private $search_mode = 0;
+    protected $search_mode = 0;
     /**
      * The specification for personalization.
      * Notice that if both
@@ -281,7 +281,7 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.retail.v2.SearchRequest.PersonalizationSpec personalization_spec = 32;</code>
      */
-    private $personalization_spec = null;
+    protected $personalization_spec = null;
     /**
      * The labels applied to a resource must meet the following requirements:
      * * Each resource can have multiple labels, up to a maximum of 64.
@@ -295,9 +295,9 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      * * The key portion of a label must be unique. However, you can use the same
      *   key with multiple resources.
      * * Keys must start with a lowercase letter or international character.
-     * See [Google Cloud
-     * Document](https://cloud.google.com/resource-manager/docs/creating-managing-labels#requirements)
-     * for more details.
+     * For more information, see [Requirements for
+     * labels](https://cloud.google.com/resource-manager/docs/creating-managing-labels#requirements)
+     * in the Resource Manager documentation.
      *
      * Generated from protobuf field <code>map<string, string> labels = 34;</code>
      */
@@ -308,7 +308,7 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>optional .google.cloud.retail.v2.SearchRequest.SpellCorrectionSpec spell_correction_spec = 35;</code>
      */
-    private $spell_correction_spec = null;
+    protected $spell_correction_spec = null;
     /**
      * The entity for customers that may run multiple different entities, domains,
      * sites or regions, for example, `Google US`, `Google Ads`, `Waymo`,
@@ -319,7 +319,20 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string entity = 38;</code>
      */
-    private $entity = '';
+    protected $entity = '';
+    /**
+     * Optional. This field specifies all conversational related parameters
+     * addition to traditional retail search.
+     *
+     * Generated from protobuf field <code>.google.cloud.retail.v2.SearchRequest.ConversationalSearchSpec conversational_search_spec = 40 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $conversational_search_spec = null;
+    /**
+     * Optional. This field specifies tile navigation related parameters.
+     *
+     * Generated from protobuf field <code>.google.cloud.retail.v2.SearchRequest.TileNavigationSpec tile_navigation_spec = 41 [(.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $tile_navigation_spec = null;
 
     /**
      * Constructor.
@@ -333,7 +346,7 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *           or the name of the legacy placement resource, such as
      *           `projects/&#42;&#47;locations/global/catalogs/default_catalog/placements/default_search`.
      *           This field is used to identify the serving config name and the set
-     *           of models that will be used to make the search.
+     *           of models that are used to make the search.
      *     @type string $branch
      *           The branch resource name, such as
      *           `projects/&#42;&#47;locations/global/catalogs/default_catalog/branches/0`.
@@ -381,26 +394,26 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *     @type string $filter
      *           The filter syntax consists of an expression language for constructing a
      *           predicate from one or more fields of the products being filtered. Filter
-     *           expression is case-sensitive. See more details at this [user
-     *           guide](https://cloud.google.com/retail/docs/filter-and-order#filter).
+     *           expression is case-sensitive. For more information, see
+     *           [Filter](https://cloud.google.com/retail/docs/filter-and-order#filter).
      *           If this field is unrecognizable, an INVALID_ARGUMENT is returned.
      *     @type string $canonical_filter
      *           The default filter that is applied when a user performs a search without
      *           checking any filters on the search page.
      *           The filter applied to every search request when quality improvement such as
-     *           query expansion is needed. For example, if a query does not have enough
-     *           results, an expanded query with
-     *           [SearchRequest.canonical_filter][google.cloud.retail.v2.SearchRequest.canonical_filter]
-     *           will be returned as a supplement of the original query. This field is
-     *           strongly recommended to achieve high search quality.
-     *           See [SearchRequest.filter][google.cloud.retail.v2.SearchRequest.filter] for
-     *           more details about filter syntax.
+     *           query expansion is needed. In the case a query does not have a sufficient
+     *           amount of results this filter will be used to determine whether or not to
+     *           enable the query expansion flow. The original filter will still be used for
+     *           the query expanded search.
+     *           This field is strongly recommended to achieve high search quality.
+     *           For more information about filter syntax, see
+     *           [SearchRequest.filter][google.cloud.retail.v2.SearchRequest.filter].
      *     @type string $order_by
      *           The order in which products are returned. Products can be ordered by
      *           a field in an [Product][google.cloud.retail.v2.Product] object. Leave it
-     *           unset if ordered by relevance. OrderBy expression is case-sensitive. See
-     *           more details at this [user
-     *           guide](https://cloud.google.com/retail/docs/filter-and-order#order).
+     *           unset if ordered by relevance. OrderBy expression is case-sensitive. For
+     *           more information, see
+     *           [Order](https://cloud.google.com/retail/docs/filter-and-order#order).
      *           If this field is unrecognizable, an INVALID_ARGUMENT is returned.
      *     @type array<\Google\Cloud\Retail\V2\SearchRequest\FacetSpec>|\Google\Protobuf\Internal\RepeatedField $facet_specs
      *           Facet specifications for faceted search. If empty, no facets are returned.
@@ -412,8 +425,8 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *           The specification for dynamically generated facets. Notice that only
      *           textual facets can be dynamically generated.
      *     @type \Google\Cloud\Retail\V2\SearchRequest\BoostSpec $boost_spec
-     *           Boost specification to boost certain products. See more details at this
-     *           [user guide](https://cloud.google.com/retail/docs/boosting).
+     *           Boost specification to boost certain products. For more information, see
+     *           [Boost results](https://cloud.google.com/retail/docs/boosting).
      *           Notice that if both
      *           [ServingConfig.boost_control_ids][google.cloud.retail.v2.ServingConfig.boost_control_ids]
      *           and
@@ -423,8 +436,8 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *           to the sum of the boost scores from all matched boost conditions.
      *     @type \Google\Cloud\Retail\V2\SearchRequest\QueryExpansionSpec $query_expansion_spec
      *           The query expansion specification that specifies the conditions under which
-     *           query expansion will occur. See more details at this [user
-     *           guide](https://cloud.google.com/retail/docs/result-size#query_expansion).
+     *           query expansion occurs. For more information, see [Query
+     *           expansion](https://cloud.google.com/retail/docs/result-size#query_expansion).
      *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $variant_rollup_keys
      *           The keys to fetch and rollup the matching
      *           [variant][google.cloud.retail.v2.Product.Type.VARIANT]
@@ -493,7 +506,7 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *           If this field is set to an invalid value other than these, an
      *           INVALID_ARGUMENT error is returned.
      *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $page_categories
-     *           The categories associated with a category page. Required for category
+     *           The categories associated with a category page. Must be set for category
      *           navigation queries to achieve good search quality. The format should be
      *           the same as
      *           [UserEvent.page_categories][google.cloud.retail.v2.UserEvent.page_categories];
@@ -529,9 +542,9 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *           * The key portion of a label must be unique. However, you can use the same
      *             key with multiple resources.
      *           * Keys must start with a lowercase letter or international character.
-     *           See [Google Cloud
-     *           Document](https://cloud.google.com/resource-manager/docs/creating-managing-labels#requirements)
-     *           for more details.
+     *           For more information, see [Requirements for
+     *           labels](https://cloud.google.com/resource-manager/docs/creating-managing-labels#requirements)
+     *           in the Resource Manager documentation.
      *     @type \Google\Cloud\Retail\V2\SearchRequest\SpellCorrectionSpec $spell_correction_spec
      *           The spell correction specification that specifies the mode under
      *           which spell correction will take effect.
@@ -542,6 +555,11 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      *           If this is set, it should be exactly matched with
      *           [UserEvent.entity][google.cloud.retail.v2.UserEvent.entity] to get search
      *           results boosted by entity.
+     *     @type \Google\Cloud\Retail\V2\SearchRequest\ConversationalSearchSpec $conversational_search_spec
+     *           Optional. This field specifies all conversational related parameters
+     *           addition to traditional retail search.
+     *     @type \Google\Cloud\Retail\V2\SearchRequest\TileNavigationSpec $tile_navigation_spec
+     *           Optional. This field specifies tile navigation related parameters.
      * }
      */
     public function __construct($data = NULL) {
@@ -555,7 +573,7 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      * or the name of the legacy placement resource, such as
      * `projects/&#42;&#47;locations/global/catalogs/default_catalog/placements/default_search`.
      * This field is used to identify the serving config name and the set
-     * of models that will be used to make the search.
+     * of models that are used to make the search.
      *
      * Generated from protobuf field <code>string placement = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      * @return string
@@ -571,7 +589,7 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      * or the name of the legacy placement resource, such as
      * `projects/&#42;&#47;locations/global/catalogs/default_catalog/placements/default_search`.
      * This field is used to identify the serving config name and the set
-     * of models that will be used to make the search.
+     * of models that are used to make the search.
      *
      * Generated from protobuf field <code>string placement = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      * @param string $var
@@ -840,8 +858,8 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
     /**
      * The filter syntax consists of an expression language for constructing a
      * predicate from one or more fields of the products being filtered. Filter
-     * expression is case-sensitive. See more details at this [user
-     * guide](https://cloud.google.com/retail/docs/filter-and-order#filter).
+     * expression is case-sensitive. For more information, see
+     * [Filter](https://cloud.google.com/retail/docs/filter-and-order#filter).
      * If this field is unrecognizable, an INVALID_ARGUMENT is returned.
      *
      * Generated from protobuf field <code>string filter = 10;</code>
@@ -855,8 +873,8 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
     /**
      * The filter syntax consists of an expression language for constructing a
      * predicate from one or more fields of the products being filtered. Filter
-     * expression is case-sensitive. See more details at this [user
-     * guide](https://cloud.google.com/retail/docs/filter-and-order#filter).
+     * expression is case-sensitive. For more information, see
+     * [Filter](https://cloud.google.com/retail/docs/filter-and-order#filter).
      * If this field is unrecognizable, an INVALID_ARGUMENT is returned.
      *
      * Generated from protobuf field <code>string filter = 10;</code>
@@ -875,13 +893,13 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      * The default filter that is applied when a user performs a search without
      * checking any filters on the search page.
      * The filter applied to every search request when quality improvement such as
-     * query expansion is needed. For example, if a query does not have enough
-     * results, an expanded query with
-     * [SearchRequest.canonical_filter][google.cloud.retail.v2.SearchRequest.canonical_filter]
-     * will be returned as a supplement of the original query. This field is
-     * strongly recommended to achieve high search quality.
-     * See [SearchRequest.filter][google.cloud.retail.v2.SearchRequest.filter] for
-     * more details about filter syntax.
+     * query expansion is needed. In the case a query does not have a sufficient
+     * amount of results this filter will be used to determine whether or not to
+     * enable the query expansion flow. The original filter will still be used for
+     * the query expanded search.
+     * This field is strongly recommended to achieve high search quality.
+     * For more information about filter syntax, see
+     * [SearchRequest.filter][google.cloud.retail.v2.SearchRequest.filter].
      *
      * Generated from protobuf field <code>string canonical_filter = 28;</code>
      * @return string
@@ -895,13 +913,13 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      * The default filter that is applied when a user performs a search without
      * checking any filters on the search page.
      * The filter applied to every search request when quality improvement such as
-     * query expansion is needed. For example, if a query does not have enough
-     * results, an expanded query with
-     * [SearchRequest.canonical_filter][google.cloud.retail.v2.SearchRequest.canonical_filter]
-     * will be returned as a supplement of the original query. This field is
-     * strongly recommended to achieve high search quality.
-     * See [SearchRequest.filter][google.cloud.retail.v2.SearchRequest.filter] for
-     * more details about filter syntax.
+     * query expansion is needed. In the case a query does not have a sufficient
+     * amount of results this filter will be used to determine whether or not to
+     * enable the query expansion flow. The original filter will still be used for
+     * the query expanded search.
+     * This field is strongly recommended to achieve high search quality.
+     * For more information about filter syntax, see
+     * [SearchRequest.filter][google.cloud.retail.v2.SearchRequest.filter].
      *
      * Generated from protobuf field <code>string canonical_filter = 28;</code>
      * @param string $var
@@ -918,9 +936,9 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
     /**
      * The order in which products are returned. Products can be ordered by
      * a field in an [Product][google.cloud.retail.v2.Product] object. Leave it
-     * unset if ordered by relevance. OrderBy expression is case-sensitive. See
-     * more details at this [user
-     * guide](https://cloud.google.com/retail/docs/filter-and-order#order).
+     * unset if ordered by relevance. OrderBy expression is case-sensitive. For
+     * more information, see
+     * [Order](https://cloud.google.com/retail/docs/filter-and-order#order).
      * If this field is unrecognizable, an INVALID_ARGUMENT is returned.
      *
      * Generated from protobuf field <code>string order_by = 11;</code>
@@ -934,9 +952,9 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
     /**
      * The order in which products are returned. Products can be ordered by
      * a field in an [Product][google.cloud.retail.v2.Product] object. Leave it
-     * unset if ordered by relevance. OrderBy expression is case-sensitive. See
-     * more details at this [user
-     * guide](https://cloud.google.com/retail/docs/filter-and-order#order).
+     * unset if ordered by relevance. OrderBy expression is case-sensitive. For
+     * more information, see
+     * [Order](https://cloud.google.com/retail/docs/filter-and-order#order).
      * If this field is unrecognizable, an INVALID_ARGUMENT is returned.
      *
      * Generated from protobuf field <code>string order_by = 11;</code>
@@ -1030,8 +1048,8 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Boost specification to boost certain products. See more details at this
-     * [user guide](https://cloud.google.com/retail/docs/boosting).
+     * Boost specification to boost certain products. For more information, see
+     * [Boost results](https://cloud.google.com/retail/docs/boosting).
      * Notice that if both
      * [ServingConfig.boost_control_ids][google.cloud.retail.v2.ServingConfig.boost_control_ids]
      * and
@@ -1059,8 +1077,8 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Boost specification to boost certain products. See more details at this
-     * [user guide](https://cloud.google.com/retail/docs/boosting).
+     * Boost specification to boost certain products. For more information, see
+     * [Boost results](https://cloud.google.com/retail/docs/boosting).
      * Notice that if both
      * [ServingConfig.boost_control_ids][google.cloud.retail.v2.ServingConfig.boost_control_ids]
      * and
@@ -1083,8 +1101,8 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
 
     /**
      * The query expansion specification that specifies the conditions under which
-     * query expansion will occur. See more details at this [user
-     * guide](https://cloud.google.com/retail/docs/result-size#query_expansion).
+     * query expansion occurs. For more information, see [Query
+     * expansion](https://cloud.google.com/retail/docs/result-size#query_expansion).
      *
      * Generated from protobuf field <code>.google.cloud.retail.v2.SearchRequest.QueryExpansionSpec query_expansion_spec = 14;</code>
      * @return \Google\Cloud\Retail\V2\SearchRequest\QueryExpansionSpec|null
@@ -1106,8 +1124,8 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
 
     /**
      * The query expansion specification that specifies the conditions under which
-     * query expansion will occur. See more details at this [user
-     * guide](https://cloud.google.com/retail/docs/result-size#query_expansion).
+     * query expansion occurs. For more information, see [Query
+     * expansion](https://cloud.google.com/retail/docs/result-size#query_expansion).
      *
      * Generated from protobuf field <code>.google.cloud.retail.v2.SearchRequest.QueryExpansionSpec query_expansion_spec = 14;</code>
      * @param \Google\Cloud\Retail\V2\SearchRequest\QueryExpansionSpec $var
@@ -1278,7 +1296,7 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The categories associated with a category page. Required for category
+     * The categories associated with a category page. Must be set for category
      * navigation queries to achieve good search quality. The format should be
      * the same as
      * [UserEvent.page_categories][google.cloud.retail.v2.UserEvent.page_categories];
@@ -1298,7 +1316,7 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The categories associated with a category page. Required for category
+     * The categories associated with a category page. Must be set for category
      * navigation queries to achieve good search quality. The format should be
      * the same as
      * [UserEvent.page_categories][google.cloud.retail.v2.UserEvent.page_categories];
@@ -1414,9 +1432,9 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      * * The key portion of a label must be unique. However, you can use the same
      *   key with multiple resources.
      * * Keys must start with a lowercase letter or international character.
-     * See [Google Cloud
-     * Document](https://cloud.google.com/resource-manager/docs/creating-managing-labels#requirements)
-     * for more details.
+     * For more information, see [Requirements for
+     * labels](https://cloud.google.com/resource-manager/docs/creating-managing-labels#requirements)
+     * in the Resource Manager documentation.
      *
      * Generated from protobuf field <code>map<string, string> labels = 34;</code>
      * @return \Google\Protobuf\Internal\MapField
@@ -1439,9 +1457,9 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
      * * The key portion of a label must be unique. However, you can use the same
      *   key with multiple resources.
      * * Keys must start with a lowercase letter or international character.
-     * See [Google Cloud
-     * Document](https://cloud.google.com/resource-manager/docs/creating-managing-labels#requirements)
-     * for more details.
+     * For more information, see [Requirements for
+     * labels](https://cloud.google.com/resource-manager/docs/creating-managing-labels#requirements)
+     * in the Resource Manager documentation.
      *
      * Generated from protobuf field <code>map<string, string> labels = 34;</code>
      * @param array|\Google\Protobuf\Internal\MapField $var
@@ -1525,6 +1543,80 @@ class SearchRequest extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->entity = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. This field specifies all conversational related parameters
+     * addition to traditional retail search.
+     *
+     * Generated from protobuf field <code>.google.cloud.retail.v2.SearchRequest.ConversationalSearchSpec conversational_search_spec = 40 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\Retail\V2\SearchRequest\ConversationalSearchSpec|null
+     */
+    public function getConversationalSearchSpec()
+    {
+        return $this->conversational_search_spec;
+    }
+
+    public function hasConversationalSearchSpec()
+    {
+        return isset($this->conversational_search_spec);
+    }
+
+    public function clearConversationalSearchSpec()
+    {
+        unset($this->conversational_search_spec);
+    }
+
+    /**
+     * Optional. This field specifies all conversational related parameters
+     * addition to traditional retail search.
+     *
+     * Generated from protobuf field <code>.google.cloud.retail.v2.SearchRequest.ConversationalSearchSpec conversational_search_spec = 40 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\Retail\V2\SearchRequest\ConversationalSearchSpec $var
+     * @return $this
+     */
+    public function setConversationalSearchSpec($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Retail\V2\SearchRequest\ConversationalSearchSpec::class);
+        $this->conversational_search_spec = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. This field specifies tile navigation related parameters.
+     *
+     * Generated from protobuf field <code>.google.cloud.retail.v2.SearchRequest.TileNavigationSpec tile_navigation_spec = 41 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\Retail\V2\SearchRequest\TileNavigationSpec|null
+     */
+    public function getTileNavigationSpec()
+    {
+        return $this->tile_navigation_spec;
+    }
+
+    public function hasTileNavigationSpec()
+    {
+        return isset($this->tile_navigation_spec);
+    }
+
+    public function clearTileNavigationSpec()
+    {
+        unset($this->tile_navigation_spec);
+    }
+
+    /**
+     * Optional. This field specifies tile navigation related parameters.
+     *
+     * Generated from protobuf field <code>.google.cloud.retail.v2.SearchRequest.TileNavigationSpec tile_navigation_spec = 41 [(.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\Retail\V2\SearchRequest\TileNavigationSpec $var
+     * @return $this
+     */
+    public function setTileNavigationSpec($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Retail\V2\SearchRequest\TileNavigationSpec::class);
+        $this->tile_navigation_spec = $var;
 
         return $this;
     }

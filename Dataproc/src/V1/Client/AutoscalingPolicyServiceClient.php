@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ use Google\Cloud\Iam\V1\SetIamPolicyRequest;
 use Google\Cloud\Iam\V1\TestIamPermissionsRequest;
 use Google\Cloud\Iam\V1\TestIamPermissionsResponse;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The API interface for managing autoscaling policies in the
@@ -58,14 +59,14 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createAutoscalingPolicyAsync(CreateAutoscalingPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAutoscalingPolicyAsync(DeleteAutoscalingPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAutoscalingPolicyAsync(GetAutoscalingPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAutoscalingPoliciesAsync(ListAutoscalingPoliciesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateAutoscalingPolicyAsync(UpdateAutoscalingPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AutoscalingPolicy> createAutoscalingPolicyAsync(CreateAutoscalingPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteAutoscalingPolicyAsync(DeleteAutoscalingPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AutoscalingPolicy> getAutoscalingPolicyAsync(GetAutoscalingPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAutoscalingPoliciesAsync(ListAutoscalingPoliciesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AutoscalingPolicy> updateAutoscalingPolicyAsync(UpdateAutoscalingPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
  */
 final class AutoscalingPolicyServiceClient
 {
@@ -92,9 +93,7 @@ final class AutoscalingPolicyServiceClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private static function getClientDefaults()
     {
@@ -109,7 +108,8 @@ final class AutoscalingPolicyServiceClient
             ],
             'transportConfig' => [
                 'rest' => [
-                    'restClientConfigPath' => __DIR__ . '/../resources/autoscaling_policy_service_rest_client_config.php',
+                    'restClientConfigPath' =>
+                        __DIR__ . '/../resources/autoscaling_policy_service_rest_client_config.php',
                 ],
             ],
         ];
@@ -161,8 +161,11 @@ final class AutoscalingPolicyServiceClient
      *
      * @return string The formatted project_location_autoscaling_policy resource.
      */
-    public static function projectLocationAutoscalingPolicyName(string $project, string $location, string $autoscalingPolicy): string
-    {
+    public static function projectLocationAutoscalingPolicyName(
+        string $project,
+        string $location,
+        string $autoscalingPolicy
+    ): string {
         return self::getPathTemplate('projectLocationAutoscalingPolicy')->render([
             'project' => $project,
             'location' => $location,
@@ -180,8 +183,11 @@ final class AutoscalingPolicyServiceClient
      *
      * @return string The formatted project_region_autoscaling_policy resource.
      */
-    public static function projectRegionAutoscalingPolicyName(string $project, string $region, string $autoscalingPolicy): string
-    {
+    public static function projectRegionAutoscalingPolicyName(
+        string $project,
+        string $region,
+        string $autoscalingPolicy
+    ): string {
         return self::getPathTemplate('projectRegionAutoscalingPolicy')->render([
             'project' => $project,
             'region' => $region,
@@ -222,14 +228,14 @@ final class AutoscalingPolicyServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -251,6 +257,12 @@ final class AutoscalingPolicyServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -284,6 +296,9 @@ final class AutoscalingPolicyServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -311,6 +326,8 @@ final class AutoscalingPolicyServiceClient
      * The async variant is
      * {@see AutoscalingPolicyServiceClient::createAutoscalingPolicyAsync()} .
      *
+     * @example samples/V1/AutoscalingPolicyServiceClient/create_autoscaling_policy.php
+     *
      * @param CreateAutoscalingPolicyRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
      *     Optional.
@@ -325,8 +342,10 @@ final class AutoscalingPolicyServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createAutoscalingPolicy(CreateAutoscalingPolicyRequest $request, array $callOptions = []): AutoscalingPolicy
-    {
+    public function createAutoscalingPolicy(
+        CreateAutoscalingPolicyRequest $request,
+        array $callOptions = []
+    ): AutoscalingPolicy {
         return $this->startApiCall('CreateAutoscalingPolicy', $request, $callOptions)->wait();
     }
 
@@ -336,6 +355,8 @@ final class AutoscalingPolicyServiceClient
      *
      * The async variant is
      * {@see AutoscalingPolicyServiceClient::deleteAutoscalingPolicyAsync()} .
+     *
+     * @example samples/V1/AutoscalingPolicyServiceClient/delete_autoscaling_policy.php
      *
      * @param DeleteAutoscalingPolicyRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
@@ -360,6 +381,8 @@ final class AutoscalingPolicyServiceClient
      * The async variant is
      * {@see AutoscalingPolicyServiceClient::getAutoscalingPolicyAsync()} .
      *
+     * @example samples/V1/AutoscalingPolicyServiceClient/get_autoscaling_policy.php
+     *
      * @param GetAutoscalingPolicyRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -374,8 +397,10 @@ final class AutoscalingPolicyServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getAutoscalingPolicy(GetAutoscalingPolicyRequest $request, array $callOptions = []): AutoscalingPolicy
-    {
+    public function getAutoscalingPolicy(
+        GetAutoscalingPolicyRequest $request,
+        array $callOptions = []
+    ): AutoscalingPolicy {
         return $this->startApiCall('GetAutoscalingPolicy', $request, $callOptions)->wait();
     }
 
@@ -384,6 +409,8 @@ final class AutoscalingPolicyServiceClient
      *
      * The async variant is
      * {@see AutoscalingPolicyServiceClient::listAutoscalingPoliciesAsync()} .
+     *
+     * @example samples/V1/AutoscalingPolicyServiceClient/list_autoscaling_policies.php
      *
      * @param ListAutoscalingPoliciesRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
@@ -399,8 +426,10 @@ final class AutoscalingPolicyServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listAutoscalingPolicies(ListAutoscalingPoliciesRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listAutoscalingPolicies(
+        ListAutoscalingPoliciesRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListAutoscalingPolicies', $request, $callOptions);
     }
 
@@ -412,6 +441,8 @@ final class AutoscalingPolicyServiceClient
      *
      * The async variant is
      * {@see AutoscalingPolicyServiceClient::updateAutoscalingPolicyAsync()} .
+     *
+     * @example samples/V1/AutoscalingPolicyServiceClient/update_autoscaling_policy.php
      *
      * @param UpdateAutoscalingPolicyRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
@@ -427,8 +458,10 @@ final class AutoscalingPolicyServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateAutoscalingPolicy(UpdateAutoscalingPolicyRequest $request, array $callOptions = []): AutoscalingPolicy
-    {
+    public function updateAutoscalingPolicy(
+        UpdateAutoscalingPolicyRequest $request,
+        array $callOptions = []
+    ): AutoscalingPolicy {
         return $this->startApiCall('UpdateAutoscalingPolicy', $request, $callOptions)->wait();
     }
 
@@ -438,6 +471,8 @@ final class AutoscalingPolicyServiceClient
      *
      * The async variant is {@see AutoscalingPolicyServiceClient::getIamPolicyAsync()}
      * .
+     *
+     * @example samples/V1/AutoscalingPolicyServiceClient/get_iam_policy.php
      *
      * @param GetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -467,6 +502,8 @@ final class AutoscalingPolicyServiceClient
      *
      * The async variant is {@see AutoscalingPolicyServiceClient::setIamPolicyAsync()}
      * .
+     *
+     * @example samples/V1/AutoscalingPolicyServiceClient/set_iam_policy.php
      *
      * @param SetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -499,6 +536,8 @@ final class AutoscalingPolicyServiceClient
      * The async variant is
      * {@see AutoscalingPolicyServiceClient::testIamPermissionsAsync()} .
      *
+     * @example samples/V1/AutoscalingPolicyServiceClient/test_iam_permissions.php
+     *
      * @param TestIamPermissionsRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -513,8 +552,10 @@ final class AutoscalingPolicyServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function testIamPermissions(TestIamPermissionsRequest $request, array $callOptions = []): TestIamPermissionsResponse
-    {
+    public function testIamPermissions(
+        TestIamPermissionsRequest $request,
+        array $callOptions = []
+    ): TestIamPermissionsResponse {
         return $this->startApiCall('TestIamPermissions', $request, $callOptions)->wait();
     }
 }

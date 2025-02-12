@@ -10,7 +10,7 @@ use Google\Protobuf\Internal\GPBUtil;
 
 /**
  * Defines a cohort selection criteria. A cohort is a group of users who share
- * a common characteristic. For example, users with the same `firstTouchDate`
+ * a common characteristic. For example, users with the same `firstSessionDate`
  * belong to the same cohort.
  *
  * Generated from protobuf message <code>google.analytics.data.v1alpha.Cohort</code>
@@ -25,13 +25,14 @@ class Cohort extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
-     * Dimension used by the cohort. Required and only supports `firstTouchDate`.
+     * Dimension used by the cohort. Required and only supports
+     * `firstSessionDate`.
      *
      * Generated from protobuf field <code>string dimension = 2;</code>
      */
-    private $dimension = '';
+    protected $dimension = '';
     /**
      * The cohort selects users whose first touch date is between start date and
      * end date defined in the `dateRange`. This `dateRange` does not specify the
@@ -50,7 +51,7 @@ class Cohort extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.analytics.data.v1alpha.DateRange date_range = 3;</code>
      */
-    private $date_range = null;
+    protected $date_range = null;
 
     /**
      * Constructor.
@@ -64,7 +65,8 @@ class Cohort extends \Google\Protobuf\Internal\Message
      *           `RESERVED_`. If not set, cohorts are named by their zero based index
      *           `cohort_0`, `cohort_1`, etc.
      *     @type string $dimension
-     *           Dimension used by the cohort. Required and only supports `firstTouchDate`.
+     *           Dimension used by the cohort. Required and only supports
+     *           `firstSessionDate`.
      *     @type \Google\Analytics\Data\V1alpha\DateRange $date_range
      *           The cohort selects users whose first touch date is between start date and
      *           end date defined in the `dateRange`. This `dateRange` does not specify the
@@ -120,7 +122,8 @@ class Cohort extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Dimension used by the cohort. Required and only supports `firstTouchDate`.
+     * Dimension used by the cohort. Required and only supports
+     * `firstSessionDate`.
      *
      * Generated from protobuf field <code>string dimension = 2;</code>
      * @return string
@@ -131,7 +134,8 @@ class Cohort extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Dimension used by the cohort. Required and only supports `firstTouchDate`.
+     * Dimension used by the cohort. Required and only supports
+     * `firstSessionDate`.
      *
      * Generated from protobuf field <code>string dimension = 2;</code>
      * @param string $var
@@ -166,7 +170,7 @@ class Cohort extends \Google\Protobuf\Internal\Message
      */
     public function getDateRange()
     {
-        return isset($this->date_range) ? $this->date_range : null;
+        return $this->date_range;
     }
 
     public function hasDateRange()

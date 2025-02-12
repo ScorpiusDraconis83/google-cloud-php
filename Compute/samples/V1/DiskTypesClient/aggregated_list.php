@@ -25,10 +25,11 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // [START compute_v1_generated_DiskTypes_AggregatedList_sync]
 use Google\ApiCore\ApiException;
 use Google\ApiCore\PagedListResponse;
-use Google\Cloud\Compute\V1\DiskTypesClient;
+use Google\Cloud\Compute\V1\AggregatedListDiskTypesRequest;
+use Google\Cloud\Compute\V1\Client\DiskTypesClient;
 
 /**
- * Retrieves an aggregated list of disk types.
+ * Retrieves an aggregated list of disk types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
  *
  * @param string $project Project ID for this request.
  */
@@ -37,10 +38,14 @@ function aggregated_list_sample(string $project): void
     // Create a client.
     $diskTypesClient = new DiskTypesClient();
 
+    // Prepare the request message.
+    $request = (new AggregatedListDiskTypesRequest())
+        ->setProject($project);
+
     // Call the API and handle any network failures.
     try {
         /** @var PagedListResponse $response */
-        $response = $diskTypesClient->aggregatedList($project);
+        $response = $diskTypesClient->aggregatedList($request);
 
         foreach ($response as $element) {
             printf('Element data: %s' . PHP_EOL, $element->serializeToJsonString());

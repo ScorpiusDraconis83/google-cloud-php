@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2018 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,6 +84,7 @@ use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\Location;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Google Cloud Key Management Service
@@ -107,39 +108,39 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface asymmetricDecryptAsync(AsymmetricDecryptRequest $request, array $optionalArgs = [])
- * @method PromiseInterface asymmetricSignAsync(AsymmetricSignRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createCryptoKeyAsync(CreateCryptoKeyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createCryptoKeyVersionAsync(CreateCryptoKeyVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createImportJobAsync(CreateImportJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createKeyRingAsync(CreateKeyRingRequest $request, array $optionalArgs = [])
- * @method PromiseInterface decryptAsync(DecryptRequest $request, array $optionalArgs = [])
- * @method PromiseInterface destroyCryptoKeyVersionAsync(DestroyCryptoKeyVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface encryptAsync(EncryptRequest $request, array $optionalArgs = [])
- * @method PromiseInterface generateRandomBytesAsync(GenerateRandomBytesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getCryptoKeyAsync(GetCryptoKeyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getCryptoKeyVersionAsync(GetCryptoKeyVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getImportJobAsync(GetImportJobRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getKeyRingAsync(GetKeyRingRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getPublicKeyAsync(GetPublicKeyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface importCryptoKeyVersionAsync(ImportCryptoKeyVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listCryptoKeyVersionsAsync(ListCryptoKeyVersionsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listCryptoKeysAsync(ListCryptoKeysRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listImportJobsAsync(ListImportJobsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listKeyRingsAsync(ListKeyRingsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface macSignAsync(MacSignRequest $request, array $optionalArgs = [])
- * @method PromiseInterface macVerifyAsync(MacVerifyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface rawDecryptAsync(RawDecryptRequest $request, array $optionalArgs = [])
- * @method PromiseInterface rawEncryptAsync(RawEncryptRequest $request, array $optionalArgs = [])
- * @method PromiseInterface restoreCryptoKeyVersionAsync(RestoreCryptoKeyVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateCryptoKeyAsync(UpdateCryptoKeyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateCryptoKeyPrimaryVersionAsync(UpdateCryptoKeyPrimaryVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateCryptoKeyVersionAsync(UpdateCryptoKeyVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AsymmetricDecryptResponse> asymmetricDecryptAsync(AsymmetricDecryptRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AsymmetricSignResponse> asymmetricSignAsync(AsymmetricSignRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CryptoKey> createCryptoKeyAsync(CreateCryptoKeyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CryptoKeyVersion> createCryptoKeyVersionAsync(CreateCryptoKeyVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ImportJob> createImportJobAsync(CreateImportJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<KeyRing> createKeyRingAsync(CreateKeyRingRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DecryptResponse> decryptAsync(DecryptRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CryptoKeyVersion> destroyCryptoKeyVersionAsync(DestroyCryptoKeyVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<EncryptResponse> encryptAsync(EncryptRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<GenerateRandomBytesResponse> generateRandomBytesAsync(GenerateRandomBytesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CryptoKey> getCryptoKeyAsync(GetCryptoKeyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CryptoKeyVersion> getCryptoKeyVersionAsync(GetCryptoKeyVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ImportJob> getImportJobAsync(GetImportJobRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<KeyRing> getKeyRingAsync(GetKeyRingRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PublicKey> getPublicKeyAsync(GetPublicKeyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CryptoKeyVersion> importCryptoKeyVersionAsync(ImportCryptoKeyVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listCryptoKeyVersionsAsync(ListCryptoKeyVersionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listCryptoKeysAsync(ListCryptoKeysRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listImportJobsAsync(ListImportJobsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listKeyRingsAsync(ListKeyRingsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<MacSignResponse> macSignAsync(MacSignRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<MacVerifyResponse> macVerifyAsync(MacVerifyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<RawDecryptResponse> rawDecryptAsync(RawDecryptRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<RawEncryptResponse> rawEncryptAsync(RawEncryptRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CryptoKeyVersion> restoreCryptoKeyVersionAsync(RestoreCryptoKeyVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CryptoKey> updateCryptoKeyAsync(UpdateCryptoKeyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CryptoKey> updateCryptoKeyPrimaryVersionAsync(UpdateCryptoKeyPrimaryVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CryptoKeyVersion> updateCryptoKeyVersionAsync(UpdateCryptoKeyVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
  */
 final class KeyManagementServiceClient
 {
@@ -223,8 +224,13 @@ final class KeyManagementServiceClient
      *
      * @return string The formatted crypto_key_version resource.
      */
-    public static function cryptoKeyVersionName(string $project, string $location, string $keyRing, string $cryptoKey, string $cryptoKeyVersion): string
-    {
+    public static function cryptoKeyVersionName(
+        string $project,
+        string $location,
+        string $keyRing,
+        string $cryptoKey,
+        string $cryptoKeyVersion
+    ): string {
         return self::getPathTemplate('cryptoKeyVersion')->render([
             'project' => $project,
             'location' => $location,
@@ -307,14 +313,14 @@ final class KeyManagementServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -336,6 +342,12 @@ final class KeyManagementServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -369,6 +381,9 @@ final class KeyManagementServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -400,6 +415,8 @@ final class KeyManagementServiceClient
      * The async variant is {@see KeyManagementServiceClient::asymmetricDecryptAsync()}
      * .
      *
+     * @example samples/V1/KeyManagementServiceClient/asymmetric_decrypt.php
+     *
      * @param AsymmetricDecryptRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -414,8 +431,10 @@ final class KeyManagementServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function asymmetricDecrypt(AsymmetricDecryptRequest $request, array $callOptions = []): AsymmetricDecryptResponse
-    {
+    public function asymmetricDecrypt(
+        AsymmetricDecryptRequest $request,
+        array $callOptions = []
+    ): AsymmetricDecryptResponse {
         return $this->startApiCall('AsymmetricDecrypt', $request, $callOptions)->wait();
     }
 
@@ -427,6 +446,8 @@ final class KeyManagementServiceClient
      * [GetPublicKey][google.cloud.kms.v1.KeyManagementService.GetPublicKey].
      *
      * The async variant is {@see KeyManagementServiceClient::asymmetricSignAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/asymmetric_sign.php
      *
      * @param AsymmetricSignRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -456,6 +477,8 @@ final class KeyManagementServiceClient
      * are required.
      *
      * The async variant is {@see KeyManagementServiceClient::createCryptoKeyAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/create_crypto_key.php
      *
      * @param CreateCryptoKeyRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -487,6 +510,8 @@ final class KeyManagementServiceClient
      * The async variant is
      * {@see KeyManagementServiceClient::createCryptoKeyVersionAsync()} .
      *
+     * @example samples/V1/KeyManagementServiceClient/create_crypto_key_version.php
+     *
      * @param CreateCryptoKeyVersionRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -501,8 +526,10 @@ final class KeyManagementServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createCryptoKeyVersion(CreateCryptoKeyVersionRequest $request, array $callOptions = []): CryptoKeyVersion
-    {
+    public function createCryptoKeyVersion(
+        CreateCryptoKeyVersionRequest $request,
+        array $callOptions = []
+    ): CryptoKeyVersion {
         return $this->startApiCall('CreateCryptoKeyVersion', $request, $callOptions)->wait();
     }
 
@@ -514,6 +541,8 @@ final class KeyManagementServiceClient
      * required.
      *
      * The async variant is {@see KeyManagementServiceClient::createImportJobAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/create_import_job.php
      *
      * @param CreateImportJobRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -539,6 +568,8 @@ final class KeyManagementServiceClient
      * Location.
      *
      * The async variant is {@see KeyManagementServiceClient::createKeyRingAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/create_key_ring.php
      *
      * @param CreateKeyRingRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -566,6 +597,8 @@ final class KeyManagementServiceClient
      * [ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ENCRYPT_DECRYPT].
      *
      * The async variant is {@see KeyManagementServiceClient::decryptAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/decrypt.php
      *
      * @param DecryptRequest $request     A request to house fields associated with the call.
      * @param array          $callOptions {
@@ -612,6 +645,8 @@ final class KeyManagementServiceClient
      * The async variant is
      * {@see KeyManagementServiceClient::destroyCryptoKeyVersionAsync()} .
      *
+     * @example samples/V1/KeyManagementServiceClient/destroy_crypto_key_version.php
+     *
      * @param DestroyCryptoKeyVersionRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
      *     Optional.
@@ -626,8 +661,10 @@ final class KeyManagementServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function destroyCryptoKeyVersion(DestroyCryptoKeyVersionRequest $request, array $callOptions = []): CryptoKeyVersion
-    {
+    public function destroyCryptoKeyVersion(
+        DestroyCryptoKeyVersionRequest $request,
+        array $callOptions = []
+    ): CryptoKeyVersion {
         return $this->startApiCall('DestroyCryptoKeyVersion', $request, $callOptions)->wait();
     }
 
@@ -638,6 +675,8 @@ final class KeyManagementServiceClient
      * [ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ENCRYPT_DECRYPT].
      *
      * The async variant is {@see KeyManagementServiceClient::encryptAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/encrypt.php
      *
      * @param EncryptRequest $request     A request to house fields associated with the call.
      * @param array          $callOptions {
@@ -665,6 +704,8 @@ final class KeyManagementServiceClient
      * The async variant is
      * {@see KeyManagementServiceClient::generateRandomBytesAsync()} .
      *
+     * @example samples/V1/KeyManagementServiceClient/generate_random_bytes.php
+     *
      * @param GenerateRandomBytesRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
      *     Optional.
@@ -679,8 +720,10 @@ final class KeyManagementServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function generateRandomBytes(GenerateRandomBytesRequest $request, array $callOptions = []): GenerateRandomBytesResponse
-    {
+    public function generateRandomBytes(
+        GenerateRandomBytesRequest $request,
+        array $callOptions = []
+    ): GenerateRandomBytesResponse {
         return $this->startApiCall('GenerateRandomBytes', $request, $callOptions)->wait();
     }
 
@@ -690,6 +733,8 @@ final class KeyManagementServiceClient
      * [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion].
      *
      * The async variant is {@see KeyManagementServiceClient::getCryptoKeyAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/get_crypto_key.php
      *
      * @param GetCryptoKeyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -717,6 +762,8 @@ final class KeyManagementServiceClient
      * The async variant is
      * {@see KeyManagementServiceClient::getCryptoKeyVersionAsync()} .
      *
+     * @example samples/V1/KeyManagementServiceClient/get_crypto_key_version.php
+     *
      * @param GetCryptoKeyVersionRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
      *     Optional.
@@ -741,6 +788,8 @@ final class KeyManagementServiceClient
      *
      * The async variant is {@see KeyManagementServiceClient::getImportJobAsync()} .
      *
+     * @example samples/V1/KeyManagementServiceClient/get_import_job.php
+     *
      * @param GetImportJobRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -764,6 +813,8 @@ final class KeyManagementServiceClient
      * Returns metadata for a given [KeyRing][google.cloud.kms.v1.KeyRing].
      *
      * The async variant is {@see KeyManagementServiceClient::getKeyRingAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/get_key_ring.php
      *
      * @param GetKeyRingRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -793,6 +844,8 @@ final class KeyManagementServiceClient
      * [ASYMMETRIC_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ASYMMETRIC_DECRYPT].
      *
      * The async variant is {@see KeyManagementServiceClient::getPublicKeyAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/get_public_key.php
      *
      * @param GetPublicKeyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -826,6 +879,8 @@ final class KeyManagementServiceClient
      * The async variant is
      * {@see KeyManagementServiceClient::importCryptoKeyVersionAsync()} .
      *
+     * @example samples/V1/KeyManagementServiceClient/import_crypto_key_version.php
+     *
      * @param ImportCryptoKeyVersionRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -840,8 +895,10 @@ final class KeyManagementServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function importCryptoKeyVersion(ImportCryptoKeyVersionRequest $request, array $callOptions = []): CryptoKeyVersion
-    {
+    public function importCryptoKeyVersion(
+        ImportCryptoKeyVersionRequest $request,
+        array $callOptions = []
+    ): CryptoKeyVersion {
         return $this->startApiCall('ImportCryptoKeyVersion', $request, $callOptions)->wait();
     }
 
@@ -850,6 +907,8 @@ final class KeyManagementServiceClient
      *
      * The async variant is
      * {@see KeyManagementServiceClient::listCryptoKeyVersionsAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/list_crypto_key_versions.php
      *
      * @param ListCryptoKeyVersionsRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
@@ -865,8 +924,10 @@ final class KeyManagementServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listCryptoKeyVersions(ListCryptoKeyVersionsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listCryptoKeyVersions(
+        ListCryptoKeyVersionsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListCryptoKeyVersions', $request, $callOptions);
     }
 
@@ -874,6 +935,8 @@ final class KeyManagementServiceClient
      * Lists [CryptoKeys][google.cloud.kms.v1.CryptoKey].
      *
      * The async variant is {@see KeyManagementServiceClient::listCryptoKeysAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/list_crypto_keys.php
      *
      * @param ListCryptoKeysRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -899,6 +962,8 @@ final class KeyManagementServiceClient
      *
      * The async variant is {@see KeyManagementServiceClient::listImportJobsAsync()} .
      *
+     * @example samples/V1/KeyManagementServiceClient/list_import_jobs.php
+     *
      * @param ListImportJobsRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -922,6 +987,8 @@ final class KeyManagementServiceClient
      * Lists [KeyRings][google.cloud.kms.v1.KeyRing].
      *
      * The async variant is {@see KeyManagementServiceClient::listKeyRingsAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/list_key_rings.php
      *
      * @param ListKeyRingsRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -948,6 +1015,8 @@ final class KeyManagementServiceClient
      * producing a tag that can be verified by another source with the same key.
      *
      * The async variant is {@see KeyManagementServiceClient::macSignAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/mac_sign.php
      *
      * @param MacSignRequest $request     A request to house fields associated with the call.
      * @param array          $callOptions {
@@ -976,6 +1045,8 @@ final class KeyManagementServiceClient
      *
      * The async variant is {@see KeyManagementServiceClient::macVerifyAsync()} .
      *
+     * @example samples/V1/KeyManagementServiceClient/mac_verify.php
+     *
      * @param MacVerifyRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
      *     Optional.
@@ -1002,6 +1073,8 @@ final class KeyManagementServiceClient
      * [RAW_ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.RAW_ENCRYPT_DECRYPT].
      *
      * The async variant is {@see KeyManagementServiceClient::rawDecryptAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/raw_decrypt.php
      *
      * @param RawDecryptRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -1031,6 +1104,8 @@ final class KeyManagementServiceClient
      * [RAW_ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.RAW_ENCRYPT_DECRYPT].
      *
      * The async variant is {@see KeyManagementServiceClient::rawEncryptAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/raw_encrypt.php
      *
      * @param RawEncryptRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -1065,6 +1140,8 @@ final class KeyManagementServiceClient
      * The async variant is
      * {@see KeyManagementServiceClient::restoreCryptoKeyVersionAsync()} .
      *
+     * @example samples/V1/KeyManagementServiceClient/restore_crypto_key_version.php
+     *
      * @param RestoreCryptoKeyVersionRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
      *     Optional.
@@ -1079,8 +1156,10 @@ final class KeyManagementServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function restoreCryptoKeyVersion(RestoreCryptoKeyVersionRequest $request, array $callOptions = []): CryptoKeyVersion
-    {
+    public function restoreCryptoKeyVersion(
+        RestoreCryptoKeyVersionRequest $request,
+        array $callOptions = []
+    ): CryptoKeyVersion {
         return $this->startApiCall('RestoreCryptoKeyVersion', $request, $callOptions)->wait();
     }
 
@@ -1088,6 +1167,8 @@ final class KeyManagementServiceClient
      * Update a [CryptoKey][google.cloud.kms.v1.CryptoKey].
      *
      * The async variant is {@see KeyManagementServiceClient::updateCryptoKeyAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/update_crypto_key.php
      *
      * @param UpdateCryptoKeyRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -1119,6 +1200,8 @@ final class KeyManagementServiceClient
      * The async variant is
      * {@see KeyManagementServiceClient::updateCryptoKeyPrimaryVersionAsync()} .
      *
+     * @example samples/V1/KeyManagementServiceClient/update_crypto_key_primary_version.php
+     *
      * @param UpdateCryptoKeyPrimaryVersionRequest $request     A request to house fields associated with the call.
      * @param array                                $callOptions {
      *     Optional.
@@ -1133,8 +1216,10 @@ final class KeyManagementServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateCryptoKeyPrimaryVersion(UpdateCryptoKeyPrimaryVersionRequest $request, array $callOptions = []): CryptoKey
-    {
+    public function updateCryptoKeyPrimaryVersion(
+        UpdateCryptoKeyPrimaryVersionRequest $request,
+        array $callOptions = []
+    ): CryptoKey {
         return $this->startApiCall('UpdateCryptoKeyPrimaryVersion', $request, $callOptions)->wait();
     }
 
@@ -1155,6 +1240,8 @@ final class KeyManagementServiceClient
      * The async variant is
      * {@see KeyManagementServiceClient::updateCryptoKeyVersionAsync()} .
      *
+     * @example samples/V1/KeyManagementServiceClient/update_crypto_key_version.php
+     *
      * @param UpdateCryptoKeyVersionRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -1169,8 +1256,10 @@ final class KeyManagementServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateCryptoKeyVersion(UpdateCryptoKeyVersionRequest $request, array $callOptions = []): CryptoKeyVersion
-    {
+    public function updateCryptoKeyVersion(
+        UpdateCryptoKeyVersionRequest $request,
+        array $callOptions = []
+    ): CryptoKeyVersion {
         return $this->startApiCall('UpdateCryptoKeyVersion', $request, $callOptions)->wait();
     }
 
@@ -1178,6 +1267,8 @@ final class KeyManagementServiceClient
      * Gets information about a location.
      *
      * The async variant is {@see KeyManagementServiceClient::getLocationAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/get_location.php
      *
      * @param GetLocationRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -1203,6 +1294,8 @@ final class KeyManagementServiceClient
      *
      * The async variant is {@see KeyManagementServiceClient::listLocationsAsync()} .
      *
+     * @example samples/V1/KeyManagementServiceClient/list_locations.php
+     *
      * @param ListLocationsRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -1227,6 +1320,8 @@ final class KeyManagementServiceClient
     if the resource exists and does not have a policy set.
      *
      * The async variant is {@see KeyManagementServiceClient::getIamPolicyAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/get_iam_policy.php
      *
      * @param GetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -1255,6 +1350,8 @@ final class KeyManagementServiceClient
     errors.
      *
      * The async variant is {@see KeyManagementServiceClient::setIamPolicyAsync()} .
+     *
+     * @example samples/V1/KeyManagementServiceClient/set_iam_policy.php
      *
      * @param SetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -1287,6 +1384,8 @@ final class KeyManagementServiceClient
      * The async variant is
      * {@see KeyManagementServiceClient::testIamPermissionsAsync()} .
      *
+     * @example samples/V1/KeyManagementServiceClient/test_iam_permissions.php
+     *
      * @param TestIamPermissionsRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -1301,8 +1400,10 @@ final class KeyManagementServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function testIamPermissions(TestIamPermissionsRequest $request, array $callOptions = []): TestIamPermissionsResponse
-    {
+    public function testIamPermissions(
+        TestIamPermissionsRequest $request,
+        array $callOptions = []
+    ): TestIamPermissionsResponse {
         return $this->startApiCall('TestIamPermissions', $request, $callOptions)->wait();
     }
 }

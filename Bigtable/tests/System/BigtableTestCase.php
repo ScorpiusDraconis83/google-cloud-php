@@ -17,8 +17,8 @@
 
 namespace Google\Cloud\Bigtable\Tests\System;
 
-use Google\Cloud\Bigtable\Admin\V2\BigtableInstanceAdminClient as InstanceAdminClient;
-use Google\Cloud\Bigtable\Admin\V2\BigtableTableAdminClient as TableAdminClient;
+use Google\Cloud\Bigtable\Admin\V2\Client\BigtableInstanceAdminClient as InstanceAdminClient;
+use Google\Cloud\Bigtable\Admin\V2\Client\BigtableTableAdminClient as TableAdminClient;
 use Google\Cloud\Bigtable\Admin\V2\Cluster;
 use Google\Cloud\Bigtable\Admin\V2\ColumnFamily;
 use Google\Cloud\Bigtable\Admin\V2\Instance;
@@ -26,6 +26,10 @@ use Google\Cloud\Bigtable\Admin\V2\Table;
 use Google\Cloud\Bigtable\BigtableClient;
 use Google\Cloud\Core\Testing\System\SystemTestCase;
 use Exception;
+use Google\Cloud\Bigtable\Admin\V2\CreateInstanceRequest;
+use Google\Cloud\Bigtable\Admin\V2\CreateTableRequest;
+use Google\Cloud\Bigtable\Admin\V2\DeleteInstanceRequest;
+use Google\Cloud\Bigtable\Admin\V2\DeleteTableRequest;
 
 /**
  * @group bigtable
@@ -45,15 +49,19 @@ class BigtableTestCase extends SystemTestCase
     protected static $instanceId;
     protected static $clusterId;
 
-    public static function setUpBeforeClass(): void
+    /**
+     * @beforeClass
+     */
+    public static function setUpTestFixtures(): void
     {
         self::setUsingEmulator(getenv('BIGTABLE_EMULATOR_HOST'));
         $keyFilePath = getenv('GOOGLE_CLOUD_PHP_TESTS_KEY_PATH');
+        $credentials = self::isEmulatorUsed() ? null : $keyFilePath;
         self::$instanceAdminClient = new InstanceAdminClient([
-            'credentials' => $keyFilePath
+            'credentials' => $credentials,
         ]);
         self::$tableAdminClient = new TableAdminClient([
-            'credentials' => $keyFilePath
+            'credentials' => $credentials,
         ]);
         $keyFileData = json_decode(file_get_contents($keyFilePath), true);
         self::$projectId = $keyFileData['project_id'];
@@ -61,15 +69,17 @@ class BigtableTestCase extends SystemTestCase
         self::$clusterId = uniqid(self::CLUSTER_ID_PREFIX);
         self::$table = (new BigtableClient([
             'projectId' => self::$projectId,
-            'credentials' => $keyFilePath
+            'credentials' => $credentials,
         ]))->table(self::$instanceId, self::TABLE_ID);
         if (!self::isEmulatorUsed()) {
             self::createInstance();
         }
         self::createTable();
     }
-
-    public static function tearDownAfterClass(): void
+    /**
+     * @afterClass
+     */
+    public static function tearDownTestFixtures(): void
     {
         self::deleteTable();
         if (!self::isEmulatorUsed()) {
@@ -93,12 +103,13 @@ class BigtableTestCase extends SystemTestCase
         $clusters = [
             self::$clusterId => $cluster
         ];
-        $operationResponse = self::$instanceAdminClient->createInstance(
-            $formattedParent,
-            self::$instanceId,
-            $instance,
-            $clusters
-        );
+        $request = new CreateInstanceRequest([
+            'parent' => $formattedParent,
+            'instance_id' => self::$instanceId,
+            'instance' => $instance,
+            'clusters' => $clusters
+        ]);
+        $operationResponse = self::$instanceAdminClient->createInstance($request);
         $operationResponse->pollUntilComplete();
         if (!$operationResponse->operationSucceeded()) {
             throw new Exception('error creating instance', -1);
@@ -111,7 +122,10 @@ class BigtableTestCase extends SystemTestCase
             self::$projectId,
             self::$instanceId
         );
-        self::$instanceAdminClient->deleteInstance($formattedName);
+        $request = new DeleteInstanceRequest([
+            'name' => $formattedName
+        ]);
+        self::$instanceAdminClient->deleteInstance($request);
     }
 
     private static function createTable()
@@ -134,11 +148,12 @@ class BigtableTestCase extends SystemTestCase
             'cf8' => $columnFamily,
             'cf9' => $columnFamily
         ]);
-        self::$tableAdminClient->createTable(
-            $formattedParent,
-            self::TABLE_ID,
-            $table
-        );
+        $request = new CreateTableRequest([
+            'parent' => $formattedParent,
+            'table_id' => self::TABLE_ID,
+            'table' => $table
+        ]);
+        self::$tableAdminClient->createTable($request);
     }
 
     private static function deleteTable()
@@ -148,6 +163,9 @@ class BigtableTestCase extends SystemTestCase
             self::$instanceId,
             self::TABLE_ID
         );
-        self::$tableAdminClient->deleteTable($formattedName);
+        $request = new DeleteTableRequest([
+            'name' => $formattedName
+        ]);
+        self::$tableAdminClient->deleteTable($request);
     }
 }

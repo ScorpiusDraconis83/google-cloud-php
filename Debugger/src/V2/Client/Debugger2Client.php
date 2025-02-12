@@ -41,6 +41,7 @@ use Google\Cloud\Debugger\V2\ListDebuggeesResponse;
 use Google\Cloud\Debugger\V2\SetBreakpointRequest;
 use Google\Cloud\Debugger\V2\SetBreakpointResponse;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The Debugger service provides the API that allows users to collect run-time
@@ -59,11 +60,11 @@ use GuzzleHttp\Promise\PromiseInterface;
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
  *
- * @method PromiseInterface deleteBreakpointAsync(DeleteBreakpointRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getBreakpointAsync(GetBreakpointRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listBreakpointsAsync(ListBreakpointsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listDebuggeesAsync(ListDebuggeesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setBreakpointAsync(SetBreakpointRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteBreakpointAsync(DeleteBreakpointRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<GetBreakpointResponse> getBreakpointAsync(GetBreakpointRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ListBreakpointsResponse> listBreakpointsAsync(ListBreakpointsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ListDebuggeesResponse> listDebuggeesAsync(ListDebuggeesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<SetBreakpointResponse> setBreakpointAsync(SetBreakpointRequest $request, array $optionalArgs = [])
  */
 final class Debugger2Client
 {
@@ -130,6 +131,12 @@ final class Debugger2Client
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -163,6 +170,9 @@ final class Debugger2Client
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -189,6 +199,8 @@ final class Debugger2Client
      *
      * The async variant is {@see Debugger2Client::deleteBreakpointAsync()} .
      *
+     * @example samples/V2/Debugger2Client/delete_breakpoint.php
+     *
      * @param DeleteBreakpointRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
      *     Optional.
@@ -210,6 +222,8 @@ final class Debugger2Client
      * Gets breakpoint information.
      *
      * The async variant is {@see Debugger2Client::getBreakpointAsync()} .
+     *
+     * @example samples/V2/Debugger2Client/get_breakpoint.php
      *
      * @param GetBreakpointRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -235,6 +249,8 @@ final class Debugger2Client
      *
      * The async variant is {@see Debugger2Client::listBreakpointsAsync()} .
      *
+     * @example samples/V2/Debugger2Client/list_breakpoints.php
+     *
      * @param ListBreakpointsRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -259,6 +275,8 @@ final class Debugger2Client
      *
      * The async variant is {@see Debugger2Client::listDebuggeesAsync()} .
      *
+     * @example samples/V2/Debugger2Client/list_debuggees.php
+     *
      * @param ListDebuggeesRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -282,6 +300,8 @@ final class Debugger2Client
      * Sets the breakpoint to the debuggee.
      *
      * The async variant is {@see Debugger2Client::setBreakpointAsync()} .
+     *
+     * @example samples/V2/Debugger2Client/set_breakpoint.php
      *
      * @param SetBreakpointRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {

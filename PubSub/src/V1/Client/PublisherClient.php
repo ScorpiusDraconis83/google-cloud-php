@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ namespace Google\Cloud\PubSub\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
+use Google\ApiCore\InsecureCredentialsWrapper;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
 use Google\ApiCore\RetrySettings;
@@ -49,7 +50,9 @@ use Google\Cloud\PubSub\V1\PublishRequest;
 use Google\Cloud\PubSub\V1\PublishResponse;
 use Google\Cloud\PubSub\V1\Topic;
 use Google\Cloud\PubSub\V1\UpdateTopicRequest;
+use Grpc\ChannelCredentials;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The service that an application uses to manipulate topics, and to send
@@ -63,18 +66,18 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createTopicAsync(Topic $request, array $optionalArgs = [])
- * @method PromiseInterface deleteTopicAsync(DeleteTopicRequest $request, array $optionalArgs = [])
- * @method PromiseInterface detachSubscriptionAsync(DetachSubscriptionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getTopicAsync(GetTopicRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listTopicSnapshotsAsync(ListTopicSnapshotsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listTopicSubscriptionsAsync(ListTopicSubscriptionsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listTopicsAsync(ListTopicsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface publishAsync(PublishRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateTopicAsync(UpdateTopicRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Topic> createTopicAsync(Topic $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteTopicAsync(DeleteTopicRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DetachSubscriptionResponse> detachSubscriptionAsync(DetachSubscriptionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Topic> getTopicAsync(GetTopicRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listTopicSnapshotsAsync(ListTopicSnapshotsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listTopicSubscriptionsAsync(ListTopicSubscriptionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listTopicsAsync(ListTopicsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PublishResponse> publishAsync(PublishRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Topic> updateTopicAsync(UpdateTopicRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
  */
 final class PublisherClient
 {
@@ -236,20 +239,24 @@ final class PublisherClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
 
     /**
      * Constructor.
+     *
+     * Setting the "PUBSUB_EMULATOR_HOST" environment variable will automatically set
+     * the API Endpoint to the value specified in the variable, as well as ensure that
+     * empty credentials are used in the transport layer.
      *
      * @param array $options {
      *     Optional. Options for configuring the service API wrapper.
@@ -265,6 +272,12 @@ final class PublisherClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -298,12 +311,16 @@ final class PublisherClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
      */
     public function __construct(array $options = [])
     {
+        $options = $this->setDefaultEmulatorConfig($options);
         $clientOptions = $this->buildClientOptions($options);
         $this->setClientOptions($clientOptions);
     }
@@ -324,6 +341,8 @@ final class PublisherClient
      * (https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names).
      *
      * The async variant is {@see PublisherClient::createTopicAsync()} .
+     *
+     * @example samples/V1/PublisherClient/create_topic.php
      *
      * @param Topic $request     A request to house fields associated with the call.
      * @param array $callOptions {
@@ -353,6 +372,8 @@ final class PublisherClient
      *
      * The async variant is {@see PublisherClient::deleteTopicAsync()} .
      *
+     * @example samples/V1/PublisherClient/delete_topic.php
+     *
      * @param DeleteTopicRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -378,6 +399,8 @@ final class PublisherClient
      *
      * The async variant is {@see PublisherClient::detachSubscriptionAsync()} .
      *
+     * @example samples/V1/PublisherClient/detach_subscription.php
+     *
      * @param DetachSubscriptionRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -401,6 +424,8 @@ final class PublisherClient
      * Gets the configuration of a topic.
      *
      * The async variant is {@see PublisherClient::getTopicAsync()} .
+     *
+     * @example samples/V1/PublisherClient/get_topic.php
      *
      * @param GetTopicRequest $request     A request to house fields associated with the call.
      * @param array           $callOptions {
@@ -430,6 +455,8 @@ final class PublisherClient
      *
      * The async variant is {@see PublisherClient::listTopicSnapshotsAsync()} .
      *
+     * @example samples/V1/PublisherClient/list_topic_snapshots.php
+     *
      * @param ListTopicSnapshotsRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -454,6 +481,8 @@ final class PublisherClient
      *
      * The async variant is {@see PublisherClient::listTopicSubscriptionsAsync()} .
      *
+     * @example samples/V1/PublisherClient/list_topic_subscriptions.php
+     *
      * @param ListTopicSubscriptionsRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -477,6 +506,8 @@ final class PublisherClient
      * Lists matching topics.
      *
      * The async variant is {@see PublisherClient::listTopicsAsync()} .
+     *
+     * @example samples/V1/PublisherClient/list_topics.php
      *
      * @param ListTopicsRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -503,6 +534,8 @@ final class PublisherClient
      *
      * The async variant is {@see PublisherClient::publishAsync()} .
      *
+     * @example samples/V1/PublisherClient/publish.php
+     *
      * @param PublishRequest $request     A request to house fields associated with the call.
      * @param array          $callOptions {
      *     Optional.
@@ -523,10 +556,12 @@ final class PublisherClient
     }
 
     /**
-     * Updates an existing topic. Note that certain properties of a
-     * topic are not modifiable.
+     * Updates an existing topic by updating the fields specified in the update
+     * mask. Note that certain properties of a topic are not modifiable.
      *
      * The async variant is {@see PublisherClient::updateTopicAsync()} .
+     *
+     * @example samples/V1/PublisherClient/update_topic.php
      *
      * @param UpdateTopicRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -552,6 +587,8 @@ final class PublisherClient
     if the resource exists and does not have a policy set.
      *
      * The async variant is {@see PublisherClient::getIamPolicyAsync()} .
+     *
+     * @example samples/V1/PublisherClient/get_iam_policy.php
      *
      * @param GetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -580,6 +617,8 @@ final class PublisherClient
     errors.
      *
      * The async variant is {@see PublisherClient::setIamPolicyAsync()} .
+     *
+     * @example samples/V1/PublisherClient/set_iam_policy.php
      *
      * @param SetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -611,6 +650,8 @@ final class PublisherClient
      *
      * The async variant is {@see PublisherClient::testIamPermissionsAsync()} .
      *
+     * @example samples/V1/PublisherClient/test_iam_permissions.php
+     *
      * @param TestIamPermissionsRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -628,5 +669,27 @@ final class PublisherClient
     public function testIamPermissions(TestIamPermissionsRequest $request, array $callOptions = []): TestIamPermissionsResponse
     {
         return $this->startApiCall('TestIamPermissions', $request, $callOptions)->wait();
+    }
+
+    /** Configure the gapic configuration to use a service emulator. */
+    private function setDefaultEmulatorConfig(array $options): array
+    {
+        $emulatorHost = getenv('PUBSUB_EMULATOR_HOST');
+        if (empty($emulatorHost)) {
+            return $options;
+        }
+
+        if ($scheme = parse_url($emulatorHost, PHP_URL_SCHEME)) {
+            $search = $scheme . '://';
+            $emulatorHost = str_replace($search, '', $emulatorHost);
+        }
+
+        $options['apiEndpoint'] ??= $emulatorHost;
+        if (class_exists(ChannelCredentials::class)) {
+            $options['transportConfig']['grpc']['stubOpts']['credentials'] ??= ChannelCredentials::createInsecure();
+        }
+
+        $options['credentials'] ??= new InsecureCredentialsWrapper();
+        return $options;
     }
 }

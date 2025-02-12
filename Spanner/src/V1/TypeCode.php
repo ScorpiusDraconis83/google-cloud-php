@@ -44,6 +44,13 @@ class TypeCode
      */
     const FLOAT64 = 3;
     /**
+     * Encoded as `number`, or the strings `"NaN"`, `"Infinity"`, or
+     * `"-Infinity"`.
+     *
+     * Generated from protobuf enum <code>FLOAT32 = 15;</code>
+     */
+    const FLOAT32 = 15;
+    /**
      * Encoded as `string` in RFC 3339 timestamp format. The time zone
      * must be present, and must be `"Z"`.
      * If the schema has the column option
@@ -91,13 +98,13 @@ class TypeCode
     const STRUCT = 9;
     /**
      * Encoded as `string`, in decimal format or scientific notation format.
-     * <br>Decimal format:
-     * <br>`[+-]Digits[.[Digits]]` or
-     * <br>`[+-][Digits].Digits`
+     * Decimal format:
+     * `[+-]Digits[.[Digits]]` or
+     * `[+-][Digits].Digits`
      * Scientific notation:
-     * <br>`[+-]Digits[.[Digits]][ExponentIndicator[+-]Digits]` or
-     * <br>`[+-][Digits].Digits[ExponentIndicator[+-]Digits]`
-     * <br>(ExponentIndicator is `"e"` or `"E"`)
+     * `[+-]Digits[.[Digits]][ExponentIndicator[+-]Digits]` or
+     * `[+-][Digits].Digits[ExponentIndicator[+-]Digits]`
+     * (ExponentIndicator is `"e"` or `"E"`)
      *
      * Generated from protobuf enum <code>NUMERIC = 10;</code>
      */
@@ -114,12 +121,43 @@ class TypeCode
      * Generated from protobuf enum <code>JSON = 11;</code>
      */
     const JSON = 11;
+    /**
+     * Encoded as a base64-encoded `string`, as described in RFC 4648,
+     * section 4.
+     *
+     * Generated from protobuf enum <code>PROTO = 13;</code>
+     */
+    const PROTO = 13;
+    /**
+     * Encoded as `string`, in decimal format.
+     *
+     * Generated from protobuf enum <code>ENUM = 14;</code>
+     */
+    const ENUM = 14;
+    /**
+     * Encoded as `string`, in `ISO8601` duration format -
+     * `P[n]Y[n]M[n]DT[n]H[n]M[n[.fraction]]S`
+     * where `n` is an integer.
+     * For example, `P1Y2M3DT4H5M6.5S` represents time duration of 1 year, 2
+     * months, 3 days, 4 hours, 5 minutes, and 6.5 seconds.
+     *
+     * Generated from protobuf enum <code>INTERVAL = 16;</code>
+     */
+    const INTERVAL = 16;
+    /**
+     * Encoded as `string`, in lower-case hexa-decimal format, as described
+     * in RFC 9562, section 4.
+     *
+     * Generated from protobuf enum <code>UUID = 17;</code>
+     */
+    const UUID = 17;
 
     private static $valueToName = [
         self::TYPE_CODE_UNSPECIFIED => 'TYPE_CODE_UNSPECIFIED',
         self::BOOL => 'BOOL',
         self::INT64 => 'INT64',
         self::FLOAT64 => 'FLOAT64',
+        self::FLOAT32 => 'FLOAT32',
         self::TIMESTAMP => 'TIMESTAMP',
         self::DATE => 'DATE',
         self::STRING => 'STRING',
@@ -128,6 +166,10 @@ class TypeCode
         self::STRUCT => 'STRUCT',
         self::NUMERIC => 'NUMERIC',
         self::JSON => 'JSON',
+        self::PROTO => 'PROTO',
+        self::ENUM => 'ENUM',
+        self::INTERVAL => 'INTERVAL',
+        self::UUID => 'UUID',
     ];
 
     public static function name($value)

@@ -28,19 +28,6 @@ use Symfony\Component\Console\Tester\CommandTester;
  */
 class ComponentInfoCommandTest extends TestCase
 {
-    private static $expectedFiles = [
-        '.OwlBot.yaml',
-        '.gitattributes',
-        '.github/pull_request_template.md',
-        '.repo-metadata.json',
-        'CONTRIBUTING.md',
-        'LICENSE',
-        'README.md',
-        'VERSION',
-        'owlbot.py',
-        'phpunit.xml.dist',
-    ];
-
     private static CommandTester $commandTester;
 
     public static function setUpBeforeClass(): void
@@ -68,7 +55,7 @@ class ComponentInfoCommandTest extends TestCase
 
     public function testComponentDetails()
     {
-        self::$commandTester->execute(['-c' => 'AccessContextManager']);
+        self::$commandTester->execute(['-c' => ['AccessContextManager']]);
 
         // confirm a few fields we expect to see in the output
         $display = self::$commandTester->getDisplay();
@@ -82,8 +69,8 @@ class ComponentInfoCommandTest extends TestCase
     public function testFieldsOption()
     {
         self::$commandTester->execute([
-            '-c' => 'AccessContextManager',
-            '--fields' => 'name,package_name,doesnt_exist',
+            '-c' => ['AccessContextManager'],
+            '--fields' => 'component_name,package_name,doesnt_exist',
         ]);
         $this->assertEquals(<<<EOL
 +-----------------------------------------------+
@@ -97,8 +84,8 @@ EOL, self::$commandTester->getDisplay());
     public function testFieldsOptionOrder()
     {
         self::$commandTester->execute([
-            '-c' => 'AccessContextManager',
-            '--fields' => 'package_name,name',
+            '-c' => ['AccessContextManager'],
+            '--fields' => 'package_name,component_name',
         ]);
         $this->assertEquals(<<<EOL
 +-----------------------------------------------+
@@ -114,8 +101,8 @@ EOL, self::$commandTester->getDisplay());
         mkdir($tmpDir = sys_get_temp_dir() . '/component-info-test-' . time());
         $csv = $tmpDir . '/test.csv';
         self::$commandTester->execute([
-            '-c' => 'AccessContextManager',
-            '--fields' => 'package_name,name,github_repo',
+            '-c' => ['AccessContextManager'],
+            '--fields' => 'package_name,component_name,github_repo',
             '--csv' => $csv,
         ]);
         $this->assertFileExists($csv);

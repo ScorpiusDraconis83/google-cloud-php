@@ -23,7 +23,8 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START analyticsadmin_v1alpha_generated_AnalyticsAdminService_RunAccessReport_sync]
-use Google\Analytics\Admin\V1alpha\AnalyticsAdminServiceClient;
+use Google\Analytics\Admin\V1alpha\Client\AnalyticsAdminServiceClient;
+use Google\Analytics\Admin\V1alpha\RunAccessReportRequest;
 use Google\Analytics\Admin\V1alpha\RunAccessReportResponse;
 use Google\ApiCore\ApiException;
 
@@ -37,12 +38,17 @@ use Google\ApiCore\ApiException;
  * only be requested on Google Analytics 360 properties. This method is only
  * available to Administrators.
  *
- * These data access records include GA4 UI Reporting, GA4 UI Explorations,
- * GA4 Data API, and other products like Firebase & Admob that can retrieve
+ * These data access records include GA UI Reporting, GA UI Explorations,
+ * GA Data API, and other products like Firebase & Admob that can retrieve
  * data from Google Analytics through a linkage. These records don't include
  * property configuration changes like adding a stream or changing a
  * property's time zone. For configuration change history, see
  * [searchChangeHistoryEvents](https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).
+ *
+ * To give your feedback on this API, complete the [Google Analytics Access
+ * Reports
+ * feedback](https://docs.google.com/forms/d/e/1FAIpQLSdmEBUrMzAEdiEKk5TV5dEHvDUZDRlgWYdQdAeSdtR4hVjEhw/viewform)
+ * form.
  *
  * This sample has been automatically generated and should be regarded as a code
  * template only. It will require modifications to work:
@@ -55,10 +61,13 @@ function run_access_report_sample(): void
     // Create a client.
     $analyticsAdminServiceClient = new AnalyticsAdminServiceClient();
 
+    // Prepare the request message.
+    $request = new RunAccessReportRequest();
+
     // Call the API and handle any network failures.
     try {
         /** @var RunAccessReportResponse $response */
-        $response = $analyticsAdminServiceClient->runAccessReport();
+        $response = $analyticsAdminServiceClient->runAccessReport($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

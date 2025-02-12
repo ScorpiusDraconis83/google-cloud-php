@@ -246,11 +246,65 @@ class BucketTest extends TestCase
         $this->assertEquals('file2.txt', $objects[1]->name());
     }
 
+    public function testGetsObjectsWithManagedFolders()
+    {
+        $this->connection->listObjects(Argument::any())
+            ->willReturn([
+                'kind' => 'storage#objects',
+                'prefixes' => ['managedFolders/', 'mf/'],
+                'items' => [[
+                    'name' => 'mf/file.txt',
+                    'generation' => 'abc',
+                    'kind' => 'storage#object'
+                ]]
+            ]);
+
+        $bucket = $this->getBucket();
+        $objects = iterator_to_array($bucket->objects([
+            'delimiter' => '/',
+            'includeFoldersAsPrefixes' => true
+        ]));
+
+        $this->assertEquals('mf/file.txt', $objects[0]->name());
+    }
+
     public function testDelete()
     {
         $bucket = $this->getBucket([], false);
 
         $this->assertNull($bucket->delete());
+    }
+
+    public function testRestore()
+    {
+        $this->connection->restoreObject(Argument::any())
+            ->willReturn([
+                'name' => 'file.txt',
+                'generation' => 'abc'
+            ]);
+
+        $bucket = $this->getBucket();
+        $restoredObject = $bucket->restore('file.txt', 'abc');
+
+        $this->assertInstanceOf(StorageObject::class, $restoredObject);
+        $this->assertEquals('file.txt', $restoredObject->name());
+        $this->assertEquals('abc', $restoredObject->info()['generation']);
+    }
+
+    public function testRestoreWithRestoreToken()
+    {
+        $this->connection->restoreObject(Argument::any())
+            ->willReturn([
+                'name' => 'file.txt',
+                'generation' => 'abc'
+            ]);
+
+        $bucket = $this->getBucket();
+        $restoredObject = $bucket->restore('file.txt', 'abc', ['restoreToken' => 'def']);
+
+        $this->assertInstanceOf(StorageObject::class, $restoredObject);
+        $this->assertEquals('file.txt', $restoredObject->name());
+        $this->assertEquals('abc', $restoredObject->info()['generation']);
     }
 
     public function testComposeThrowsExceptionWithLessThanTwoSources()
@@ -695,7 +749,7 @@ class BucketTest extends TestCase
     }
 
     private function getBucketForSigning(
-        SignBlobInterface $credentials = null,
+        ?SignBlobInterface $credentials = null,
         $scopes = ''
     ) {
         if ($credentials === null) {

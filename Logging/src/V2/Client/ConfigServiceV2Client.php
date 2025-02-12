@@ -74,6 +74,7 @@ use Google\Cloud\Logging\V2\UpdateSinkRequest;
 use Google\Cloud\Logging\V2\UpdateViewRequest;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Service for configuring sinks used to route log entries.
@@ -86,38 +87,38 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface copyLogEntriesAsync(CopyLogEntriesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createBucketAsync(CreateBucketRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createBucketAsyncAsync(CreateBucketRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createExclusionAsync(CreateExclusionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createLinkAsync(CreateLinkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createSinkAsync(CreateSinkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createViewAsync(CreateViewRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteBucketAsync(DeleteBucketRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteExclusionAsync(DeleteExclusionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteLinkAsync(DeleteLinkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteSinkAsync(DeleteSinkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteViewAsync(DeleteViewRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getBucketAsync(GetBucketRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getCmekSettingsAsync(GetCmekSettingsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getExclusionAsync(GetExclusionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLinkAsync(GetLinkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getSettingsAsync(GetSettingsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getSinkAsync(GetSinkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getViewAsync(GetViewRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listBucketsAsync(ListBucketsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listExclusionsAsync(ListExclusionsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLinksAsync(ListLinksRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listSinksAsync(ListSinksRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listViewsAsync(ListViewsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface undeleteBucketAsync(UndeleteBucketRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateBucketAsync(UpdateBucketRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateBucketAsyncAsync(UpdateBucketRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateCmekSettingsAsync(UpdateCmekSettingsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateExclusionAsync(UpdateExclusionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateSettingsAsync(UpdateSettingsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateSinkAsync(UpdateSinkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateViewAsync(UpdateViewRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> copyLogEntriesAsync(CopyLogEntriesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<LogBucket> createBucketAsync(CreateBucketRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createBucketAsyncAsync(CreateBucketRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<LogExclusion> createExclusionAsync(CreateExclusionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createLinkAsync(CreateLinkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<LogSink> createSinkAsync(CreateSinkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<LogView> createViewAsync(CreateViewRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteBucketAsync(DeleteBucketRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteExclusionAsync(DeleteExclusionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteLinkAsync(DeleteLinkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteSinkAsync(DeleteSinkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteViewAsync(DeleteViewRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<LogBucket> getBucketAsync(GetBucketRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CmekSettings> getCmekSettingsAsync(GetCmekSettingsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<LogExclusion> getExclusionAsync(GetExclusionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Link> getLinkAsync(GetLinkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Settings> getSettingsAsync(GetSettingsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<LogSink> getSinkAsync(GetSinkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<LogView> getViewAsync(GetViewRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listBucketsAsync(ListBucketsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listExclusionsAsync(ListExclusionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLinksAsync(ListLinksRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listSinksAsync(ListSinksRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listViewsAsync(ListViewsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> undeleteBucketAsync(UndeleteBucketRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<LogBucket> updateBucketAsync(UpdateBucketRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateBucketAsyncAsync(UpdateBucketRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CmekSettings> updateCmekSettingsAsync(UpdateCmekSettingsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<LogExclusion> updateExclusionAsync(UpdateExclusionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Settings> updateSettingsAsync(UpdateSettingsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<LogSink> updateSinkAsync(UpdateSinkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<LogView> updateViewAsync(UpdateViewRequest $request, array $optionalArgs = [])
  */
 final class ConfigServiceV2Client
 {
@@ -1008,14 +1009,14 @@ final class ConfigServiceV2Client
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -1037,6 +1038,12 @@ final class ConfigServiceV2Client
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -1070,6 +1077,9 @@ final class ConfigServiceV2Client
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -1097,6 +1107,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::copyLogEntriesAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/copy_log_entries.php
+     *
      * @param CopyLogEntriesRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -1121,6 +1133,8 @@ final class ConfigServiceV2Client
      * has been created, the bucket's location cannot be changed.
      *
      * The async variant is {@see ConfigServiceV2Client::createBucketAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/create_bucket.php
      *
      * @param CreateBucketRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -1148,6 +1162,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::createBucketAsyncAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/create_bucket_async.php
+     *
      * @param CreateBucketRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -1174,6 +1190,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::createExclusionAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/create_exclusion.php
+     *
      * @param CreateExclusionRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -1199,6 +1217,8 @@ final class ConfigServiceV2Client
      * currently only contain one link.
      *
      * The async variant is {@see ConfigServiceV2Client::createLinkAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/create_link.php
      *
      * @param CreateLinkRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -1227,6 +1247,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::createSinkAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/create_sink.php
+     *
      * @param CreateSinkRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -1251,6 +1273,8 @@ final class ConfigServiceV2Client
      * maximum of 30 views.
      *
      * The async variant is {@see ConfigServiceV2Client::createViewAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/create_view.php
      *
      * @param CreateViewRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -1280,6 +1304,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::deleteBucketAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/delete_bucket.php
+     *
      * @param DeleteBucketRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -1301,6 +1327,8 @@ final class ConfigServiceV2Client
      * Deletes an exclusion in the _Default sink.
      *
      * The async variant is {@see ConfigServiceV2Client::deleteExclusionAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/delete_exclusion.php
      *
      * @param DeleteExclusionRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -1324,6 +1352,8 @@ final class ConfigServiceV2Client
      * dataset.
      *
      * The async variant is {@see ConfigServiceV2Client::deleteLinkAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/delete_link.php
      *
      * @param DeleteLinkRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -1350,6 +1380,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::deleteSinkAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/delete_sink.php
+     *
      * @param DeleteSinkRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -1375,6 +1407,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::deleteViewAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/delete_view.php
+     *
      * @param DeleteViewRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -1396,6 +1430,8 @@ final class ConfigServiceV2Client
      * Gets a log bucket.
      *
      * The async variant is {@see ConfigServiceV2Client::getBucketAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/get_bucket.php
      *
      * @param GetBucketRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
@@ -1430,6 +1466,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::getCmekSettingsAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/get_cmek_settings.php
+     *
      * @param GetCmekSettingsRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -1454,6 +1492,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::getExclusionAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/get_exclusion.php
+     *
      * @param GetExclusionRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -1477,6 +1517,8 @@ final class ConfigServiceV2Client
      * Gets a link.
      *
      * The async variant is {@see ConfigServiceV2Client::getLinkAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/get_link.php
      *
      * @param GetLinkRequest $request     A request to house fields associated with the call.
      * @param array          $callOptions {
@@ -1511,6 +1553,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::getSettingsAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/get_settings.php
+     *
      * @param GetSettingsRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -1534,6 +1578,8 @@ final class ConfigServiceV2Client
      * Gets a sink.
      *
      * The async variant is {@see ConfigServiceV2Client::getSinkAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/get_sink.php
      *
      * @param GetSinkRequest $request     A request to house fields associated with the call.
      * @param array          $callOptions {
@@ -1559,6 +1605,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::getViewAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/get_view.php
+     *
      * @param GetViewRequest $request     A request to house fields associated with the call.
      * @param array          $callOptions {
      *     Optional.
@@ -1582,6 +1630,8 @@ final class ConfigServiceV2Client
      * Lists log buckets.
      *
      * The async variant is {@see ConfigServiceV2Client::listBucketsAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/list_buckets.php
      *
      * @param ListBucketsRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -1607,6 +1657,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::listExclusionsAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/list_exclusions.php
+     *
      * @param ListExclusionsRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -1630,6 +1682,8 @@ final class ConfigServiceV2Client
      * Lists links.
      *
      * The async variant is {@see ConfigServiceV2Client::listLinksAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/list_links.php
      *
      * @param ListLinksRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
@@ -1655,6 +1709,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::listSinksAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/list_sinks.php
+     *
      * @param ListSinksRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
      *     Optional.
@@ -1678,6 +1734,8 @@ final class ConfigServiceV2Client
      * Lists views on a log bucket.
      *
      * The async variant is {@see ConfigServiceV2Client::listViewsAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/list_views.php
      *
      * @param ListViewsRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
@@ -1703,6 +1761,8 @@ final class ConfigServiceV2Client
      * within the grace period of 7 days.
      *
      * The async variant is {@see ConfigServiceV2Client::undeleteBucketAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/undelete_bucket.php
      *
      * @param UndeleteBucketRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -1730,6 +1790,8 @@ final class ConfigServiceV2Client
      * After a bucket has been created, the bucket's location cannot be changed.
      *
      * The async variant is {@see ConfigServiceV2Client::updateBucketAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/update_bucket.php
      *
      * @param UpdateBucketRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -1759,6 +1821,8 @@ final class ConfigServiceV2Client
      * After a bucket has been created, the bucket's location cannot be changed.
      *
      * The async variant is {@see ConfigServiceV2Client::updateBucketAsyncAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/update_bucket_async.php
      *
      * @param UpdateBucketRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -1798,6 +1862,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::updateCmekSettingsAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/update_cmek_settings.php
+     *
      * @param UpdateCmekSettingsRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -1822,6 +1888,8 @@ final class ConfigServiceV2Client
      * sink.
      *
      * The async variant is {@see ConfigServiceV2Client::updateExclusionAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/update_exclusion.php
      *
      * @param UpdateExclusionRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -1862,6 +1930,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::updateSettingsAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/update_settings.php
+     *
      * @param UpdateSettingsRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -1890,6 +1960,8 @@ final class ConfigServiceV2Client
      *
      * The async variant is {@see ConfigServiceV2Client::updateSinkAsync()} .
      *
+     * @example samples/V2/ConfigServiceV2Client/update_sink.php
+     *
      * @param UpdateSinkRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -1917,6 +1989,8 @@ final class ConfigServiceV2Client
      * few minutes.
      *
      * The async variant is {@see ConfigServiceV2Client::updateViewAsync()} .
+     *
+     * @example samples/V2/ConfigServiceV2Client/update_view.php
      *
      * @param UpdateViewRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {

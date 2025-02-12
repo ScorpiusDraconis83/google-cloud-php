@@ -21,7 +21,22 @@ class GetAttributionSettingsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $name = '';
+    protected $name = '';
+
+    /**
+     * @param string $name Required. The name of the attribution settings to retrieve.
+     *                     Format: properties/{property}/attributionSettings
+     *                     Please see {@see AnalyticsAdminServiceClient::attributionSettingsName()} for help formatting this field.
+     *
+     * @return \Google\Analytics\Admin\V1alpha\GetAttributionSettingsRequest
+     *
+     * @experimental
+     */
+    public static function build(string $name): self
+    {
+        return (new self())
+            ->setName($name);
+    }
 
     /**
      * Constructor.

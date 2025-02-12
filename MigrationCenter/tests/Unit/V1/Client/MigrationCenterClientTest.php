@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ namespace Google\Cloud\MigrationCenter\Tests\Unit\V1\Client;
 
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\Testing\GeneratedTest;
 use Google\ApiCore\Testing\MockTransport;
 use Google\Cloud\Location\GetLocationRequest;
@@ -104,6 +103,7 @@ use Google\Cloud\MigrationCenter\V1\UpdatePreferenceSetRequest;
 use Google\Cloud\MigrationCenter\V1\UpdateSettingsRequest;
 use Google\Cloud\MigrationCenter\V1\UpdateSourceRequest;
 use Google\Cloud\MigrationCenter\V1\ValidateImportJobRequest;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\GetOperationRequest;
 use Google\LongRunning\Operation;
 use Google\Protobuf\Any;

@@ -18,17 +18,22 @@
 namespace Google\Cloud\Bigtable;
 
 use Google\ApiCore\ApiException;
+use Google\ApiCore\ArrayTrait;
 use Google\ApiCore\Serializer;
 use Google\Cloud\Bigtable\Exception\BigtableDataOperationException;
 use Google\Cloud\Bigtable\Filter\FilterInterface;
-use Google\Cloud\Bigtable\Mutations;
-use Google\Cloud\Bigtable\ReadModifyWriteRowRules;
-use Google\Cloud\Bigtable\V2\BigtableClient as GapicClient;
+use Google\Cloud\Bigtable\V2\CheckAndMutateRowRequest;
+use Google\Cloud\Bigtable\V2\Client\BigtableClient as GapicClient;
+use Google\Cloud\Bigtable\V2\MutateRowRequest;
+use Google\Cloud\Bigtable\V2\MutateRowsRequest;
 use Google\Cloud\Bigtable\V2\MutateRowsRequest\Entry;
+use Google\Cloud\Bigtable\V2\ReadModifyWriteRowRequest;
+use Google\Cloud\Bigtable\V2\ReadRowsRequest;
 use Google\Cloud\Bigtable\V2\Row;
 use Google\Cloud\Bigtable\V2\RowRange;
 use Google\Cloud\Bigtable\V2\RowSet;
-use Google\Cloud\Core\ArrayTrait;
+use Google\Cloud\Bigtable\V2\SampleRowKeysRequest;
+use Google\Cloud\Core\ApiHelperTrait;
 use Google\Rpc\Code;
 
 /**
@@ -46,6 +51,7 @@ use Google\Rpc\Code;
 class Table
 {
     use ArrayTrait;
+    use ApiHelperTrait;
 
     /**
      * @var GapicClient
@@ -70,7 +76,8 @@ class Table
     /**
      * Create a table instance.
      *
-     * @param GapicClient $gapicClient The GAPIC client used to make requests.
+     * @param GapicClient $gapicClient The GAPIC client to use in order to send requests.
+     * @param Serializer $serializer The serializer instance to encode/decode messages.
      * @param string $tableName The full table name. Must match the following
      *        pattern: projects/{project}/instances/{instance}/tables/{table}.
      * @param array $options [optional] {
@@ -79,21 +86,22 @@ class Table
      *     @type string $appProfileId This value specifies routing for
      *           replication. **Defaults to** the "default" application profile.
      *     @type array $headers Headers to be passed with each request.
-     *     @type int $retries Number of times to retry. **Defaults to** `3`.
+     *     @type int $retrySettings.maxRetries Number of times to retry. **Defaults to** `3`.
      *           This settings only applies to {@see \Google\Cloud\Bigtable\Table::mutateRows()},
      *           {@see \Google\Cloud\Bigtable\Table::upsert()} and
      *           {@see \Google\Cloud\Bigtable\Table::readRows()}.
      * }
      */
     public function __construct(
-        GapicClient $gapicClient,
-        $tableName,
+        $gapicClient,
+        Serializer $serializer,
+        string $tableName,
         array $options = []
     ) {
         $this->gapicClient = $gapicClient;
+        $this->serializer = $serializer;
         $this->tableName = $tableName;
         $this->options = $options;
-        $this->serializer = new Serializer();
     }
 
     /**
@@ -128,7 +136,7 @@ class Table
         foreach ($rowMutations as $rowKey => $mutations) {
             $entries[] = $this->toEntry($rowKey, $mutations);
         }
-        $this->mutateRowsWithEntries($entries, $options);
+        $this->mutateRowsWithEntries($entries, $options + $this->options);
     }
 
     /**
@@ -150,19 +158,26 @@ class Table
      * @param array $options [optional] {
      *     Configuration options.
      *
-     *     @type int $retries Number of times to retry. **Defaults to** `3`.
+     *        @param RetrySettings|array $retrySettings {
+     *               @option int $maxRetries Number of times to retry. **Defaults to** `3`.
+     *                  Only maxRetries works for RetrySettings in this API.
+     *               }
      * }
      * @return void
      * @throws ApiException If the remote call fails.
      */
     public function mutateRow($rowKey, Mutations $mutations, array $options = [])
     {
-        $this->gapicClient->mutateRow(
-            $this->tableName,
-            $rowKey,
-            $mutations->toProto(),
-            $options + $this->options
+        list($data, $optionalArgs) = $this->splitOptionalArgs($options + $this->options);
+        $data['table_name'] = $this->tableName;
+        $data['row_key'] = $rowKey;
+        $data['mutations'] = $mutations->toProto();
+        $request = $this->serializer->decodeMessage(
+            new MutateRowRequest(),
+            $data
         );
+
+        $this->gapicClient->mutateRow($request, $optionalArgs);
     }
 
     /**
@@ -186,7 +201,10 @@ class Table
      * @param array $options [optional] {
      *     Configuration options.
      *
-     *     @type int $retries Number of times to retry. **Defaults to** `3`.
+     *     @param RetrySettings|array $retrySettings {
+     *            @option int $maxRetries Number of times to retry. **Defaults to** `3`.
+     *                Only maxRetries works for RetrySettings in this API.
+     *            }
      * }
      * @return void
      * @throws ApiException|BigtableDataOperationException If the remote call fails or operation fails
@@ -195,7 +213,7 @@ class Table
     {
         $entries = [];
         foreach ($rows as $rowKey => $families) {
-            $mutations = new Mutations;
+            $mutations = new Mutations();
             foreach ($families as $family => $qualifiers) {
                 foreach ($qualifiers as $qualifier => $value) {
                     if (isset($value['timeStamp'])) {
@@ -212,7 +230,7 @@ class Table
             }
             $entries[] = $this->toEntry($rowKey, $mutations);
         }
-        $this->mutateRowsWithEntries($entries, $options);
+        $this->mutateRowsWithEntries($entries, $options + $this->options);
     }
 
     /**
@@ -256,7 +274,10 @@ class Table
      *           To learn more please see {@see \Google\Cloud\Bigtable\Filter} which
      *           provides static factory methods for the various filter types.
      *     @type int $rowsLimit The number of rows to scan.
-     *     @type int $retries Number of times to retry. **Defaults to** `3`.
+     * @param RetrySettings|array $retrySettings {
+     *        @option int $maxRetries Number of times to retry. **Defaults to** `3`.
+     *                Only maxRetries works for RetrySettings in this API.
+     *        }
      * }
      * @return ChunkFormatter
      */
@@ -265,6 +286,7 @@ class Table
         $rowKeys = $this->pluck('rowKeys', $options, false) ?: [];
         $ranges = $this->pluck('rowRanges', $options, false) ?: [];
         $filter = $this->pluck('filter', $options, false) ?: null;
+        list($data, $optionalArgs) = $this->splitOptionalArgs($options + $this->options);
 
         array_walk($ranges, function (&$range) {
             $range = $this->serializer->decodeMessage(
@@ -280,9 +302,10 @@ class Table
                 )
             );
         }
+
         if ($ranges || $rowKeys) {
-            $options['rows'] = $this->serializer->decodeMessage(
-                new RowSet,
+            $data['rows'] = $this->serializer->decodeMessage(
+                new RowSet(),
                 [
                     'rowKeys' => $rowKeys,
                     'rowRanges' => $ranges
@@ -290,21 +313,18 @@ class Table
             );
         }
         if ($filter !== null) {
-            if (!$filter instanceof FilterInterface) {
-                throw new \InvalidArgumentException(
-                    sprintf(
-                        'Expected filter to be of type \'%s\', instead got \'%s\'.',
-                        FilterInterface::class,
-                        gettype($filter)
-                    )
-                );
-            }
-            $options['filter'] = $filter->toProto();
+            $data['filter'] = $filter instanceof FilterInterface
+                ? $filter->toProto()
+                : $filter;
         }
+
+        $data['table_name'] = $this->tableName;
+        $request = $this->serializer->decodeMessage(new ReadRowsRequest(), $data);
+
         return new ChunkFormatter(
-            [$this->gapicClient, 'readRows'],
-            $this->tableName,
-            $options + $this->options
+            $this->gapicClient,
+            $request,
+            $optionalArgs
         );
     }
 
@@ -375,12 +395,17 @@ class Table
      */
     public function readModifyWriteRow($rowKey, ReadModifyWriteRowRules $rules, array $options = [])
     {
+        list($data, $optionalArgs) = $this->splitOptionalArgs($options + $this->options);
+        $data['table_name'] = $this->tableName;
+        $data['row_key'] = $rowKey;
+        $data['rules'] = $rules->toProto();
+
+        $request = $this->serializer->decodeMessage(new ReadModifyWriteRowRequest(), $data);
         $readModifyWriteRowResponse = $this->gapicClient->readModifyWriteRow(
-            $this->tableName,
-            $rowKey,
-            $rules->toProto(),
-            $options + $this->options
+            $request,
+            $optionalArgs
         );
+
         return $this->convertToArray($readModifyWriteRowResponse->getRow());
     }
 
@@ -404,10 +429,11 @@ class Table
      */
     public function sampleRowKeys(array $options = [])
     {
-        $stream = $this->gapicClient->sampleRowKeys(
-            $this->tableName,
-            $options + $this->options
-        );
+        list($data, $optionalArgs) = $this->splitOptionalArgs($options + $this->options);
+        $data['table_name'] = $this->tableName;
+
+        $request = $this->serializer->decodeMessage(new SampleRowKeysRequest(), $data);
+        $stream = $this->gapicClient->sampleRowKeys($request, $optionalArgs);
 
         foreach ($stream->readAll() as $response) {
             yield [
@@ -485,26 +511,32 @@ class Table
             throw new \InvalidArgumentException('checkAndMutateRow must have either trueMutations or falseMutations.');
         }
 
-        return $this->gapicClient
-            ->checkAndMutateRow(
-                $this->tableName,
-                $rowKey,
-                $options + $this->options
-            )
-            ->getPredicateMatched();
+        list($data, $optionalArgs) = $this->splitOptionalArgs($options + $this->options);
+        $data['table_name'] = $this->tableName;
+        $data['row_key'] = $rowKey;
+        $request = $this->serializer->decodeMessage(new CheckAndMutateRowRequest(), $data);
+
+        return $this->gapicClient->checkAndMutateRow(
+            $request,
+            $optionalArgs
+        )->getPredicateMatched();
     }
 
     private function mutateRowsWithEntries(array $entries, array $options = [])
     {
         $rowMutationsFailedResponse = [];
-        $options = $options + $this->options;
-        $argumentFunction = function () use (&$entries, &$rowMutationsFailedResponse, $options) {
+
+        // This function is responsible to modify the $entries before every retry.
+        $argumentFunction = function ($request, $options) use (&$entries, &$rowMutationsFailedResponse) {
             if (count($rowMutationsFailedResponse) > 0) {
                 $entries = array_values($entries);
                 $rowMutationsFailedResponse = [];
             }
-            return [$this->tableName, $entries, $options];
+
+            $request->setEntries($entries);
+            return [$request, $options];
         };
+
         $statusCode = Code::OK;
         $lastProcessedIndex = -1;
         $retryFunction = function ($ex) use (&$statusCode, &$lastProcessedIndex) {
@@ -515,11 +547,19 @@ class Table
             }
             return false;
         };
+
+        list($data, $optionalArgs) = $this->splitOptionalArgs($options + $this->options);
+
+        $request = $this->serializer->decodeMessage(new MutateRowsRequest(), $data);
+        $request->setTableName($this->tableName);
+
         $retryingStream = new ResumableStream(
-            [$this->gapicClient, 'mutateRows'],
+            $this->gapicClient,
+            'mutateRows',
+            $request,
             $argumentFunction,
             $retryFunction,
-            $this->pluck('retries', $options, false)
+            $optionalArgs
         );
         $message = 'partial failure';
         try {
@@ -533,7 +573,8 @@ class Table
                         $rowMutationsFailedResponse[] = [
                             'rowKey' => $entries[$mutateRowsResponseEntry->getIndex()]->getRowKey(),
                             'statusCode' => $mutateRowsResponseEntry->getStatus()->getCode(),
-                            'message' => $mutateRowsResponseEntry->getStatus()->getMessage()
+                            'message' => $mutateRowsResponseEntry->getStatus()->getMessage(),
+                            'index' => $mutateRowsResponseEntry->getIndex(),
                         ];
                     } else {
                         unset($entries[$mutateRowsResponseEntry->getIndex()]);
@@ -587,7 +628,7 @@ class Table
                 $rowMutationsFailedResponse[] = [
                     'rowKey' => $entries[$index]->getRowKey(),
                     'statusCode' => $statusCode,
-                    'message' => $message
+                    'message' => $message,
                 ];
             }
         }
@@ -595,7 +636,7 @@ class Table
 
     private function toEntry($rowKey, Mutations $mutations)
     {
-        return (new Entry)
+        return (new Entry())
             ->setRowKey($rowKey)
             ->setMutations($mutations->toProto());
     }

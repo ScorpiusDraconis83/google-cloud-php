@@ -24,25 +24,33 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START securitycenter_v1_generated_SecurityCenter_DeleteMuteConfig_sync]
 use Google\ApiCore\ApiException;
-use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\Client\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\DeleteMuteConfigRequest;
 
 /**
  * Deletes an existing mute config.
  *
  * @param string $formattedName Name of the mute config to delete. Its format is
- *                              organizations/{organization}/muteConfigs/{config_id},
- *                              folders/{folder}/muteConfigs/{config_id}, or
- *                              projects/{project}/muteConfigs/{config_id}
- *                              Please see {@see SecurityCenterClient::muteConfigName()} for help formatting this field.
+ *                              `organizations/{organization}/muteConfigs/{config_id}`,
+ *                              `folders/{folder}/muteConfigs/{config_id}`,
+ *                              `projects/{project}/muteConfigs/{config_id}`,
+ *                              `organizations/{organization}/locations/global/muteConfigs/{config_id}`,
+ *                              `folders/{folder}/locations/global/muteConfigs/{config_id}`, or
+ *                              `projects/{project}/locations/global/muteConfigs/{config_id}`. Please see
+ *                              {@see SecurityCenterClient::muteConfigName()} for help formatting this field.
  */
 function delete_mute_config_sample(string $formattedName): void
 {
     // Create a client.
     $securityCenterClient = new SecurityCenterClient();
 
+    // Prepare the request message.
+    $request = (new DeleteMuteConfigRequest())
+        ->setName($formattedName);
+
     // Call the API and handle any network failures.
     try {
-        $securityCenterClient->deleteMuteConfig($formattedName);
+        $securityCenterClient->deleteMuteConfig($request);
         printf('Call completed successfully.' . PHP_EOL);
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

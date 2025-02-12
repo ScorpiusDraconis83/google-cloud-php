@@ -9,7 +9,7 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Represents a health check resource. Google Compute Engine has two health check resources: * [Regional](/compute/docs/reference/rest/v1/regionHealthChecks) * [Global](/compute/docs/reference/rest/v1/healthChecks) These health check resources can be used for load balancing and for autohealing VMs in a managed instance group (MIG). **Load balancing** The following load balancer can use either regional or global health check: * Internal TCP/UDP load balancer The following load balancers require regional health check: * Internal HTTP(S) load balancer * Backend service-based network load balancer Traffic Director and the following load balancers require global health check: * External HTTP(S) load balancer * TCP proxy load balancer * SSL proxy load balancer The following load balancer require [legacy HTTP health checks](https://cloud.google.com/compute/docs/reference/rest/v1/httpHealthChecks): * Target pool-based network load balancer **Autohealing in MIGs** The health checks that you use for autohealing VMs in a MIG can be either regional or global. For more information, see Set up an application health check and autohealing. For more information, see Health checks overview.
+ * Represents a health check resource. Google Compute Engine has two health check resources: * [Regional](/compute/docs/reference/rest/v1/regionHealthChecks) * [Global](https://cloud.google.com/compute/docs/reference/rest/v1/healthChecks) These health check resources can be used for load balancing and for autohealing VMs in a managed instance group (MIG). **Load balancing** Health check requirements vary depending on the type of load balancer. For details about the type of health check supported for each load balancer and corresponding backend type, see Health checks overview: Load balancer guide. **Autohealing in MIGs** The health checks that you use for autohealing VMs in a MIG can be either regional or global. For more information, see Set up an application health check and autohealing. For more information, see Health checks overview.
  *
  * Generated from protobuf message <code>google.cloud.compute.v1.HealthCheck</code>
  */
@@ -92,6 +92,12 @@ class HealthCheck extends \Google\Protobuf\Internal\Message
      */
     private $self_link = null;
     /**
+     * The list of cloud regions from which health checks are performed. If any regions are specified, then exactly 3 regions should be specified. The region names must be valid names of Google Cloud regions. This can only be set for global health check. If this list is non-empty, then there are restrictions on what other health check fields are supported and what other resources can use this health check: - SSL, HTTP2, and GRPC protocols are not supported. - The TCP request field is not supported. - The proxyHeader field for HTTP, HTTPS, and TCP is not supported. - The checkIntervalSec field must be at least 30. - The health check cannot be used with BackendService nor with managed instance group auto-healing. 
+     *
+     * Generated from protobuf field <code>repeated string source_regions = 405568475;</code>
+     */
+    private $source_regions;
+    /**
      * Generated from protobuf field <code>optional .google.cloud.compute.v1.SSLHealthCheck ssl_health_check = 280032440;</code>
      */
     private $ssl_health_check = null;
@@ -149,6 +155,8 @@ class HealthCheck extends \Google\Protobuf\Internal\Message
      *           [Output Only] Region where the health check resides. Not applicable to global health checks.
      *     @type string $self_link
      *           [Output Only] Server-defined URL for the resource.
+     *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $source_regions
+     *           The list of cloud regions from which health checks are performed. If any regions are specified, then exactly 3 regions should be specified. The region names must be valid names of Google Cloud regions. This can only be set for global health check. If this list is non-empty, then there are restrictions on what other health check fields are supported and what other resources can use this health check: - SSL, HTTP2, and GRPC protocols are not supported. - The TCP request field is not supported. - The proxyHeader field for HTTP, HTTPS, and TCP is not supported. - The checkIntervalSec field must be at least 30. - The health check cannot be used with BackendService nor with managed instance group auto-healing. 
      *     @type \Google\Cloud\Compute\V1\SSLHealthCheck $ssl_health_check
      *     @type \Google\Cloud\Compute\V1\TCPHealthCheck $tcp_health_check
      *     @type int $timeout_sec
@@ -649,6 +657,32 @@ class HealthCheck extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->self_link = $var;
+
+        return $this;
+    }
+
+    /**
+     * The list of cloud regions from which health checks are performed. If any regions are specified, then exactly 3 regions should be specified. The region names must be valid names of Google Cloud regions. This can only be set for global health check. If this list is non-empty, then there are restrictions on what other health check fields are supported and what other resources can use this health check: - SSL, HTTP2, and GRPC protocols are not supported. - The TCP request field is not supported. - The proxyHeader field for HTTP, HTTPS, and TCP is not supported. - The checkIntervalSec field must be at least 30. - The health check cannot be used with BackendService nor with managed instance group auto-healing. 
+     *
+     * Generated from protobuf field <code>repeated string source_regions = 405568475;</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getSourceRegions()
+    {
+        return $this->source_regions;
+    }
+
+    /**
+     * The list of cloud regions from which health checks are performed. If any regions are specified, then exactly 3 regions should be specified. The region names must be valid names of Google Cloud regions. This can only be set for global health check. If this list is non-empty, then there are restrictions on what other health check fields are supported and what other resources can use this health check: - SSL, HTTP2, and GRPC protocols are not supported. - The TCP request field is not supported. - The proxyHeader field for HTTP, HTTPS, and TCP is not supported. - The checkIntervalSec field must be at least 30. - The health check cannot be used with BackendService nor with managed instance group auto-healing. 
+     *
+     * Generated from protobuf field <code>repeated string source_regions = 405568475;</code>
+     * @param array<string>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setSourceRegions($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
+        $this->source_regions = $arr;
 
         return $this;
     }

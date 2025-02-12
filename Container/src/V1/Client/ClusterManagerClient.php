@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,6 +77,7 @@ use Google\Cloud\Container\V1\UpdateClusterRequest;
 use Google\Cloud\Container\V1\UpdateMasterRequest;
 use Google\Cloud\Container\V1\UpdateNodePoolRequest;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Google Kubernetes Engine Cluster Manager v1
@@ -89,40 +90,40 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface cancelOperationAsync(CancelOperationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface checkAutopilotCompatibilityAsync(CheckAutopilotCompatibilityRequest $request, array $optionalArgs = [])
- * @method PromiseInterface completeIPRotationAsync(CompleteIPRotationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface completeNodePoolUpgradeAsync(CompleteNodePoolUpgradeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createClusterAsync(CreateClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createNodePoolAsync(CreateNodePoolRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteClusterAsync(DeleteClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteNodePoolAsync(DeleteNodePoolRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getClusterAsync(GetClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getJSONWebKeysAsync(GetJSONWebKeysRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getNodePoolAsync(GetNodePoolRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getOperationAsync(GetOperationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getServerConfigAsync(GetServerConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listClustersAsync(ListClustersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listNodePoolsAsync(ListNodePoolsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listOperationsAsync(ListOperationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listUsableSubnetworksAsync(ListUsableSubnetworksRequest $request, array $optionalArgs = [])
- * @method PromiseInterface rollbackNodePoolUpgradeAsync(RollbackNodePoolUpgradeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setAddonsConfigAsync(SetAddonsConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setLabelsAsync(SetLabelsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setLegacyAbacAsync(SetLegacyAbacRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setLocationsAsync(SetLocationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setLoggingServiceAsync(SetLoggingServiceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setMaintenancePolicyAsync(SetMaintenancePolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setMasterAuthAsync(SetMasterAuthRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setMonitoringServiceAsync(SetMonitoringServiceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setNetworkPolicyAsync(SetNetworkPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setNodePoolAutoscalingAsync(SetNodePoolAutoscalingRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setNodePoolManagementAsync(SetNodePoolManagementRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setNodePoolSizeAsync(SetNodePoolSizeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface startIPRotationAsync(StartIPRotationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateClusterAsync(UpdateClusterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateMasterAsync(UpdateMasterRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateNodePoolAsync(UpdateNodePoolRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> cancelOperationAsync(CancelOperationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CheckAutopilotCompatibilityResponse> checkAutopilotCompatibilityAsync(CheckAutopilotCompatibilityRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> completeIPRotationAsync(CompleteIPRotationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> completeNodePoolUpgradeAsync(CompleteNodePoolUpgradeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> createClusterAsync(CreateClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> createNodePoolAsync(CreateNodePoolRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> deleteClusterAsync(DeleteClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> deleteNodePoolAsync(DeleteNodePoolRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Cluster> getClusterAsync(GetClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<GetJSONWebKeysResponse> getJSONWebKeysAsync(GetJSONWebKeysRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<NodePool> getNodePoolAsync(GetNodePoolRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> getOperationAsync(GetOperationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ServerConfig> getServerConfigAsync(GetServerConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ListClustersResponse> listClustersAsync(ListClustersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ListNodePoolsResponse> listNodePoolsAsync(ListNodePoolsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ListOperationsResponse> listOperationsAsync(ListOperationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listUsableSubnetworksAsync(ListUsableSubnetworksRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> rollbackNodePoolUpgradeAsync(RollbackNodePoolUpgradeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> setAddonsConfigAsync(SetAddonsConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> setLabelsAsync(SetLabelsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> setLegacyAbacAsync(SetLegacyAbacRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> setLocationsAsync(SetLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> setLoggingServiceAsync(SetLoggingServiceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> setMaintenancePolicyAsync(SetMaintenancePolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> setMasterAuthAsync(SetMasterAuthRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> setMonitoringServiceAsync(SetMonitoringServiceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> setNetworkPolicyAsync(SetNetworkPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> setNodePoolAutoscalingAsync(SetNodePoolAutoscalingRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> setNodePoolManagementAsync(SetNodePoolManagementRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> setNodePoolSizeAsync(SetNodePoolSizeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> startIPRotationAsync(StartIPRotationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> updateClusterAsync(UpdateClusterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> updateMasterAsync(UpdateMasterRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Operation> updateNodePoolAsync(UpdateNodePoolRequest $request, array $optionalArgs = [])
  */
 final class ClusterManagerClient
 {
@@ -149,9 +150,7 @@ final class ClusterManagerClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private static function getClientDefaults()
     {
@@ -170,6 +169,53 @@ final class ClusterManagerClient
                 ],
             ],
         ];
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a ca_pool
+     * resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $caPool
+     *
+     * @return string The formatted ca_pool resource.
+     */
+    public static function caPoolName(string $project, string $location, string $caPool): string
+    {
+        return self::getPathTemplate('caPool')->render([
+            'project' => $project,
+            'location' => $location,
+            'ca_pool' => $caPool,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * crypto_key_version resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $keyRing
+     * @param string $cryptoKey
+     * @param string $cryptoKeyVersion
+     *
+     * @return string The formatted crypto_key_version resource.
+     */
+    public static function cryptoKeyVersionName(
+        string $project,
+        string $location,
+        string $keyRing,
+        string $cryptoKey,
+        string $cryptoKeyVersion
+    ): string {
+        return self::getPathTemplate('cryptoKeyVersion')->render([
+            'project' => $project,
+            'location' => $location,
+            'key_ring' => $keyRing,
+            'crypto_key' => $cryptoKey,
+            'crypto_key_version' => $cryptoKeyVersion,
+        ]);
     }
 
     /**
@@ -193,6 +239,8 @@ final class ClusterManagerClient
      * Parses a formatted name string and returns an associative array of the components in the name.
      * The following name formats are supported:
      * Template: Pattern
+     * - caPool: projects/{project}/locations/{location}/caPools/{ca_pool}
+     * - cryptoKeyVersion: projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}
      * - topic: projects/{project}/topics/{topic}
      *
      * The optional $template argument can be supplied to specify a particular pattern,
@@ -201,14 +249,14 @@ final class ClusterManagerClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -230,6 +278,12 @@ final class ClusterManagerClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -263,6 +317,9 @@ final class ClusterManagerClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -289,6 +346,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::cancelOperationAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/cancel_operation.php
+     *
      * @param CancelOperationRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -313,6 +372,8 @@ final class ClusterManagerClient
      * The async variant is
      * {@see ClusterManagerClient::checkAutopilotCompatibilityAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/check_autopilot_compatibility.php
+     *
      * @param CheckAutopilotCompatibilityRequest $request     A request to house fields associated with the call.
      * @param array                              $callOptions {
      *     Optional.
@@ -327,8 +388,10 @@ final class ClusterManagerClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function checkAutopilotCompatibility(CheckAutopilotCompatibilityRequest $request, array $callOptions = []): CheckAutopilotCompatibilityResponse
-    {
+    public function checkAutopilotCompatibility(
+        CheckAutopilotCompatibilityRequest $request,
+        array $callOptions = []
+    ): CheckAutopilotCompatibilityResponse {
         return $this->startApiCall('CheckAutopilotCompatibility', $request, $callOptions)->wait();
     }
 
@@ -336,6 +399,8 @@ final class ClusterManagerClient
      * Completes master IP rotation.
      *
      * The async variant is {@see ClusterManagerClient::completeIPRotationAsync()} .
+     *
+     * @example samples/V1/ClusterManagerClient/complete_ip_rotation.php
      *
      * @param CompleteIPRotationRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
@@ -362,6 +427,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::completeNodePoolUpgradeAsync()}
      * .
+     *
+     * @example samples/V1/ClusterManagerClient/complete_node_pool_upgrade.php
      *
      * @param CompleteNodePoolUpgradeRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
@@ -398,6 +465,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::createClusterAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/create_cluster.php
+     *
      * @param CreateClusterRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -421,6 +490,8 @@ final class ClusterManagerClient
      * Creates a node pool for a cluster.
      *
      * The async variant is {@see ClusterManagerClient::createNodePoolAsync()} .
+     *
+     * @example samples/V1/ClusterManagerClient/create_node_pool.php
      *
      * @param CreateNodePoolRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -454,6 +525,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::deleteClusterAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/delete_cluster.php
+     *
      * @param DeleteClusterRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -477,6 +550,8 @@ final class ClusterManagerClient
      * Deletes a node pool from a cluster.
      *
      * The async variant is {@see ClusterManagerClient::deleteNodePoolAsync()} .
+     *
+     * @example samples/V1/ClusterManagerClient/delete_node_pool.php
      *
      * @param DeleteNodePoolRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -502,6 +577,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::getClusterAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/get_cluster.php
+     *
      * @param GetClusterRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -524,10 +601,10 @@ final class ClusterManagerClient
     /**
      * Gets the public component of the cluster signing keys in
      * JSON Web Key format.
-     * This API is not yet intended for general use, and is not available for all
-     * clusters.
      *
      * The async variant is {@see ClusterManagerClient::getJSONWebKeysAsync()} .
+     *
+     * @example samples/V1/ClusterManagerClient/get_json_web_keys.php
      *
      * @param GetJSONWebKeysRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -553,6 +630,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::getNodePoolAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/get_node_pool.php
+     *
      * @param GetNodePoolRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -577,6 +656,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::getOperationAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/get_operation.php
+     *
      * @param GetOperationRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -600,6 +681,8 @@ final class ClusterManagerClient
      * Returns configuration info about the Google Kubernetes Engine service.
      *
      * The async variant is {@see ClusterManagerClient::getServerConfigAsync()} .
+     *
+     * @example samples/V1/ClusterManagerClient/get_server_config.php
      *
      * @param GetServerConfigRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -626,6 +709,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::listClustersAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/list_clusters.php
+     *
      * @param ListClustersRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -649,6 +734,8 @@ final class ClusterManagerClient
      * Lists the node pools for a cluster.
      *
      * The async variant is {@see ClusterManagerClient::listNodePoolsAsync()} .
+     *
+     * @example samples/V1/ClusterManagerClient/list_node_pools.php
      *
      * @param ListNodePoolsRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -674,6 +761,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::listOperationsAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/list_operations.php
+     *
      * @param ListOperationsRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -698,6 +787,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::listUsableSubnetworksAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/list_usable_subnetworks.php
+     *
      * @param ListUsableSubnetworksRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -712,8 +803,10 @@ final class ClusterManagerClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listUsableSubnetworks(ListUsableSubnetworksRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listUsableSubnetworks(
+        ListUsableSubnetworksRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListUsableSubnetworks', $request, $callOptions);
     }
 
@@ -723,6 +816,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::rollbackNodePoolUpgradeAsync()}
      * .
+     *
+     * @example samples/V1/ClusterManagerClient/rollback_node_pool_upgrade.php
      *
      * @param RollbackNodePoolUpgradeRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
@@ -748,6 +843,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::setAddonsConfigAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/set_addons_config.php
+     *
      * @param SetAddonsConfigRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -772,6 +869,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::setLabelsAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/set_labels.php
+     *
      * @param SetLabelsRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
      *     Optional.
@@ -795,6 +894,8 @@ final class ClusterManagerClient
      * Enables or disables the ABAC authorization mechanism on a cluster.
      *
      * The async variant is {@see ClusterManagerClient::setLegacyAbacAsync()} .
+     *
+     * @example samples/V1/ClusterManagerClient/set_legacy_abac.php
      *
      * @param SetLegacyAbacRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -823,6 +924,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::setLocationsAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/set_locations.php
+     *
      * @param SetLocationsRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -849,6 +952,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::setLoggingServiceAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/set_logging_service.php
+     *
      * @param SetLoggingServiceRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
      *     Optional.
@@ -872,6 +977,8 @@ final class ClusterManagerClient
      * Sets the maintenance policy for a cluster.
      *
      * The async variant is {@see ClusterManagerClient::setMaintenancePolicyAsync()} .
+     *
+     * @example samples/V1/ClusterManagerClient/set_maintenance_policy.php
      *
      * @param SetMaintenancePolicyRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
@@ -899,6 +1006,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::setMasterAuthAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/set_master_auth.php
+     *
      * @param SetMasterAuthRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -923,6 +1032,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::setMonitoringServiceAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/set_monitoring_service.php
+     *
      * @param SetMonitoringServiceRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -946,6 +1057,8 @@ final class ClusterManagerClient
      * Enables or disables Network Policy for a cluster.
      *
      * The async variant is {@see ClusterManagerClient::setNetworkPolicyAsync()} .
+     *
+     * @example samples/V1/ClusterManagerClient/set_network_policy.php
      *
      * @param SetNetworkPolicyRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -972,6 +1085,8 @@ final class ClusterManagerClient
      * The async variant is {@see ClusterManagerClient::setNodePoolAutoscalingAsync()}
      * .
      *
+     * @example samples/V1/ClusterManagerClient/set_node_pool_autoscaling.php
+     *
      * @param SetNodePoolAutoscalingRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -995,6 +1110,8 @@ final class ClusterManagerClient
      * Sets the NodeManagement options for a node pool.
      *
      * The async variant is {@see ClusterManagerClient::setNodePoolManagementAsync()} .
+     *
+     * @example samples/V1/ClusterManagerClient/set_node_pool_management.php
      *
      * @param SetNodePoolManagementRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
@@ -1022,6 +1139,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::setNodePoolSizeAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/set_node_pool_size.php
+     *
      * @param SetNodePoolSizeRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -1045,6 +1164,8 @@ final class ClusterManagerClient
      * Starts master IP rotation.
      *
      * The async variant is {@see ClusterManagerClient::startIPRotationAsync()} .
+     *
+     * @example samples/V1/ClusterManagerClient/start_ip_rotation.php
      *
      * @param StartIPRotationRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -1070,6 +1191,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::updateClusterAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/update_cluster.php
+     *
      * @param UpdateClusterRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -1094,6 +1217,8 @@ final class ClusterManagerClient
      *
      * The async variant is {@see ClusterManagerClient::updateMasterAsync()} .
      *
+     * @example samples/V1/ClusterManagerClient/update_master.php
+     *
      * @param UpdateMasterRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -1117,6 +1242,8 @@ final class ClusterManagerClient
      * Updates the version and/or image type for the specified node pool.
      *
      * The async variant is {@see ClusterManagerClient::updateNodePoolAsync()} .
+     *
+     * @example samples/V1/ClusterManagerClient/update_node_pool.php
      *
      * @param UpdateNodePoolRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {

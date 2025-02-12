@@ -24,7 +24,8 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START resourcesettings_v1_generated_ResourceSettingsService_GetSetting_sync]
 use Google\ApiCore\ApiException;
-use Google\Cloud\ResourceSettings\V1\ResourceSettingsServiceClient;
+use Google\Cloud\ResourceSettings\V1\Client\ResourceSettingsServiceClient;
+use Google\Cloud\ResourceSettings\V1\GetSettingRequest;
 use Google\Cloud\ResourceSettings\V1\Setting;
 
 /**
@@ -33,7 +34,8 @@ use Google\Cloud\ResourceSettings\V1\Setting;
  * Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
  * setting does not exist.
  *
- * @param string $formattedName The name of the setting to get. See [Setting][google.cloud.resourcesettings.v1.Setting] for naming
+ * @param string $formattedName The name of the setting to get. See
+ *                              [Setting][google.cloud.resourcesettings.v1.Setting] for naming
  *                              requirements. Please see
  *                              {@see ResourceSettingsServiceClient::settingName()} for help formatting this field.
  */
@@ -42,10 +44,14 @@ function get_setting_sample(string $formattedName): void
     // Create a client.
     $resourceSettingsServiceClient = new ResourceSettingsServiceClient();
 
+    // Prepare the request message.
+    $request = (new GetSettingRequest())
+        ->setName($formattedName);
+
     // Call the API and handle any network failures.
     try {
         /** @var Setting $response */
-        $response = $resourceSettingsServiceClient->getSetting($formattedName);
+        $response = $resourceSettingsServiceClient->getSetting($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

@@ -23,11 +23,13 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetConversionEvent_sync]
-use Google\Analytics\Admin\V1alpha\AnalyticsAdminServiceClient;
+use Google\Analytics\Admin\V1alpha\Client\AnalyticsAdminServiceClient;
 use Google\Analytics\Admin\V1alpha\ConversionEvent;
+use Google\Analytics\Admin\V1alpha\GetConversionEventRequest;
 use Google\ApiCore\ApiException;
 
 /**
+ * Deprecated: Use `GetKeyEvent` instead.
  * Retrieve a single conversion event.
  *
  * @param string $formattedName The resource name of the conversion event to retrieve.
@@ -40,10 +42,14 @@ function get_conversion_event_sample(string $formattedName): void
     // Create a client.
     $analyticsAdminServiceClient = new AnalyticsAdminServiceClient();
 
+    // Prepare the request message.
+    $request = (new GetConversionEventRequest())
+        ->setName($formattedName);
+
     // Call the API and handle any network failures.
     try {
         /** @var ConversionEvent $response */
-        $response = $analyticsAdminServiceClient->getConversionEvent($formattedName);
+        $response = $analyticsAdminServiceClient->getConversionEvent($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

@@ -21,7 +21,7 @@ class NetworkConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string management_cidr = 4 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $management_cidr = '';
+    protected $management_cidr = '';
     /**
      * Optional. The relative resource name of the VMware Engine network attached
      * to the private cloud. Specify the name in the following form:
@@ -30,14 +30,14 @@ class NetworkConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string vmware_engine_network = 5 [(.google.api.field_behavior) = OPTIONAL, (.google.api.resource_reference) = {</code>
      */
-    private $vmware_engine_network = '';
+    protected $vmware_engine_network = '';
     /**
      * Output only. The canonical name of the VMware Engine network in the form:
      * `projects/{project_number}/locations/{location}/vmwareEngineNetworks/{vmware_engine_network_id}`
      *
      * Generated from protobuf field <code>string vmware_engine_network_canonical = 6 [(.google.api.field_behavior) = OUTPUT_ONLY, (.google.api.resource_reference) = {</code>
      */
-    private $vmware_engine_network_canonical = '';
+    protected $vmware_engine_network_canonical = '';
     /**
      * Output only. The IP address layout version of the management IP address
      * range. Possible versions include:
@@ -50,7 +50,16 @@ class NetworkConfig extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>int32 management_ip_address_layout_version = 8 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $management_ip_address_layout_version = 0;
+    protected $management_ip_address_layout_version = 0;
+    /**
+     * Output only. DNS Server IP of the Private Cloud.
+     * All DNS queries can be forwarded to this address for name resolution of
+     * Private Cloud's management entities like vCenter, NSX-T Manager and
+     * ESXi hosts.
+     *
+     * Generated from protobuf field <code>string dns_server_ip = 9 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    protected $dns_server_ip = '';
 
     /**
      * Constructor.
@@ -77,6 +86,11 @@ class NetworkConfig extends \Google\Protobuf\Internal\Message
      *           * `managementIpAddressLayoutVersion=2`: Indicates the latest IP address
      *           layout used by all newly created private clouds. This version supports all
      *           current features.
+     *     @type string $dns_server_ip
+     *           Output only. DNS Server IP of the Private Cloud.
+     *           All DNS queries can be forwarded to this address for name resolution of
+     *           Private Cloud's management entities like vCenter, NSX-T Manager and
+     *           ESXi hosts.
      * }
      */
     public function __construct($data = NULL) {
@@ -206,6 +220,38 @@ class NetworkConfig extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkInt32($var);
         $this->management_ip_address_layout_version = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. DNS Server IP of the Private Cloud.
+     * All DNS queries can be forwarded to this address for name resolution of
+     * Private Cloud's management entities like vCenter, NSX-T Manager and
+     * ESXi hosts.
+     *
+     * Generated from protobuf field <code>string dns_server_ip = 9 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return string
+     */
+    public function getDnsServerIp()
+    {
+        return $this->dns_server_ip;
+    }
+
+    /**
+     * Output only. DNS Server IP of the Private Cloud.
+     * All DNS queries can be forwarded to this address for name resolution of
+     * Private Cloud's management entities like vCenter, NSX-T Manager and
+     * ESXi hosts.
+     *
+     * Generated from protobuf field <code>string dns_server_ip = 9 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setDnsServerIp($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->dns_server_ip = $var;
 
         return $this;
     }

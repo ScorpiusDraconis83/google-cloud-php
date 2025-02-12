@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,12 +46,13 @@ use Google\Cloud\Monitoring\V3\ServiceLevelObjective;
 use Google\Cloud\Monitoring\V3\UpdateServiceLevelObjectiveRequest;
 use Google\Cloud\Monitoring\V3\UpdateServiceRequest;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The Cloud Monitoring Service-Oriented Monitoring API has endpoints for
- * managing and querying aspects of a workspace's services. These include the
- * `Service`'s monitored resources, its Service-Level Objectives, and a taxonomy
- * of categorized Health Metrics.
+ * managing and querying aspects of a Metrics Scope's services. These include
+ * the `Service`'s monitored resources, its Service-Level Objectives, and a
+ * taxonomy of categorized Health Metrics.
  *
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
@@ -61,16 +62,16 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createServiceAsync(CreateServiceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createServiceLevelObjectiveAsync(CreateServiceLevelObjectiveRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteServiceAsync(DeleteServiceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteServiceLevelObjectiveAsync(DeleteServiceLevelObjectiveRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getServiceAsync(GetServiceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getServiceLevelObjectiveAsync(GetServiceLevelObjectiveRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listServiceLevelObjectivesAsync(ListServiceLevelObjectivesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listServicesAsync(ListServicesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateServiceAsync(UpdateServiceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateServiceLevelObjectiveAsync(UpdateServiceLevelObjectiveRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Service> createServiceAsync(CreateServiceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ServiceLevelObjective> createServiceLevelObjectiveAsync(CreateServiceLevelObjectiveRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteServiceAsync(DeleteServiceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteServiceLevelObjectiveAsync(DeleteServiceLevelObjectiveRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Service> getServiceAsync(GetServiceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ServiceLevelObjective> getServiceLevelObjectiveAsync(GetServiceLevelObjectiveRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listServiceLevelObjectivesAsync(ListServiceLevelObjectivesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listServicesAsync(ListServicesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Service> updateServiceAsync(UpdateServiceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ServiceLevelObjective> updateServiceLevelObjectiveAsync(UpdateServiceLevelObjectiveRequest $request, array $optionalArgs = [])
  */
 final class ServiceMonitoringServiceClient
 {
@@ -116,7 +117,8 @@ final class ServiceMonitoringServiceClient
             ],
             'transportConfig' => [
                 'rest' => [
-                    'restClientConfigPath' => __DIR__ . '/../resources/service_monitoring_service_rest_client_config.php',
+                    'restClientConfigPath' =>
+                        __DIR__ . '/../resources/service_monitoring_service_rest_client_config.php',
                 ],
             ],
         ];
@@ -149,8 +151,11 @@ final class ServiceMonitoringServiceClient
      *
      * @return string The formatted folder_service_service_level_objective resource.
      */
-    public static function folderServiceServiceLevelObjectiveName(string $folder, string $service, string $serviceLevelObjective): string
-    {
+    public static function folderServiceServiceLevelObjectiveName(
+        string $folder,
+        string $service,
+        string $serviceLevelObjective
+    ): string {
         return self::getPathTemplate('folderServiceServiceLevelObjective')->render([
             'folder' => $folder,
             'service' => $service,
@@ -185,8 +190,11 @@ final class ServiceMonitoringServiceClient
      *
      * @return string The formatted organization_service_service_level_objective resource.
      */
-    public static function organizationServiceServiceLevelObjectiveName(string $organization, string $service, string $serviceLevelObjective): string
-    {
+    public static function organizationServiceServiceLevelObjectiveName(
+        string $organization,
+        string $service,
+        string $serviceLevelObjective
+    ): string {
         return self::getPathTemplate('organizationServiceServiceLevelObjective')->render([
             'organization' => $organization,
             'service' => $service,
@@ -221,8 +229,11 @@ final class ServiceMonitoringServiceClient
      *
      * @return string The formatted project_service_service_level_objective resource.
      */
-    public static function projectServiceServiceLevelObjectiveName(string $project, string $service, string $serviceLevelObjective): string
-    {
+    public static function projectServiceServiceLevelObjectiveName(
+        string $project,
+        string $service,
+        string $serviceLevelObjective
+    ): string {
         return self::getPathTemplate('projectServiceServiceLevelObjective')->render([
             'project' => $project,
             'service' => $service,
@@ -257,8 +268,11 @@ final class ServiceMonitoringServiceClient
      *
      * @return string The formatted service_level_objective resource.
      */
-    public static function serviceLevelObjectiveName(string $project, string $service, string $serviceLevelObjective): string
-    {
+    public static function serviceLevelObjectiveName(
+        string $project,
+        string $service,
+        string $serviceLevelObjective
+    ): string {
         return self::getPathTemplate('serviceLevelObjective')->render([
             'project' => $project,
             'service' => $service,
@@ -285,14 +299,14 @@ final class ServiceMonitoringServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -314,6 +328,12 @@ final class ServiceMonitoringServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -347,6 +367,9 @@ final class ServiceMonitoringServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -374,6 +397,8 @@ final class ServiceMonitoringServiceClient
      * The async variant is {@see ServiceMonitoringServiceClient::createServiceAsync()}
      * .
      *
+     * @example samples/V3/ServiceMonitoringServiceClient/create_service.php
+     *
      * @param CreateServiceRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -399,6 +424,8 @@ final class ServiceMonitoringServiceClient
      * The async variant is
      * {@see ServiceMonitoringServiceClient::createServiceLevelObjectiveAsync()} .
      *
+     * @example samples/V3/ServiceMonitoringServiceClient/create_service_level_objective.php
+     *
      * @param CreateServiceLevelObjectiveRequest $request     A request to house fields associated with the call.
      * @param array                              $callOptions {
      *     Optional.
@@ -413,8 +440,10 @@ final class ServiceMonitoringServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createServiceLevelObjective(CreateServiceLevelObjectiveRequest $request, array $callOptions = []): ServiceLevelObjective
-    {
+    public function createServiceLevelObjective(
+        CreateServiceLevelObjectiveRequest $request,
+        array $callOptions = []
+    ): ServiceLevelObjective {
         return $this->startApiCall('CreateServiceLevelObjective', $request, $callOptions)->wait();
     }
 
@@ -423,6 +452,8 @@ final class ServiceMonitoringServiceClient
      *
      * The async variant is {@see ServiceMonitoringServiceClient::deleteServiceAsync()}
      * .
+     *
+     * @example samples/V3/ServiceMonitoringServiceClient/delete_service.php
      *
      * @param DeleteServiceRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -447,6 +478,8 @@ final class ServiceMonitoringServiceClient
      * The async variant is
      * {@see ServiceMonitoringServiceClient::deleteServiceLevelObjectiveAsync()} .
      *
+     * @example samples/V3/ServiceMonitoringServiceClient/delete_service_level_objective.php
+     *
      * @param DeleteServiceLevelObjectiveRequest $request     A request to house fields associated with the call.
      * @param array                              $callOptions {
      *     Optional.
@@ -459,8 +492,10 @@ final class ServiceMonitoringServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function deleteServiceLevelObjective(DeleteServiceLevelObjectiveRequest $request, array $callOptions = []): void
-    {
+    public function deleteServiceLevelObjective(
+        DeleteServiceLevelObjectiveRequest $request,
+        array $callOptions = []
+    ): void {
         $this->startApiCall('DeleteServiceLevelObjective', $request, $callOptions)->wait();
     }
 
@@ -468,6 +503,8 @@ final class ServiceMonitoringServiceClient
      * Get the named `Service`.
      *
      * The async variant is {@see ServiceMonitoringServiceClient::getServiceAsync()} .
+     *
+     * @example samples/V3/ServiceMonitoringServiceClient/get_service.php
      *
      * @param GetServiceRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -494,6 +531,8 @@ final class ServiceMonitoringServiceClient
      * The async variant is
      * {@see ServiceMonitoringServiceClient::getServiceLevelObjectiveAsync()} .
      *
+     * @example samples/V3/ServiceMonitoringServiceClient/get_service_level_objective.php
+     *
      * @param GetServiceLevelObjectiveRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
      *     Optional.
@@ -508,8 +547,10 @@ final class ServiceMonitoringServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getServiceLevelObjective(GetServiceLevelObjectiveRequest $request, array $callOptions = []): ServiceLevelObjective
-    {
+    public function getServiceLevelObjective(
+        GetServiceLevelObjectiveRequest $request,
+        array $callOptions = []
+    ): ServiceLevelObjective {
         return $this->startApiCall('GetServiceLevelObjective', $request, $callOptions)->wait();
     }
 
@@ -518,6 +559,8 @@ final class ServiceMonitoringServiceClient
      *
      * The async variant is
      * {@see ServiceMonitoringServiceClient::listServiceLevelObjectivesAsync()} .
+     *
+     * @example samples/V3/ServiceMonitoringServiceClient/list_service_level_objectives.php
      *
      * @param ListServiceLevelObjectivesRequest $request     A request to house fields associated with the call.
      * @param array                             $callOptions {
@@ -533,16 +576,20 @@ final class ServiceMonitoringServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listServiceLevelObjectives(ListServiceLevelObjectivesRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listServiceLevelObjectives(
+        ListServiceLevelObjectivesRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListServiceLevelObjectives', $request, $callOptions);
     }
 
     /**
-     * List `Service`s for this workspace.
+     * List `Service`s for this Metrics Scope.
      *
      * The async variant is {@see ServiceMonitoringServiceClient::listServicesAsync()}
      * .
+     *
+     * @example samples/V3/ServiceMonitoringServiceClient/list_services.php
      *
      * @param ListServicesRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -569,6 +616,8 @@ final class ServiceMonitoringServiceClient
      * The async variant is {@see ServiceMonitoringServiceClient::updateServiceAsync()}
      * .
      *
+     * @example samples/V3/ServiceMonitoringServiceClient/update_service.php
+     *
      * @param UpdateServiceRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -594,6 +643,8 @@ final class ServiceMonitoringServiceClient
      * The async variant is
      * {@see ServiceMonitoringServiceClient::updateServiceLevelObjectiveAsync()} .
      *
+     * @example samples/V3/ServiceMonitoringServiceClient/update_service_level_objective.php
+     *
      * @param UpdateServiceLevelObjectiveRequest $request     A request to house fields associated with the call.
      * @param array                              $callOptions {
      *     Optional.
@@ -608,8 +659,10 @@ final class ServiceMonitoringServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateServiceLevelObjective(UpdateServiceLevelObjectiveRequest $request, array $callOptions = []): ServiceLevelObjective
-    {
+    public function updateServiceLevelObjective(
+        UpdateServiceLevelObjectiveRequest $request,
+        array $callOptions = []
+    ): ServiceLevelObjective {
         return $this->startApiCall('UpdateServiceLevelObjective', $request, $callOptions)->wait();
     }
 }

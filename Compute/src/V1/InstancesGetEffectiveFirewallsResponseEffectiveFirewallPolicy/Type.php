@@ -7,7 +7,7 @@ namespace Google\Cloud\Compute\V1\InstancesGetEffectiveFirewallsResponseEffectiv
 use UnexpectedValueException;
 
 /**
- * [Output Only] The type of the firewall policy. Can be one of HIERARCHY, NETWORK, NETWORK_REGIONAL.
+ * [Output Only] The type of the firewall policy. Can be one of HIERARCHY, NETWORK, NETWORK_REGIONAL, SYSTEM_GLOBAL, SYSTEM_REGIONAL.
  *
  * Protobuf type <code>google.cloud.compute.v1.InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy.Type</code>
  */
@@ -32,6 +32,14 @@ class Type
      */
     const NETWORK_REGIONAL = 190804272;
     /**
+     * Generated from protobuf enum <code>SYSTEM_GLOBAL = 60099507;</code>
+     */
+    const SYSTEM_GLOBAL = 60099507;
+    /**
+     * Generated from protobuf enum <code>SYSTEM_REGIONAL = 161777199;</code>
+     */
+    const SYSTEM_REGIONAL = 161777199;
+    /**
      * Generated from protobuf enum <code>UNSPECIFIED = 526786327;</code>
      */
     const UNSPECIFIED = 526786327;
@@ -41,6 +49,8 @@ class Type
         self::HIERARCHY => 'HIERARCHY',
         self::NETWORK => 'NETWORK',
         self::NETWORK_REGIONAL => 'NETWORK_REGIONAL',
+        self::SYSTEM_GLOBAL => 'SYSTEM_GLOBAL',
+        self::SYSTEM_REGIONAL => 'SYSTEM_REGIONAL',
         self::UNSPECIFIED => 'UNSPECIFIED',
     ];
 

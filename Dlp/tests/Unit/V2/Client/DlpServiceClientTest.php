@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,10 @@ use Google\ApiCore\Testing\MockTransport;
 use Google\Cloud\Dlp\V2\ActivateJobTriggerRequest;
 use Google\Cloud\Dlp\V2\CancelDlpJobRequest;
 use Google\Cloud\Dlp\V2\Client\DlpServiceClient;
+use Google\Cloud\Dlp\V2\ColumnDataProfile;
+use Google\Cloud\Dlp\V2\Connection;
+use Google\Cloud\Dlp\V2\ConnectionState;
+use Google\Cloud\Dlp\V2\CreateConnectionRequest;
 use Google\Cloud\Dlp\V2\CreateDeidentifyTemplateRequest;
 use Google\Cloud\Dlp\V2\CreateDiscoveryConfigRequest;
 use Google\Cloud\Dlp\V2\CreateDlpJobRequest;
@@ -38,22 +42,31 @@ use Google\Cloud\Dlp\V2\CreateStoredInfoTypeRequest;
 use Google\Cloud\Dlp\V2\DeidentifyContentRequest;
 use Google\Cloud\Dlp\V2\DeidentifyContentResponse;
 use Google\Cloud\Dlp\V2\DeidentifyTemplate;
+use Google\Cloud\Dlp\V2\DeleteConnectionRequest;
 use Google\Cloud\Dlp\V2\DeleteDeidentifyTemplateRequest;
 use Google\Cloud\Dlp\V2\DeleteDiscoveryConfigRequest;
 use Google\Cloud\Dlp\V2\DeleteDlpJobRequest;
+use Google\Cloud\Dlp\V2\DeleteFileStoreDataProfileRequest;
 use Google\Cloud\Dlp\V2\DeleteInspectTemplateRequest;
 use Google\Cloud\Dlp\V2\DeleteJobTriggerRequest;
 use Google\Cloud\Dlp\V2\DeleteStoredInfoTypeRequest;
+use Google\Cloud\Dlp\V2\DeleteTableDataProfileRequest;
 use Google\Cloud\Dlp\V2\DiscoveryConfig;
 use Google\Cloud\Dlp\V2\DiscoveryConfig\Status;
 use Google\Cloud\Dlp\V2\DlpJob;
+use Google\Cloud\Dlp\V2\FileStoreDataProfile;
 use Google\Cloud\Dlp\V2\FinishDlpJobRequest;
+use Google\Cloud\Dlp\V2\GetColumnDataProfileRequest;
+use Google\Cloud\Dlp\V2\GetConnectionRequest;
 use Google\Cloud\Dlp\V2\GetDeidentifyTemplateRequest;
 use Google\Cloud\Dlp\V2\GetDiscoveryConfigRequest;
 use Google\Cloud\Dlp\V2\GetDlpJobRequest;
+use Google\Cloud\Dlp\V2\GetFileStoreDataProfileRequest;
 use Google\Cloud\Dlp\V2\GetInspectTemplateRequest;
 use Google\Cloud\Dlp\V2\GetJobTriggerRequest;
+use Google\Cloud\Dlp\V2\GetProjectDataProfileRequest;
 use Google\Cloud\Dlp\V2\GetStoredInfoTypeRequest;
+use Google\Cloud\Dlp\V2\GetTableDataProfileRequest;
 use Google\Cloud\Dlp\V2\HybridInspectDlpJobRequest;
 use Google\Cloud\Dlp\V2\HybridInspectJobTriggerRequest;
 use Google\Cloud\Dlp\V2\HybridInspectResponse;
@@ -61,26 +74,41 @@ use Google\Cloud\Dlp\V2\InspectContentRequest;
 use Google\Cloud\Dlp\V2\InspectContentResponse;
 use Google\Cloud\Dlp\V2\InspectTemplate;
 use Google\Cloud\Dlp\V2\JobTrigger;
+use Google\Cloud\Dlp\V2\ListColumnDataProfilesRequest;
+use Google\Cloud\Dlp\V2\ListColumnDataProfilesResponse;
+use Google\Cloud\Dlp\V2\ListConnectionsRequest;
+use Google\Cloud\Dlp\V2\ListConnectionsResponse;
 use Google\Cloud\Dlp\V2\ListDeidentifyTemplatesRequest;
 use Google\Cloud\Dlp\V2\ListDeidentifyTemplatesResponse;
 use Google\Cloud\Dlp\V2\ListDiscoveryConfigsRequest;
 use Google\Cloud\Dlp\V2\ListDiscoveryConfigsResponse;
 use Google\Cloud\Dlp\V2\ListDlpJobsRequest;
 use Google\Cloud\Dlp\V2\ListDlpJobsResponse;
+use Google\Cloud\Dlp\V2\ListFileStoreDataProfilesRequest;
+use Google\Cloud\Dlp\V2\ListFileStoreDataProfilesResponse;
 use Google\Cloud\Dlp\V2\ListInfoTypesRequest;
 use Google\Cloud\Dlp\V2\ListInfoTypesResponse;
 use Google\Cloud\Dlp\V2\ListInspectTemplatesRequest;
 use Google\Cloud\Dlp\V2\ListInspectTemplatesResponse;
 use Google\Cloud\Dlp\V2\ListJobTriggersRequest;
 use Google\Cloud\Dlp\V2\ListJobTriggersResponse;
+use Google\Cloud\Dlp\V2\ListProjectDataProfilesRequest;
+use Google\Cloud\Dlp\V2\ListProjectDataProfilesResponse;
 use Google\Cloud\Dlp\V2\ListStoredInfoTypesRequest;
 use Google\Cloud\Dlp\V2\ListStoredInfoTypesResponse;
+use Google\Cloud\Dlp\V2\ListTableDataProfilesRequest;
+use Google\Cloud\Dlp\V2\ListTableDataProfilesResponse;
+use Google\Cloud\Dlp\V2\ProjectDataProfile;
 use Google\Cloud\Dlp\V2\RedactImageRequest;
 use Google\Cloud\Dlp\V2\RedactImageResponse;
 use Google\Cloud\Dlp\V2\ReidentifyContentRequest;
 use Google\Cloud\Dlp\V2\ReidentifyContentResponse;
+use Google\Cloud\Dlp\V2\SearchConnectionsRequest;
+use Google\Cloud\Dlp\V2\SearchConnectionsResponse;
 use Google\Cloud\Dlp\V2\StoredInfoType;
 use Google\Cloud\Dlp\V2\StoredInfoTypeConfig;
+use Google\Cloud\Dlp\V2\TableDataProfile;
+use Google\Cloud\Dlp\V2\UpdateConnectionRequest;
 use Google\Cloud\Dlp\V2\UpdateDeidentifyTemplateRequest;
 use Google\Cloud\Dlp\V2\UpdateDiscoveryConfigRequest;
 use Google\Cloud\Dlp\V2\UpdateInspectTemplateRequest;
@@ -106,7 +134,9 @@ class DlpServiceClientTest extends GeneratedTest
     /** @return CredentialsWrapper */
     private function createCredentials()
     {
-        return $this->getMockBuilder(CredentialsWrapper::class)->disableOriginalConstructor()->getMock();
+        return $this->getMockBuilder(CredentialsWrapper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /** @return DlpServiceClient */
@@ -135,8 +165,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->jobTriggerName('[PROJECT]', '[JOB_TRIGGER]');
-        $request = (new ActivateJobTriggerRequest())
-            ->setName($formattedName);
+        $request = (new ActivateJobTriggerRequest())->setName($formattedName);
         $response = $gapicClient->activateJobTrigger($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -160,17 +189,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->jobTriggerName('[PROJECT]', '[JOB_TRIGGER]');
-        $request = (new ActivateJobTriggerRequest())
-            ->setName($formattedName);
+        $request = (new ActivateJobTriggerRequest())->setName($formattedName);
         try {
             $gapicClient->activateJobTrigger($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -197,8 +228,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->dlpJobName('[PROJECT]', '[DLP_JOB]');
-        $request = (new CancelDlpJobRequest())
-            ->setName($formattedName);
+        $request = (new CancelDlpJobRequest())->setName($formattedName);
         $gapicClient->cancelDlpJob($request);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
@@ -221,19 +251,94 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->dlpJobName('[PROJECT]', '[DLP_JOB]');
-        $request = (new CancelDlpJobRequest())
-            ->setName($formattedName);
+        $request = (new CancelDlpJobRequest())->setName($formattedName);
         try {
             $gapicClient->cancelDlpJob($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function createConnectionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $name = 'name3373707';
+        $expectedResponse = new Connection();
+        $expectedResponse->setName($name);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
+        $connection = new Connection();
+        $connectionState = ConnectionState::CONNECTION_STATE_UNSPECIFIED;
+        $connection->setState($connectionState);
+        $request = (new CreateConnectionRequest())->setParent($formattedParent)->setConnection($connection);
+        $response = $gapicClient->createConnection($request);
+        $this->assertEquals($expectedResponse, $response);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/CreateConnection', $actualFuncCall);
+        $actualValue = $actualRequestObject->getParent();
+        $this->assertProtobufEquals($formattedParent, $actualValue);
+        $actualValue = $actualRequestObject->getConnection();
+        $this->assertProtobufEquals($connection, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function createConnectionExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
+        $connection = new Connection();
+        $connectionState = ConnectionState::CONNECTION_STATE_UNSPECIFIED;
+        $connection->setState($connectionState);
+        $request = (new CreateConnectionRequest())->setParent($formattedParent)->setConnection($connection);
+        try {
+            $gapicClient->createConnection($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -293,12 +398,15 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
@@ -367,12 +475,15 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
@@ -412,8 +523,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
-        $request = (new CreateDlpJobRequest())
-            ->setParent($formattedParent);
+        $request = (new CreateDlpJobRequest())->setParent($formattedParent);
         $response = $gapicClient->createDlpJob($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -437,17 +547,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
-        $request = (new CreateDlpJobRequest())
-            ->setParent($formattedParent);
+        $request = (new CreateDlpJobRequest())->setParent($formattedParent);
         try {
             $gapicClient->createDlpJob($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -509,12 +621,15 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
@@ -557,9 +672,7 @@ class DlpServiceClientTest extends GeneratedTest
         $jobTrigger = new JobTrigger();
         $jobTriggerStatus = \Google\Cloud\Dlp\V2\JobTrigger\Status::STATUS_UNSPECIFIED;
         $jobTrigger->setStatus($jobTriggerStatus);
-        $request = (new CreateJobTriggerRequest())
-            ->setParent($formattedParent)
-            ->setJobTrigger($jobTrigger);
+        $request = (new CreateJobTriggerRequest())->setParent($formattedParent)->setJobTrigger($jobTrigger);
         $response = $gapicClient->createJobTrigger($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -585,21 +698,22 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
         $jobTrigger = new JobTrigger();
         $jobTriggerStatus = \Google\Cloud\Dlp\V2\JobTrigger\Status::STATUS_UNSPECIFIED;
         $jobTrigger->setStatus($jobTriggerStatus);
-        $request = (new CreateJobTriggerRequest())
-            ->setParent($formattedParent)
-            ->setJobTrigger($jobTrigger);
+        $request = (new CreateJobTriggerRequest())->setParent($formattedParent)->setJobTrigger($jobTrigger);
         try {
             $gapicClient->createJobTrigger($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -629,9 +743,7 @@ class DlpServiceClientTest extends GeneratedTest
         // Mock request
         $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
         $config = new StoredInfoTypeConfig();
-        $request = (new CreateStoredInfoTypeRequest())
-            ->setParent($formattedParent)
-            ->setConfig($config);
+        $request = (new CreateStoredInfoTypeRequest())->setParent($formattedParent)->setConfig($config);
         $response = $gapicClient->createStoredInfoType($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -657,19 +769,20 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
         $config = new StoredInfoTypeConfig();
-        $request = (new CreateStoredInfoTypeRequest())
-            ->setParent($formattedParent)
-            ->setConfig($config);
+        $request = (new CreateStoredInfoTypeRequest())->setParent($formattedParent)->setConfig($config);
         try {
             $gapicClient->createStoredInfoType($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -716,16 +829,81 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new DeidentifyContentRequest();
         try {
             $gapicClient->deidentifyContent($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function deleteConnectionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $expectedResponse = new GPBEmpty();
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedName = $gapicClient->connectionName('[PROJECT]', '[LOCATION]', '[CONNECTION]');
+        $request = (new DeleteConnectionRequest())->setName($formattedName);
+        $gapicClient->deleteConnection($request);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/DeleteConnection', $actualFuncCall);
+        $actualValue = $actualRequestObject->getName();
+        $this->assertProtobufEquals($formattedName, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function deleteConnectionExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedName = $gapicClient->connectionName('[PROJECT]', '[LOCATION]', '[CONNECTION]');
+        $request = (new DeleteConnectionRequest())->setName($formattedName);
+        try {
+            $gapicClient->deleteConnection($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -750,8 +928,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->deidentifyTemplateName('[ORGANIZATION]', '[DEIDENTIFY_TEMPLATE]');
-        $request = (new DeleteDeidentifyTemplateRequest())
-            ->setName($formattedName);
+        $request = (new DeleteDeidentifyTemplateRequest())->setName($formattedName);
         $gapicClient->deleteDeidentifyTemplate($request);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
@@ -774,17 +951,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->deidentifyTemplateName('[ORGANIZATION]', '[DEIDENTIFY_TEMPLATE]');
-        $request = (new DeleteDeidentifyTemplateRequest())
-            ->setName($formattedName);
+        $request = (new DeleteDeidentifyTemplateRequest())->setName($formattedName);
         try {
             $gapicClient->deleteDeidentifyTemplate($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -811,8 +990,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->discoveryConfigName('[PROJECT]', '[LOCATION]', '[DISCOVERY_CONFIG]');
-        $request = (new DeleteDiscoveryConfigRequest())
-            ->setName($formattedName);
+        $request = (new DeleteDiscoveryConfigRequest())->setName($formattedName);
         $gapicClient->deleteDiscoveryConfig($request);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
@@ -835,17 +1013,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->discoveryConfigName('[PROJECT]', '[LOCATION]', '[DISCOVERY_CONFIG]');
-        $request = (new DeleteDiscoveryConfigRequest())
-            ->setName($formattedName);
+        $request = (new DeleteDiscoveryConfigRequest())->setName($formattedName);
         try {
             $gapicClient->deleteDiscoveryConfig($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -872,8 +1052,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->dlpJobName('[PROJECT]', '[DLP_JOB]');
-        $request = (new DeleteDlpJobRequest())
-            ->setName($formattedName);
+        $request = (new DeleteDlpJobRequest())->setName($formattedName);
         $gapicClient->deleteDlpJob($request);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
@@ -896,19 +1075,91 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->dlpJobName('[PROJECT]', '[DLP_JOB]');
-        $request = (new DeleteDlpJobRequest())
-            ->setName($formattedName);
+        $request = (new DeleteDlpJobRequest())->setName($formattedName);
         try {
             $gapicClient->deleteDlpJob($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function deleteFileStoreDataProfileTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $expectedResponse = new GPBEmpty();
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedName = $gapicClient->fileStoreDataProfileName(
+            '[ORGANIZATION]',
+            '[LOCATION]',
+            '[FILE_STORE_DATA_PROFILE]'
+        );
+        $request = (new DeleteFileStoreDataProfileRequest())->setName($formattedName);
+        $gapicClient->deleteFileStoreDataProfile($request);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/DeleteFileStoreDataProfile', $actualFuncCall);
+        $actualValue = $actualRequestObject->getName();
+        $this->assertProtobufEquals($formattedName, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function deleteFileStoreDataProfileExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedName = $gapicClient->fileStoreDataProfileName(
+            '[ORGANIZATION]',
+            '[LOCATION]',
+            '[FILE_STORE_DATA_PROFILE]'
+        );
+        $request = (new DeleteFileStoreDataProfileRequest())->setName($formattedName);
+        try {
+            $gapicClient->deleteFileStoreDataProfile($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -933,8 +1184,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->inspectTemplateName('[ORGANIZATION]', '[INSPECT_TEMPLATE]');
-        $request = (new DeleteInspectTemplateRequest())
-            ->setName($formattedName);
+        $request = (new DeleteInspectTemplateRequest())->setName($formattedName);
         $gapicClient->deleteInspectTemplate($request);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
@@ -957,17 +1207,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->inspectTemplateName('[ORGANIZATION]', '[INSPECT_TEMPLATE]');
-        $request = (new DeleteInspectTemplateRequest())
-            ->setName($formattedName);
+        $request = (new DeleteInspectTemplateRequest())->setName($formattedName);
         try {
             $gapicClient->deleteInspectTemplate($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -994,8 +1246,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->jobTriggerName('[PROJECT]', '[JOB_TRIGGER]');
-        $request = (new DeleteJobTriggerRequest())
-            ->setName($formattedName);
+        $request = (new DeleteJobTriggerRequest())->setName($formattedName);
         $gapicClient->deleteJobTrigger($request);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
@@ -1018,17 +1269,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->jobTriggerName('[PROJECT]', '[JOB_TRIGGER]');
-        $request = (new DeleteJobTriggerRequest())
-            ->setName($formattedName);
+        $request = (new DeleteJobTriggerRequest())->setName($formattedName);
         try {
             $gapicClient->deleteJobTrigger($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1055,8 +1308,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->storedInfoTypeName('[ORGANIZATION]', '[STORED_INFO_TYPE]');
-        $request = (new DeleteStoredInfoTypeRequest())
-            ->setName($formattedName);
+        $request = (new DeleteStoredInfoTypeRequest())->setName($formattedName);
         $gapicClient->deleteStoredInfoType($request);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
@@ -1079,19 +1331,83 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->storedInfoTypeName('[ORGANIZATION]', '[STORED_INFO_TYPE]');
-        $request = (new DeleteStoredInfoTypeRequest())
-            ->setName($formattedName);
+        $request = (new DeleteStoredInfoTypeRequest())->setName($formattedName);
         try {
             $gapicClient->deleteStoredInfoType($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function deleteTableDataProfileTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $expectedResponse = new GPBEmpty();
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedName = $gapicClient->tableDataProfileName('[ORGANIZATION]', '[LOCATION]', '[TABLE_DATA_PROFILE]');
+        $request = (new DeleteTableDataProfileRequest())->setName($formattedName);
+        $gapicClient->deleteTableDataProfile($request);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/DeleteTableDataProfile', $actualFuncCall);
+        $actualValue = $actualRequestObject->getName();
+        $this->assertProtobufEquals($formattedName, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function deleteTableDataProfileExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedName = $gapicClient->tableDataProfileName('[ORGANIZATION]', '[LOCATION]', '[TABLE_DATA_PROFILE]');
+        $request = (new DeleteTableDataProfileRequest())->setName($formattedName);
+        try {
+            $gapicClient->deleteTableDataProfile($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -1116,8 +1432,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->dlpJobName('[PROJECT]', '[DLP_JOB]');
-        $request = (new FinishDlpJobRequest())
-            ->setName($formattedName);
+        $request = (new FinishDlpJobRequest())->setName($formattedName);
         $gapicClient->finishDlpJob($request);
         $actualRequests = $transport->popReceivedCalls();
         $this->assertSame(1, count($actualRequests));
@@ -1140,19 +1455,167 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->dlpJobName('[PROJECT]', '[DLP_JOB]');
-        $request = (new FinishDlpJobRequest())
-            ->setName($formattedName);
+        $request = (new FinishDlpJobRequest())->setName($formattedName);
         try {
             $gapicClient->finishDlpJob($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function getColumnDataProfileTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $name2 = 'name2-1052831874';
+        $tableDataProfile = 'tableDataProfile1230971621';
+        $tableFullResource = 'tableFullResource1490522381';
+        $datasetProjectId = 'datasetProjectId1943685672';
+        $datasetLocation = 'datasetLocation1011262364';
+        $datasetId = 'datasetId-2115646910';
+        $tableId = 'tableId-895419604';
+        $column = 'column-1354837162';
+        $freeTextScore = 1.21823761e8;
+        $expectedResponse = new ColumnDataProfile();
+        $expectedResponse->setName($name2);
+        $expectedResponse->setTableDataProfile($tableDataProfile);
+        $expectedResponse->setTableFullResource($tableFullResource);
+        $expectedResponse->setDatasetProjectId($datasetProjectId);
+        $expectedResponse->setDatasetLocation($datasetLocation);
+        $expectedResponse->setDatasetId($datasetId);
+        $expectedResponse->setTableId($tableId);
+        $expectedResponse->setColumn($column);
+        $expectedResponse->setFreeTextScore($freeTextScore);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedName = $gapicClient->columnDataProfileName('[ORGANIZATION]', '[LOCATION]', '[COLUMN_DATA_PROFILE]');
+        $request = (new GetColumnDataProfileRequest())->setName($formattedName);
+        $response = $gapicClient->getColumnDataProfile($request);
+        $this->assertEquals($expectedResponse, $response);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/GetColumnDataProfile', $actualFuncCall);
+        $actualValue = $actualRequestObject->getName();
+        $this->assertProtobufEquals($formattedName, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function getColumnDataProfileExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedName = $gapicClient->columnDataProfileName('[ORGANIZATION]', '[LOCATION]', '[COLUMN_DATA_PROFILE]');
+        $request = (new GetColumnDataProfileRequest())->setName($formattedName);
+        try {
+            $gapicClient->getColumnDataProfile($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function getConnectionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $name2 = 'name2-1052831874';
+        $expectedResponse = new Connection();
+        $expectedResponse->setName($name2);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedName = $gapicClient->connectionName('[PROJECT]', '[LOCATION]', '[CONNECTION]');
+        $request = (new GetConnectionRequest())->setName($formattedName);
+        $response = $gapicClient->getConnection($request);
+        $this->assertEquals($expectedResponse, $response);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/GetConnection', $actualFuncCall);
+        $actualValue = $actualRequestObject->getName();
+        $this->assertProtobufEquals($formattedName, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function getConnectionExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedName = $gapicClient->connectionName('[PROJECT]', '[LOCATION]', '[CONNECTION]');
+        $request = (new GetConnectionRequest())->setName($formattedName);
+        try {
+            $gapicClient->getConnection($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -1183,8 +1646,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->deidentifyTemplateName('[ORGANIZATION]', '[DEIDENTIFY_TEMPLATE]');
-        $request = (new GetDeidentifyTemplateRequest())
-            ->setName($formattedName);
+        $request = (new GetDeidentifyTemplateRequest())->setName($formattedName);
         $response = $gapicClient->getDeidentifyTemplate($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1208,17 +1670,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->deidentifyTemplateName('[ORGANIZATION]', '[DEIDENTIFY_TEMPLATE]');
-        $request = (new GetDeidentifyTemplateRequest())
-            ->setName($formattedName);
+        $request = (new GetDeidentifyTemplateRequest())->setName($formattedName);
         try {
             $gapicClient->getDeidentifyTemplate($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1249,8 +1713,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->discoveryConfigName('[PROJECT]', '[LOCATION]', '[DISCOVERY_CONFIG]');
-        $request = (new GetDiscoveryConfigRequest())
-            ->setName($formattedName);
+        $request = (new GetDiscoveryConfigRequest())->setName($formattedName);
         $response = $gapicClient->getDiscoveryConfig($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1274,17 +1737,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->discoveryConfigName('[PROJECT]', '[LOCATION]', '[DISCOVERY_CONFIG]');
-        $request = (new GetDiscoveryConfigRequest())
-            ->setName($formattedName);
+        $request = (new GetDiscoveryConfigRequest())->setName($formattedName);
         try {
             $gapicClient->getDiscoveryConfig($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1315,8 +1780,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->dlpJobName('[PROJECT]', '[DLP_JOB]');
-        $request = (new GetDlpJobRequest())
-            ->setName($formattedName);
+        $request = (new GetDlpJobRequest())->setName($formattedName);
         $response = $gapicClient->getDlpJob($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1340,19 +1804,100 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->dlpJobName('[PROJECT]', '[DLP_JOB]');
-        $request = (new GetDlpJobRequest())
-            ->setName($formattedName);
+        $request = (new GetDlpJobRequest())->setName($formattedName);
         try {
             $gapicClient->getDlpJob($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function getFileStoreDataProfileTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $name2 = 'name2-1052831874';
+        $projectDataProfile = 'projectDataProfile-316045958';
+        $projectId = 'projectId-1969970175';
+        $fileStoreLocation = 'fileStoreLocation-169306506';
+        $locationType = 'locationType-1796591228';
+        $fileStorePath = 'fileStorePath-1852775578';
+        $fullResource = 'fullResource1559053246';
+        $fileStoreIsEmpty = false;
+        $expectedResponse = new FileStoreDataProfile();
+        $expectedResponse->setName($name2);
+        $expectedResponse->setProjectDataProfile($projectDataProfile);
+        $expectedResponse->setProjectId($projectId);
+        $expectedResponse->setFileStoreLocation($fileStoreLocation);
+        $expectedResponse->setLocationType($locationType);
+        $expectedResponse->setFileStorePath($fileStorePath);
+        $expectedResponse->setFullResource($fullResource);
+        $expectedResponse->setFileStoreIsEmpty($fileStoreIsEmpty);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedName = $gapicClient->projectDataProfileName('[ORGANIZATION]', '[LOCATION]', '[PROJECT_DATA_PROFILE]');
+        $request = (new GetFileStoreDataProfileRequest())->setName($formattedName);
+        $response = $gapicClient->getFileStoreDataProfile($request);
+        $this->assertEquals($expectedResponse, $response);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/GetFileStoreDataProfile', $actualFuncCall);
+        $actualValue = $actualRequestObject->getName();
+        $this->assertProtobufEquals($formattedName, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function getFileStoreDataProfileExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedName = $gapicClient->projectDataProfileName('[ORGANIZATION]', '[LOCATION]', '[PROJECT_DATA_PROFILE]');
+        $request = (new GetFileStoreDataProfileRequest())->setName($formattedName);
+        try {
+            $gapicClient->getFileStoreDataProfile($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -1383,8 +1928,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->inspectTemplateName('[ORGANIZATION]', '[INSPECT_TEMPLATE]');
-        $request = (new GetInspectTemplateRequest())
-            ->setName($formattedName);
+        $request = (new GetInspectTemplateRequest())->setName($formattedName);
         $response = $gapicClient->getInspectTemplate($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1408,17 +1952,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->inspectTemplateName('[ORGANIZATION]', '[INSPECT_TEMPLATE]');
-        $request = (new GetInspectTemplateRequest())
-            ->setName($formattedName);
+        $request = (new GetInspectTemplateRequest())->setName($formattedName);
         try {
             $gapicClient->getInspectTemplate($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1451,8 +1997,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->jobTriggerName('[PROJECT]', '[JOB_TRIGGER]');
-        $request = (new GetJobTriggerRequest())
-            ->setName($formattedName);
+        $request = (new GetJobTriggerRequest())->setName($formattedName);
         $response = $gapicClient->getJobTrigger($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1476,19 +2021,92 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->jobTriggerName('[PROJECT]', '[JOB_TRIGGER]');
-        $request = (new GetJobTriggerRequest())
-            ->setName($formattedName);
+        $request = (new GetJobTriggerRequest())->setName($formattedName);
         try {
             $gapicClient->getJobTrigger($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function getProjectDataProfileTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $name2 = 'name2-1052831874';
+        $projectId = 'projectId-1969970175';
+        $tableDataProfileCount = 330585909;
+        $fileStoreDataProfileCount = 332405595;
+        $expectedResponse = new ProjectDataProfile();
+        $expectedResponse->setName($name2);
+        $expectedResponse->setProjectId($projectId);
+        $expectedResponse->setTableDataProfileCount($tableDataProfileCount);
+        $expectedResponse->setFileStoreDataProfileCount($fileStoreDataProfileCount);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedName = $gapicClient->projectDataProfileName('[ORGANIZATION]', '[LOCATION]', '[PROJECT_DATA_PROFILE]');
+        $request = (new GetProjectDataProfileRequest())->setName($formattedName);
+        $response = $gapicClient->getProjectDataProfile($request);
+        $this->assertEquals($expectedResponse, $response);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/GetProjectDataProfile', $actualFuncCall);
+        $actualValue = $actualRequestObject->getName();
+        $this->assertProtobufEquals($formattedName, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function getProjectDataProfileExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedName = $gapicClient->projectDataProfileName('[ORGANIZATION]', '[LOCATION]', '[PROJECT_DATA_PROFILE]');
+        $request = (new GetProjectDataProfileRequest())->setName($formattedName);
+        try {
+            $gapicClient->getProjectDataProfile($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -1515,8 +2133,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->storedInfoTypeName('[ORGANIZATION]', '[STORED_INFO_TYPE]');
-        $request = (new GetStoredInfoTypeRequest())
-            ->setName($formattedName);
+        $request = (new GetStoredInfoTypeRequest())->setName($formattedName);
         $response = $gapicClient->getStoredInfoType($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1540,19 +2157,106 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->storedInfoTypeName('[ORGANIZATION]', '[STORED_INFO_TYPE]');
-        $request = (new GetStoredInfoTypeRequest())
-            ->setName($formattedName);
+        $request = (new GetStoredInfoTypeRequest())->setName($formattedName);
         try {
             $gapicClient->getStoredInfoType($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function getTableDataProfileTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $name2 = 'name2-1052831874';
+        $projectDataProfile = 'projectDataProfile-316045958';
+        $datasetProjectId = 'datasetProjectId1943685672';
+        $datasetLocation = 'datasetLocation1011262364';
+        $datasetId = 'datasetId-2115646910';
+        $tableId = 'tableId-895419604';
+        $fullResource = 'fullResource1559053246';
+        $scannedColumnCount = 787756843;
+        $failedColumnCount = 706572376;
+        $tableSizeBytes = 927763390;
+        $rowCount = 1340416618;
+        $expectedResponse = new TableDataProfile();
+        $expectedResponse->setName($name2);
+        $expectedResponse->setProjectDataProfile($projectDataProfile);
+        $expectedResponse->setDatasetProjectId($datasetProjectId);
+        $expectedResponse->setDatasetLocation($datasetLocation);
+        $expectedResponse->setDatasetId($datasetId);
+        $expectedResponse->setTableId($tableId);
+        $expectedResponse->setFullResource($fullResource);
+        $expectedResponse->setScannedColumnCount($scannedColumnCount);
+        $expectedResponse->setFailedColumnCount($failedColumnCount);
+        $expectedResponse->setTableSizeBytes($tableSizeBytes);
+        $expectedResponse->setRowCount($rowCount);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedName = $gapicClient->tableDataProfileName('[ORGANIZATION]', '[LOCATION]', '[TABLE_DATA_PROFILE]');
+        $request = (new GetTableDataProfileRequest())->setName($formattedName);
+        $response = $gapicClient->getTableDataProfile($request);
+        $this->assertEquals($expectedResponse, $response);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/GetTableDataProfile', $actualFuncCall);
+        $actualValue = $actualRequestObject->getName();
+        $this->assertProtobufEquals($formattedName, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function getTableDataProfileExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedName = $gapicClient->tableDataProfileName('[ORGANIZATION]', '[LOCATION]', '[TABLE_DATA_PROFILE]');
+        $request = (new GetTableDataProfileRequest())->setName($formattedName);
+        try {
+            $gapicClient->getTableDataProfile($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -1577,8 +2281,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->dlpJobName('[PROJECT]', '[DLP_JOB]');
-        $request = (new HybridInspectDlpJobRequest())
-            ->setName($formattedName);
+        $request = (new HybridInspectDlpJobRequest())->setName($formattedName);
         $response = $gapicClient->hybridInspectDlpJob($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1602,17 +2305,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->dlpJobName('[PROJECT]', '[DLP_JOB]');
-        $request = (new HybridInspectDlpJobRequest())
-            ->setName($formattedName);
+        $request = (new HybridInspectDlpJobRequest())->setName($formattedName);
         try {
             $gapicClient->hybridInspectDlpJob($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1639,8 +2344,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->jobTriggerName('[PROJECT]', '[JOB_TRIGGER]');
-        $request = (new HybridInspectJobTriggerRequest())
-            ->setName($formattedName);
+        $request = (new HybridInspectJobTriggerRequest())->setName($formattedName);
         $response = $gapicClient->hybridInspectJobTrigger($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1664,17 +2368,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->jobTriggerName('[PROJECT]', '[JOB_TRIGGER]');
-        $request = (new HybridInspectJobTriggerRequest())
-            ->setName($formattedName);
+        $request = (new HybridInspectJobTriggerRequest())->setName($formattedName);
         try {
             $gapicClient->hybridInspectJobTrigger($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1721,16 +2427,161 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new InspectContentRequest();
         try {
             $gapicClient->inspectContent($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function listColumnDataProfilesTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $nextPageToken = '';
+        $columnDataProfilesElement = new ColumnDataProfile();
+        $columnDataProfiles = [$columnDataProfilesElement];
+        $expectedResponse = new ListColumnDataProfilesResponse();
+        $expectedResponse->setNextPageToken($nextPageToken);
+        $expectedResponse->setColumnDataProfiles($columnDataProfiles);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
+        $request = (new ListColumnDataProfilesRequest())->setParent($formattedParent);
+        $response = $gapicClient->listColumnDataProfiles($request);
+        $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
+        $resources = iterator_to_array($response->iterateAllElements());
+        $this->assertSame(1, count($resources));
+        $this->assertEquals($expectedResponse->getColumnDataProfiles()[0], $resources[0]);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/ListColumnDataProfiles', $actualFuncCall);
+        $actualValue = $actualRequestObject->getParent();
+        $this->assertProtobufEquals($formattedParent, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function listColumnDataProfilesExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
+        $request = (new ListColumnDataProfilesRequest())->setParent($formattedParent);
+        try {
+            $gapicClient->listColumnDataProfiles($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function listConnectionsTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $nextPageToken = '';
+        $connectionsElement = new Connection();
+        $connections = [$connectionsElement];
+        $expectedResponse = new ListConnectionsResponse();
+        $expectedResponse->setNextPageToken($nextPageToken);
+        $expectedResponse->setConnections($connections);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
+        $request = (new ListConnectionsRequest())->setParent($formattedParent);
+        $response = $gapicClient->listConnections($request);
+        $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
+        $resources = iterator_to_array($response->iterateAllElements());
+        $this->assertSame(1, count($resources));
+        $this->assertEquals($expectedResponse->getConnections()[0], $resources[0]);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/ListConnections', $actualFuncCall);
+        $actualValue = $actualRequestObject->getParent();
+        $this->assertProtobufEquals($formattedParent, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function listConnectionsExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
+        $request = (new ListConnectionsRequest())->setParent($formattedParent);
+        try {
+            $gapicClient->listConnections($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -1753,17 +2604,14 @@ class DlpServiceClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $deidentifyTemplatesElement = new DeidentifyTemplate();
-        $deidentifyTemplates = [
-            $deidentifyTemplatesElement,
-        ];
+        $deidentifyTemplates = [$deidentifyTemplatesElement];
         $expectedResponse = new ListDeidentifyTemplatesResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setDeidentifyTemplates($deidentifyTemplates);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
-        $request = (new ListDeidentifyTemplatesRequest())
-            ->setParent($formattedParent);
+        $request = (new ListDeidentifyTemplatesRequest())->setParent($formattedParent);
         $response = $gapicClient->listDeidentifyTemplates($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -1790,17 +2638,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
-        $request = (new ListDeidentifyTemplatesRequest())
-            ->setParent($formattedParent);
+        $request = (new ListDeidentifyTemplatesRequest())->setParent($formattedParent);
         try {
             $gapicClient->listDeidentifyTemplates($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1825,17 +2675,14 @@ class DlpServiceClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $discoveryConfigsElement = new DiscoveryConfig();
-        $discoveryConfigs = [
-            $discoveryConfigsElement,
-        ];
+        $discoveryConfigs = [$discoveryConfigsElement];
         $expectedResponse = new ListDiscoveryConfigsResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setDiscoveryConfigs($discoveryConfigs);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
-        $request = (new ListDiscoveryConfigsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListDiscoveryConfigsRequest())->setParent($formattedParent);
         $response = $gapicClient->listDiscoveryConfigs($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -1862,17 +2709,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
-        $request = (new ListDiscoveryConfigsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListDiscoveryConfigsRequest())->setParent($formattedParent);
         try {
             $gapicClient->listDiscoveryConfigs($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1897,17 +2746,14 @@ class DlpServiceClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $jobsElement = new DlpJob();
-        $jobs = [
-            $jobsElement,
-        ];
+        $jobs = [$jobsElement];
         $expectedResponse = new ListDlpJobsResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setJobs($jobs);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
-        $request = (new ListDlpJobsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListDlpJobsRequest())->setParent($formattedParent);
         $response = $gapicClient->listDlpJobs($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -1934,19 +2780,92 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
-        $request = (new ListDlpJobsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListDlpJobsRequest())->setParent($formattedParent);
         try {
             $gapicClient->listDlpJobs($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function listFileStoreDataProfilesTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $nextPageToken = '';
+        $fileStoreDataProfilesElement = new FileStoreDataProfile();
+        $fileStoreDataProfiles = [$fileStoreDataProfilesElement];
+        $expectedResponse = new ListFileStoreDataProfilesResponse();
+        $expectedResponse->setNextPageToken($nextPageToken);
+        $expectedResponse->setFileStoreDataProfiles($fileStoreDataProfiles);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
+        $request = (new ListFileStoreDataProfilesRequest())->setParent($formattedParent);
+        $response = $gapicClient->listFileStoreDataProfiles($request);
+        $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
+        $resources = iterator_to_array($response->iterateAllElements());
+        $this->assertSame(1, count($resources));
+        $this->assertEquals($expectedResponse->getFileStoreDataProfiles()[0], $resources[0]);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/ListFileStoreDataProfiles', $actualFuncCall);
+        $actualValue = $actualRequestObject->getParent();
+        $this->assertProtobufEquals($formattedParent, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function listFileStoreDataProfilesExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
+        $request = (new ListFileStoreDataProfilesRequest())->setParent($formattedParent);
+        try {
+            $gapicClient->listFileStoreDataProfiles($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -1991,12 +2910,15 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new ListInfoTypesRequest();
         try {
@@ -2023,17 +2945,14 @@ class DlpServiceClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $inspectTemplatesElement = new InspectTemplate();
-        $inspectTemplates = [
-            $inspectTemplatesElement,
-        ];
+        $inspectTemplates = [$inspectTemplatesElement];
         $expectedResponse = new ListInspectTemplatesResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setInspectTemplates($inspectTemplates);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
-        $request = (new ListInspectTemplatesRequest())
-            ->setParent($formattedParent);
+        $request = (new ListInspectTemplatesRequest())->setParent($formattedParent);
         $response = $gapicClient->listInspectTemplates($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -2060,17 +2979,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
-        $request = (new ListInspectTemplatesRequest())
-            ->setParent($formattedParent);
+        $request = (new ListInspectTemplatesRequest())->setParent($formattedParent);
         try {
             $gapicClient->listInspectTemplates($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2095,17 +3016,14 @@ class DlpServiceClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $jobTriggersElement = new JobTrigger();
-        $jobTriggers = [
-            $jobTriggersElement,
-        ];
+        $jobTriggers = [$jobTriggersElement];
         $expectedResponse = new ListJobTriggersResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setJobTriggers($jobTriggers);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
-        $request = (new ListJobTriggersRequest())
-            ->setParent($formattedParent);
+        $request = (new ListJobTriggersRequest())->setParent($formattedParent);
         $response = $gapicClient->listJobTriggers($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -2132,19 +3050,92 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
-        $request = (new ListJobTriggersRequest())
-            ->setParent($formattedParent);
+        $request = (new ListJobTriggersRequest())->setParent($formattedParent);
         try {
             $gapicClient->listJobTriggers($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function listProjectDataProfilesTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $nextPageToken = '';
+        $projectDataProfilesElement = new ProjectDataProfile();
+        $projectDataProfiles = [$projectDataProfilesElement];
+        $expectedResponse = new ListProjectDataProfilesResponse();
+        $expectedResponse->setNextPageToken($nextPageToken);
+        $expectedResponse->setProjectDataProfiles($projectDataProfiles);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
+        $request = (new ListProjectDataProfilesRequest())->setParent($formattedParent);
+        $response = $gapicClient->listProjectDataProfiles($request);
+        $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
+        $resources = iterator_to_array($response->iterateAllElements());
+        $this->assertSame(1, count($resources));
+        $this->assertEquals($expectedResponse->getProjectDataProfiles()[0], $resources[0]);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/ListProjectDataProfiles', $actualFuncCall);
+        $actualValue = $actualRequestObject->getParent();
+        $this->assertProtobufEquals($formattedParent, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function listProjectDataProfilesExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
+        $request = (new ListProjectDataProfilesRequest())->setParent($formattedParent);
+        try {
+            $gapicClient->listProjectDataProfiles($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -2167,17 +3158,14 @@ class DlpServiceClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $storedInfoTypesElement = new StoredInfoType();
-        $storedInfoTypes = [
-            $storedInfoTypesElement,
-        ];
+        $storedInfoTypes = [$storedInfoTypesElement];
         $expectedResponse = new ListStoredInfoTypesResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setStoredInfoTypes($storedInfoTypes);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
-        $request = (new ListStoredInfoTypesRequest())
-            ->setParent($formattedParent);
+        $request = (new ListStoredInfoTypesRequest())->setParent($formattedParent);
         $response = $gapicClient->listStoredInfoTypes($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -2204,19 +3192,92 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
-        $request = (new ListStoredInfoTypesRequest())
-            ->setParent($formattedParent);
+        $request = (new ListStoredInfoTypesRequest())->setParent($formattedParent);
         try {
             $gapicClient->listStoredInfoTypes($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function listTableDataProfilesTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $nextPageToken = '';
+        $tableDataProfilesElement = new TableDataProfile();
+        $tableDataProfiles = [$tableDataProfilesElement];
+        $expectedResponse = new ListTableDataProfilesResponse();
+        $expectedResponse->setNextPageToken($nextPageToken);
+        $expectedResponse->setTableDataProfiles($tableDataProfiles);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
+        $request = (new ListTableDataProfilesRequest())->setParent($formattedParent);
+        $response = $gapicClient->listTableDataProfiles($request);
+        $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
+        $resources = iterator_to_array($response->iterateAllElements());
+        $this->assertSame(1, count($resources));
+        $this->assertEquals($expectedResponse->getTableDataProfiles()[0], $resources[0]);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/ListTableDataProfiles', $actualFuncCall);
+        $actualValue = $actualRequestObject->getParent();
+        $this->assertProtobufEquals($formattedParent, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function listTableDataProfilesExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
+        $request = (new ListTableDataProfilesRequest())->setParent($formattedParent);
+        try {
+            $gapicClient->listTableDataProfiles($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -2265,12 +3326,15 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new RedactImageRequest();
         try {
@@ -2299,8 +3363,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
-        $request = (new ReidentifyContentRequest())
-            ->setParent($formattedParent);
+        $request = (new ReidentifyContentRequest())->setParent($formattedParent);
         $response = $gapicClient->reidentifyContent($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -2324,19 +3387,165 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->projectName('[PROJECT]');
-        $request = (new ReidentifyContentRequest())
-            ->setParent($formattedParent);
+        $request = (new ReidentifyContentRequest())->setParent($formattedParent);
         try {
             $gapicClient->reidentifyContent($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function searchConnectionsTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $nextPageToken = '';
+        $connectionsElement = new Connection();
+        $connections = [$connectionsElement];
+        $expectedResponse = new SearchConnectionsResponse();
+        $expectedResponse->setNextPageToken($nextPageToken);
+        $expectedResponse->setConnections($connections);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
+        $request = (new SearchConnectionsRequest())->setParent($formattedParent);
+        $response = $gapicClient->searchConnections($request);
+        $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
+        $resources = iterator_to_array($response->iterateAllElements());
+        $this->assertSame(1, count($resources));
+        $this->assertEquals($expectedResponse->getConnections()[0], $resources[0]);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/SearchConnections', $actualFuncCall);
+        $actualValue = $actualRequestObject->getParent();
+        $this->assertProtobufEquals($formattedParent, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function searchConnectionsExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedParent = $gapicClient->organizationLocationName('[ORGANIZATION]', '[LOCATION]');
+        $request = (new SearchConnectionsRequest())->setParent($formattedParent);
+        try {
+            $gapicClient->searchConnections($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function updateConnectionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $name2 = 'name2-1052831874';
+        $expectedResponse = new Connection();
+        $expectedResponse->setName($name2);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedName = $gapicClient->connectionName('[PROJECT]', '[LOCATION]', '[CONNECTION]');
+        $connection = new Connection();
+        $connectionState = ConnectionState::CONNECTION_STATE_UNSPECIFIED;
+        $connection->setState($connectionState);
+        $request = (new UpdateConnectionRequest())->setName($formattedName)->setConnection($connection);
+        $response = $gapicClient->updateConnection($request);
+        $this->assertEquals($expectedResponse, $response);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.privacy.dlp.v2.DlpService/UpdateConnection', $actualFuncCall);
+        $actualValue = $actualRequestObject->getName();
+        $this->assertProtobufEquals($formattedName, $actualValue);
+        $actualValue = $actualRequestObject->getConnection();
+        $this->assertProtobufEquals($connection, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function updateConnectionExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedName = $gapicClient->connectionName('[PROJECT]', '[LOCATION]', '[CONNECTION]');
+        $connection = new Connection();
+        $connectionState = ConnectionState::CONNECTION_STATE_UNSPECIFIED;
+        $connection->setState($connectionState);
+        $request = (new UpdateConnectionRequest())->setName($formattedName)->setConnection($connection);
+        try {
+            $gapicClient->updateConnection($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -2367,8 +3576,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->deidentifyTemplateName('[ORGANIZATION]', '[DEIDENTIFY_TEMPLATE]');
-        $request = (new UpdateDeidentifyTemplateRequest())
-            ->setName($formattedName);
+        $request = (new UpdateDeidentifyTemplateRequest())->setName($formattedName);
         $response = $gapicClient->updateDeidentifyTemplate($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -2392,17 +3600,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->deidentifyTemplateName('[ORGANIZATION]', '[DEIDENTIFY_TEMPLATE]');
-        $request = (new UpdateDeidentifyTemplateRequest())
-            ->setName($formattedName);
+        $request = (new UpdateDeidentifyTemplateRequest())->setName($formattedName);
         try {
             $gapicClient->updateDeidentifyTemplate($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2436,9 +3646,7 @@ class DlpServiceClientTest extends GeneratedTest
         $discoveryConfig = new DiscoveryConfig();
         $discoveryConfigStatus = Status::STATUS_UNSPECIFIED;
         $discoveryConfig->setStatus($discoveryConfigStatus);
-        $request = (new UpdateDiscoveryConfigRequest())
-            ->setName($formattedName)
-            ->setDiscoveryConfig($discoveryConfig);
+        $request = (new UpdateDiscoveryConfigRequest())->setName($formattedName)->setDiscoveryConfig($discoveryConfig);
         $response = $gapicClient->updateDiscoveryConfig($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -2464,21 +3672,22 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->discoveryConfigName('[PROJECT]', '[LOCATION]', '[DISCOVERY_CONFIG]');
         $discoveryConfig = new DiscoveryConfig();
         $discoveryConfigStatus = Status::STATUS_UNSPECIFIED;
         $discoveryConfig->setStatus($discoveryConfigStatus);
-        $request = (new UpdateDiscoveryConfigRequest())
-            ->setName($formattedName)
-            ->setDiscoveryConfig($discoveryConfig);
+        $request = (new UpdateDiscoveryConfigRequest())->setName($formattedName)->setDiscoveryConfig($discoveryConfig);
         try {
             $gapicClient->updateDiscoveryConfig($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2511,8 +3720,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->inspectTemplateName('[ORGANIZATION]', '[INSPECT_TEMPLATE]');
-        $request = (new UpdateInspectTemplateRequest())
-            ->setName($formattedName);
+        $request = (new UpdateInspectTemplateRequest())->setName($formattedName);
         $response = $gapicClient->updateInspectTemplate($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -2536,17 +3744,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->inspectTemplateName('[ORGANIZATION]', '[INSPECT_TEMPLATE]');
-        $request = (new UpdateInspectTemplateRequest())
-            ->setName($formattedName);
+        $request = (new UpdateInspectTemplateRequest())->setName($formattedName);
         try {
             $gapicClient->updateInspectTemplate($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2579,8 +3789,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->jobTriggerName('[PROJECT]', '[JOB_TRIGGER]');
-        $request = (new UpdateJobTriggerRequest())
-            ->setName($formattedName);
+        $request = (new UpdateJobTriggerRequest())->setName($formattedName);
         $response = $gapicClient->updateJobTrigger($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -2604,17 +3813,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->jobTriggerName('[PROJECT]', '[JOB_TRIGGER]');
-        $request = (new UpdateJobTriggerRequest())
-            ->setName($formattedName);
+        $request = (new UpdateJobTriggerRequest())->setName($formattedName);
         try {
             $gapicClient->updateJobTrigger($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2643,8 +3854,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->storedInfoTypeName('[ORGANIZATION]', '[STORED_INFO_TYPE]');
-        $request = (new UpdateStoredInfoTypeRequest())
-            ->setName($formattedName);
+        $request = (new UpdateStoredInfoTypeRequest())->setName($formattedName);
         $response = $gapicClient->updateStoredInfoType($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -2668,17 +3878,19 @@ class DlpServiceClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->storedInfoTypeName('[ORGANIZATION]', '[STORED_INFO_TYPE]');
-        $request = (new UpdateStoredInfoTypeRequest())
-            ->setName($formattedName);
+        $request = (new UpdateStoredInfoTypeRequest())->setName($formattedName);
         try {
             $gapicClient->updateStoredInfoType($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2709,8 +3921,7 @@ class DlpServiceClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->jobTriggerName('[PROJECT]', '[JOB_TRIGGER]');
-        $request = (new ActivateJobTriggerRequest())
-            ->setName($formattedName);
+        $request = (new ActivateJobTriggerRequest())->setName($formattedName);
         $response = $gapicClient->activateJobTriggerAsync($request)->wait();
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();

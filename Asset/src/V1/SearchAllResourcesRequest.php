@@ -29,7 +29,7 @@ class SearchAllResourcesRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string scope = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $scope = '';
+    protected $scope = '';
     /**
      * Optional. The query statement. See [how to construct a
      * query](https://cloud.google.com/asset-inventory/docs/searching-resources#how_to_construct_a_query)
@@ -112,11 +112,11 @@ class SearchAllResourcesRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string query = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $query = '';
+    protected $query = '';
     /**
      * Optional. A list of asset types that this request searches for. If empty,
-     * it will search all the [searchable asset
-     * types](https://cloud.google.com/asset-inventory/docs/supported-asset-types).
+     * it will search all the asset types [supported by search
+     * APIs](https://cloud.google.com/asset-inventory/docs/supported-asset-types).
      * Regular expressions are also supported. For example:
      * * "compute.googleapis.com.*" snapshots resources whose asset type starts
      * with "compute.googleapis.com".
@@ -138,7 +138,7 @@ class SearchAllResourcesRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>int32 page_size = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $page_size = 0;
+    protected $page_size = 0;
     /**
      * Optional. If present, then retrieve the next batch of results from the
      * preceding call to this method. `page_token` must be the value of
@@ -147,7 +147,7 @@ class SearchAllResourcesRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string page_token = 5 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $page_token = '';
+    protected $page_token = '';
     /**
      * Optional. A comma-separated list of fields specifying the sorting order of
      * the results. The default order is ascending. Add " DESC" after the field
@@ -168,7 +168,7 @@ class SearchAllResourcesRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string order_by = 6 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $order_by = '';
+    protected $order_by = '';
     /**
      * Optional. A comma-separated list of fields that you want returned in the
      * results. The following fields are returned by default if not specified:
@@ -202,7 +202,7 @@ class SearchAllResourcesRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.protobuf.FieldMask read_mask = 8 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $read_mask = null;
+    protected $read_mask = null;
 
     /**
      * @param string   $scope      Required. A scope can be a project, a folder, or an organization. The
@@ -298,8 +298,8 @@ class SearchAllResourcesRequest extends \Google\Protobuf\Internal\Message
      *                             fields and are also located in the `us-west1` region or the `global`
      *                             location.
      * @param string[] $assetTypes Optional. A list of asset types that this request searches for. If empty,
-     *                             it will search all the [searchable asset
-     *                             types](https://cloud.google.com/asset-inventory/docs/supported-asset-types).
+     *                             it will search all the asset types [supported by search
+     *                             APIs](https://cloud.google.com/asset-inventory/docs/supported-asset-types).
      *
      *                             Regular expressions are also supported. For example:
      *
@@ -422,8 +422,8 @@ class SearchAllResourcesRequest extends \Google\Protobuf\Internal\Message
      *             location.
      *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $asset_types
      *           Optional. A list of asset types that this request searches for. If empty,
-     *           it will search all the [searchable asset
-     *           types](https://cloud.google.com/asset-inventory/docs/supported-asset-types).
+     *           it will search all the asset types [supported by search
+     *           APIs](https://cloud.google.com/asset-inventory/docs/supported-asset-types).
      *           Regular expressions are also supported. For example:
      *           * "compute.googleapis.com.*" snapshots resources whose asset type starts
      *           with "compute.googleapis.com".
@@ -723,8 +723,8 @@ class SearchAllResourcesRequest extends \Google\Protobuf\Internal\Message
 
     /**
      * Optional. A list of asset types that this request searches for. If empty,
-     * it will search all the [searchable asset
-     * types](https://cloud.google.com/asset-inventory/docs/supported-asset-types).
+     * it will search all the asset types [supported by search
+     * APIs](https://cloud.google.com/asset-inventory/docs/supported-asset-types).
      * Regular expressions are also supported. For example:
      * * "compute.googleapis.com.*" snapshots resources whose asset type starts
      * with "compute.googleapis.com".
@@ -744,8 +744,8 @@ class SearchAllResourcesRequest extends \Google\Protobuf\Internal\Message
 
     /**
      * Optional. A list of asset types that this request searches for. If empty,
-     * it will search all the [searchable asset
-     * types](https://cloud.google.com/asset-inventory/docs/supported-asset-types).
+     * it will search all the asset types [supported by search
+     * APIs](https://cloud.google.com/asset-inventory/docs/supported-asset-types).
      * Regular expressions are also supported. For example:
      * * "compute.googleapis.com.*" snapshots resources whose asset type starts
      * with "compute.googleapis.com".

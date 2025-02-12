@@ -11,7 +11,6 @@ use Google\Protobuf\Internal\GPBUtil;
 /**
  * Represents both a request to Restore some portion of a Backup into
  * a target GKE cluster and a record of the restore operation itself.
- * Next id: 18
  *
  * Generated from protobuf message <code>google.cloud.gkebackup.v1.Restore</code>
  */
@@ -23,33 +22,33 @@ class Restore extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Output only. Server generated global unique identifier of
      * [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) format.
      *
      * Generated from protobuf field <code>string uid = 2 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $uid = '';
+    protected $uid = '';
     /**
      * Output only. The timestamp when this Restore resource was created.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp create_time = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $create_time = null;
+    protected $create_time = null;
     /**
      * Output only. The timestamp when this Restore resource was last
      * updated.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp update_time = 4 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $update_time = null;
+    protected $update_time = null;
     /**
      * User specified descriptive string for this Restore.
      *
      * Generated from protobuf field <code>string description = 5;</code>
      */
-    private $description = '';
+    protected $description = '';
     /**
      * Required. Immutable. A reference to the
      * [Backup][google.cloud.gkebackup.v1.Backup] used as the source from which
@@ -60,7 +59,7 @@ class Restore extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string backup = 6 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $backup = '';
+    protected $backup = '';
     /**
      * Output only. The target cluster into which this Restore will restore data.
      * Valid formats:
@@ -71,7 +70,7 @@ class Restore extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string cluster = 7 [(.google.api.field_behavior) = OUTPUT_ONLY, (.google.api.resource_reference) = {</code>
      */
-    private $cluster = '';
+    protected $cluster = '';
     /**
      * Output only. Configuration of the Restore.  Inherited from parent
      * RestorePlan's
@@ -79,7 +78,7 @@ class Restore extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.gkebackup.v1.RestoreConfig restore_config = 8 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $restore_config = null;
+    protected $restore_config = null;
     /**
      * A set of custom labels supplied by user.
      *
@@ -91,45 +90,45 @@ class Restore extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.gkebackup.v1.Restore.State state = 10 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $state = 0;
+    protected $state = 0;
     /**
      * Output only. Human-readable description of why the Restore is in its
      * current state.
      *
      * Generated from protobuf field <code>string state_reason = 11 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $state_reason = '';
+    protected $state_reason = '';
     /**
      * Output only. Timestamp of when the restore operation completed.
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp complete_time = 12 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $complete_time = null;
+    protected $complete_time = null;
     /**
      * Output only. Number of resources restored during the restore execution.
      *
      * Generated from protobuf field <code>int32 resources_restored_count = 13 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $resources_restored_count = 0;
+    protected $resources_restored_count = 0;
     /**
      * Output only. Number of resources excluded during the restore execution.
      *
      * Generated from protobuf field <code>int32 resources_excluded_count = 14 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $resources_excluded_count = 0;
+    protected $resources_excluded_count = 0;
     /**
      * Output only. Number of resources that failed to be restored during the
      * restore execution.
      *
      * Generated from protobuf field <code>int32 resources_failed_count = 15 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $resources_failed_count = 0;
+    protected $resources_failed_count = 0;
     /**
      * Output only. Number of volumes restored during the restore execution.
      *
      * Generated from protobuf field <code>int32 volumes_restored_count = 16 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $volumes_restored_count = 0;
+    protected $volumes_restored_count = 0;
     /**
      * Output only. `etag` is used for optimistic concurrency control as a way to
      * help prevent simultaneous updates of a restore from overwriting each other.
@@ -142,7 +141,27 @@ class Restore extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string etag = 17 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $etag = '';
+    protected $etag = '';
+    /**
+     * Optional. Immutable. Filters resources for `Restore`. If not specified, the
+     * scope of the restore will remain the same as defined in the `RestorePlan`.
+     * If this is specified, and no resources are matched by the
+     * `inclusion_filters` or everyting is excluded by the `exclusion_filters`,
+     * nothing will be restored. This filter can only be specified if the value of
+     * [namespaced_resource_restore_mode][google.cloud.gkebackup.v1.RestoreConfig.namespaced_resource_restore_mode]
+     * is set to `MERGE_SKIP_ON_CONFLICT`, `MERGE_REPLACE_VOLUME_ON_CONFLICT` or
+     * `MERGE_REPLACE_ON_CONFLICT`.
+     *
+     * Generated from protobuf field <code>.google.cloud.gkebackup.v1.Restore.Filter filter = 18 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    protected $filter = null;
+    /**
+     * Optional. Immutable. Overrides the volume data restore policies selected in
+     * the Restore Config for override-scoped resources.
+     *
+     * Generated from protobuf field <code>repeated .google.cloud.gkebackup.v1.VolumeDataRestorePolicyOverride volume_data_restore_policy_overrides = 19 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OPTIONAL];</code>
+     */
+    private $volume_data_restore_policy_overrides;
 
     /**
      * Constructor.
@@ -208,6 +227,18 @@ class Restore extends \Google\Protobuf\Internal\Message
      *           and systems are expected to put that etag in the request to
      *           `UpdateRestore` or `DeleteRestore` to ensure that their change will be
      *           applied to the same version of the resource.
+     *     @type \Google\Cloud\GkeBackup\V1\Restore\Filter $filter
+     *           Optional. Immutable. Filters resources for `Restore`. If not specified, the
+     *           scope of the restore will remain the same as defined in the `RestorePlan`.
+     *           If this is specified, and no resources are matched by the
+     *           `inclusion_filters` or everyting is excluded by the `exclusion_filters`,
+     *           nothing will be restored. This filter can only be specified if the value of
+     *           [namespaced_resource_restore_mode][google.cloud.gkebackup.v1.RestoreConfig.namespaced_resource_restore_mode]
+     *           is set to `MERGE_SKIP_ON_CONFLICT`, `MERGE_REPLACE_VOLUME_ON_CONFLICT` or
+     *           `MERGE_REPLACE_ON_CONFLICT`.
+     *     @type array<\Google\Cloud\GkeBackup\V1\VolumeDataRestorePolicyOverride>|\Google\Protobuf\Internal\RepeatedField $volume_data_restore_policy_overrides
+     *           Optional. Immutable. Overrides the volume data restore policies selected in
+     *           the Restore Config for override-scoped resources.
      * }
      */
     public function __construct($data = NULL) {
@@ -741,6 +772,84 @@ class Restore extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkString($var, True);
         $this->etag = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Immutable. Filters resources for `Restore`. If not specified, the
+     * scope of the restore will remain the same as defined in the `RestorePlan`.
+     * If this is specified, and no resources are matched by the
+     * `inclusion_filters` or everyting is excluded by the `exclusion_filters`,
+     * nothing will be restored. This filter can only be specified if the value of
+     * [namespaced_resource_restore_mode][google.cloud.gkebackup.v1.RestoreConfig.namespaced_resource_restore_mode]
+     * is set to `MERGE_SKIP_ON_CONFLICT`, `MERGE_REPLACE_VOLUME_ON_CONFLICT` or
+     * `MERGE_REPLACE_ON_CONFLICT`.
+     *
+     * Generated from protobuf field <code>.google.cloud.gkebackup.v1.Restore.Filter filter = 18 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Cloud\GkeBackup\V1\Restore\Filter|null
+     */
+    public function getFilter()
+    {
+        return $this->filter;
+    }
+
+    public function hasFilter()
+    {
+        return isset($this->filter);
+    }
+
+    public function clearFilter()
+    {
+        unset($this->filter);
+    }
+
+    /**
+     * Optional. Immutable. Filters resources for `Restore`. If not specified, the
+     * scope of the restore will remain the same as defined in the `RestorePlan`.
+     * If this is specified, and no resources are matched by the
+     * `inclusion_filters` or everyting is excluded by the `exclusion_filters`,
+     * nothing will be restored. This filter can only be specified if the value of
+     * [namespaced_resource_restore_mode][google.cloud.gkebackup.v1.RestoreConfig.namespaced_resource_restore_mode]
+     * is set to `MERGE_SKIP_ON_CONFLICT`, `MERGE_REPLACE_VOLUME_ON_CONFLICT` or
+     * `MERGE_REPLACE_ON_CONFLICT`.
+     *
+     * Generated from protobuf field <code>.google.cloud.gkebackup.v1.Restore.Filter filter = 18 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OPTIONAL];</code>
+     * @param \Google\Cloud\GkeBackup\V1\Restore\Filter $var
+     * @return $this
+     */
+    public function setFilter($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\GkeBackup\V1\Restore\Filter::class);
+        $this->filter = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Immutable. Overrides the volume data restore policies selected in
+     * the Restore Config for override-scoped resources.
+     *
+     * Generated from protobuf field <code>repeated .google.cloud.gkebackup.v1.VolumeDataRestorePolicyOverride volume_data_restore_policy_overrides = 19 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OPTIONAL];</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getVolumeDataRestorePolicyOverrides()
+    {
+        return $this->volume_data_restore_policy_overrides;
+    }
+
+    /**
+     * Optional. Immutable. Overrides the volume data restore policies selected in
+     * the Restore Config for override-scoped resources.
+     *
+     * Generated from protobuf field <code>repeated .google.cloud.gkebackup.v1.VolumeDataRestorePolicyOverride volume_data_restore_policy_overrides = 19 [(.google.api.field_behavior) = IMMUTABLE, (.google.api.field_behavior) = OPTIONAL];</code>
+     * @param array<\Google\Cloud\GkeBackup\V1\VolumeDataRestorePolicyOverride>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setVolumeDataRestorePolicyOverrides($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Google\Cloud\GkeBackup\V1\VolumeDataRestorePolicyOverride::class);
+        $this->volume_data_restore_policy_overrides = $arr;
 
         return $this;
     }

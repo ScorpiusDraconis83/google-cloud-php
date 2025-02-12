@@ -15,7 +15,7 @@ use Google\Protobuf\Internal\GPBUtil;
  * to perform a crypto transformation using a KMS-wrapped crypto key:
  * dlp.kms.encrypt
  * For more information, see [Creating a wrapped key]
- * (https://cloud.google.com/dlp/docs/create-wrapped-key).
+ * (https://cloud.google.com/sensitive-data-protection/docs/create-wrapped-key).
  * Note: When you use Cloud KMS for cryptographic operations,
  * [charges apply](https://cloud.google.com/kms/pricing).
  *
@@ -28,13 +28,13 @@ class KmsWrappedCryptoKey extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>bytes wrapped_key = 1 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $wrapped_key = '';
+    protected $wrapped_key = '';
     /**
      * Required. The resource name of the KMS CryptoKey to use for unwrapping.
      *
      * Generated from protobuf field <code>string crypto_key_name = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $crypto_key_name = '';
+    protected $crypto_key_name = '';
 
     /**
      * Constructor.

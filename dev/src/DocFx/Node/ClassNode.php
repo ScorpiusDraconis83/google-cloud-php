@@ -28,12 +28,14 @@ class ClassNode
     use NameTrait;
 
     private $childNode;
-    private array $protoPackages;
     private string $tocName;
 
     public function __construct(
-        private SimpleXMLElement $xmlNode
-    ) {}
+        private SimpleXMLElement $xmlNode,
+        private array $protoPackages = [],
+    ) {
+        $this->namespace = $this->getNamespace();
+    }
 
     public function isProtobufEnumClass(): bool
     {
@@ -58,6 +60,14 @@ class ClassNode
         $descriptionParts = explode("\n", $description);
         $lastDescriptionLine = array_pop($descriptionParts);
         return 0 === strpos($lastDescriptionLine, 'Protobuf type');
+    }
+
+    public function isProtobufMessageClass(): bool
+    {
+        if ($extends = $this->getExtends()) {
+            return '\Google\Protobuf\Internal\Message' === $extends;
+        }
+        return false;
     }
 
     public function isGapicEnumClass(): bool
@@ -90,10 +100,11 @@ class ClassNode
     public function isV2ServiceClass(): bool
     {
         // returns true if the class does not extend another class and isn't a
-        // base class
+        // base class and it contains a "Client" namespace
         if (!$this->getExtends()
             && !$this->isServiceBaseClass()
             && 'Client' === substr($this->getName(), -6)
+            && false !== strpos($this->getFullName(), '\\Client\\')
         ) {
             return true;
         }
@@ -164,7 +175,7 @@ class ClassNode
     {
         $methods = [];
         foreach ($this->xmlNode->method as $methodNode) {
-            $method = new MethodNode($methodNode, $this->protoPackages);
+            $method = new MethodNode($methodNode, $this->namespace, $this->protoPackages);
             if ($method->isPublic() && !$method->isInherited() && !$method->isExcludedMethod()) {
                 // This is to fix an issue in phpdocumentor where magic methods do not have
                 // "inhereted_from" set as expected.
@@ -199,7 +210,7 @@ class ClassNode
     {
         $constants = [];
         foreach ($this->xmlNode->constant as $constantNode) {
-            $constant = new ConstantNode($constantNode, $this->protoPackages);
+            $constant = new ConstantNode($constantNode, $this->namespace, $this->protoPackages);
             if ($constant->isPublic() && !$constant->isInherited()) {
                 $constants[] = $constant;
             }
@@ -228,7 +239,7 @@ class ClassNode
     public function getProtoPackage(): ?string
     {
         foreach ($this->xmlNode->constant as $constantNode) {
-            $constant = new ConstantNode($constantNode);
+            $constant = new ConstantNode($constantNode, $this->namespace, $this->protoPackages);
             if ($constant->getName() === 'SERVICE_NAME') {
                 // pop the service from the end to get the package name
                 $package = trim($constant->getValue(), '\'');
@@ -236,14 +247,6 @@ class ClassNode
             }
         }
         return null;
-    }
-
-    public function setProtoPackages(array $protoPackages)
-    {
-        $this->protoPackages = $protoPackages;
-        if ($this->childNode) {
-            $this->childNode->setProtoPackages($protoPackages);
-        }
     }
 
     public function getTocName()

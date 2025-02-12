@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\DiscoveryEngine\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\ResourceHelperTrait;
 use Google\ApiCore\RetrySettings;
@@ -37,10 +36,13 @@ use Google\Api\HttpBody;
 use Google\Auth\FetchAuthTokenInterface;
 use Google\Cloud\DiscoveryEngine\V1\CollectUserEventRequest;
 use Google\Cloud\DiscoveryEngine\V1\ImportUserEventsRequest;
+use Google\Cloud\DiscoveryEngine\V1\PurgeUserEventsRequest;
 use Google\Cloud\DiscoveryEngine\V1\UserEvent;
 use Google\Cloud\DiscoveryEngine\V1\WriteUserEventRequest;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Service for ingesting end user actions on a website to Discovery Engine API.
@@ -53,9 +55,10 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface collectUserEventAsync(CollectUserEventRequest $request, array $optionalArgs = [])
- * @method PromiseInterface importUserEventsAsync(ImportUserEventsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface writeUserEventAsync(WriteUserEventRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<HttpBody> collectUserEventAsync(CollectUserEventRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> importUserEventsAsync(ImportUserEventsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> purgeUserEventsAsync(PurgeUserEventsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<UserEvent> writeUserEventAsync(WriteUserEventRequest $request, array $optionalArgs = [])
  */
 final class UserEventServiceClient
 {
@@ -137,6 +140,25 @@ final class UserEventServiceClient
     }
 
     /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
+    }
+
+    /**
      * Formats a string containing the fully-qualified path to represent a data_store
      * resource.
      *
@@ -180,6 +202,27 @@ final class UserEventServiceClient
             'data_store' => $dataStore,
             'branch' => $branch,
             'document' => $document,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a engine
+     * resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $collection
+     * @param string $engine
+     *
+     * @return string The formatted engine resource.
+     */
+    public static function engineName(string $project, string $location, string $collection, string $engine): string
+    {
+        return self::getPathTemplate('engine')->render([
+            'project' => $project,
+            'location' => $location,
+            'collection' => $collection,
+            'engine' => $engine,
         ]);
     }
 
@@ -292,6 +335,7 @@ final class UserEventServiceClient
      * Template: Pattern
      * - dataStore: projects/{project}/locations/{location}/dataStores/{data_store}
      * - document: projects/{project}/locations/{location}/dataStores/{data_store}/branches/{branch}/documents/{document}
+     * - engine: projects/{project}/locations/{location}/collections/{collection}/engines/{engine}
      * - projectLocationCollectionDataStore: projects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}
      * - projectLocationCollectionDataStoreBranchDocument: projects/{project}/locations/{location}/collections/{collection}/dataStores/{data_store}/branches/{branch}/documents/{document}
      * - projectLocationDataStore: projects/{project}/locations/{location}/dataStores/{data_store}
@@ -303,14 +347,14 @@ final class UserEventServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -332,6 +376,12 @@ final class UserEventServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -365,6 +415,9 @@ final class UserEventServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -418,7 +471,7 @@ final class UserEventServiceClient
     }
 
     /**
-     * Bulk import of User events. Request processing might be
+     * Bulk import of user events. Request processing might be
      * synchronous. Events that already exist are skipped.
      * Use this method for backfilling historical user events.
      *
@@ -447,6 +500,35 @@ final class UserEventServiceClient
     public function importUserEvents(ImportUserEventsRequest $request, array $callOptions = []): OperationResponse
     {
         return $this->startApiCall('ImportUserEvents', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Deletes permanently all user events specified by the filter provided.
+     * Depending on the number of events specified by the filter, this operation
+     * could take hours or days to complete. To test a filter, use the list
+     * command first.
+     *
+     * The async variant is {@see UserEventServiceClient::purgeUserEventsAsync()} .
+     *
+     * @example samples/V1/UserEventServiceClient/purge_user_events.php
+     *
+     * @param PurgeUserEventsRequest $request     A request to house fields associated with the call.
+     * @param array                  $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return OperationResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function purgeUserEvents(PurgeUserEventsRequest $request, array $callOptions = []): OperationResponse
+    {
+        return $this->startApiCall('PurgeUserEvents', $request, $callOptions)->wait();
     }
 
     /**

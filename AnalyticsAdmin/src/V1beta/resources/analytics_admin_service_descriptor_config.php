@@ -1,4 +1,24 @@
 <?php
+/*
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * GENERATED CODE WARNING
+ * This file was automatically generated - do not edit!
+ */
 
 return [
     'interfaces' => [
@@ -111,6 +131,18 @@ return [
                     ],
                 ],
             ],
+            'CreateKeyEvent' => [
+                'callType' => \Google\ApiCore\Call::UNARY_CALL,
+                'responseType' => 'Google\Analytics\Admin\V1beta\KeyEvent',
+                'headerParams' => [
+                    [
+                        'keyName' => 'parent',
+                        'fieldAccessors' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
             'CreateMeasurementProtocolSecret' => [
                 'callType' => \Google\ApiCore\Call::UNARY_CALL,
                 'responseType' => 'Google\Analytics\Admin\V1beta\MeasurementProtocolSecret',
@@ -176,6 +208,18 @@ return [
                 ],
             ],
             'DeleteGoogleAdsLink' => [
+                'callType' => \Google\ApiCore\Call::UNARY_CALL,
+                'responseType' => 'Google\Protobuf\GPBEmpty',
+                'headerParams' => [
+                    [
+                        'keyName' => 'name',
+                        'fieldAccessors' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'DeleteKeyEvent' => [
                 'callType' => \Google\ApiCore\Call::UNARY_CALL,
                 'responseType' => 'Google\Protobuf\GPBEmpty',
                 'headerParams' => [
@@ -286,6 +330,18 @@ return [
             'GetDataStream' => [
                 'callType' => \Google\ApiCore\Call::UNARY_CALL,
                 'responseType' => 'Google\Analytics\Admin\V1beta\DataStream',
+                'headerParams' => [
+                    [
+                        'keyName' => 'name',
+                        'fieldAccessors' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'GetKeyEvent' => [
+                'callType' => \Google\ApiCore\Call::UNARY_CALL,
+                'responseType' => 'Google\Analytics\Admin\V1beta\KeyEvent',
                 'headerParams' => [
                     [
                         'keyName' => 'name',
@@ -463,6 +519,26 @@ return [
                     ],
                 ],
             ],
+            'ListKeyEvents' => [
+                'pageStreaming' => [
+                    'requestPageTokenGetMethod' => 'getPageToken',
+                    'requestPageTokenSetMethod' => 'setPageToken',
+                    'requestPageSizeGetMethod' => 'getPageSize',
+                    'requestPageSizeSetMethod' => 'setPageSize',
+                    'responsePageTokenGetMethod' => 'getNextPageToken',
+                    'resourcesGetMethod' => 'getKeyEvents',
+                ],
+                'callType' => \Google\ApiCore\Call::PAGINATED_CALL,
+                'responseType' => 'Google\Analytics\Admin\V1beta\ListKeyEventsResponse',
+                'headerParams' => [
+                    [
+                        'keyName' => 'parent',
+                        'fieldAccessors' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
             'ListMeasurementProtocolSecrets' => [
                 'pageStreaming' => [
                     'requestPageTokenGetMethod' => 'getPageToken',
@@ -622,6 +698,19 @@ return [
                     ],
                 ],
             ],
+            'UpdateKeyEvent' => [
+                'callType' => \Google\ApiCore\Call::UNARY_CALL,
+                'responseType' => 'Google\Analytics\Admin\V1beta\KeyEvent',
+                'headerParams' => [
+                    [
+                        'keyName' => 'key_event.name',
+                        'fieldAccessors' => [
+                            'getKeyEvent',
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'UpdateMeasurementProtocolSecret' => [
                 'callType' => \Google\ApiCore\Call::UNARY_CALL,
                 'responseType' => 'Google\Analytics\Admin\V1beta\MeasurementProtocolSecret',
@@ -658,7 +747,9 @@ return [
                 'dataStream' => 'properties/{property}/dataStreams/{data_stream}',
                 'firebaseLink' => 'properties/{property}/firebaseLinks/{firebase_link}',
                 'googleAdsLink' => 'properties/{property}/googleAdsLinks/{google_ads_link}',
+                'keyEvent' => 'properties/{property}/keyEvents/{key_event}',
                 'measurementProtocolSecret' => 'properties/{property}/dataStreams/{data_stream}/measurementProtocolSecrets/{measurement_protocol_secret}',
+                'organization' => 'organizations/{organization}',
                 'property' => 'properties/{property}',
             ],
         ],

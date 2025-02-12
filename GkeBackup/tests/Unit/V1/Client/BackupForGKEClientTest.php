@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ namespace Google\Cloud\GkeBackup\Tests\Unit\V1\Client;
 
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\Testing\GeneratedTest;
 use Google\ApiCore\Testing\MockTransport;
 use Google\Cloud\GkeBackup\V1\Backup;
@@ -38,6 +37,8 @@ use Google\Cloud\GkeBackup\V1\DeleteBackupPlanRequest;
 use Google\Cloud\GkeBackup\V1\DeleteBackupRequest;
 use Google\Cloud\GkeBackup\V1\DeleteRestorePlanRequest;
 use Google\Cloud\GkeBackup\V1\DeleteRestoreRequest;
+use Google\Cloud\GkeBackup\V1\GetBackupIndexDownloadUrlRequest;
+use Google\Cloud\GkeBackup\V1\GetBackupIndexDownloadUrlResponse;
 use Google\Cloud\GkeBackup\V1\GetBackupPlanRequest;
 use Google\Cloud\GkeBackup\V1\GetBackupRequest;
 use Google\Cloud\GkeBackup\V1\GetRestorePlanRequest;
@@ -74,6 +75,7 @@ use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\ListLocationsResponse;
 use Google\Cloud\Location\Location;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\GetOperationRequest;
 use Google\LongRunning\Operation;
 use Google\Protobuf\Any;
@@ -97,7 +99,9 @@ class BackupForGKEClientTest extends GeneratedTest
     /** @return CredentialsWrapper */
     private function createCredentials()
     {
-        return $this->getMockBuilder(CredentialsWrapper::class)->disableOriginalConstructor()->getMock();
+        return $this->getMockBuilder(CredentialsWrapper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /** @return BackupForGKEClient */
@@ -146,6 +150,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $description = 'description-1724546052';
         $podCount = 977657493;
         $configBackupSizeBytes = 606785139;
+        $permissiveMode = false;
         $expectedResponse = new Backup();
         $expectedResponse->setName($name);
         $expectedResponse->setUid($uid);
@@ -163,6 +168,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $expectedResponse->setDescription($description);
         $expectedResponse->setPodCount($podCount);
         $expectedResponse->setConfigBackupSizeBytes($configBackupSizeBytes);
+        $expectedResponse->setPermissiveMode($permissiveMode);
         $anyResponse = new Any();
         $anyResponse->setValue($expectedResponse->serializeToString());
         $completeOperation = new Operation();
@@ -172,8 +178,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $operationsTransport->addResponse($completeOperation);
         // Mock request
         $formattedParent = $gapicClient->backupPlanName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]');
-        $request = (new CreateBackupRequest())
-            ->setParent($formattedParent);
+        $request = (new CreateBackupRequest())->setParent($formattedParent);
         $response = $gapicClient->createBackup($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -229,17 +234,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->backupPlanName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]');
-        $request = (new CreateBackupRequest())
-            ->setParent($formattedParent);
+        $request = (new CreateBackupRequest())->setParent($formattedParent);
         $response = $gapicClient->createBackup($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -291,6 +298,8 @@ class BackupForGKEClientTest extends GeneratedTest
         $deactivated = true;
         $protectedPodCount = 1494678716;
         $stateReason = 'stateReason282113458';
+        $rpoRiskLevel = 1939768030;
+        $rpoRiskReason = 'rpoRiskReason167896166';
         $expectedResponse = new BackupPlan();
         $expectedResponse->setName($name);
         $expectedResponse->setUid($uid);
@@ -300,6 +309,8 @@ class BackupForGKEClientTest extends GeneratedTest
         $expectedResponse->setDeactivated($deactivated);
         $expectedResponse->setProtectedPodCount($protectedPodCount);
         $expectedResponse->setStateReason($stateReason);
+        $expectedResponse->setRpoRiskLevel($rpoRiskLevel);
+        $expectedResponse->setRpoRiskReason($rpoRiskReason);
         $anyResponse = new Any();
         $anyResponse->setValue($expectedResponse->serializeToString());
         $completeOperation = new Operation();
@@ -376,12 +387,15 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
@@ -535,12 +549,15 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->restorePlanName('[PROJECT]', '[LOCATION]', '[RESTORE_PLAN]');
@@ -690,12 +707,15 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
@@ -764,8 +784,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $operationsTransport->addResponse($completeOperation);
         // Mock request
         $formattedName = $gapicClient->backupName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]', '[BACKUP]');
-        $request = (new DeleteBackupRequest())
-            ->setName($formattedName);
+        $request = (new DeleteBackupRequest())->setName($formattedName);
         $response = $gapicClient->deleteBackup($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -821,17 +840,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->backupName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]', '[BACKUP]');
-        $request = (new DeleteBackupRequest())
-            ->setName($formattedName);
+        $request = (new DeleteBackupRequest())->setName($formattedName);
         $response = $gapicClient->deleteBackup($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -885,8 +906,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $operationsTransport->addResponse($completeOperation);
         // Mock request
         $formattedName = $gapicClient->backupPlanName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]');
-        $request = (new DeleteBackupPlanRequest())
-            ->setName($formattedName);
+        $request = (new DeleteBackupPlanRequest())->setName($formattedName);
         $response = $gapicClient->deleteBackupPlan($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -942,17 +962,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->backupPlanName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]');
-        $request = (new DeleteBackupPlanRequest())
-            ->setName($formattedName);
+        $request = (new DeleteBackupPlanRequest())->setName($formattedName);
         $response = $gapicClient->deleteBackupPlan($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -1006,8 +1028,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $operationsTransport->addResponse($completeOperation);
         // Mock request
         $formattedName = $gapicClient->restoreName('[PROJECT]', '[LOCATION]', '[RESTORE_PLAN]', '[RESTORE]');
-        $request = (new DeleteRestoreRequest())
-            ->setName($formattedName);
+        $request = (new DeleteRestoreRequest())->setName($formattedName);
         $response = $gapicClient->deleteRestore($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -1063,17 +1084,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->restoreName('[PROJECT]', '[LOCATION]', '[RESTORE_PLAN]', '[RESTORE]');
-        $request = (new DeleteRestoreRequest())
-            ->setName($formattedName);
+        $request = (new DeleteRestoreRequest())->setName($formattedName);
         $response = $gapicClient->deleteRestore($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -1127,8 +1150,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $operationsTransport->addResponse($completeOperation);
         // Mock request
         $formattedName = $gapicClient->restorePlanName('[PROJECT]', '[LOCATION]', '[RESTORE_PLAN]');
-        $request = (new DeleteRestorePlanRequest())
-            ->setName($formattedName);
+        $request = (new DeleteRestorePlanRequest())->setName($formattedName);
         $response = $gapicClient->deleteRestorePlan($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -1184,17 +1206,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->restorePlanName('[PROJECT]', '[LOCATION]', '[RESTORE_PLAN]');
-        $request = (new DeleteRestorePlanRequest())
-            ->setName($formattedName);
+        $request = (new DeleteRestorePlanRequest())->setName($formattedName);
         $response = $gapicClient->deleteRestorePlan($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -1242,6 +1266,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $description = 'description-1724546052';
         $podCount = 977657493;
         $configBackupSizeBytes = 606785139;
+        $permissiveMode = false;
         $expectedResponse = new Backup();
         $expectedResponse->setName($name2);
         $expectedResponse->setUid($uid);
@@ -1259,11 +1284,11 @@ class BackupForGKEClientTest extends GeneratedTest
         $expectedResponse->setDescription($description);
         $expectedResponse->setPodCount($podCount);
         $expectedResponse->setConfigBackupSizeBytes($configBackupSizeBytes);
+        $expectedResponse->setPermissiveMode($permissiveMode);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->backupName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]', '[BACKUP]');
-        $request = (new GetBackupRequest())
-            ->setName($formattedName);
+        $request = (new GetBackupRequest())->setName($formattedName);
         $response = $gapicClient->getBackup($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1287,19 +1312,86 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->backupName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]', '[BACKUP]');
-        $request = (new GetBackupRequest())
-            ->setName($formattedName);
+        $request = (new GetBackupRequest())->setName($formattedName);
         try {
             $gapicClient->getBackup($request);
+            // If the $gapicClient method call did not throw, fail the test
+            $this->fail('Expected an ApiException, but no exception was thrown.');
+        } catch (ApiException $ex) {
+            $this->assertEquals($status->code, $ex->getCode());
+            $this->assertEquals($expectedExceptionMessage, $ex->getMessage());
+        }
+        // Call popReceivedCalls to ensure the stub is exhausted
+        $transport->popReceivedCalls();
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function getBackupIndexDownloadUrlTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        // Mock response
+        $signedUrl = 'signedUrl-979536436';
+        $expectedResponse = new GetBackupIndexDownloadUrlResponse();
+        $expectedResponse->setSignedUrl($signedUrl);
+        $transport->addResponse($expectedResponse);
+        // Mock request
+        $formattedBackup = $gapicClient->backupName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]', '[BACKUP]');
+        $request = (new GetBackupIndexDownloadUrlRequest())->setBackup($formattedBackup);
+        $response = $gapicClient->getBackupIndexDownloadUrl($request);
+        $this->assertEquals($expectedResponse, $response);
+        $actualRequests = $transport->popReceivedCalls();
+        $this->assertSame(1, count($actualRequests));
+        $actualFuncCall = $actualRequests[0]->getFuncCall();
+        $actualRequestObject = $actualRequests[0]->getRequestObject();
+        $this->assertSame('/google.cloud.gkebackup.v1.BackupForGKE/GetBackupIndexDownloadUrl', $actualFuncCall);
+        $actualValue = $actualRequestObject->getBackup();
+        $this->assertProtobufEquals($formattedBackup, $actualValue);
+        $this->assertTrue($transport->isExhausted());
+    }
+
+    /** @test */
+    public function getBackupIndexDownloadUrlExceptionTest()
+    {
+        $transport = $this->createTransport();
+        $gapicClient = $this->createClient([
+            'transport' => $transport,
+        ]);
+        $this->assertTrue($transport->isExhausted());
+        $status = new stdClass();
+        $status->code = Code::DATA_LOSS;
+        $status->details = 'internal error';
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
+        $transport->addResponse(null, $status);
+        // Mock request
+        $formattedBackup = $gapicClient->backupName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]', '[BACKUP]');
+        $request = (new GetBackupIndexDownloadUrlRequest())->setBackup($formattedBackup);
+        try {
+            $gapicClient->getBackupIndexDownloadUrl($request);
             // If the $gapicClient method call did not throw, fail the test
             $this->fail('Expected an ApiException, but no exception was thrown.');
         } catch (ApiException $ex) {
@@ -1328,6 +1420,8 @@ class BackupForGKEClientTest extends GeneratedTest
         $deactivated = true;
         $protectedPodCount = 1494678716;
         $stateReason = 'stateReason282113458';
+        $rpoRiskLevel = 1939768030;
+        $rpoRiskReason = 'rpoRiskReason167896166';
         $expectedResponse = new BackupPlan();
         $expectedResponse->setName($name2);
         $expectedResponse->setUid($uid);
@@ -1337,11 +1431,12 @@ class BackupForGKEClientTest extends GeneratedTest
         $expectedResponse->setDeactivated($deactivated);
         $expectedResponse->setProtectedPodCount($protectedPodCount);
         $expectedResponse->setStateReason($stateReason);
+        $expectedResponse->setRpoRiskLevel($rpoRiskLevel);
+        $expectedResponse->setRpoRiskReason($rpoRiskReason);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->backupPlanName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]');
-        $request = (new GetBackupPlanRequest())
-            ->setName($formattedName);
+        $request = (new GetBackupPlanRequest())->setName($formattedName);
         $response = $gapicClient->getBackupPlan($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1365,17 +1460,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->backupPlanName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]');
-        $request = (new GetBackupPlanRequest())
-            ->setName($formattedName);
+        $request = (new GetBackupPlanRequest())->setName($formattedName);
         try {
             $gapicClient->getBackupPlan($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1424,8 +1521,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->restoreName('[PROJECT]', '[LOCATION]', '[RESTORE_PLAN]', '[RESTORE]');
-        $request = (new GetRestoreRequest())
-            ->setName($formattedName);
+        $request = (new GetRestoreRequest())->setName($formattedName);
         $response = $gapicClient->getRestore($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1449,17 +1545,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->restoreName('[PROJECT]', '[LOCATION]', '[RESTORE_PLAN]', '[RESTORE]');
-        $request = (new GetRestoreRequest())
-            ->setName($formattedName);
+        $request = (new GetRestoreRequest())->setName($formattedName);
         try {
             $gapicClient->getRestore($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1500,8 +1598,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedName = $gapicClient->restorePlanName('[PROJECT]', '[LOCATION]', '[RESTORE_PLAN]');
-        $request = (new GetRestorePlanRequest())
-            ->setName($formattedName);
+        $request = (new GetRestorePlanRequest())->setName($formattedName);
         $response = $gapicClient->getRestorePlan($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1525,17 +1622,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedName = $gapicClient->restorePlanName('[PROJECT]', '[LOCATION]', '[RESTORE_PLAN]');
-        $request = (new GetRestorePlanRequest())
-            ->setName($formattedName);
+        $request = (new GetRestorePlanRequest())->setName($formattedName);
         try {
             $gapicClient->getRestorePlan($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1575,9 +1674,14 @@ class BackupForGKEClientTest extends GeneratedTest
         $expectedResponse->setEtag($etag);
         $transport->addResponse($expectedResponse);
         // Mock request
-        $formattedName = $gapicClient->volumeBackupName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]', '[BACKUP]', '[VOLUME_BACKUP]');
-        $request = (new GetVolumeBackupRequest())
-            ->setName($formattedName);
+        $formattedName = $gapicClient->volumeBackupName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[BACKUP_PLAN]',
+            '[BACKUP]',
+            '[VOLUME_BACKUP]'
+        );
+        $request = (new GetVolumeBackupRequest())->setName($formattedName);
         $response = $gapicClient->getVolumeBackup($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1601,17 +1705,25 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
-        $formattedName = $gapicClient->volumeBackupName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]', '[BACKUP]', '[VOLUME_BACKUP]');
-        $request = (new GetVolumeBackupRequest())
-            ->setName($formattedName);
+        $formattedName = $gapicClient->volumeBackupName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[BACKUP_PLAN]',
+            '[BACKUP]',
+            '[VOLUME_BACKUP]'
+        );
+        $request = (new GetVolumeBackupRequest())->setName($formattedName);
         try {
             $gapicClient->getVolumeBackup($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1649,9 +1761,14 @@ class BackupForGKEClientTest extends GeneratedTest
         $expectedResponse->setEtag($etag);
         $transport->addResponse($expectedResponse);
         // Mock request
-        $formattedName = $gapicClient->volumeRestoreName('[PROJECT]', '[LOCATION]', '[RESTORE_PLAN]', '[RESTORE]', '[VOLUME_RESTORE]');
-        $request = (new GetVolumeRestoreRequest())
-            ->setName($formattedName);
+        $formattedName = $gapicClient->volumeRestoreName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[RESTORE_PLAN]',
+            '[RESTORE]',
+            '[VOLUME_RESTORE]'
+        );
+        $request = (new GetVolumeRestoreRequest())->setName($formattedName);
         $response = $gapicClient->getVolumeRestore($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1675,17 +1792,25 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
-        $formattedName = $gapicClient->volumeRestoreName('[PROJECT]', '[LOCATION]', '[RESTORE_PLAN]', '[RESTORE]', '[VOLUME_RESTORE]');
-        $request = (new GetVolumeRestoreRequest())
-            ->setName($formattedName);
+        $formattedName = $gapicClient->volumeRestoreName(
+            '[PROJECT]',
+            '[LOCATION]',
+            '[RESTORE_PLAN]',
+            '[RESTORE]',
+            '[VOLUME_RESTORE]'
+        );
+        $request = (new GetVolumeRestoreRequest())->setName($formattedName);
         try {
             $gapicClient->getVolumeRestore($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1710,17 +1835,14 @@ class BackupForGKEClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $backupPlansElement = new BackupPlan();
-        $backupPlans = [
-            $backupPlansElement,
-        ];
+        $backupPlans = [$backupPlansElement];
         $expectedResponse = new ListBackupPlansResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setBackupPlans($backupPlans);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
-        $request = (new ListBackupPlansRequest())
-            ->setParent($formattedParent);
+        $request = (new ListBackupPlansRequest())->setParent($formattedParent);
         $response = $gapicClient->listBackupPlans($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -1747,17 +1869,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
-        $request = (new ListBackupPlansRequest())
-            ->setParent($formattedParent);
+        $request = (new ListBackupPlansRequest())->setParent($formattedParent);
         try {
             $gapicClient->listBackupPlans($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1782,17 +1906,14 @@ class BackupForGKEClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $backupsElement = new Backup();
-        $backups = [
-            $backupsElement,
-        ];
+        $backups = [$backupsElement];
         $expectedResponse = new ListBackupsResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setBackups($backups);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->backupPlanName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]');
-        $request = (new ListBackupsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListBackupsRequest())->setParent($formattedParent);
         $response = $gapicClient->listBackups($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -1819,17 +1940,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->backupPlanName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]');
-        $request = (new ListBackupsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListBackupsRequest())->setParent($formattedParent);
         try {
             $gapicClient->listBackups($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1854,17 +1977,14 @@ class BackupForGKEClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $restorePlansElement = new RestorePlan();
-        $restorePlans = [
-            $restorePlansElement,
-        ];
+        $restorePlans = [$restorePlansElement];
         $expectedResponse = new ListRestorePlansResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setRestorePlans($restorePlans);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
-        $request = (new ListRestorePlansRequest())
-            ->setParent($formattedParent);
+        $request = (new ListRestorePlansRequest())->setParent($formattedParent);
         $response = $gapicClient->listRestorePlans($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -1891,17 +2011,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->locationName('[PROJECT]', '[LOCATION]');
-        $request = (new ListRestorePlansRequest())
-            ->setParent($formattedParent);
+        $request = (new ListRestorePlansRequest())->setParent($formattedParent);
         try {
             $gapicClient->listRestorePlans($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1926,17 +2048,14 @@ class BackupForGKEClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $restoresElement = new Restore();
-        $restores = [
-            $restoresElement,
-        ];
+        $restores = [$restoresElement];
         $expectedResponse = new ListRestoresResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setRestores($restores);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->restorePlanName('[PROJECT]', '[LOCATION]', '[RESTORE_PLAN]');
-        $request = (new ListRestoresRequest())
-            ->setParent($formattedParent);
+        $request = (new ListRestoresRequest())->setParent($formattedParent);
         $response = $gapicClient->listRestores($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -1963,17 +2082,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->restorePlanName('[PROJECT]', '[LOCATION]', '[RESTORE_PLAN]');
-        $request = (new ListRestoresRequest())
-            ->setParent($formattedParent);
+        $request = (new ListRestoresRequest())->setParent($formattedParent);
         try {
             $gapicClient->listRestores($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1998,17 +2119,14 @@ class BackupForGKEClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $volumeBackupsElement = new VolumeBackup();
-        $volumeBackups = [
-            $volumeBackupsElement,
-        ];
+        $volumeBackups = [$volumeBackupsElement];
         $expectedResponse = new ListVolumeBackupsResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setVolumeBackups($volumeBackups);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->backupName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]', '[BACKUP]');
-        $request = (new ListVolumeBackupsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListVolumeBackupsRequest())->setParent($formattedParent);
         $response = $gapicClient->listVolumeBackups($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -2035,17 +2153,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->backupName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]', '[BACKUP]');
-        $request = (new ListVolumeBackupsRequest())
-            ->setParent($formattedParent);
+        $request = (new ListVolumeBackupsRequest())->setParent($formattedParent);
         try {
             $gapicClient->listVolumeBackups($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2070,17 +2190,14 @@ class BackupForGKEClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $volumeRestoresElement = new VolumeRestore();
-        $volumeRestores = [
-            $volumeRestoresElement,
-        ];
+        $volumeRestores = [$volumeRestoresElement];
         $expectedResponse = new ListVolumeRestoresResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setVolumeRestores($volumeRestores);
         $transport->addResponse($expectedResponse);
         // Mock request
         $formattedParent = $gapicClient->restoreName('[PROJECT]', '[LOCATION]', '[RESTORE_PLAN]', '[RESTORE]');
-        $request = (new ListVolumeRestoresRequest())
-            ->setParent($formattedParent);
+        $request = (new ListVolumeRestoresRequest())->setParent($formattedParent);
         $response = $gapicClient->listVolumeRestores($request);
         $this->assertEquals($expectedResponse, $response->getPage()->getResponseObject());
         $resources = iterator_to_array($response->iterateAllElements());
@@ -2107,17 +2224,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $formattedParent = $gapicClient->restoreName('[PROJECT]', '[LOCATION]', '[RESTORE_PLAN]', '[RESTORE]');
-        $request = (new ListVolumeRestoresRequest())
-            ->setParent($formattedParent);
+        $request = (new ListVolumeRestoresRequest())->setParent($formattedParent);
         try {
             $gapicClient->listVolumeRestores($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2168,6 +2287,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $description = 'description-1724546052';
         $podCount = 977657493;
         $configBackupSizeBytes = 606785139;
+        $permissiveMode = false;
         $expectedResponse = new Backup();
         $expectedResponse->setName($name);
         $expectedResponse->setUid($uid);
@@ -2185,6 +2305,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $expectedResponse->setDescription($description);
         $expectedResponse->setPodCount($podCount);
         $expectedResponse->setConfigBackupSizeBytes($configBackupSizeBytes);
+        $expectedResponse->setPermissiveMode($permissiveMode);
         $anyResponse = new Any();
         $anyResponse->setValue($expectedResponse->serializeToString());
         $completeOperation = new Operation();
@@ -2194,8 +2315,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $operationsTransport->addResponse($completeOperation);
         // Mock request
         $backup = new Backup();
-        $request = (new UpdateBackupRequest())
-            ->setBackup($backup);
+        $request = (new UpdateBackupRequest())->setBackup($backup);
         $response = $gapicClient->updateBackup($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -2251,17 +2371,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $backup = new Backup();
-        $request = (new UpdateBackupRequest())
-            ->setBackup($backup);
+        $request = (new UpdateBackupRequest())->setBackup($backup);
         $response = $gapicClient->updateBackup($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -2313,6 +2435,8 @@ class BackupForGKEClientTest extends GeneratedTest
         $deactivated = true;
         $protectedPodCount = 1494678716;
         $stateReason = 'stateReason282113458';
+        $rpoRiskLevel = 1939768030;
+        $rpoRiskReason = 'rpoRiskReason167896166';
         $expectedResponse = new BackupPlan();
         $expectedResponse->setName($name);
         $expectedResponse->setUid($uid);
@@ -2322,6 +2446,8 @@ class BackupForGKEClientTest extends GeneratedTest
         $expectedResponse->setDeactivated($deactivated);
         $expectedResponse->setProtectedPodCount($protectedPodCount);
         $expectedResponse->setStateReason($stateReason);
+        $expectedResponse->setRpoRiskLevel($rpoRiskLevel);
+        $expectedResponse->setRpoRiskReason($rpoRiskReason);
         $anyResponse = new Any();
         $anyResponse->setValue($expectedResponse->serializeToString());
         $completeOperation = new Operation();
@@ -2333,8 +2459,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $backupPlan = new BackupPlan();
         $backupPlanCluster = $gapicClient->clusterName('[PROJECT]', '[LOCATION]', '[CLUSTER]');
         $backupPlan->setCluster($backupPlanCluster);
-        $request = (new UpdateBackupPlanRequest())
-            ->setBackupPlan($backupPlan);
+        $request = (new UpdateBackupPlanRequest())->setBackupPlan($backupPlan);
         $response = $gapicClient->updateBackupPlan($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -2390,19 +2515,21 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $backupPlan = new BackupPlan();
         $backupPlanCluster = $gapicClient->clusterName('[PROJECT]', '[LOCATION]', '[CLUSTER]');
         $backupPlan->setCluster($backupPlanCluster);
-        $request = (new UpdateBackupPlanRequest())
-            ->setBackupPlan($backupPlan);
+        $request = (new UpdateBackupPlanRequest())->setBackupPlan($backupPlan);
         $response = $gapicClient->updateBackupPlan($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -2480,8 +2607,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $restore = new Restore();
         $restoreBackup = $gapicClient->backupName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]', '[BACKUP]');
         $restore->setBackup($restoreBackup);
-        $request = (new UpdateRestoreRequest())
-            ->setRestore($restore);
+        $request = (new UpdateRestoreRequest())->setRestore($restore);
         $response = $gapicClient->updateRestore($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -2537,19 +2663,21 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $restore = new Restore();
         $restoreBackup = $gapicClient->backupName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]', '[BACKUP]');
         $restore->setBackup($restoreBackup);
-        $request = (new UpdateRestoreRequest())
-            ->setRestore($restore);
+        $request = (new UpdateRestoreRequest())->setRestore($restore);
         $response = $gapicClient->updateRestore($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -2623,8 +2751,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $restorePlan->setCluster($restorePlanCluster);
         $restorePlanRestoreConfig = new RestoreConfig();
         $restorePlan->setRestoreConfig($restorePlanRestoreConfig);
-        $request = (new UpdateRestorePlanRequest())
-            ->setRestorePlan($restorePlan);
+        $request = (new UpdateRestorePlanRequest())->setRestorePlan($restorePlan);
         $response = $gapicClient->updateRestorePlan($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -2680,12 +2807,15 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $operationsTransport->addResponse(null, $status);
         // Mock request
         $restorePlan = new RestorePlan();
@@ -2695,8 +2825,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $restorePlan->setCluster($restorePlanCluster);
         $restorePlanRestoreConfig = new RestoreConfig();
         $restorePlan->setRestoreConfig($restorePlanRestoreConfig);
-        $request = (new UpdateRestorePlanRequest())
-            ->setRestorePlan($restorePlan);
+        $request = (new UpdateRestorePlanRequest())->setRestorePlan($restorePlan);
         $response = $gapicClient->updateRestorePlan($request);
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());
@@ -2758,12 +2887,15 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new GetLocationRequest();
         try {
@@ -2790,9 +2922,7 @@ class BackupForGKEClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $locationsElement = new Location();
-        $locations = [
-            $locationsElement,
-        ];
+        $locations = [$locationsElement];
         $expectedResponse = new ListLocationsResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setLocations($locations);
@@ -2822,12 +2952,15 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new ListLocationsRequest();
         try {
@@ -2860,8 +2993,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $resource = 'resource-341064690';
-        $request = (new GetIamPolicyRequest())
-            ->setResource($resource);
+        $request = (new GetIamPolicyRequest())->setResource($resource);
         $response = $gapicClient->getIamPolicy($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -2885,17 +3017,19 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $resource = 'resource-341064690';
-        $request = (new GetIamPolicyRequest())
-            ->setResource($resource);
+        $request = (new GetIamPolicyRequest())->setResource($resource);
         try {
             $gapicClient->getIamPolicy($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2927,9 +3061,7 @@ class BackupForGKEClientTest extends GeneratedTest
         // Mock request
         $resource = 'resource-341064690';
         $policy = new Policy();
-        $request = (new SetIamPolicyRequest())
-            ->setResource($resource)
-            ->setPolicy($policy);
+        $request = (new SetIamPolicyRequest())->setResource($resource)->setPolicy($policy);
         $response = $gapicClient->setIamPolicy($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -2955,19 +3087,20 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $resource = 'resource-341064690';
         $policy = new Policy();
-        $request = (new SetIamPolicyRequest())
-            ->setResource($resource)
-            ->setPolicy($policy);
+        $request = (new SetIamPolicyRequest())->setResource($resource)->setPolicy($policy);
         try {
             $gapicClient->setIamPolicy($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2995,9 +3128,7 @@ class BackupForGKEClientTest extends GeneratedTest
         // Mock request
         $resource = 'resource-341064690';
         $permissions = [];
-        $request = (new TestIamPermissionsRequest())
-            ->setResource($resource)
-            ->setPermissions($permissions);
+        $request = (new TestIamPermissionsRequest())->setResource($resource)->setPermissions($permissions);
         $response = $gapicClient->testIamPermissions($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -3023,19 +3154,20 @@ class BackupForGKEClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $resource = 'resource-341064690';
         $permissions = [];
-        $request = (new TestIamPermissionsRequest())
-            ->setResource($resource)
-            ->setPermissions($permissions);
+        $request = (new TestIamPermissionsRequest())->setResource($resource)->setPermissions($permissions);
         try {
             $gapicClient->testIamPermissions($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -3086,6 +3218,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $description = 'description-1724546052';
         $podCount = 977657493;
         $configBackupSizeBytes = 606785139;
+        $permissiveMode = false;
         $expectedResponse = new Backup();
         $expectedResponse->setName($name);
         $expectedResponse->setUid($uid);
@@ -3103,6 +3236,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $expectedResponse->setDescription($description);
         $expectedResponse->setPodCount($podCount);
         $expectedResponse->setConfigBackupSizeBytes($configBackupSizeBytes);
+        $expectedResponse->setPermissiveMode($permissiveMode);
         $anyResponse = new Any();
         $anyResponse->setValue($expectedResponse->serializeToString());
         $completeOperation = new Operation();
@@ -3112,8 +3246,7 @@ class BackupForGKEClientTest extends GeneratedTest
         $operationsTransport->addResponse($completeOperation);
         // Mock request
         $formattedParent = $gapicClient->backupPlanName('[PROJECT]', '[LOCATION]', '[BACKUP_PLAN]');
-        $request = (new CreateBackupRequest())
-            ->setParent($formattedParent);
+        $request = (new CreateBackupRequest())->setParent($formattedParent);
         $response = $gapicClient->createBackupAsync($request)->wait();
         $this->assertFalse($response->isDone());
         $this->assertNull($response->getResult());

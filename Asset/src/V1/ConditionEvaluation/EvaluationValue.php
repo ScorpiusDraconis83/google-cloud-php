@@ -34,7 +34,7 @@ class EvaluationValue
     /**
      * The evaluation result is `conditional` when the condition expression
      * contains variables that are either missing input values or have not been
-     * supported by Analyzer yet.
+     * supported by Policy Analyzer yet.
      *
      * Generated from protobuf enum <code>CONDITIONAL = 3;</code>
      */
@@ -68,6 +68,4 @@ class EvaluationValue
     }
 }
 
-// Adding a class alias for backwards compatibility with the previous class name.
-class_alias(EvaluationValue::class, \Google\Cloud\Asset\V1\ConditionEvaluation_EvaluationValue::class);
 

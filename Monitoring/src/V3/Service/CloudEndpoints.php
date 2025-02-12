@@ -17,12 +17,12 @@ class CloudEndpoints extends \Google\Protobuf\Internal\Message
 {
     /**
      * The name of the Cloud Endpoints service underlying this service.
-     * Corresponds to the `service` resource label in the `api` monitored
-     * resource: https://cloud.google.com/monitoring/api/resources#tag_api
+     * Corresponds to the `service` resource label in the [`api` monitored
+     * resource](https://cloud.google.com/monitoring/api/resources#tag_api).
      *
      * Generated from protobuf field <code>string service = 1;</code>
      */
-    private $service = '';
+    protected $service = '';
 
     /**
      * Constructor.
@@ -32,8 +32,8 @@ class CloudEndpoints extends \Google\Protobuf\Internal\Message
      *
      *     @type string $service
      *           The name of the Cloud Endpoints service underlying this service.
-     *           Corresponds to the `service` resource label in the `api` monitored
-     *           resource: https://cloud.google.com/monitoring/api/resources#tag_api
+     *           Corresponds to the `service` resource label in the [`api` monitored
+     *           resource](https://cloud.google.com/monitoring/api/resources#tag_api).
      * }
      */
     public function __construct($data = NULL) {
@@ -43,8 +43,8 @@ class CloudEndpoints extends \Google\Protobuf\Internal\Message
 
     /**
      * The name of the Cloud Endpoints service underlying this service.
-     * Corresponds to the `service` resource label in the `api` monitored
-     * resource: https://cloud.google.com/monitoring/api/resources#tag_api
+     * Corresponds to the `service` resource label in the [`api` monitored
+     * resource](https://cloud.google.com/monitoring/api/resources#tag_api).
      *
      * Generated from protobuf field <code>string service = 1;</code>
      * @return string
@@ -56,8 +56,8 @@ class CloudEndpoints extends \Google\Protobuf\Internal\Message
 
     /**
      * The name of the Cloud Endpoints service underlying this service.
-     * Corresponds to the `service` resource label in the `api` monitored
-     * resource: https://cloud.google.com/monitoring/api/resources#tag_api
+     * Corresponds to the `service` resource label in the [`api` monitored
+     * resource](https://cloud.google.com/monitoring/api/resources#tag_api).
      *
      * Generated from protobuf field <code>string service = 1;</code>
      * @param string $var
@@ -73,6 +73,4 @@ class CloudEndpoints extends \Google\Protobuf\Internal\Message
 
 }
 
-// Adding a class alias for backwards compatibility with the previous class name.
-class_alias(CloudEndpoints::class, \Google\Cloud\Monitoring\V3\Service_CloudEndpoints::class);
 

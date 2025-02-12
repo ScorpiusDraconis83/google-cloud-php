@@ -9,7 +9,8 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
- * Request message for [SecretManagerService.ListSecrets][google.cloud.secretmanager.v1.SecretManagerService.ListSecrets].
+ * Request message for
+ * [SecretManagerService.ListSecrets][google.cloud.secretmanager.v1.SecretManagerService.ListSecrets].
  *
  * Generated from protobuf message <code>google.cloud.secretmanager.v1.ListSecretsRequest</code>
  */
@@ -17,11 +18,12 @@ class ListSecretsRequest extends \Google\Protobuf\Internal\Message
 {
     /**
      * Required. The resource name of the project associated with the
-     * [Secrets][google.cloud.secretmanager.v1.Secret], in the format `projects/&#42;`.
+     * [Secrets][google.cloud.secretmanager.v1.Secret], in the format `projects/&#42;`
+     * or `projects/&#42;&#47;locations/&#42;`
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * Optional. The maximum number of results to be returned in a single page. If
      * set to 0, the server decides the number of results to return. If the
@@ -29,14 +31,14 @@ class ListSecretsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>int32 page_size = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $page_size = 0;
+    protected $page_size = 0;
     /**
      * Optional. Pagination token, returned earlier via
      * [ListSecretsResponse.next_page_token][google.cloud.secretmanager.v1.ListSecretsResponse.next_page_token].
      *
      * Generated from protobuf field <code>string page_token = 3 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $page_token = '';
+    protected $page_token = '';
     /**
      * Optional. Filter string, adhering to the rules in
      * [List-operation
@@ -46,12 +48,13 @@ class ListSecretsRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string filter = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $filter = '';
+    protected $filter = '';
 
     /**
      * @param string $parent Required. The resource name of the project associated with the
-     *                       [Secrets][google.cloud.secretmanager.v1.Secret], in the format `projects/*`. Please see
-     *                       {@see SecretManagerServiceClient::projectName()} for help formatting this field.
+     *                       [Secrets][google.cloud.secretmanager.v1.Secret], in the format `projects/*`
+     *                       or `projects/&#42;/locations/*`
+     *                       Please see {@see SecretManagerServiceClient::projectName()} for help formatting this field.
      *
      * @return \Google\Cloud\SecretManager\V1\ListSecretsRequest
      *
@@ -71,7 +74,8 @@ class ListSecretsRequest extends \Google\Protobuf\Internal\Message
      *
      *     @type string $parent
      *           Required. The resource name of the project associated with the
-     *           [Secrets][google.cloud.secretmanager.v1.Secret], in the format `projects/&#42;`.
+     *           [Secrets][google.cloud.secretmanager.v1.Secret], in the format `projects/&#42;`
+     *           or `projects/&#42;&#47;locations/&#42;`
      *     @type int $page_size
      *           Optional. The maximum number of results to be returned in a single page. If
      *           set to 0, the server decides the number of results to return. If the
@@ -94,7 +98,8 @@ class ListSecretsRequest extends \Google\Protobuf\Internal\Message
 
     /**
      * Required. The resource name of the project associated with the
-     * [Secrets][google.cloud.secretmanager.v1.Secret], in the format `projects/&#42;`.
+     * [Secrets][google.cloud.secretmanager.v1.Secret], in the format `projects/&#42;`
+     * or `projects/&#42;&#47;locations/&#42;`
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      * @return string
@@ -106,7 +111,8 @@ class ListSecretsRequest extends \Google\Protobuf\Internal\Message
 
     /**
      * Required. The resource name of the project associated with the
-     * [Secrets][google.cloud.secretmanager.v1.Secret], in the format `projects/&#42;`.
+     * [Secrets][google.cloud.secretmanager.v1.Secret], in the format `projects/&#42;`
+     * or `projects/&#42;&#47;locations/&#42;`
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      * @param string $var

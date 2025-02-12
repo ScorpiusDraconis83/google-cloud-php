@@ -17,11 +17,13 @@
 
 namespace Google\Cloud\Spanner\Tests\Unit;
 
+use Google\ApiCore\ValidationException;
 use Google\Cloud\Core\Testing\GrpcTestTrait;
 use Google\Cloud\Core\Testing\TestHelpers;
 use Google\Cloud\Core\TimeTrait;
 use Google\Cloud\Spanner\BatchDmlResult;
 use Google\Cloud\Spanner\Database;
+use Google\Cloud\Spanner\Duration;
 use Google\Cloud\Spanner\KeySet;
 use Google\Cloud\Spanner\Operation;
 use Google\Cloud\Spanner\Result;
@@ -120,7 +122,7 @@ class TransactionTest extends TestCase
     {
         $this->transaction->insert('Posts', ['foo' => 'bar']);
 
-        $mutations = $this->transaction->___getProperty('mutations');
+        $mutations = $this->transaction->___getProperty('mutationData');
 
         $this->assertEquals('Posts', $mutations[0]['insert']['table']);
         $this->assertEquals('foo', $mutations[0]['insert']['columns'][0]);
@@ -131,7 +133,7 @@ class TransactionTest extends TestCase
     {
         $this->transaction->insertBatch('Posts', [['foo' => 'bar']]);
 
-        $mutations = $this->transaction->___getProperty('mutations');
+        $mutations = $this->transaction->___getProperty('mutationData');
 
         $this->assertEquals('Posts', $mutations[0]['insert']['table']);
         $this->assertEquals('foo', $mutations[0]['insert']['columns'][0]);
@@ -142,7 +144,7 @@ class TransactionTest extends TestCase
     {
         $this->transaction->update('Posts', ['foo' => 'bar']);
 
-        $mutations = $this->transaction->___getProperty('mutations');
+        $mutations = $this->transaction->___getProperty('mutationData');
 
         $this->assertEquals('Posts', $mutations[0]['update']['table']);
         $this->assertEquals('foo', $mutations[0]['update']['columns'][0]);
@@ -153,7 +155,7 @@ class TransactionTest extends TestCase
     {
         $this->transaction->updateBatch('Posts', [['foo' => 'bar']]);
 
-        $mutations = $this->transaction->___getProperty('mutations');
+        $mutations = $this->transaction->___getProperty('mutationData');
 
         $this->assertEquals('Posts', $mutations[0]['update']['table']);
         $this->assertEquals('foo', $mutations[0]['update']['columns'][0]);
@@ -164,7 +166,7 @@ class TransactionTest extends TestCase
     {
         $this->transaction->insertOrUpdate('Posts', ['foo' => 'bar']);
 
-        $mutations = $this->transaction->___getProperty('mutations');
+        $mutations = $this->transaction->___getProperty('mutationData');
 
         $this->assertEquals('Posts', $mutations[0]['insertOrUpdate']['table']);
         $this->assertEquals('foo', $mutations[0]['insertOrUpdate']['columns'][0]);
@@ -175,7 +177,7 @@ class TransactionTest extends TestCase
     {
         $this->transaction->insertOrUpdateBatch('Posts', [['foo' => 'bar']]);
 
-        $mutations = $this->transaction->___getProperty('mutations');
+        $mutations = $this->transaction->___getProperty('mutationData');
 
         $this->assertEquals('Posts', $mutations[0]['insertOrUpdate']['table']);
         $this->assertEquals('foo', $mutations[0]['insertOrUpdate']['columns'][0]);
@@ -186,7 +188,7 @@ class TransactionTest extends TestCase
     {
         $this->transaction->replace('Posts', ['foo' => 'bar']);
 
-        $mutations = $this->transaction->___getProperty('mutations');
+        $mutations = $this->transaction->___getProperty('mutationData');
 
         $this->assertEquals('Posts', $mutations[0]['replace']['table']);
         $this->assertEquals('foo', $mutations[0]['replace']['columns'][0]);
@@ -197,7 +199,7 @@ class TransactionTest extends TestCase
     {
         $this->transaction->replaceBatch('Posts', [['foo' => 'bar']]);
 
-        $mutations = $this->transaction->___getProperty('mutations');
+        $mutations = $this->transaction->___getProperty('mutationData');
 
         $this->assertEquals('Posts', $mutations[0]['replace']['table']);
         $this->assertEquals('foo', $mutations[0]['replace']['columns'][0]);
@@ -208,7 +210,7 @@ class TransactionTest extends TestCase
     {
         $this->transaction->delete('Posts', new KeySet(['keys' => ['foo']]));
 
-        $mutations = $this->transaction->___getProperty('mutations');
+        $mutations = $this->transaction->___getProperty('mutationData');
         $this->assertEquals('Posts', $mutations[0]['delete']['table']);
         $this->assertEquals('foo', $mutations[0]['delete']['keySet']['keys'][0]);
         $this->assertArrayNotHasKey('all', $mutations[0]['delete']['keySet']);
@@ -220,7 +222,8 @@ class TransactionTest extends TestCase
 
         $this->connection->executeStreamingSql(Argument::allOf(
             Argument::withEntry('transaction', ['id' => self::TRANSACTION]),
-            Argument::withEntry('sql', $sql)
+            Argument::withEntry('sql', $sql),
+            Argument::withEntry('headers', ['x-goog-spanner-route-to-leader' => ['true']])
         ))->shouldBeCalled()->willReturn($this->resultGenerator());
 
         $this->refreshOperation($this->transaction, $this->connection->reveal());
@@ -236,17 +239,31 @@ class TransactionTest extends TestCase
         $sql = 'UPDATE foo SET bar = @bar';
         $this->connection->executeStreamingSql(Argument::allOf(
             Argument::withEntry('sql', $sql),
-            Argument::withEntry('transactionId', self::TRANSACTION),
+            Argument::withEntry('transaction', ['id' => self::TRANSACTION]),
             Argument::withEntry('requestOptions', [
                 'requestTag' => self::REQUEST_TAG,
                 'transactionTag' => self::TRANSACTION_TAG
-            ])
+            ]),
+            Argument::withEntry('headers', ['x-goog-spanner-route-to-leader' => ['true']])
         ))->shouldBeCalled()->willReturn($this->resultGenerator(true));
 
         $this->refreshOperation($this->transaction, $this->connection->reveal());
         $res = $this->transaction->executeUpdate($sql, ['requestOptions' => ['requestTag' => self::REQUEST_TAG]]);
 
         $this->assertEquals(1, $res);
+    }
+
+    public function testExecuteUpdateWithExcludeTxnFromChangeStreamsThrowsException()
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage(
+            'The excludeTxnFromChangeStreams option cannot be set for individual DML requests'
+        );
+
+        $sql = 'UPDATE foo SET bar = @bar';
+        $this->transaction->executeUpdate($sql, [
+           'transaction' => ['begin' => ['excludeTxnFromChangeStreams' => true]]
+        ]);
     }
 
     public function testDmlSeqno()
@@ -326,7 +343,8 @@ class TransactionTest extends TestCase
             Argument::withEntry('requestOptions', [
                 'transactionTag' => self::TRANSACTION_TAG,
                 'requestTag' => self::REQUEST_TAG
-            ])
+            ]),
+            Argument::withEntry('headers', ['x-goog-spanner-route-to-leader' => ['true']])
         ))->shouldBeCalled()->willReturn([
             'resultSets' => [
                 [
@@ -435,7 +453,7 @@ class TransactionTest extends TestCase
         $sql = 'UPDATE foo SET bar = @bar';
         $this->connection->executeStreamingSql(Argument::allOf(
             Argument::withEntry('sql', $sql),
-            Argument::withEntry('transactionId', self::TRANSACTION),
+            Argument::withEntry('transaction', ['id' => self::TRANSACTION]),
             Argument::withEntry('requestOptions', [
                 'transactionTag' => self::TRANSACTION_TAG,
                 'requestTag' => self::REQUEST_TAG
@@ -461,7 +479,8 @@ class TransactionTest extends TestCase
             Argument::withEntry('requestOptions', [
                 'transactionTag' => self::TRANSACTION_TAG,
                 'requestTag' => self::REQUEST_TAG
-            ])
+            ]),
+            Argument::withEntry('headers', ['x-goog-spanner-route-to-leader' => ['true']])
         ))->shouldBeCalled()->willReturn($this->resultGenerator());
 
         $this->refreshOperation($this->transaction, $this->connection->reveal());
@@ -482,7 +501,7 @@ class TransactionTest extends TestCase
     {
         $this->transaction->insert('Posts', ['foo' => 'bar']);
 
-        $mutations = $this->transaction->___getProperty('mutations');
+        $mutations = $this->transaction->___getProperty('mutationData');
 
         $operation = $this->prophesize(Operation::class);
         $operation->commitWithResponse(
@@ -505,7 +524,7 @@ class TransactionTest extends TestCase
     {
         $this->transaction->insert('Posts', ['foo' => 'bar']);
 
-        $mutations = $this->transaction->___getProperty('mutations');
+        $mutations = $this->transaction->___getProperty('mutationData');
 
         $operation = $this->prophesize(Operation::class);
         $operation->commitWithResponse(
@@ -523,6 +542,37 @@ class TransactionTest extends TestCase
         $this->transaction->___setProperty('operation', $operation->reveal());
 
         $this->transaction->commit(['returnCommitStats' => true]);
+
+        $this->assertEquals(['mutationCount' => 1], $this->transaction->getCommitStats());
+    }
+
+    public function testCommitWithMaxCommitDelay()
+    {
+        $duration = new Duration(0, 100000000);
+        $this->transaction->insert('Posts', ['foo' => 'bar']);
+
+        $mutations = $this->transaction->___getProperty('mutationData');
+
+        $operation = $this->prophesize(Operation::class);
+        $operation->commitWithResponse(
+            $this->session,
+            $mutations,
+            [
+                'transactionId' => self::TRANSACTION,
+                'returnCommitStats' => true,
+                'maxCommitDelay' => $duration,
+                'requestOptions' => [
+                    'transactionTag' => self::TRANSACTION_TAG
+                ]
+            ]
+        )->shouldBeCalled()->willReturn($this->commitResponseWithCommitStats());
+
+        $this->transaction->___setProperty('operation', $operation->reveal());
+
+        $this->transaction->commit([
+            'returnCommitStats' => true,
+            'maxCommitDelay' => $duration
+        ]);
 
         $this->assertEquals(['mutationCount' => 1], $this->transaction->getCommitStats());
     }

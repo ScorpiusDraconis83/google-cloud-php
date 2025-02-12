@@ -42,6 +42,7 @@ use Google\Cloud\Compute\V1\PatchRegionAutoscalerRequest;
 use Google\Cloud\Compute\V1\RegionOperationsClient;
 use Google\Cloud\Compute\V1\UpdateRegionAutoscalerRequest;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The RegionAutoscalers API.
@@ -49,12 +50,12 @@ use GuzzleHttp\Promise\PromiseInterface;
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
  *
- * @method PromiseInterface deleteAsync(DeleteRegionAutoscalerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAsync(GetRegionAutoscalerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface insertAsync(InsertRegionAutoscalerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAsync(ListRegionAutoscalersRequest $request, array $optionalArgs = [])
- * @method PromiseInterface patchAsync(PatchRegionAutoscalerRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateAsync(UpdateRegionAutoscalerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteAsync(DeleteRegionAutoscalerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Autoscaler> getAsync(GetRegionAutoscalerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> insertAsync(InsertRegionAutoscalerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAsync(ListRegionAutoscalersRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> patchAsync(PatchRegionAutoscalerRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateAsync(UpdateRegionAutoscalerRequest $request, array $optionalArgs = [])
  */
 final class RegionAutoscalersClient
 {
@@ -113,8 +114,8 @@ final class RegionAutoscalersClient
         return 'rest';
     }
 
-    /** Implements GapicClientTrait::getSupportedTransports. */
-    private static function getSupportedTransports()
+    /** Implements ClientOptionsTrait::supportedTransports. */
+    private static function supportedTransports()
     {
         return [
             'rest',
@@ -147,6 +148,9 @@ final class RegionAutoscalersClient
             'operationNameMethod' => 'getName',
             'operationStatusMethod' => 'getStatus',
             'operationStatusDoneValue' => \Google\Cloud\Compute\V1\Operation\Status::DONE,
+            'getOperationRequest' => '\Google\Cloud\Compute\V1\GetRegionOperationRequest',
+            'cancelOperationRequest' => null,
+            'deleteOperationRequest' => '\Google\Cloud\Compute\V1\DeleteRegionOperationRequest',
         ];
     }
 
@@ -186,6 +190,12 @@ final class RegionAutoscalersClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -216,6 +226,9 @@ final class RegionAutoscalersClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -243,6 +256,8 @@ final class RegionAutoscalersClient
      *
      * The async variant is {@see RegionAutoscalersClient::deleteAsync()} .
      *
+     * @example samples/V1/RegionAutoscalersClient/delete.php
+     *
      * @param DeleteRegionAutoscalerRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -266,6 +281,8 @@ final class RegionAutoscalersClient
      * Returns the specified autoscaler.
      *
      * The async variant is {@see RegionAutoscalersClient::getAsync()} .
+     *
+     * @example samples/V1/RegionAutoscalersClient/get.php
      *
      * @param GetRegionAutoscalerRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -291,6 +308,8 @@ final class RegionAutoscalersClient
      *
      * The async variant is {@see RegionAutoscalersClient::insertAsync()} .
      *
+     * @example samples/V1/RegionAutoscalersClient/insert.php
+     *
      * @param InsertRegionAutoscalerRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -314,6 +333,8 @@ final class RegionAutoscalersClient
      * Retrieves a list of autoscalers contained within the specified region.
      *
      * The async variant is {@see RegionAutoscalersClient::listAsync()} .
+     *
+     * @example samples/V1/RegionAutoscalersClient/list.php
      *
      * @param ListRegionAutoscalersRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
@@ -339,6 +360,8 @@ final class RegionAutoscalersClient
      *
      * The async variant is {@see RegionAutoscalersClient::patchAsync()} .
      *
+     * @example samples/V1/RegionAutoscalersClient/patch.php
+     *
      * @param PatchRegionAutoscalerRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -362,6 +385,8 @@ final class RegionAutoscalersClient
      * Updates an autoscaler in the specified project using the data included in the request.
      *
      * The async variant is {@see RegionAutoscalersClient::updateAsync()} .
+     *
+     * @example samples/V1/RegionAutoscalersClient/update.php
      *
      * @param UpdateRegionAutoscalerRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {

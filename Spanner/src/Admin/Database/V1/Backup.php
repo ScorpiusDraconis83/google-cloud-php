@@ -16,10 +16,10 @@ use Google\Protobuf\Internal\GPBUtil;
 class Backup extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Required for the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup] operation.
-     * Name of the database from which this backup was
-     * created. This needs to be in the same instance as the backup.
-     * Values are of the form
+     * Required for the
+     * [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     * operation. Name of the database from which this backup was created. This
+     * needs to be in the same instance as the backup. Values are of the form
      * `projects/<project>/instances/<instance>/databases/<database>`.
      *
      * Generated from protobuf field <code>string database = 2 [(.google.api.resource_reference) = {</code>
@@ -35,7 +35,8 @@ class Backup extends \Google\Protobuf\Internal\Message
      */
     private $version_time = null;
     /**
-     * Required for the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     * Required for the
+     * [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
      * operation. The expiration time of the backup, with microseconds
      * granularity that must be at least 6 hours and at most 366 days
      * from the time the CreateBackup request is processed. Once the `expire_time`
@@ -46,8 +47,11 @@ class Backup extends \Google\Protobuf\Internal\Message
      */
     private $expire_time = null;
     /**
-     * Output only for the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup] operation.
-     * Required for the [UpdateBackup][google.spanner.admin.database.v1.DatabaseAdmin.UpdateBackup] operation.
+     * Output only for the
+     * [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     * operation. Required for the
+     * [UpdateBackup][google.spanner.admin.database.v1.DatabaseAdmin.UpdateBackup]
+     * operation.
      * A globally unique identifier for the backup which cannot be
      * changed. Values are of the form
      * `projects/<project>/instances/<instance>/backups/[a-z][a-z0-9_\-]*[a-z0-9]`
@@ -62,7 +66,8 @@ class Backup extends \Google\Protobuf\Internal\Message
      */
     private $name = '';
     /**
-     * Output only. The time the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     * Output only. The time the
+     * [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
      * request is received. If the request does not specify `version_time`, the
      * `version_time` of the backup will be equivalent to the `create_time`.
      *
@@ -75,6 +80,29 @@ class Backup extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>int64 size_bytes = 5 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
     private $size_bytes = 0;
+    /**
+     * Output only. The number of bytes that will be freed by deleting this
+     * backup. This value will be zero if, for example, this backup is part of an
+     * incremental backup chain and younger backups in the chain require that we
+     * keep its data. For backups not in an incremental backup chain, this is
+     * always the size of the backup. This value may change if backups on the same
+     * chain get created, deleted or expired.
+     *
+     * Generated from protobuf field <code>int64 freeable_size_bytes = 15 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    private $freeable_size_bytes = 0;
+    /**
+     * Output only. For a backup in an incremental backup chain, this is the
+     * storage space needed to keep the data that has changed since the previous
+     * backup. For all other backups, this is always the size of the backup. This
+     * value may change if backups on the same chain get deleted or expired.
+     * This field can be used to calculate the total storage space used by a set
+     * of backups. For example, the total space used by all backups of a database
+     * can be computed by summing up this field.
+     *
+     * Generated from protobuf field <code>int64 exclusive_size_bytes = 16 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    private $exclusive_size_bytes = 0;
     /**
      * Output only. The current state of the backup.
      *
@@ -99,6 +127,17 @@ class Backup extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.google.spanner.admin.database.v1.EncryptionInfo encryption_info = 8 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
     private $encryption_info = null;
+    /**
+     * Output only. The encryption information for the backup, whether it is
+     * protected by one or more KMS keys. The information includes all Cloud
+     * KMS key versions used to encrypt the backup. The `encryption_status' field
+     * inside of each `EncryptionInfo` is not populated. At least one of the key
+     * versions must be available for the backup to be restored. If a key version
+     * is revoked in the middle of a restore, the restore behavior is undefined.
+     *
+     * Generated from protobuf field <code>repeated .google.spanner.admin.database.v1.EncryptionInfo encryption_information = 13 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    private $encryption_information;
     /**
      * Output only. The database dialect information for the backup.
      *
@@ -127,6 +166,40 @@ class Backup extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.google.protobuf.Timestamp max_expire_time = 12 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
     private $max_expire_time = null;
+    /**
+     * Output only. List of backup schedule URIs that are associated with
+     * creating this backup. This is only applicable for scheduled backups, and
+     * is empty for on-demand backups.
+     * To optimize for storage, whenever possible, multiple schedules are
+     * collapsed together to create one backup. In such cases, this field captures
+     * the list of all backup schedule URIs that are associated with creating
+     * this backup. If collapsing is not done, then this field captures the
+     * single backup schedule URI associated with creating this backup.
+     *
+     * Generated from protobuf field <code>repeated string backup_schedules = 14 [(.google.api.field_behavior) = OUTPUT_ONLY, (.google.api.resource_reference) = {</code>
+     */
+    private $backup_schedules;
+    /**
+     * Output only. Populated only for backups in an incremental backup chain.
+     * Backups share the same chain id if and only if they belong to the same
+     * incremental backup chain. Use this field to determine which backups are
+     * part of the same incremental backup chain. The ordering of backups in the
+     * chain can be determined by ordering the backup `version_time`.
+     *
+     * Generated from protobuf field <code>string incremental_backup_chain_id = 17 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    private $incremental_backup_chain_id = '';
+    /**
+     * Output only. Data deleted at a time older than this is guaranteed not to be
+     * retained in order to support this backup. For a backup in an incremental
+     * backup chain, this is the version time of the oldest backup that exists or
+     * ever existed in the chain. For all other backups, this is the version time
+     * of the backup. This field can be used to understand what data is being
+     * retained by the backup system.
+     *
+     * Generated from protobuf field <code>.google.protobuf.Timestamp oldest_version_time = 18 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     */
+    private $oldest_version_time = null;
 
     /**
      * Constructor.
@@ -135,10 +208,10 @@ class Backup extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type string $database
-     *           Required for the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup] operation.
-     *           Name of the database from which this backup was
-     *           created. This needs to be in the same instance as the backup.
-     *           Values are of the form
+     *           Required for the
+     *           [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     *           operation. Name of the database from which this backup was created. This
+     *           needs to be in the same instance as the backup. Values are of the form
      *           `projects/<project>/instances/<instance>/databases/<database>`.
      *     @type \Google\Protobuf\Timestamp $version_time
      *           The backup will contain an externally consistent copy of the database at
@@ -146,15 +219,19 @@ class Backup extends \Google\Protobuf\Internal\Message
      *           specified, the system will set `version_time` to the `create_time` of the
      *           backup.
      *     @type \Google\Protobuf\Timestamp $expire_time
-     *           Required for the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     *           Required for the
+     *           [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
      *           operation. The expiration time of the backup, with microseconds
      *           granularity that must be at least 6 hours and at most 366 days
      *           from the time the CreateBackup request is processed. Once the `expire_time`
      *           has passed, the backup is eligible to be automatically deleted by Cloud
      *           Spanner to free the resources used by the backup.
      *     @type string $name
-     *           Output only for the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup] operation.
-     *           Required for the [UpdateBackup][google.spanner.admin.database.v1.DatabaseAdmin.UpdateBackup] operation.
+     *           Output only for the
+     *           [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     *           operation. Required for the
+     *           [UpdateBackup][google.spanner.admin.database.v1.DatabaseAdmin.UpdateBackup]
+     *           operation.
      *           A globally unique identifier for the backup which cannot be
      *           changed. Values are of the form
      *           `projects/<project>/instances/<instance>/backups/[a-z][a-z0-9_\-]*[a-z0-9]`
@@ -165,11 +242,27 @@ class Backup extends \Google\Protobuf\Internal\Message
      *           by the prefix of the backup name of the form
      *           `projects/<project>/instances/<instance>`.
      *     @type \Google\Protobuf\Timestamp $create_time
-     *           Output only. The time the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     *           Output only. The time the
+     *           [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
      *           request is received. If the request does not specify `version_time`, the
      *           `version_time` of the backup will be equivalent to the `create_time`.
      *     @type int|string $size_bytes
      *           Output only. Size of the backup in bytes.
+     *     @type int|string $freeable_size_bytes
+     *           Output only. The number of bytes that will be freed by deleting this
+     *           backup. This value will be zero if, for example, this backup is part of an
+     *           incremental backup chain and younger backups in the chain require that we
+     *           keep its data. For backups not in an incremental backup chain, this is
+     *           always the size of the backup. This value may change if backups on the same
+     *           chain get created, deleted or expired.
+     *     @type int|string $exclusive_size_bytes
+     *           Output only. For a backup in an incremental backup chain, this is the
+     *           storage space needed to keep the data that has changed since the previous
+     *           backup. For all other backups, this is always the size of the backup. This
+     *           value may change if backups on the same chain get deleted or expired.
+     *           This field can be used to calculate the total storage space used by a set
+     *           of backups. For example, the total space used by all backups of a database
+     *           can be computed by summing up this field.
      *     @type int $state
      *           Output only. The current state of the backup.
      *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $referencing_databases
@@ -182,6 +275,13 @@ class Backup extends \Google\Protobuf\Internal\Message
      *           to the backup is removed.
      *     @type \Google\Cloud\Spanner\Admin\Database\V1\EncryptionInfo $encryption_info
      *           Output only. The encryption information for the backup.
+     *     @type array<\Google\Cloud\Spanner\Admin\Database\V1\EncryptionInfo>|\Google\Protobuf\Internal\RepeatedField $encryption_information
+     *           Output only. The encryption information for the backup, whether it is
+     *           protected by one or more KMS keys. The information includes all Cloud
+     *           KMS key versions used to encrypt the backup. The `encryption_status' field
+     *           inside of each `EncryptionInfo` is not populated. At least one of the key
+     *           versions must be available for the backup to be restored. If a key version
+     *           is revoked in the middle of a restore, the restore behavior is undefined.
      *     @type int $database_dialect
      *           Output only. The database dialect information for the backup.
      *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $referencing_backups
@@ -198,6 +298,28 @@ class Backup extends \Google\Protobuf\Internal\Message
      *           multiple APIs: CreateBackup, UpdateBackup, CopyBackup. When updating or
      *           copying an existing backup, the expiration time specified must be
      *           less than `Backup.max_expire_time`.
+     *     @type array<string>|\Google\Protobuf\Internal\RepeatedField $backup_schedules
+     *           Output only. List of backup schedule URIs that are associated with
+     *           creating this backup. This is only applicable for scheduled backups, and
+     *           is empty for on-demand backups.
+     *           To optimize for storage, whenever possible, multiple schedules are
+     *           collapsed together to create one backup. In such cases, this field captures
+     *           the list of all backup schedule URIs that are associated with creating
+     *           this backup. If collapsing is not done, then this field captures the
+     *           single backup schedule URI associated with creating this backup.
+     *     @type string $incremental_backup_chain_id
+     *           Output only. Populated only for backups in an incremental backup chain.
+     *           Backups share the same chain id if and only if they belong to the same
+     *           incremental backup chain. Use this field to determine which backups are
+     *           part of the same incremental backup chain. The ordering of backups in the
+     *           chain can be determined by ordering the backup `version_time`.
+     *     @type \Google\Protobuf\Timestamp $oldest_version_time
+     *           Output only. Data deleted at a time older than this is guaranteed not to be
+     *           retained in order to support this backup. For a backup in an incremental
+     *           backup chain, this is the version time of the oldest backup that exists or
+     *           ever existed in the chain. For all other backups, this is the version time
+     *           of the backup. This field can be used to understand what data is being
+     *           retained by the backup system.
      * }
      */
     public function __construct($data = NULL) {
@@ -206,10 +328,10 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required for the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup] operation.
-     * Name of the database from which this backup was
-     * created. This needs to be in the same instance as the backup.
-     * Values are of the form
+     * Required for the
+     * [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     * operation. Name of the database from which this backup was created. This
+     * needs to be in the same instance as the backup. Values are of the form
      * `projects/<project>/instances/<instance>/databases/<database>`.
      *
      * Generated from protobuf field <code>string database = 2 [(.google.api.resource_reference) = {</code>
@@ -221,10 +343,10 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required for the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup] operation.
-     * Name of the database from which this backup was
-     * created. This needs to be in the same instance as the backup.
-     * Values are of the form
+     * Required for the
+     * [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     * operation. Name of the database from which this backup was created. This
+     * needs to be in the same instance as the backup. Values are of the form
      * `projects/<project>/instances/<instance>/databases/<database>`.
      *
      * Generated from protobuf field <code>string database = 2 [(.google.api.resource_reference) = {</code>
@@ -282,7 +404,8 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required for the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     * Required for the
+     * [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
      * operation. The expiration time of the backup, with microseconds
      * granularity that must be at least 6 hours and at most 366 days
      * from the time the CreateBackup request is processed. Once the `expire_time`
@@ -308,7 +431,8 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required for the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     * Required for the
+     * [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
      * operation. The expiration time of the backup, with microseconds
      * granularity that must be at least 6 hours and at most 366 days
      * from the time the CreateBackup request is processed. Once the `expire_time`
@@ -328,8 +452,11 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Output only for the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup] operation.
-     * Required for the [UpdateBackup][google.spanner.admin.database.v1.DatabaseAdmin.UpdateBackup] operation.
+     * Output only for the
+     * [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     * operation. Required for the
+     * [UpdateBackup][google.spanner.admin.database.v1.DatabaseAdmin.UpdateBackup]
+     * operation.
      * A globally unique identifier for the backup which cannot be
      * changed. Values are of the form
      * `projects/<project>/instances/<instance>/backups/[a-z][a-z0-9_\-]*[a-z0-9]`
@@ -349,8 +476,11 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Output only for the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup] operation.
-     * Required for the [UpdateBackup][google.spanner.admin.database.v1.DatabaseAdmin.UpdateBackup] operation.
+     * Output only for the
+     * [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     * operation. Required for the
+     * [UpdateBackup][google.spanner.admin.database.v1.DatabaseAdmin.UpdateBackup]
+     * operation.
      * A globally unique identifier for the backup which cannot be
      * changed. Values are of the form
      * `projects/<project>/instances/<instance>/backups/[a-z][a-z0-9_\-]*[a-z0-9]`
@@ -374,7 +504,8 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Output only. The time the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     * Output only. The time the
+     * [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
      * request is received. If the request does not specify `version_time`, the
      * `version_time` of the backup will be equivalent to the `create_time`.
      *
@@ -397,7 +528,8 @@ class Backup extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Output only. The time the [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
+     * Output only. The time the
+     * [CreateBackup][google.spanner.admin.database.v1.DatabaseAdmin.CreateBackup]
      * request is received. If the request does not specify `version_time`, the
      * `version_time` of the backup will be equivalent to the `create_time`.
      *
@@ -435,6 +567,80 @@ class Backup extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkInt64($var);
         $this->size_bytes = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. The number of bytes that will be freed by deleting this
+     * backup. This value will be zero if, for example, this backup is part of an
+     * incremental backup chain and younger backups in the chain require that we
+     * keep its data. For backups not in an incremental backup chain, this is
+     * always the size of the backup. This value may change if backups on the same
+     * chain get created, deleted or expired.
+     *
+     * Generated from protobuf field <code>int64 freeable_size_bytes = 15 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return int|string
+     */
+    public function getFreeableSizeBytes()
+    {
+        return $this->freeable_size_bytes;
+    }
+
+    /**
+     * Output only. The number of bytes that will be freed by deleting this
+     * backup. This value will be zero if, for example, this backup is part of an
+     * incremental backup chain and younger backups in the chain require that we
+     * keep its data. For backups not in an incremental backup chain, this is
+     * always the size of the backup. This value may change if backups on the same
+     * chain get created, deleted or expired.
+     *
+     * Generated from protobuf field <code>int64 freeable_size_bytes = 15 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param int|string $var
+     * @return $this
+     */
+    public function setFreeableSizeBytes($var)
+    {
+        GPBUtil::checkInt64($var);
+        $this->freeable_size_bytes = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. For a backup in an incremental backup chain, this is the
+     * storage space needed to keep the data that has changed since the previous
+     * backup. For all other backups, this is always the size of the backup. This
+     * value may change if backups on the same chain get deleted or expired.
+     * This field can be used to calculate the total storage space used by a set
+     * of backups. For example, the total space used by all backups of a database
+     * can be computed by summing up this field.
+     *
+     * Generated from protobuf field <code>int64 exclusive_size_bytes = 16 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return int|string
+     */
+    public function getExclusiveSizeBytes()
+    {
+        return $this->exclusive_size_bytes;
+    }
+
+    /**
+     * Output only. For a backup in an incremental backup chain, this is the
+     * storage space needed to keep the data that has changed since the previous
+     * backup. For all other backups, this is always the size of the backup. This
+     * value may change if backups on the same chain get deleted or expired.
+     * This field can be used to calculate the total storage space used by a set
+     * of backups. For example, the total space used by all backups of a database
+     * can be computed by summing up this field.
+     *
+     * Generated from protobuf field <code>int64 exclusive_size_bytes = 16 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param int|string $var
+     * @return $this
+     */
+    public function setExclusiveSizeBytes($var)
+    {
+        GPBUtil::checkInt64($var);
+        $this->exclusive_size_bytes = $var;
 
         return $this;
     }
@@ -535,6 +741,42 @@ class Backup extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Cloud\Spanner\Admin\Database\V1\EncryptionInfo::class);
         $this->encryption_info = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. The encryption information for the backup, whether it is
+     * protected by one or more KMS keys. The information includes all Cloud
+     * KMS key versions used to encrypt the backup. The `encryption_status' field
+     * inside of each `EncryptionInfo` is not populated. At least one of the key
+     * versions must be available for the backup to be restored. If a key version
+     * is revoked in the middle of a restore, the restore behavior is undefined.
+     *
+     * Generated from protobuf field <code>repeated .google.spanner.admin.database.v1.EncryptionInfo encryption_information = 13 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getEncryptionInformation()
+    {
+        return $this->encryption_information;
+    }
+
+    /**
+     * Output only. The encryption information for the backup, whether it is
+     * protected by one or more KMS keys. The information includes all Cloud
+     * KMS key versions used to encrypt the backup. The `encryption_status' field
+     * inside of each `EncryptionInfo` is not populated. At least one of the key
+     * versions must be available for the backup to be restored. If a key version
+     * is revoked in the middle of a restore, the restore behavior is undefined.
+     *
+     * Generated from protobuf field <code>repeated .google.spanner.admin.database.v1.EncryptionInfo encryption_information = 13 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param array<\Google\Cloud\Spanner\Admin\Database\V1\EncryptionInfo>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setEncryptionInformation($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Google\Cloud\Spanner\Admin\Database\V1\EncryptionInfo::class);
+        $this->encryption_information = $arr;
 
         return $this;
     }
@@ -643,6 +885,126 @@ class Backup extends \Google\Protobuf\Internal\Message
     {
         GPBUtil::checkMessage($var, \Google\Protobuf\Timestamp::class);
         $this->max_expire_time = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. List of backup schedule URIs that are associated with
+     * creating this backup. This is only applicable for scheduled backups, and
+     * is empty for on-demand backups.
+     * To optimize for storage, whenever possible, multiple schedules are
+     * collapsed together to create one backup. In such cases, this field captures
+     * the list of all backup schedule URIs that are associated with creating
+     * this backup. If collapsing is not done, then this field captures the
+     * single backup schedule URI associated with creating this backup.
+     *
+     * Generated from protobuf field <code>repeated string backup_schedules = 14 [(.google.api.field_behavior) = OUTPUT_ONLY, (.google.api.resource_reference) = {</code>
+     * @return \Google\Protobuf\Internal\RepeatedField
+     */
+    public function getBackupSchedules()
+    {
+        return $this->backup_schedules;
+    }
+
+    /**
+     * Output only. List of backup schedule URIs that are associated with
+     * creating this backup. This is only applicable for scheduled backups, and
+     * is empty for on-demand backups.
+     * To optimize for storage, whenever possible, multiple schedules are
+     * collapsed together to create one backup. In such cases, this field captures
+     * the list of all backup schedule URIs that are associated with creating
+     * this backup. If collapsing is not done, then this field captures the
+     * single backup schedule URI associated with creating this backup.
+     *
+     * Generated from protobuf field <code>repeated string backup_schedules = 14 [(.google.api.field_behavior) = OUTPUT_ONLY, (.google.api.resource_reference) = {</code>
+     * @param array<string>|\Google\Protobuf\Internal\RepeatedField $var
+     * @return $this
+     */
+    public function setBackupSchedules($var)
+    {
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
+        $this->backup_schedules = $arr;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Populated only for backups in an incremental backup chain.
+     * Backups share the same chain id if and only if they belong to the same
+     * incremental backup chain. Use this field to determine which backups are
+     * part of the same incremental backup chain. The ordering of backups in the
+     * chain can be determined by ordering the backup `version_time`.
+     *
+     * Generated from protobuf field <code>string incremental_backup_chain_id = 17 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return string
+     */
+    public function getIncrementalBackupChainId()
+    {
+        return $this->incremental_backup_chain_id;
+    }
+
+    /**
+     * Output only. Populated only for backups in an incremental backup chain.
+     * Backups share the same chain id if and only if they belong to the same
+     * incremental backup chain. Use this field to determine which backups are
+     * part of the same incremental backup chain. The ordering of backups in the
+     * chain can be determined by ordering the backup `version_time`.
+     *
+     * Generated from protobuf field <code>string incremental_backup_chain_id = 17 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param string $var
+     * @return $this
+     */
+    public function setIncrementalBackupChainId($var)
+    {
+        GPBUtil::checkString($var, True);
+        $this->incremental_backup_chain_id = $var;
+
+        return $this;
+    }
+
+    /**
+     * Output only. Data deleted at a time older than this is guaranteed not to be
+     * retained in order to support this backup. For a backup in an incremental
+     * backup chain, this is the version time of the oldest backup that exists or
+     * ever existed in the chain. For all other backups, this is the version time
+     * of the backup. This field can be used to understand what data is being
+     * retained by the backup system.
+     *
+     * Generated from protobuf field <code>.google.protobuf.Timestamp oldest_version_time = 18 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @return \Google\Protobuf\Timestamp|null
+     */
+    public function getOldestVersionTime()
+    {
+        return $this->oldest_version_time;
+    }
+
+    public function hasOldestVersionTime()
+    {
+        return isset($this->oldest_version_time);
+    }
+
+    public function clearOldestVersionTime()
+    {
+        unset($this->oldest_version_time);
+    }
+
+    /**
+     * Output only. Data deleted at a time older than this is guaranteed not to be
+     * retained in order to support this backup. For a backup in an incremental
+     * backup chain, this is the version time of the oldest backup that exists or
+     * ever existed in the chain. For all other backups, this is the version time
+     * of the backup. This field can be used to understand what data is being
+     * retained by the backup system.
+     *
+     * Generated from protobuf field <code>.google.protobuf.Timestamp oldest_version_time = 18 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
+     * @param \Google\Protobuf\Timestamp $var
+     * @return $this
+     */
+    public function setOldestVersionTime($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Protobuf\Timestamp::class);
+        $this->oldest_version_time = $var;
 
         return $this;
     }

@@ -50,6 +50,7 @@ use Google\Cloud\Compute\V1\Subnetwork;
 use Google\Cloud\Compute\V1\TestIamPermissionsSubnetworkRequest;
 use Google\Cloud\Compute\V1\TestPermissionsResponse;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The Subnetworks API.
@@ -57,18 +58,18 @@ use GuzzleHttp\Promise\PromiseInterface;
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
  *
- * @method PromiseInterface aggregatedListAsync(AggregatedListSubnetworksRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAsync(DeleteSubnetworkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface expandIpCidrRangeAsync(ExpandIpCidrRangeSubnetworkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAsync(GetSubnetworkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicySubnetworkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface insertAsync(InsertSubnetworkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAsync(ListSubnetworksRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listUsableAsync(ListUsableSubnetworksRequest $request, array $optionalArgs = [])
- * @method PromiseInterface patchAsync(PatchSubnetworkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicySubnetworkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setPrivateIpGoogleAccessAsync(SetPrivateIpGoogleAccessSubnetworkRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsSubnetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> aggregatedListAsync(AggregatedListSubnetworksRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteAsync(DeleteSubnetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> expandIpCidrRangeAsync(ExpandIpCidrRangeSubnetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Subnetwork> getAsync(GetSubnetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicySubnetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> insertAsync(InsertSubnetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAsync(ListSubnetworksRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listUsableAsync(ListUsableSubnetworksRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> patchAsync(PatchSubnetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicySubnetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> setPrivateIpGoogleAccessAsync(SetPrivateIpGoogleAccessSubnetworkRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsSubnetworkRequest $request, array $optionalArgs = [])
  */
 final class SubnetworksClient
 {
@@ -127,8 +128,8 @@ final class SubnetworksClient
         return 'rest';
     }
 
-    /** Implements GapicClientTrait::getSupportedTransports. */
-    private static function getSupportedTransports()
+    /** Implements ClientOptionsTrait::supportedTransports. */
+    private static function supportedTransports()
     {
         return [
             'rest',
@@ -161,6 +162,9 @@ final class SubnetworksClient
             'operationNameMethod' => 'getName',
             'operationStatusMethod' => 'getStatus',
             'operationStatusDoneValue' => \Google\Cloud\Compute\V1\Operation\Status::DONE,
+            'getOperationRequest' => '\Google\Cloud\Compute\V1\GetRegionOperationRequest',
+            'cancelOperationRequest' => null,
+            'deleteOperationRequest' => '\Google\Cloud\Compute\V1\DeleteRegionOperationRequest',
         ];
     }
 
@@ -200,6 +204,12 @@ final class SubnetworksClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -230,6 +240,9 @@ final class SubnetworksClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -253,9 +266,11 @@ final class SubnetworksClient
     }
 
     /**
-     * Retrieves an aggregated list of subnetworks.
+     * Retrieves an aggregated list of subnetworks. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
      *
      * The async variant is {@see SubnetworksClient::aggregatedListAsync()} .
+     *
+     * @example samples/V1/SubnetworksClient/aggregated_list.php
      *
      * @param AggregatedListSubnetworksRequest $request     A request to house fields associated with the call.
      * @param array                            $callOptions {
@@ -281,6 +296,8 @@ final class SubnetworksClient
      *
      * The async variant is {@see SubnetworksClient::deleteAsync()} .
      *
+     * @example samples/V1/SubnetworksClient/delete.php
+     *
      * @param DeleteSubnetworkRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
      *     Optional.
@@ -304,6 +321,8 @@ final class SubnetworksClient
      * Expands the IP CIDR range of the subnetwork to a specified value.
      *
      * The async variant is {@see SubnetworksClient::expandIpCidrRangeAsync()} .
+     *
+     * @example samples/V1/SubnetworksClient/expand_ip_cidr_range.php
      *
      * @param ExpandIpCidrRangeSubnetworkRequest $request     A request to house fields associated with the call.
      * @param array                              $callOptions {
@@ -329,6 +348,8 @@ final class SubnetworksClient
      *
      * The async variant is {@see SubnetworksClient::getAsync()} .
      *
+     * @example samples/V1/SubnetworksClient/get.php
+     *
      * @param GetSubnetworkRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -352,6 +373,8 @@ final class SubnetworksClient
      * Gets the access control policy for a resource. May be empty if no such policy or resource exists.
      *
      * The async variant is {@see SubnetworksClient::getIamPolicyAsync()} .
+     *
+     * @example samples/V1/SubnetworksClient/get_iam_policy.php
      *
      * @param GetIamPolicySubnetworkRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
@@ -377,6 +400,8 @@ final class SubnetworksClient
      *
      * The async variant is {@see SubnetworksClient::insertAsync()} .
      *
+     * @example samples/V1/SubnetworksClient/insert.php
+     *
      * @param InsertSubnetworkRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
      *     Optional.
@@ -400,6 +425,8 @@ final class SubnetworksClient
      * Retrieves a list of subnetworks available to the specified project.
      *
      * The async variant is {@see SubnetworksClient::listAsync()} .
+     *
+     * @example samples/V1/SubnetworksClient/list.php
      *
      * @param ListSubnetworksRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -425,6 +452,8 @@ final class SubnetworksClient
      *
      * The async variant is {@see SubnetworksClient::listUsableAsync()} .
      *
+     * @example samples/V1/SubnetworksClient/list_usable.php
+     *
      * @param ListUsableSubnetworksRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -448,6 +477,8 @@ final class SubnetworksClient
      * Patches the specified subnetwork with the data included in the request. Only certain fields can be updated with a patch request as indicated in the field descriptions. You must specify the current fingerprint of the subnetwork resource being patched.
      *
      * The async variant is {@see SubnetworksClient::patchAsync()} .
+     *
+     * @example samples/V1/SubnetworksClient/patch.php
      *
      * @param PatchSubnetworkRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -473,6 +504,8 @@ final class SubnetworksClient
      *
      * The async variant is {@see SubnetworksClient::setIamPolicyAsync()} .
      *
+     * @example samples/V1/SubnetworksClient/set_iam_policy.php
+     *
      * @param SetIamPolicySubnetworkRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -497,6 +530,8 @@ final class SubnetworksClient
      *
      * The async variant is {@see SubnetworksClient::setPrivateIpGoogleAccessAsync()} .
      *
+     * @example samples/V1/SubnetworksClient/set_private_ip_google_access.php
+     *
      * @param SetPrivateIpGoogleAccessSubnetworkRequest $request     A request to house fields associated with the call.
      * @param array                                     $callOptions {
      *     Optional.
@@ -520,6 +555,8 @@ final class SubnetworksClient
      * Returns permissions that a caller has on the specified resource.
      *
      * The async variant is {@see SubnetworksClient::testIamPermissionsAsync()} .
+     *
+     * @example samples/V1/SubnetworksClient/test_iam_permissions.php
      *
      * @param TestIamPermissionsSubnetworkRequest $request     A request to house fields associated with the call.
      * @param array                               $callOptions {

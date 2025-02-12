@@ -7,6 +7,8 @@ namespace Google\Cloud\Dlp\V2\CustomInfoType;
 use UnexpectedValueException;
 
 /**
+ * Type of exclusion rule.
+ *
  * Protobuf type <code>google.privacy.dlp.v2.CustomInfoType.ExclusionType</code>
  */
 class ExclusionType
@@ -51,6 +53,4 @@ class ExclusionType
     }
 }
 
-// Adding a class alias for backwards compatibility with the previous class name.
-class_alias(ExclusionType::class, \Google\Cloud\Dlp\V2\CustomInfoType_ExclusionType::class);
 

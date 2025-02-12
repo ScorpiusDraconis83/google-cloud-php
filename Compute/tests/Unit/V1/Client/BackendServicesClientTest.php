@@ -559,6 +559,7 @@ class BackendServicesClientTest extends GeneratedTest
         $enableCDN = false;
         $fingerprint = 'fingerprint-1375934236';
         $id = 3355;
+        $ipAddressSelectionPolicy = 'ipAddressSelectionPolicy614471752';
         $kind = 'kind3292052';
         $loadBalancingScheme = 'loadBalancingScheme1974502980';
         $localityLbPolicy = 'localityLbPolicy-2016052161';
@@ -570,6 +571,7 @@ class BackendServicesClientTest extends GeneratedTest
         $region = 'region-934795532';
         $securityPolicy = 'securityPolicy1781695249';
         $selfLink = 'selfLink-1691268851';
+        $serviceLbPolicy = 'serviceLbPolicy1168590609';
         $sessionAffinity = 'sessionAffinity1000759473';
         $timeoutSec = 2067488653;
         $expectedResponse = new BackendService();
@@ -581,6 +583,7 @@ class BackendServicesClientTest extends GeneratedTest
         $expectedResponse->setEnableCDN($enableCDN);
         $expectedResponse->setFingerprint($fingerprint);
         $expectedResponse->setId($id);
+        $expectedResponse->setIpAddressSelectionPolicy($ipAddressSelectionPolicy);
         $expectedResponse->setKind($kind);
         $expectedResponse->setLoadBalancingScheme($loadBalancingScheme);
         $expectedResponse->setLocalityLbPolicy($localityLbPolicy);
@@ -592,6 +595,7 @@ class BackendServicesClientTest extends GeneratedTest
         $expectedResponse->setRegion($region);
         $expectedResponse->setSecurityPolicy($securityPolicy);
         $expectedResponse->setSelfLink($selfLink);
+        $expectedResponse->setServiceLbPolicy($serviceLbPolicy);
         $expectedResponse->setSessionAffinity($sessionAffinity);
         $expectedResponse->setTimeoutSec($timeoutSec);
         $transport->addResponse($expectedResponse);

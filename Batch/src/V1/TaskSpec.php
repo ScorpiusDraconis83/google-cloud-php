@@ -16,15 +16,15 @@ use Google\Protobuf\Internal\GPBUtil;
 class TaskSpec extends \Google\Protobuf\Internal\Message
 {
     /**
-     * The sequence of scripts or containers to run for this Task. Each Task using
-     * this TaskSpec executes its list of runnables in order. The Task succeeds if
-     * all of its runnables either exit with a zero status or any that exit with a
-     * non-zero status have the ignore_exit_status flag.
-     * Background runnables are killed automatically (if they have not already
-     * exited) a short time after all foreground runnables have completed. Even
-     * though this is likely to result in a non-zero exit status for the
-     * background runnable, these automatic kills are not treated as Task
-     * failures.
+     * Required. The sequence of one or more runnables (executable scripts,
+     * executable containers, and/or barriers) for each task in this task group to
+     * run. Each task runs this list of runnables in order. For a task to succeed,
+     * all of its script and container runnables each must meet at least one of
+     * the following conditions:
+     * + The runnable exited with a zero status.
+     * + The runnable didn't finish, but you enabled its `background` subfield.
+     * + The runnable exited with a non-zero status, but you enabled its
+     *   `ignore_exit_status` subfield.
      *
      * Generated from protobuf field <code>repeated .google.cloud.batch.v1.Runnable runnables = 8;</code>
      */
@@ -34,14 +34,21 @@ class TaskSpec extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.batch.v1.ComputeResource compute_resource = 3;</code>
      */
-    private $compute_resource = null;
+    protected $compute_resource = null;
     /**
-     * Maximum duration the task should run.
-     * The task will be killed and marked as FAILED if over this limit.
+     * Maximum duration the task should run before being automatically retried
+     * (if enabled) or automatically failed. Format the value of this field
+     * as a time limit in seconds followed by `s`&mdash;for example, `3600s`
+     * for 1 hour. The field accepts any value between 0 and the maximum listed
+     * for the `Duration` field type at
+     * https://protobuf.dev/reference/protobuf/google.protobuf/#duration; however,
+     * the actual maximum run time for a job will be limited to the maximum run
+     * time for a job listed at
+     * https://cloud.google.com/batch/quotas#max-job-duration.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration max_run_duration = 4;</code>
      */
-    private $max_run_duration = null;
+    protected $max_run_duration = null;
     /**
      * Maximum number of retries on failures.
      * The default, 0, which means never retry.
@@ -49,7 +56,7 @@ class TaskSpec extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>int32 max_retry_count = 5;</code>
      */
-    private $max_retry_count = 0;
+    protected $max_retry_count = 0;
     /**
      * Lifecycle management schema when any task in a task group is failed.
      * Currently we only support one lifecycle policy.
@@ -81,7 +88,7 @@ class TaskSpec extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.batch.v1.Environment environment = 10;</code>
      */
-    private $environment = null;
+    protected $environment = null;
 
     /**
      * Constructor.
@@ -90,20 +97,27 @@ class TaskSpec extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type array<\Google\Cloud\Batch\V1\Runnable>|\Google\Protobuf\Internal\RepeatedField $runnables
-     *           The sequence of scripts or containers to run for this Task. Each Task using
-     *           this TaskSpec executes its list of runnables in order. The Task succeeds if
-     *           all of its runnables either exit with a zero status or any that exit with a
-     *           non-zero status have the ignore_exit_status flag.
-     *           Background runnables are killed automatically (if they have not already
-     *           exited) a short time after all foreground runnables have completed. Even
-     *           though this is likely to result in a non-zero exit status for the
-     *           background runnable, these automatic kills are not treated as Task
-     *           failures.
+     *           Required. The sequence of one or more runnables (executable scripts,
+     *           executable containers, and/or barriers) for each task in this task group to
+     *           run. Each task runs this list of runnables in order. For a task to succeed,
+     *           all of its script and container runnables each must meet at least one of
+     *           the following conditions:
+     *           + The runnable exited with a zero status.
+     *           + The runnable didn't finish, but you enabled its `background` subfield.
+     *           + The runnable exited with a non-zero status, but you enabled its
+     *             `ignore_exit_status` subfield.
      *     @type \Google\Cloud\Batch\V1\ComputeResource $compute_resource
      *           ComputeResource requirements.
      *     @type \Google\Protobuf\Duration $max_run_duration
-     *           Maximum duration the task should run.
-     *           The task will be killed and marked as FAILED if over this limit.
+     *           Maximum duration the task should run before being automatically retried
+     *           (if enabled) or automatically failed. Format the value of this field
+     *           as a time limit in seconds followed by `s`&mdash;for example, `3600s`
+     *           for 1 hour. The field accepts any value between 0 and the maximum listed
+     *           for the `Duration` field type at
+     *           https://protobuf.dev/reference/protobuf/google.protobuf/#duration; however,
+     *           the actual maximum run time for a job will be limited to the maximum run
+     *           time for a job listed at
+     *           https://cloud.google.com/batch/quotas#max-job-duration.
      *     @type int $max_retry_count
      *           Maximum number of retries on failures.
      *           The default, 0, which means never retry.
@@ -131,15 +145,15 @@ class TaskSpec extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The sequence of scripts or containers to run for this Task. Each Task using
-     * this TaskSpec executes its list of runnables in order. The Task succeeds if
-     * all of its runnables either exit with a zero status or any that exit with a
-     * non-zero status have the ignore_exit_status flag.
-     * Background runnables are killed automatically (if they have not already
-     * exited) a short time after all foreground runnables have completed. Even
-     * though this is likely to result in a non-zero exit status for the
-     * background runnable, these automatic kills are not treated as Task
-     * failures.
+     * Required. The sequence of one or more runnables (executable scripts,
+     * executable containers, and/or barriers) for each task in this task group to
+     * run. Each task runs this list of runnables in order. For a task to succeed,
+     * all of its script and container runnables each must meet at least one of
+     * the following conditions:
+     * + The runnable exited with a zero status.
+     * + The runnable didn't finish, but you enabled its `background` subfield.
+     * + The runnable exited with a non-zero status, but you enabled its
+     *   `ignore_exit_status` subfield.
      *
      * Generated from protobuf field <code>repeated .google.cloud.batch.v1.Runnable runnables = 8;</code>
      * @return \Google\Protobuf\Internal\RepeatedField
@@ -150,15 +164,15 @@ class TaskSpec extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The sequence of scripts or containers to run for this Task. Each Task using
-     * this TaskSpec executes its list of runnables in order. The Task succeeds if
-     * all of its runnables either exit with a zero status or any that exit with a
-     * non-zero status have the ignore_exit_status flag.
-     * Background runnables are killed automatically (if they have not already
-     * exited) a short time after all foreground runnables have completed. Even
-     * though this is likely to result in a non-zero exit status for the
-     * background runnable, these automatic kills are not treated as Task
-     * failures.
+     * Required. The sequence of one or more runnables (executable scripts,
+     * executable containers, and/or barriers) for each task in this task group to
+     * run. Each task runs this list of runnables in order. For a task to succeed,
+     * all of its script and container runnables each must meet at least one of
+     * the following conditions:
+     * + The runnable exited with a zero status.
+     * + The runnable didn't finish, but you enabled its `background` subfield.
+     * + The runnable exited with a non-zero status, but you enabled its
+     *   `ignore_exit_status` subfield.
      *
      * Generated from protobuf field <code>repeated .google.cloud.batch.v1.Runnable runnables = 8;</code>
      * @param array<\Google\Cloud\Batch\V1\Runnable>|\Google\Protobuf\Internal\RepeatedField $var
@@ -209,8 +223,15 @@ class TaskSpec extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Maximum duration the task should run.
-     * The task will be killed and marked as FAILED if over this limit.
+     * Maximum duration the task should run before being automatically retried
+     * (if enabled) or automatically failed. Format the value of this field
+     * as a time limit in seconds followed by `s`&mdash;for example, `3600s`
+     * for 1 hour. The field accepts any value between 0 and the maximum listed
+     * for the `Duration` field type at
+     * https://protobuf.dev/reference/protobuf/google.protobuf/#duration; however,
+     * the actual maximum run time for a job will be limited to the maximum run
+     * time for a job listed at
+     * https://cloud.google.com/batch/quotas#max-job-duration.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration max_run_duration = 4;</code>
      * @return \Google\Protobuf\Duration|null
@@ -231,8 +252,15 @@ class TaskSpec extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Maximum duration the task should run.
-     * The task will be killed and marked as FAILED if over this limit.
+     * Maximum duration the task should run before being automatically retried
+     * (if enabled) or automatically failed. Format the value of this field
+     * as a time limit in seconds followed by `s`&mdash;for example, `3600s`
+     * for 1 hour. The field accepts any value between 0 and the maximum listed
+     * for the `Duration` field type at
+     * https://protobuf.dev/reference/protobuf/google.protobuf/#duration; however,
+     * the actual maximum run time for a job will be limited to the maximum run
+     * time for a job listed at
+     * https://cloud.google.com/batch/quotas#max-job-duration.
      *
      * Generated from protobuf field <code>.google.protobuf.Duration max_run_duration = 4;</code>
      * @param \Google\Protobuf\Duration $var

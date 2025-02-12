@@ -48,11 +48,17 @@ class RequesterPaysTest extends StorageTestCase
     private static $topic;
     private static $notificationId;
 
-    public static function setUpBeforeClass(): void
+    /**
+     * @beforeClass
+     */
+    public static function setUpTestFixtures(): void
     {
-        parent::setUpBeforeClass();
+        parent::setUpTestFixtures();
 
         $requesterKeyFilePath = getenv('GOOGLE_CLOUD_PHP_FIRESTORE_TESTS_KEY_PATH');
+        if (!$requesterKeyFilePath) {
+            self::markTestSkipped('Set GOOGLE_CLOUD_PHP_FIRESTORE_TESTS_KEY_PATH to run this test');
+        }
         $ownerKeyFilePath = getenv('GOOGLE_CLOUD_PHP_TESTS_KEY_PATH');
         self::$requesterKeyFile = json_decode(file_get_contents($requesterKeyFilePath), true);
         self::$requesterEmail = self::$requesterKeyFile['client_email'];
@@ -374,7 +380,8 @@ class RequesterPaysTest extends StorageTestCase
     public function testUploadMethodsWithUserProject(callable $call)
     {
         $bucket = self::$requesterClient->bucket(self::$bucketName, true);
-        $call($bucket);
+        $objectName = $call($bucket);
+        $this->assertTrue($bucket->object($objectName)->exists());
     }
 
     public function uploadMethods()
@@ -382,16 +389,20 @@ class RequesterPaysTest extends StorageTestCase
         return [
             'resumable-upload' => [
                 function (Bucket $bucket) {
+                    $name = uniqid(self::TESTING_PREFIX);
                     $bucket->getResumableUploader(self::$content, [
-                        'name' => uniqid(self::TESTING_PREFIX)
+                        'name' => $name
                     ])->upload();
+                    return $name;
                 },
             ],
             'streamable-upload' => [
                 function (Bucket $bucket) {
+                    $name = uniqid(self::TESTING_PREFIX);
                     $bucket->getStreamableUploader(self::$content, [
-                        'name' => uniqid(self::TESTING_PREFIX)
+                        'name' => $name
                     ])->upload();
+                    return $name;
                 },
             ],
         ];

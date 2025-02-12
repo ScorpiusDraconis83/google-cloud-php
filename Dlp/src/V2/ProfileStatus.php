@@ -9,6 +9,8 @@ use Google\Protobuf\Internal\RepeatedField;
 use Google\Protobuf\Internal\GPBUtil;
 
 /**
+ * Success or errors for the profile generation.
+ *
  * Generated from protobuf message <code>google.privacy.dlp.v2.ProfileStatus</code>
  */
 class ProfileStatus extends \Google\Protobuf\Internal\Message
@@ -19,13 +21,13 @@ class ProfileStatus extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.rpc.Status status = 1;</code>
      */
-    private $status = null;
+    protected $status = null;
     /**
      * Time when the profile generation status was updated
      *
      * Generated from protobuf field <code>.google.protobuf.Timestamp timestamp = 3;</code>
      */
-    private $timestamp = null;
+    protected $timestamp = null;
 
     /**
      * Constructor.

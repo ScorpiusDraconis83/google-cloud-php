@@ -16,6 +16,12 @@ use Google\Protobuf\Internal\GPBUtil;
 class Reservation extends \Google\Protobuf\Internal\Message
 {
     /**
+     * Reservation for aggregated resources, providing shape flexibility.
+     *
+     * Generated from protobuf field <code>optional .google.cloud.compute.v1.AllocationAggregateReservation aggregate_reservation = 291567948;</code>
+     */
+    private $aggregate_reservation = null;
+    /**
      * [Output Only] Full or partial URL to a parent commitment. This field displays for reservations that are tied to a commitment.
      *
      * Generated from protobuf field <code>optional string commitment = 482134805;</code>
@@ -94,7 +100,7 @@ class Reservation extends \Google\Protobuf\Internal\Message
      */
     private $specific_reservation_required = null;
     /**
-     * [Output Only] The status of the reservation.
+     * [Output Only] The status of the reservation. - CREATING: Reservation resources are being allocated. - READY: Reservation resources have been allocated, and the reservation is ready for use. - DELETING: Reservation deletion is in progress. - UPDATING: Reservation update is in progress.
      * Check the Status enum for the list of possible values.
      *
      * Generated from protobuf field <code>optional string status = 181260274;</code>
@@ -113,6 +119,8 @@ class Reservation extends \Google\Protobuf\Internal\Message
      * @param array $data {
      *     Optional. Data for populating the Message object.
      *
+     *     @type \Google\Cloud\Compute\V1\AllocationAggregateReservation $aggregate_reservation
+     *           Reservation for aggregated resources, providing shape flexibility.
      *     @type string $commitment
      *           [Output Only] Full or partial URL to a parent commitment. This field displays for reservations that are tied to a commitment.
      *     @type string $creation_timestamp
@@ -140,7 +148,7 @@ class Reservation extends \Google\Protobuf\Internal\Message
      *     @type bool $specific_reservation_required
      *           Indicates whether the reservation can be consumed by VMs with affinity for "any" reservation. If the field is set, then only VMs that target the reservation by name can consume from this reservation.
      *     @type string $status
-     *           [Output Only] The status of the reservation.
+     *           [Output Only] The status of the reservation. - CREATING: Reservation resources are being allocated. - READY: Reservation resources have been allocated, and the reservation is ready for use. - DELETING: Reservation deletion is in progress. - UPDATING: Reservation update is in progress.
      *           Check the Status enum for the list of possible values.
      *     @type string $zone
      *           Zone in which the reservation resides. A zone must be provided if the reservation is created within a commitment.
@@ -149,6 +157,42 @@ class Reservation extends \Google\Protobuf\Internal\Message
     public function __construct($data = NULL) {
         \GPBMetadata\Google\Cloud\Compute\V1\Compute::initOnce();
         parent::__construct($data);
+    }
+
+    /**
+     * Reservation for aggregated resources, providing shape flexibility.
+     *
+     * Generated from protobuf field <code>optional .google.cloud.compute.v1.AllocationAggregateReservation aggregate_reservation = 291567948;</code>
+     * @return \Google\Cloud\Compute\V1\AllocationAggregateReservation|null
+     */
+    public function getAggregateReservation()
+    {
+        return $this->aggregate_reservation;
+    }
+
+    public function hasAggregateReservation()
+    {
+        return isset($this->aggregate_reservation);
+    }
+
+    public function clearAggregateReservation()
+    {
+        unset($this->aggregate_reservation);
+    }
+
+    /**
+     * Reservation for aggregated resources, providing shape flexibility.
+     *
+     * Generated from protobuf field <code>optional .google.cloud.compute.v1.AllocationAggregateReservation aggregate_reservation = 291567948;</code>
+     * @param \Google\Cloud\Compute\V1\AllocationAggregateReservation $var
+     * @return $this
+     */
+    public function setAggregateReservation($var)
+    {
+        GPBUtil::checkMessage($var, \Google\Cloud\Compute\V1\AllocationAggregateReservation::class);
+        $this->aggregate_reservation = $var;
+
+        return $this;
     }
 
     /**
@@ -610,7 +654,7 @@ class Reservation extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * [Output Only] The status of the reservation.
+     * [Output Only] The status of the reservation. - CREATING: Reservation resources are being allocated. - READY: Reservation resources have been allocated, and the reservation is ready for use. - DELETING: Reservation deletion is in progress. - UPDATING: Reservation update is in progress.
      * Check the Status enum for the list of possible values.
      *
      * Generated from protobuf field <code>optional string status = 181260274;</code>
@@ -632,7 +676,7 @@ class Reservation extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * [Output Only] The status of the reservation.
+     * [Output Only] The status of the reservation. - CREATING: Reservation resources are being allocated. - READY: Reservation resources have been allocated, and the reservation is ready for use. - DELETING: Reservation deletion is in progress. - UPDATING: Reservation update is in progress.
      * Check the Status enum for the list of possible values.
      *
      * Generated from protobuf field <code>optional string status = 181260274;</code>

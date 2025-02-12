@@ -1,4 +1,24 @@
 <?php
+/*
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * GENERATED CODE WARNING
+ * This file was automatically generated - do not edit!
+ */
 
 return [
     'interfaces' => [
@@ -44,6 +64,25 @@ return [
             'CreateDeliveryPipeline' => [
                 'longRunning' => [
                     'operationReturnType' => '\Google\Cloud\Deploy\V1\DeliveryPipeline',
+                    'metadataReturnType' => '\Google\Cloud\Deploy\V1\OperationMetadata',
+                    'initialPollDelayMillis' => '500',
+                    'pollDelayMultiplier' => '1.5',
+                    'maxPollDelayMillis' => '5000',
+                    'totalPollTimeoutMillis' => '300000',
+                ],
+                'callType' => \Google\ApiCore\Call::LONGRUNNING_CALL,
+                'headerParams' => [
+                    [
+                        'keyName' => 'parent',
+                        'fieldAccessors' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
+            'CreateDeployPolicy' => [
+                'longRunning' => [
+                    'operationReturnType' => '\Google\Cloud\Deploy\V1\DeployPolicy',
                     'metadataReturnType' => '\Google\Cloud\Deploy\V1\OperationMetadata',
                     'initialPollDelayMillis' => '500',
                     'pollDelayMultiplier' => '1.5',
@@ -174,6 +213,25 @@ return [
                     ],
                 ],
             ],
+            'DeleteDeployPolicy' => [
+                'longRunning' => [
+                    'operationReturnType' => '\Google\Protobuf\GPBEmpty',
+                    'metadataReturnType' => '\Google\Cloud\Deploy\V1\OperationMetadata',
+                    'initialPollDelayMillis' => '500',
+                    'pollDelayMultiplier' => '1.5',
+                    'maxPollDelayMillis' => '5000',
+                    'totalPollTimeoutMillis' => '300000',
+                ],
+                'callType' => \Google\ApiCore\Call::LONGRUNNING_CALL,
+                'headerParams' => [
+                    [
+                        'keyName' => 'name',
+                        'fieldAccessors' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'DeleteTarget' => [
                 'longRunning' => [
                     'operationReturnType' => '\Google\Protobuf\GPBEmpty',
@@ -248,6 +306,26 @@ return [
                         'keyName' => 'delivery_pipeline.name',
                         'fieldAccessors' => [
                             'getDeliveryPipeline',
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'UpdateDeployPolicy' => [
+                'longRunning' => [
+                    'operationReturnType' => '\Google\Cloud\Deploy\V1\DeployPolicy',
+                    'metadataReturnType' => '\Google\Cloud\Deploy\V1\OperationMetadata',
+                    'initialPollDelayMillis' => '500',
+                    'pollDelayMultiplier' => '1.5',
+                    'maxPollDelayMillis' => '5000',
+                    'totalPollTimeoutMillis' => '300000',
+                ],
+                'callType' => \Google\ApiCore\Call::LONGRUNNING_CALL,
+                'headerParams' => [
+                    [
+                        'keyName' => 'deploy_policy.name',
+                        'fieldAccessors' => [
+                            'getDeployPolicy',
                             'getName',
                         ],
                     ],
@@ -393,6 +471,18 @@ return [
                     ],
                 ],
             ],
+            'GetDeployPolicy' => [
+                'callType' => \Google\ApiCore\Call::UNARY_CALL,
+                'responseType' => 'Google\Cloud\Deploy\V1\DeployPolicy',
+                'headerParams' => [
+                    [
+                        'keyName' => 'name',
+                        'fieldAccessors' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'GetJobRun' => [
                 'callType' => \Google\ApiCore\Call::UNARY_CALL,
                 'responseType' => 'Google\Cloud\Deploy\V1\JobRun',
@@ -524,6 +614,26 @@ return [
                 ],
                 'callType' => \Google\ApiCore\Call::PAGINATED_CALL,
                 'responseType' => 'Google\Cloud\Deploy\V1\ListDeliveryPipelinesResponse',
+                'headerParams' => [
+                    [
+                        'keyName' => 'parent',
+                        'fieldAccessors' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
+            'ListDeployPolicies' => [
+                'pageStreaming' => [
+                    'requestPageTokenGetMethod' => 'getPageToken',
+                    'requestPageTokenSetMethod' => 'setPageToken',
+                    'requestPageSizeGetMethod' => 'getPageSize',
+                    'requestPageSizeSetMethod' => 'setPageSize',
+                    'responsePageTokenGetMethod' => 'getNextPageToken',
+                    'resourcesGetMethod' => 'getDeployPolicies',
+                ],
+                'callType' => \Google\ApiCore\Call::PAGINATED_CALL,
+                'responseType' => 'Google\Cloud\Deploy\V1\ListDeployPoliciesResponse',
                 'headerParams' => [
                     [
                         'keyName' => 'parent',
@@ -730,11 +840,13 @@ return [
                 'config' => 'projects/{project}/locations/{location}/config',
                 'customTargetType' => 'projects/{project}/locations/{location}/customTargetTypes/{custom_target_type}',
                 'deliveryPipeline' => 'projects/{project}/locations/{location}/deliveryPipelines/{delivery_pipeline}',
+                'deployPolicy' => 'projects/{project}/locations/{location}/deployPolicies/{deploy_policy}',
                 'job' => 'projects/{project}/locations/{location}/jobs/{job}',
                 'jobRun' => 'projects/{project}/locations/{location}/deliveryPipelines/{delivery_pipeline}/releases/{release}/rollouts/{rollout}/jobRuns/{job_run}',
                 'location' => 'projects/{project}/locations/{location}',
                 'membership' => 'projects/{project}/locations/{location}/memberships/{membership}',
                 'release' => 'projects/{project}/locations/{location}/deliveryPipelines/{delivery_pipeline}/releases/{release}',
+                'repository' => 'projects/{project}/locations/{location}/connections/{connection}/repositories/{repository}',
                 'rollout' => 'projects/{project}/locations/{location}/deliveryPipelines/{delivery_pipeline}/releases/{release}/rollouts/{rollout}',
                 'service' => 'projects/{project}/locations/{location}/services/{service}',
                 'target' => 'projects/{project}/locations/{location}/targets/{target}',

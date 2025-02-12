@@ -24,13 +24,9 @@ use Google\Cloud\Datastore\DatastoreClient;
 use Google\Cloud\Firestore\FirestoreClient;
 use Google\Cloud\Language\LanguageClient;
 use Google\Cloud\Logging\LoggingClient;
-use Google\Cloud\PubSub\PubSubClient;
 use Google\Cloud\Spanner\SpannerClient;
-use Google\Cloud\Speech\SpeechClient;
 use Google\Cloud\Storage\StorageClient;
 use Google\Cloud\Core\Tests\Unit\Fixtures;
-use Google\Cloud\Translate\TranslateClient;
-use Google\Cloud\Vision\VisionClient;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -47,7 +43,7 @@ class ServiceBuilderTest extends TestCase
     /**
      * @dataProvider serviceProvider
      */
-    public function testBuildsClients($serviceName, $expectedClient, array $args = [], callable $beforeCallable = null)
+    public function testBuildsClients($serviceName, $expectedClient, array $args = [], ?callable $beforeCallable = null)
     {
         $this->checkAndSkipTest([$expectedClient]);
 
@@ -69,17 +65,6 @@ class ServiceBuilderTest extends TestCase
         $this->assertInstanceOf($expectedClient, $localConfigClient);
     }
 
-    public function testTranslateClientWithApiKey()
-    {
-        $this->checkAndSkipTest([TranslateClient::class]);
-
-        $config = ['key' => 'test_key'];
-        $serviceBuilder = new ServiceBuilder($config);
-
-        $this->assertInstanceOf(TranslateClient::class, $serviceBuilder->translate());
-        $this->assertInstanceOf(TranslateClient::class, $serviceBuilder->translate($config));
-    }
-
     /**
      * @dataProvider serviceProvider
      */
@@ -87,7 +72,7 @@ class ServiceBuilderTest extends TestCase
         $serviceName,
         $expectedClient,
         array $args = [],
-        callable $beforeCallable = null
+        ?callable $beforeCallable = null
     ) {
         $this->checkAndSkipTest([$expectedClient]);
 
@@ -125,7 +110,7 @@ class ServiceBuilderTest extends TestCase
         $serviceName,
         $expectedClient,
         array $args = [],
-        callable $beforeCallable = null
+        ?callable $beforeCallable = null
     ) {
         $this->checkAndSkipTest([$expectedClient]);
 
@@ -177,26 +162,13 @@ class ServiceBuilderTest extends TestCase
                 'language',
                 LanguageClient::class
             ], [
-                'pubsub',
-                PubSubClient::class
-            ], [
                 'spanner',
                 SpannerClient::class,
                 [],
                 [$this, 'checkAndSkipGrpcTests']
             ], [
-                'speech',
-                SpeechClient::class,
-                ['languageCode' => 'en-US']
-            ], [
                 'storage',
                 StorageClient::class
-            ], [
-                'translate',
-                TranslateClient::class
-            ], [
-                'vision',
-                VisionClient::class
             ]
         ];
     }

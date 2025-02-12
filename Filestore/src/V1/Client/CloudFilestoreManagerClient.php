@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\Filestore\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -55,8 +54,10 @@ use Google\Cloud\Filestore\V1\Snapshot;
 use Google\Cloud\Filestore\V1\UpdateBackupRequest;
 use Google\Cloud\Filestore\V1\UpdateInstanceRequest;
 use Google\Cloud\Filestore\V1\UpdateSnapshotRequest;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Configures and manages Filestore resources.
@@ -87,23 +88,23 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createBackupAsync(CreateBackupRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createInstanceAsync(CreateInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createSnapshotAsync(CreateSnapshotRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteBackupAsync(DeleteBackupRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteInstanceAsync(DeleteInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteSnapshotAsync(DeleteSnapshotRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getBackupAsync(GetBackupRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getInstanceAsync(GetInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getSnapshotAsync(GetSnapshotRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listBackupsAsync(ListBackupsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listInstancesAsync(ListInstancesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listSnapshotsAsync(ListSnapshotsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface restoreInstanceAsync(RestoreInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface revertInstanceAsync(RevertInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateBackupAsync(UpdateBackupRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateInstanceAsync(UpdateInstanceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateSnapshotAsync(UpdateSnapshotRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createBackupAsync(CreateBackupRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createInstanceAsync(CreateInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createSnapshotAsync(CreateSnapshotRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteBackupAsync(DeleteBackupRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteInstanceAsync(DeleteInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteSnapshotAsync(DeleteSnapshotRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Backup> getBackupAsync(GetBackupRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Instance> getInstanceAsync(GetInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Snapshot> getSnapshotAsync(GetSnapshotRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listBackupsAsync(ListBackupsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listInstancesAsync(ListInstancesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listSnapshotsAsync(ListSnapshotsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> restoreInstanceAsync(RestoreInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> revertInstanceAsync(RevertInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateBackupAsync(UpdateBackupRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateInstanceAsync(UpdateInstanceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateSnapshotAsync(UpdateSnapshotRequest $request, array $optionalArgs = [])
  */
 final class CloudFilestoreManagerClient
 {
@@ -130,9 +131,7 @@ final class CloudFilestoreManagerClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private $operationsClient;
 
@@ -178,10 +177,31 @@ final class CloudFilestoreManagerClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -275,14 +295,14 @@ final class CloudFilestoreManagerClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -304,6 +324,12 @@ final class CloudFilestoreManagerClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -337,6 +363,9 @@ final class CloudFilestoreManagerClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -363,6 +392,8 @@ final class CloudFilestoreManagerClient
      * Creates a backup.
      *
      * The async variant is {@see CloudFilestoreManagerClient::createBackupAsync()} .
+     *
+     * @example samples/V1/CloudFilestoreManagerClient/create_backup.php
      *
      * @param CreateBackupRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -391,6 +422,8 @@ final class CloudFilestoreManagerClient
      *
      * The async variant is {@see CloudFilestoreManagerClient::createInstanceAsync()} .
      *
+     * @example samples/V1/CloudFilestoreManagerClient/create_instance.php
+     *
      * @param CreateInstanceRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -414,6 +447,8 @@ final class CloudFilestoreManagerClient
      * Creates a snapshot.
      *
      * The async variant is {@see CloudFilestoreManagerClient::createSnapshotAsync()} .
+     *
+     * @example samples/V1/CloudFilestoreManagerClient/create_snapshot.php
      *
      * @param CreateSnapshotRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -439,6 +474,8 @@ final class CloudFilestoreManagerClient
      *
      * The async variant is {@see CloudFilestoreManagerClient::deleteBackupAsync()} .
      *
+     * @example samples/V1/CloudFilestoreManagerClient/delete_backup.php
+     *
      * @param DeleteBackupRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -462,6 +499,8 @@ final class CloudFilestoreManagerClient
      * Deletes an instance.
      *
      * The async variant is {@see CloudFilestoreManagerClient::deleteInstanceAsync()} .
+     *
+     * @example samples/V1/CloudFilestoreManagerClient/delete_instance.php
      *
      * @param DeleteInstanceRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -487,6 +526,8 @@ final class CloudFilestoreManagerClient
      *
      * The async variant is {@see CloudFilestoreManagerClient::deleteSnapshotAsync()} .
      *
+     * @example samples/V1/CloudFilestoreManagerClient/delete_snapshot.php
+     *
      * @param DeleteSnapshotRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -510,6 +551,8 @@ final class CloudFilestoreManagerClient
      * Gets the details of a specific backup.
      *
      * The async variant is {@see CloudFilestoreManagerClient::getBackupAsync()} .
+     *
+     * @example samples/V1/CloudFilestoreManagerClient/get_backup.php
      *
      * @param GetBackupRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
@@ -535,6 +578,8 @@ final class CloudFilestoreManagerClient
      *
      * The async variant is {@see CloudFilestoreManagerClient::getInstanceAsync()} .
      *
+     * @example samples/V1/CloudFilestoreManagerClient/get_instance.php
+     *
      * @param GetInstanceRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -558,6 +603,8 @@ final class CloudFilestoreManagerClient
      * Gets the details of a specific snapshot.
      *
      * The async variant is {@see CloudFilestoreManagerClient::getSnapshotAsync()} .
+     *
+     * @example samples/V1/CloudFilestoreManagerClient/get_snapshot.php
      *
      * @param GetSnapshotRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -584,6 +631,8 @@ final class CloudFilestoreManagerClient
      *
      * The async variant is {@see CloudFilestoreManagerClient::listBackupsAsync()} .
      *
+     * @example samples/V1/CloudFilestoreManagerClient/list_backups.php
+     *
      * @param ListBackupsRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -609,6 +658,8 @@ final class CloudFilestoreManagerClient
      *
      * The async variant is {@see CloudFilestoreManagerClient::listInstancesAsync()} .
      *
+     * @example samples/V1/CloudFilestoreManagerClient/list_instances.php
+     *
      * @param ListInstancesRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -633,6 +684,8 @@ final class CloudFilestoreManagerClient
      * or for all locations.
      *
      * The async variant is {@see CloudFilestoreManagerClient::listSnapshotsAsync()} .
+     *
+     * @example samples/V1/CloudFilestoreManagerClient/list_snapshots.php
      *
      * @param ListSnapshotsRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -663,6 +716,8 @@ final class CloudFilestoreManagerClient
      * The async variant is {@see CloudFilestoreManagerClient::restoreInstanceAsync()}
      * .
      *
+     * @example samples/V1/CloudFilestoreManagerClient/restore_instance.php
+     *
      * @param RestoreInstanceRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -686,6 +741,8 @@ final class CloudFilestoreManagerClient
      * Revert an existing instance's file system to a specified snapshot.
      *
      * The async variant is {@see CloudFilestoreManagerClient::revertInstanceAsync()} .
+     *
+     * @example samples/V1/CloudFilestoreManagerClient/revert_instance.php
      *
      * @param RevertInstanceRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -711,6 +768,8 @@ final class CloudFilestoreManagerClient
      *
      * The async variant is {@see CloudFilestoreManagerClient::updateBackupAsync()} .
      *
+     * @example samples/V1/CloudFilestoreManagerClient/update_backup.php
+     *
      * @param UpdateBackupRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -735,6 +794,8 @@ final class CloudFilestoreManagerClient
      *
      * The async variant is {@see CloudFilestoreManagerClient::updateInstanceAsync()} .
      *
+     * @example samples/V1/CloudFilestoreManagerClient/update_instance.php
+     *
      * @param UpdateInstanceRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -758,6 +819,8 @@ final class CloudFilestoreManagerClient
      * Updates the settings of a specific snapshot.
      *
      * The async variant is {@see CloudFilestoreManagerClient::updateSnapshotAsync()} .
+     *
+     * @example samples/V1/CloudFilestoreManagerClient/update_snapshot.php
      *
      * @param UpdateSnapshotRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {

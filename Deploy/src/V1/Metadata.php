@@ -21,20 +21,20 @@ class Metadata extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>.google.cloud.deploy.v1.CloudRunMetadata cloud_run = 1 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $cloud_run = null;
+    protected $cloud_run = null;
     /**
      * Output only. AutomationRolloutMetadata contains the information about the
      * interactions between Automation service and this rollout.
      *
      * Generated from protobuf field <code>.google.cloud.deploy.v1.AutomationRolloutMetadata automation = 2 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $automation = null;
+    protected $automation = null;
     /**
-     * Output only. Custom metadata provided by user defined `Rollout` operations.
+     * Output only. Custom metadata provided by user-defined `Rollout` operations.
      *
      * Generated from protobuf field <code>.google.cloud.deploy.v1.CustomMetadata custom = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      */
-    private $custom = null;
+    protected $custom = null;
 
     /**
      * Constructor.
@@ -49,7 +49,7 @@ class Metadata extends \Google\Protobuf\Internal\Message
      *           Output only. AutomationRolloutMetadata contains the information about the
      *           interactions between Automation service and this rollout.
      *     @type \Google\Cloud\Deploy\V1\CustomMetadata $custom
-     *           Output only. Custom metadata provided by user defined `Rollout` operations.
+     *           Output only. Custom metadata provided by user-defined `Rollout` operations.
      * }
      */
     public function __construct($data = NULL) {
@@ -134,7 +134,7 @@ class Metadata extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Output only. Custom metadata provided by user defined `Rollout` operations.
+     * Output only. Custom metadata provided by user-defined `Rollout` operations.
      *
      * Generated from protobuf field <code>.google.cloud.deploy.v1.CustomMetadata custom = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      * @return \Google\Cloud\Deploy\V1\CustomMetadata|null
@@ -155,7 +155,7 @@ class Metadata extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Output only. Custom metadata provided by user defined `Rollout` operations.
+     * Output only. Custom metadata provided by user-defined `Rollout` operations.
      *
      * Generated from protobuf field <code>.google.cloud.deploy.v1.CustomMetadata custom = 3 [(.google.api.field_behavior) = OUTPUT_ONLY];</code>
      * @param \Google\Cloud\Deploy\V1\CustomMetadata $var

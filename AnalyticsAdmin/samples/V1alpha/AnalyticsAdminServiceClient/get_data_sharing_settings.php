@@ -23,8 +23,9 @@
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetDataSharingSettings_sync]
-use Google\Analytics\Admin\V1alpha\AnalyticsAdminServiceClient;
+use Google\Analytics\Admin\V1alpha\Client\AnalyticsAdminServiceClient;
 use Google\Analytics\Admin\V1alpha\DataSharingSettings;
+use Google\Analytics\Admin\V1alpha\GetDataSharingSettingsRequest;
 use Google\ApiCore\ApiException;
 
 /**
@@ -33,7 +34,8 @@ use Google\ApiCore\ApiException;
  *
  * @param string $formattedName The name of the settings to lookup.
  *                              Format: accounts/{account}/dataSharingSettings
- *                              Example: "accounts/1000/dataSharingSettings"
+ *
+ *                              Example: `accounts/1000/dataSharingSettings`
  *                              Please see {@see AnalyticsAdminServiceClient::dataSharingSettingsName()} for help formatting this field.
  */
 function get_data_sharing_settings_sample(string $formattedName): void
@@ -41,10 +43,14 @@ function get_data_sharing_settings_sample(string $formattedName): void
     // Create a client.
     $analyticsAdminServiceClient = new AnalyticsAdminServiceClient();
 
+    // Prepare the request message.
+    $request = (new GetDataSharingSettingsRequest())
+        ->setName($formattedName);
+
     // Call the API and handle any network failures.
     try {
         /** @var DataSharingSettings $response */
-        $response = $analyticsAdminServiceClient->getDataSharingSettings($formattedName);
+        $response = $analyticsAdminServiceClient->getDataSharingSettings($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

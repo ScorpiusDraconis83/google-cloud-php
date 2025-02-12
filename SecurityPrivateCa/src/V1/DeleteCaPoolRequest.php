@@ -23,7 +23,7 @@ class DeleteCaPoolRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * Optional. An ID to identify requests. Specify a unique request ID so that
      * if you must retry your request, the server will know to ignore the request
@@ -39,16 +39,16 @@ class DeleteCaPoolRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string request_id = 2 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $request_id = '';
+    protected $request_id = '';
     /**
      * Optional. This field allows this pool to be deleted even if it's being
      * depended on by another resource. However, doing so may result in unintended
-     * and unrecoverable effects on any dependent resource(s) since the pool will
+     * and unrecoverable effects on any dependent resources since the pool will
      * no longer be able to issue certificates.
      *
      * Generated from protobuf field <code>bool ignore_dependent_resources = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
      */
-    private $ignore_dependent_resources = false;
+    protected $ignore_dependent_resources = false;
 
     /**
      * @param string $name Required. The resource name for this
@@ -91,7 +91,7 @@ class DeleteCaPoolRequest extends \Google\Protobuf\Internal\Message
      *     @type bool $ignore_dependent_resources
      *           Optional. This field allows this pool to be deleted even if it's being
      *           depended on by another resource. However, doing so may result in unintended
-     *           and unrecoverable effects on any dependent resource(s) since the pool will
+     *           and unrecoverable effects on any dependent resources since the pool will
      *           no longer be able to issue certificates.
      * }
      */
@@ -179,7 +179,7 @@ class DeleteCaPoolRequest extends \Google\Protobuf\Internal\Message
     /**
      * Optional. This field allows this pool to be deleted even if it's being
      * depended on by another resource. However, doing so may result in unintended
-     * and unrecoverable effects on any dependent resource(s) since the pool will
+     * and unrecoverable effects on any dependent resources since the pool will
      * no longer be able to issue certificates.
      *
      * Generated from protobuf field <code>bool ignore_dependent_resources = 4 [(.google.api.field_behavior) = OPTIONAL];</code>
@@ -193,7 +193,7 @@ class DeleteCaPoolRequest extends \Google\Protobuf\Internal\Message
     /**
      * Optional. This field allows this pool to be deleted even if it's being
      * depended on by another resource. However, doing so may result in unintended
-     * and unrecoverable effects on any dependent resource(s) since the pool will
+     * and unrecoverable effects on any dependent resources since the pool will
      * no longer be able to issue certificates.
      *
      * Generated from protobuf field <code>bool ignore_dependent_resources = 4 [(.google.api.field_behavior) = OPTIONAL];</code>

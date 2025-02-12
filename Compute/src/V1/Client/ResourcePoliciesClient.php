@@ -47,6 +47,7 @@ use Google\Cloud\Compute\V1\SetIamPolicyResourcePolicyRequest;
 use Google\Cloud\Compute\V1\TestIamPermissionsResourcePolicyRequest;
 use Google\Cloud\Compute\V1\TestPermissionsResponse;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The ResourcePolicies API.
@@ -54,15 +55,15 @@ use GuzzleHttp\Promise\PromiseInterface;
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
  *
- * @method PromiseInterface aggregatedListAsync(AggregatedListResourcePoliciesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAsync(DeleteResourcePolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAsync(GetResourcePolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyResourcePolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface insertAsync(InsertResourcePolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAsync(ListResourcePoliciesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface patchAsync(PatchResourcePolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyResourcePolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsResourcePolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> aggregatedListAsync(AggregatedListResourcePoliciesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteAsync(DeleteResourcePolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ResourcePolicy> getAsync(GetResourcePolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyResourcePolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> insertAsync(InsertResourcePolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAsync(ListResourcePoliciesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> patchAsync(PatchResourcePolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyResourcePolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsResourcePolicyRequest $request, array $optionalArgs = [])
  */
 final class ResourcePoliciesClient
 {
@@ -121,8 +122,8 @@ final class ResourcePoliciesClient
         return 'rest';
     }
 
-    /** Implements GapicClientTrait::getSupportedTransports. */
-    private static function getSupportedTransports()
+    /** Implements ClientOptionsTrait::supportedTransports. */
+    private static function supportedTransports()
     {
         return [
             'rest',
@@ -155,6 +156,9 @@ final class ResourcePoliciesClient
             'operationNameMethod' => 'getName',
             'operationStatusMethod' => 'getStatus',
             'operationStatusDoneValue' => \Google\Cloud\Compute\V1\Operation\Status::DONE,
+            'getOperationRequest' => '\Google\Cloud\Compute\V1\GetRegionOperationRequest',
+            'cancelOperationRequest' => null,
+            'deleteOperationRequest' => '\Google\Cloud\Compute\V1\DeleteRegionOperationRequest',
         ];
     }
 
@@ -194,6 +198,12 @@ final class ResourcePoliciesClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -224,6 +234,9 @@ final class ResourcePoliciesClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -247,9 +260,11 @@ final class ResourcePoliciesClient
     }
 
     /**
-     * Retrieves an aggregated list of resource policies.
+     * Retrieves an aggregated list of resource policies. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
      *
      * The async variant is {@see ResourcePoliciesClient::aggregatedListAsync()} .
+     *
+     * @example samples/V1/ResourcePoliciesClient/aggregated_list.php
      *
      * @param AggregatedListResourcePoliciesRequest $request     A request to house fields associated with the call.
      * @param array                                 $callOptions {
@@ -275,6 +290,8 @@ final class ResourcePoliciesClient
      *
      * The async variant is {@see ResourcePoliciesClient::deleteAsync()} .
      *
+     * @example samples/V1/ResourcePoliciesClient/delete.php
+     *
      * @param DeleteResourcePolicyRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -298,6 +315,8 @@ final class ResourcePoliciesClient
      * Retrieves all information of the specified resource policy.
      *
      * The async variant is {@see ResourcePoliciesClient::getAsync()} .
+     *
+     * @example samples/V1/ResourcePoliciesClient/get.php
      *
      * @param GetResourcePolicyRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -323,6 +342,8 @@ final class ResourcePoliciesClient
      *
      * The async variant is {@see ResourcePoliciesClient::getIamPolicyAsync()} .
      *
+     * @example samples/V1/ResourcePoliciesClient/get_iam_policy.php
+     *
      * @param GetIamPolicyResourcePolicyRequest $request     A request to house fields associated with the call.
      * @param array                             $callOptions {
      *     Optional.
@@ -346,6 +367,8 @@ final class ResourcePoliciesClient
      * Creates a new resource policy.
      *
      * The async variant is {@see ResourcePoliciesClient::insertAsync()} .
+     *
+     * @example samples/V1/ResourcePoliciesClient/insert.php
      *
      * @param InsertResourcePolicyRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
@@ -371,6 +394,8 @@ final class ResourcePoliciesClient
      *
      * The async variant is {@see ResourcePoliciesClient::listAsync()} .
      *
+     * @example samples/V1/ResourcePoliciesClient/list.php
+     *
      * @param ListResourcePoliciesRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -394,6 +419,8 @@ final class ResourcePoliciesClient
      * Modify the specified resource policy.
      *
      * The async variant is {@see ResourcePoliciesClient::patchAsync()} .
+     *
+     * @example samples/V1/ResourcePoliciesClient/patch.php
      *
      * @param PatchResourcePolicyRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -419,6 +446,8 @@ final class ResourcePoliciesClient
      *
      * The async variant is {@see ResourcePoliciesClient::setIamPolicyAsync()} .
      *
+     * @example samples/V1/ResourcePoliciesClient/set_iam_policy.php
+     *
      * @param SetIamPolicyResourcePolicyRequest $request     A request to house fields associated with the call.
      * @param array                             $callOptions {
      *     Optional.
@@ -442,6 +471,8 @@ final class ResourcePoliciesClient
      * Returns permissions that a caller has on the specified resource.
      *
      * The async variant is {@see ResourcePoliciesClient::testIamPermissionsAsync()} .
+     *
+     * @example samples/V1/ResourcePoliciesClient/test_iam_permissions.php
      *
      * @param TestIamPermissionsResourcePolicyRequest $request     A request to house fields associated with the call.
      * @param array                                   $callOptions {

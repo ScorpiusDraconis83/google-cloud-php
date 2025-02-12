@@ -1,4 +1,24 @@
 <?php
+/*
+ * Copyright 2024 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * GENERATED CODE WARNING
+ * This file was automatically generated - do not edit!
+ */
 
 return [
     'interfaces' => [
@@ -100,6 +120,21 @@ return [
                 ],
                 'queryParams' => [
                     'kms_config_id',
+                ],
+            ],
+            'CreateQuotaRule' => [
+                'method' => 'post',
+                'uriTemplate' => '/v1/{parent=projects/*/locations/*/volumes/*}/quotaRules',
+                'body' => 'quota_rule',
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+                'queryParams' => [
+                    'quota_rule_id',
                 ],
             ],
             'CreateReplication' => [
@@ -217,6 +252,17 @@ return [
                     ],
                 ],
             ],
+            'DeleteQuotaRule' => [
+                'method' => 'delete',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/volumes/*/quotaRules/*}',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'DeleteReplication' => [
                 'method' => 'delete',
                 'uriTemplate' => '/v1/{name=projects/*/locations/*/volumes/*/replications/*}',
@@ -273,6 +319,18 @@ return [
                     ],
                 ],
             ],
+            'EstablishPeering' => [
+                'method' => 'post',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/volumes/*/replications/*}:establishPeering',
+                'body' => '*',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'GetActiveDirectory' => [
                 'method' => 'get',
                 'uriTemplate' => '/v1/{name=projects/*/locations/*/activeDirectories/*}',
@@ -320,6 +378,17 @@ return [
             'GetKmsConfig' => [
                 'method' => 'get',
                 'uriTemplate' => '/v1/{name=projects/*/locations/*/kmsConfigs/*}',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'GetQuotaRule' => [
+                'method' => 'get',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/volumes/*/quotaRules/*}',
                 'placeholders' => [
                     'name' => [
                         'getters' => [
@@ -427,6 +496,17 @@ return [
                     ],
                 ],
             ],
+            'ListQuotaRules' => [
+                'method' => 'get',
+                'uriTemplate' => '/v1/{parent=projects/*/locations/*/volumes/*}/quotaRules',
+                'placeholders' => [
+                    'parent' => [
+                        'getters' => [
+                            'getParent',
+                        ],
+                    ],
+                ],
+            ],
             'ListReplications' => [
                 'method' => 'get',
                 'uriTemplate' => '/v1/{parent=projects/*/locations/*/volumes/*}/replications',
@@ -519,6 +599,30 @@ return [
                     ],
                 ],
             ],
+            'SwitchActiveReplicaZone' => [
+                'method' => 'post',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/storagePools/*}:switch',
+                'body' => '*',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
+            'SyncReplication' => [
+                'method' => 'post',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/volumes/*/replications/*}:sync',
+                'body' => '*',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'UpdateActiveDirectory' => [
                 'method' => 'patch',
                 'uriTemplate' => '/v1/{active_directory.name=projects/*/locations/*/activeDirectories/*}',
@@ -599,6 +703,19 @@ return [
                     'update_mask',
                 ],
             ],
+            'UpdateQuotaRule' => [
+                'method' => 'patch',
+                'uriTemplate' => '/v1/{quota_rule.name=projects/*/locations/*/volumes/*/quotaRules/*}',
+                'body' => 'quota_rule',
+                'placeholders' => [
+                    'quota_rule.name' => [
+                        'getters' => [
+                            'getQuotaRule',
+                            'getName',
+                        ],
+                    ],
+                ],
+            ],
             'UpdateReplication' => [
                 'method' => 'patch',
                 'uriTemplate' => '/v1/{replication.name=projects/*/locations/*/volumes/*/replications/*}',
@@ -661,6 +778,18 @@ return [
                 ],
                 'queryParams' => [
                     'update_mask',
+                ],
+            ],
+            'ValidateDirectoryService' => [
+                'method' => 'post',
+                'uriTemplate' => '/v1/{name=projects/*/locations/*/storagePools/*}:validateDirectoryService',
+                'body' => '*',
+                'placeholders' => [
+                    'name' => [
+                        'getters' => [
+                            'getName',
+                        ],
+                    ],
                 ],
             ],
             'VerifyKmsConfig' => [

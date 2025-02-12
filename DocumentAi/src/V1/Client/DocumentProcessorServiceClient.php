@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\DocumentAI\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -67,8 +66,10 @@ use Google\Cloud\DocumentAI\V1\UndeployProcessorVersionRequest;
 use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\Location;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Service to call Document AI to process documents according to the
@@ -84,30 +85,30 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface batchProcessDocumentsAsync(BatchProcessRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createProcessorAsync(CreateProcessorRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteProcessorAsync(DeleteProcessorRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteProcessorVersionAsync(DeleteProcessorVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deployProcessorVersionAsync(DeployProcessorVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface disableProcessorAsync(DisableProcessorRequest $request, array $optionalArgs = [])
- * @method PromiseInterface enableProcessorAsync(EnableProcessorRequest $request, array $optionalArgs = [])
- * @method PromiseInterface evaluateProcessorVersionAsync(EvaluateProcessorVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface fetchProcessorTypesAsync(FetchProcessorTypesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getEvaluationAsync(GetEvaluationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getProcessorAsync(GetProcessorRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getProcessorTypeAsync(GetProcessorTypeRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getProcessorVersionAsync(GetProcessorVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listEvaluationsAsync(ListEvaluationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listProcessorTypesAsync(ListProcessorTypesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listProcessorVersionsAsync(ListProcessorVersionsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listProcessorsAsync(ListProcessorsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface processDocumentAsync(ProcessRequest $request, array $optionalArgs = [])
- * @method PromiseInterface reviewDocumentAsync(ReviewDocumentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setDefaultProcessorVersionAsync(SetDefaultProcessorVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface trainProcessorVersionAsync(TrainProcessorVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface undeployProcessorVersionAsync(UndeployProcessorVersionRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> batchProcessDocumentsAsync(BatchProcessRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Processor> createProcessorAsync(CreateProcessorRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteProcessorAsync(DeleteProcessorRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteProcessorVersionAsync(DeleteProcessorVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deployProcessorVersionAsync(DeployProcessorVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> disableProcessorAsync(DisableProcessorRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> enableProcessorAsync(EnableProcessorRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> evaluateProcessorVersionAsync(EvaluateProcessorVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<FetchProcessorTypesResponse> fetchProcessorTypesAsync(FetchProcessorTypesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Evaluation> getEvaluationAsync(GetEvaluationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Processor> getProcessorAsync(GetProcessorRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ProcessorType> getProcessorTypeAsync(GetProcessorTypeRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ProcessorVersion> getProcessorVersionAsync(GetProcessorVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listEvaluationsAsync(ListEvaluationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listProcessorTypesAsync(ListProcessorTypesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listProcessorVersionsAsync(ListProcessorVersionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listProcessorsAsync(ListProcessorsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ProcessResponse> processDocumentAsync(ProcessRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> reviewDocumentAsync(ReviewDocumentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> setDefaultProcessorVersionAsync(SetDefaultProcessorVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> trainProcessorVersionAsync(TrainProcessorVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> undeployProcessorVersionAsync(UndeployProcessorVersionRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
  */
 final class DocumentProcessorServiceClient
 {
@@ -134,9 +135,7 @@ final class DocumentProcessorServiceClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private $operationsClient;
 
@@ -153,7 +152,8 @@ final class DocumentProcessorServiceClient
             ],
             'transportConfig' => [
                 'rest' => [
-                    'restClientConfigPath' => __DIR__ . '/../resources/document_processor_service_rest_client_config.php',
+                    'restClientConfigPath' =>
+                        __DIR__ . '/../resources/document_processor_service_rest_client_config.php',
                 ],
             ],
         ];
@@ -182,10 +182,31 @@ final class DocumentProcessorServiceClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -200,8 +221,13 @@ final class DocumentProcessorServiceClient
      *
      * @return string The formatted evaluation resource.
      */
-    public static function evaluationName(string $project, string $location, string $processor, string $processorVersion, string $evaluation): string
-    {
+    public static function evaluationName(
+        string $project,
+        string $location,
+        string $processor,
+        string $processorVersion,
+        string $evaluation
+    ): string {
         return self::getPathTemplate('evaluation')->render([
             'project' => $project,
             'location' => $location,
@@ -296,8 +322,12 @@ final class DocumentProcessorServiceClient
      *
      * @return string The formatted processor_version resource.
      */
-    public static function processorVersionName(string $project, string $location, string $processor, string $processorVersion): string
-    {
+    public static function processorVersionName(
+        string $project,
+        string $location,
+        string $processor,
+        string $processorVersion
+    ): string {
         return self::getPathTemplate('processorVersion')->render([
             'project' => $project,
             'location' => $location,
@@ -323,14 +353,14 @@ final class DocumentProcessorServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -352,6 +382,12 @@ final class DocumentProcessorServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -385,6 +421,9 @@ final class DocumentProcessorServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -414,6 +453,8 @@ final class DocumentProcessorServiceClient
      * The async variant is
      * {@see DocumentProcessorServiceClient::batchProcessDocumentsAsync()} .
      *
+     * @example samples/V1/DocumentProcessorServiceClient/batch_process_documents.php
+     *
      * @param BatchProcessRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -436,10 +477,16 @@ final class DocumentProcessorServiceClient
     /**
      * Creates a processor from the
      * [ProcessorType][google.cloud.documentai.v1.ProcessorType] provided. The
-     * processor will be at `ENABLED` state by default after its creation.
+     * processor will be at `ENABLED` state by default after its creation. Note
+     * that this method requires the `documentai.processors.create` permission on
+     * the project, which is highly privileged. A user or service account with
+     * this permission can create new processors that can interact with any gcs
+     * bucket in your project.
      *
      * The async variant is
      * {@see DocumentProcessorServiceClient::createProcessorAsync()} .
+     *
+     * @example samples/V1/DocumentProcessorServiceClient/create_processor.php
      *
      * @param CreateProcessorRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -467,6 +514,8 @@ final class DocumentProcessorServiceClient
      * The async variant is
      * {@see DocumentProcessorServiceClient::deleteProcessorAsync()} .
      *
+     * @example samples/V1/DocumentProcessorServiceClient/delete_processor.php
+     *
      * @param DeleteProcessorRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -493,6 +542,8 @@ final class DocumentProcessorServiceClient
      * The async variant is
      * {@see DocumentProcessorServiceClient::deleteProcessorVersionAsync()} .
      *
+     * @example samples/V1/DocumentProcessorServiceClient/delete_processor_version.php
+     *
      * @param DeleteProcessorVersionRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
      *     Optional.
@@ -507,8 +558,10 @@ final class DocumentProcessorServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function deleteProcessorVersion(DeleteProcessorVersionRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function deleteProcessorVersion(
+        DeleteProcessorVersionRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('DeleteProcessorVersion', $request, $callOptions)->wait();
     }
 
@@ -517,6 +570,8 @@ final class DocumentProcessorServiceClient
      *
      * The async variant is
      * {@see DocumentProcessorServiceClient::deployProcessorVersionAsync()} .
+     *
+     * @example samples/V1/DocumentProcessorServiceClient/deploy_processor_version.php
      *
      * @param DeployProcessorVersionRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
@@ -532,8 +587,10 @@ final class DocumentProcessorServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function deployProcessorVersion(DeployProcessorVersionRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function deployProcessorVersion(
+        DeployProcessorVersionRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('DeployProcessorVersion', $request, $callOptions)->wait();
     }
 
@@ -542,6 +599,8 @@ final class DocumentProcessorServiceClient
      *
      * The async variant is
      * {@see DocumentProcessorServiceClient::disableProcessorAsync()} .
+     *
+     * @example samples/V1/DocumentProcessorServiceClient/disable_processor.php
      *
      * @param DisableProcessorRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -567,6 +626,8 @@ final class DocumentProcessorServiceClient
      *
      * The async variant is
      * {@see DocumentProcessorServiceClient::enableProcessorAsync()} .
+     *
+     * @example samples/V1/DocumentProcessorServiceClient/enable_processor.php
      *
      * @param EnableProcessorRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -594,6 +655,8 @@ final class DocumentProcessorServiceClient
      * The async variant is
      * {@see DocumentProcessorServiceClient::evaluateProcessorVersionAsync()} .
      *
+     * @example samples/V1/DocumentProcessorServiceClient/evaluate_processor_version.php
+     *
      * @param EvaluateProcessorVersionRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
      *     Optional.
@@ -608,8 +671,10 @@ final class DocumentProcessorServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function evaluateProcessorVersion(EvaluateProcessorVersionRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function evaluateProcessorVersion(
+        EvaluateProcessorVersionRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('EvaluateProcessorVersion', $request, $callOptions)->wait();
     }
 
@@ -620,6 +685,8 @@ final class DocumentProcessorServiceClient
      *
      * The async variant is
      * {@see DocumentProcessorServiceClient::fetchProcessorTypesAsync()} .
+     *
+     * @example samples/V1/DocumentProcessorServiceClient/fetch_processor_types.php
      *
      * @param FetchProcessorTypesRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
@@ -635,8 +702,10 @@ final class DocumentProcessorServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function fetchProcessorTypes(FetchProcessorTypesRequest $request, array $callOptions = []): FetchProcessorTypesResponse
-    {
+    public function fetchProcessorTypes(
+        FetchProcessorTypesRequest $request,
+        array $callOptions = []
+    ): FetchProcessorTypesResponse {
         return $this->startApiCall('FetchProcessorTypes', $request, $callOptions)->wait();
     }
 
@@ -645,6 +714,8 @@ final class DocumentProcessorServiceClient
      *
      * The async variant is {@see DocumentProcessorServiceClient::getEvaluationAsync()}
      * .
+     *
+     * @example samples/V1/DocumentProcessorServiceClient/get_evaluation.php
      *
      * @param GetEvaluationRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -671,6 +742,8 @@ final class DocumentProcessorServiceClient
      * The async variant is {@see DocumentProcessorServiceClient::getProcessorAsync()}
      * .
      *
+     * @example samples/V1/DocumentProcessorServiceClient/get_processor.php
+     *
      * @param GetProcessorRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -695,6 +768,8 @@ final class DocumentProcessorServiceClient
      *
      * The async variant is
      * {@see DocumentProcessorServiceClient::getProcessorTypeAsync()} .
+     *
+     * @example samples/V1/DocumentProcessorServiceClient/get_processor_type.php
      *
      * @param GetProcessorTypeRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -721,6 +796,8 @@ final class DocumentProcessorServiceClient
      * The async variant is
      * {@see DocumentProcessorServiceClient::getProcessorVersionAsync()} .
      *
+     * @example samples/V1/DocumentProcessorServiceClient/get_processor_version.php
+     *
      * @param GetProcessorVersionRequest $request     A request to house fields associated with the call.
      * @param array                      $callOptions {
      *     Optional.
@@ -745,6 +822,8 @@ final class DocumentProcessorServiceClient
      *
      * The async variant is
      * {@see DocumentProcessorServiceClient::listEvaluationsAsync()} .
+     *
+     * @example samples/V1/DocumentProcessorServiceClient/list_evaluations.php
      *
      * @param ListEvaluationsRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -771,6 +850,8 @@ final class DocumentProcessorServiceClient
      * The async variant is
      * {@see DocumentProcessorServiceClient::listProcessorTypesAsync()} .
      *
+     * @example samples/V1/DocumentProcessorServiceClient/list_processor_types.php
+     *
      * @param ListProcessorTypesRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -796,6 +877,8 @@ final class DocumentProcessorServiceClient
      * The async variant is
      * {@see DocumentProcessorServiceClient::listProcessorVersionsAsync()} .
      *
+     * @example samples/V1/DocumentProcessorServiceClient/list_processor_versions.php
+     *
      * @param ListProcessorVersionsRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
      *     Optional.
@@ -810,8 +893,10 @@ final class DocumentProcessorServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listProcessorVersions(ListProcessorVersionsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listProcessorVersions(
+        ListProcessorVersionsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListProcessorVersions', $request, $callOptions);
     }
 
@@ -820,6 +905,8 @@ final class DocumentProcessorServiceClient
      *
      * The async variant is
      * {@see DocumentProcessorServiceClient::listProcessorsAsync()} .
+     *
+     * @example samples/V1/DocumentProcessorServiceClient/list_processors.php
      *
      * @param ListProcessorsRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -846,6 +933,8 @@ final class DocumentProcessorServiceClient
      * The async variant is
      * {@see DocumentProcessorServiceClient::processDocumentAsync()} .
      *
+     * @example samples/V1/DocumentProcessorServiceClient/process_document.php
+     *
      * @param ProcessRequest $request     A request to house fields associated with the call.
      * @param array          $callOptions {
      *     Optional.
@@ -871,6 +960,8 @@ final class DocumentProcessorServiceClient
      *
      * The async variant is
      * {@see DocumentProcessorServiceClient::reviewDocumentAsync()} .
+     *
+     * @example samples/V1/DocumentProcessorServiceClient/review_document.php
      *
      * @param ReviewDocumentRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -901,6 +992,8 @@ final class DocumentProcessorServiceClient
      * The async variant is
      * {@see DocumentProcessorServiceClient::setDefaultProcessorVersionAsync()} .
      *
+     * @example samples/V1/DocumentProcessorServiceClient/set_default_processor_version.php
+     *
      * @param SetDefaultProcessorVersionRequest $request     A request to house fields associated with the call.
      * @param array                             $callOptions {
      *     Optional.
@@ -915,8 +1008,10 @@ final class DocumentProcessorServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function setDefaultProcessorVersion(SetDefaultProcessorVersionRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function setDefaultProcessorVersion(
+        SetDefaultProcessorVersionRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('SetDefaultProcessorVersion', $request, $callOptions)->wait();
     }
 
@@ -927,6 +1022,8 @@ final class DocumentProcessorServiceClient
      *
      * The async variant is
      * {@see DocumentProcessorServiceClient::trainProcessorVersionAsync()} .
+     *
+     * @example samples/V1/DocumentProcessorServiceClient/train_processor_version.php
      *
      * @param TrainProcessorVersionRequest $request     A request to house fields associated with the call.
      * @param array                        $callOptions {
@@ -942,8 +1039,10 @@ final class DocumentProcessorServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function trainProcessorVersion(TrainProcessorVersionRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function trainProcessorVersion(
+        TrainProcessorVersionRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('TrainProcessorVersion', $request, $callOptions)->wait();
     }
 
@@ -952,6 +1051,8 @@ final class DocumentProcessorServiceClient
      *
      * The async variant is
      * {@see DocumentProcessorServiceClient::undeployProcessorVersionAsync()} .
+     *
+     * @example samples/V1/DocumentProcessorServiceClient/undeploy_processor_version.php
      *
      * @param UndeployProcessorVersionRequest $request     A request to house fields associated with the call.
      * @param array                           $callOptions {
@@ -967,8 +1068,10 @@ final class DocumentProcessorServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function undeployProcessorVersion(UndeployProcessorVersionRequest $request, array $callOptions = []): OperationResponse
-    {
+    public function undeployProcessorVersion(
+        UndeployProcessorVersionRequest $request,
+        array $callOptions = []
+    ): OperationResponse {
         return $this->startApiCall('UndeployProcessorVersion', $request, $callOptions)->wait();
     }
 
@@ -976,6 +1079,8 @@ final class DocumentProcessorServiceClient
      * Gets information about a location.
      *
      * The async variant is {@see DocumentProcessorServiceClient::getLocationAsync()} .
+     *
+     * @example samples/V1/DocumentProcessorServiceClient/get_location.php
      *
      * @param GetLocationRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -1001,6 +1106,8 @@ final class DocumentProcessorServiceClient
      *
      * The async variant is {@see DocumentProcessorServiceClient::listLocationsAsync()}
      * .
+     *
+     * @example samples/V1/DocumentProcessorServiceClient/list_locations.php
      *
      * @param ListLocationsRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {

@@ -17,12 +17,12 @@ class AppEngine extends \Google\Protobuf\Internal\Message
 {
     /**
      * The ID of the App Engine module underlying this service. Corresponds to
-     * the `module_id` resource label in the `gae_app` monitored resource:
-     * https://cloud.google.com/monitoring/api/resources#tag_gae_app
+     * the `module_id` resource label in the [`gae_app` monitored
+     * resource](https://cloud.google.com/monitoring/api/resources#tag_gae_app).
      *
      * Generated from protobuf field <code>string module_id = 1;</code>
      */
-    private $module_id = '';
+    protected $module_id = '';
 
     /**
      * Constructor.
@@ -32,8 +32,8 @@ class AppEngine extends \Google\Protobuf\Internal\Message
      *
      *     @type string $module_id
      *           The ID of the App Engine module underlying this service. Corresponds to
-     *           the `module_id` resource label in the `gae_app` monitored resource:
-     *           https://cloud.google.com/monitoring/api/resources#tag_gae_app
+     *           the `module_id` resource label in the [`gae_app` monitored
+     *           resource](https://cloud.google.com/monitoring/api/resources#tag_gae_app).
      * }
      */
     public function __construct($data = NULL) {
@@ -43,8 +43,8 @@ class AppEngine extends \Google\Protobuf\Internal\Message
 
     /**
      * The ID of the App Engine module underlying this service. Corresponds to
-     * the `module_id` resource label in the `gae_app` monitored resource:
-     * https://cloud.google.com/monitoring/api/resources#tag_gae_app
+     * the `module_id` resource label in the [`gae_app` monitored
+     * resource](https://cloud.google.com/monitoring/api/resources#tag_gae_app).
      *
      * Generated from protobuf field <code>string module_id = 1;</code>
      * @return string
@@ -56,8 +56,8 @@ class AppEngine extends \Google\Protobuf\Internal\Message
 
     /**
      * The ID of the App Engine module underlying this service. Corresponds to
-     * the `module_id` resource label in the `gae_app` monitored resource:
-     * https://cloud.google.com/monitoring/api/resources#tag_gae_app
+     * the `module_id` resource label in the [`gae_app` monitored
+     * resource](https://cloud.google.com/monitoring/api/resources#tag_gae_app).
      *
      * Generated from protobuf field <code>string module_id = 1;</code>
      * @param string $var
@@ -73,6 +73,4 @@ class AppEngine extends \Google\Protobuf\Internal\Message
 
 }
 
-// Adding a class alias for backwards compatibility with the previous class name.
-class_alias(AppEngine::class, \Google\Cloud\Monitoring\V3\Service_AppEngine::class);
 

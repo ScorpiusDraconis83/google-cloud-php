@@ -16,7 +16,7 @@ use Google\Protobuf\Internal\GPBUtil;
 class BigQuerySource extends \Google\Protobuf\Internal\Message
 {
     /**
-     * The project ID (can be project # or ID) that the BigQuery source is in with
+     * The project ID or the project number that contains the BigQuery source. Has
      * a length limit of 128 characters. If not specified, inherits the project
      * ID from the parent request.
      *
@@ -60,7 +60,7 @@ class BigQuerySource extends \Google\Protobuf\Internal\Message
      *   [Document.struct_data][google.cloud.discoveryengine.v1.Document.struct_data].
      * * `custom`: One custom data per row in arbitrary format that conforms to
      *   the defined [Schema][google.cloud.discoveryengine.v1.Schema] of the data
-     *   store. This can only be used by Gen App Builder.
+     *   store. This can only be used by the GENERIC Data Store vertical.
      *
      * Generated from protobuf field <code>string data_schema = 6;</code>
      */
@@ -76,7 +76,7 @@ class BigQuerySource extends \Google\Protobuf\Internal\Message
      *     @type \Google\Type\Date $partition_date
      *           BigQuery time partitioned table's _PARTITIONDATE in YYYY-MM-DD format.
      *     @type string $project_id
-     *           The project ID (can be project # or ID) that the BigQuery source is in with
+     *           The project ID or the project number that contains the BigQuery source. Has
      *           a length limit of 128 characters. If not specified, inherits the project
      *           ID from the parent request.
      *     @type string $dataset_id
@@ -104,7 +104,7 @@ class BigQuerySource extends \Google\Protobuf\Internal\Message
      *             [Document.struct_data][google.cloud.discoveryengine.v1.Document.struct_data].
      *           * `custom`: One custom data per row in arbitrary format that conforms to
      *             the defined [Schema][google.cloud.discoveryengine.v1.Schema] of the data
-     *             store. This can only be used by Gen App Builder.
+     *             store. This can only be used by the GENERIC Data Store vertical.
      * }
      */
     public function __construct($data = NULL) {
@@ -144,7 +144,7 @@ class BigQuerySource extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The project ID (can be project # or ID) that the BigQuery source is in with
+     * The project ID or the project number that contains the BigQuery source. Has
      * a length limit of 128 characters. If not specified, inherits the project
      * ID from the parent request.
      *
@@ -157,7 +157,7 @@ class BigQuerySource extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The project ID (can be project # or ID) that the BigQuery source is in with
+     * The project ID or the project number that contains the BigQuery source. Has
      * a length limit of 128 characters. If not specified, inherits the project
      * ID from the parent request.
      *
@@ -274,7 +274,7 @@ class BigQuerySource extends \Google\Protobuf\Internal\Message
      *   [Document.struct_data][google.cloud.discoveryengine.v1.Document.struct_data].
      * * `custom`: One custom data per row in arbitrary format that conforms to
      *   the defined [Schema][google.cloud.discoveryengine.v1.Schema] of the data
-     *   store. This can only be used by Gen App Builder.
+     *   store. This can only be used by the GENERIC Data Store vertical.
      *
      * Generated from protobuf field <code>string data_schema = 6;</code>
      * @return string
@@ -299,7 +299,7 @@ class BigQuerySource extends \Google\Protobuf\Internal\Message
      *   [Document.struct_data][google.cloud.discoveryengine.v1.Document.struct_data].
      * * `custom`: One custom data per row in arbitrary format that conforms to
      *   the defined [Schema][google.cloud.discoveryengine.v1.Schema] of the data
-     *   store. This can only be used by Gen App Builder.
+     *   store. This can only be used by the GENERIC Data Store vertical.
      *
      * Generated from protobuf field <code>string data_schema = 6;</code>
      * @param string $var

@@ -21,15 +21,15 @@ class CreateServiceLevelObjectiveRequest extends \Google\Protobuf\Internal\Messa
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * Optional. The ServiceLevelObjective id to use for this
      * ServiceLevelObjective. If omitted, an id will be generated instead. Must
-     * match the pattern `[a-z0-9\-]+`
+     * match the pattern `^[a-zA-Z0-9-_:.]+$`
      *
      * Generated from protobuf field <code>string service_level_objective_id = 3;</code>
      */
-    private $service_level_objective_id = '';
+    protected $service_level_objective_id = '';
     /**
      * Required. The `ServiceLevelObjective` to create.
      * The provided `name` will be respected if no `ServiceLevelObjective` exists
@@ -37,7 +37,7 @@ class CreateServiceLevelObjectiveRequest extends \Google\Protobuf\Internal\Messa
      *
      * Generated from protobuf field <code>.google.monitoring.v3.ServiceLevelObjective service_level_objective = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $service_level_objective = null;
+    protected $service_level_objective = null;
 
     /**
      * @param string                                            $parent                Required. Resource name of the parent `Service`. The format is:
@@ -71,7 +71,7 @@ class CreateServiceLevelObjectiveRequest extends \Google\Protobuf\Internal\Messa
      *     @type string $service_level_objective_id
      *           Optional. The ServiceLevelObjective id to use for this
      *           ServiceLevelObjective. If omitted, an id will be generated instead. Must
-     *           match the pattern `[a-z0-9\-]+`
+     *           match the pattern `^[a-zA-Z0-9-_:.]+$`
      *     @type \Google\Cloud\Monitoring\V3\ServiceLevelObjective $service_level_objective
      *           Required. The `ServiceLevelObjective` to create.
      *           The provided `name` will be respected if no `ServiceLevelObjective` exists
@@ -114,7 +114,7 @@ class CreateServiceLevelObjectiveRequest extends \Google\Protobuf\Internal\Messa
     /**
      * Optional. The ServiceLevelObjective id to use for this
      * ServiceLevelObjective. If omitted, an id will be generated instead. Must
-     * match the pattern `[a-z0-9\-]+`
+     * match the pattern `^[a-zA-Z0-9-_:.]+$`
      *
      * Generated from protobuf field <code>string service_level_objective_id = 3;</code>
      * @return string
@@ -127,7 +127,7 @@ class CreateServiceLevelObjectiveRequest extends \Google\Protobuf\Internal\Messa
     /**
      * Optional. The ServiceLevelObjective id to use for this
      * ServiceLevelObjective. If omitted, an id will be generated instead. Must
-     * match the pattern `[a-z0-9\-]+`
+     * match the pattern `^[a-zA-Z0-9-_:.]+$`
      *
      * Generated from protobuf field <code>string service_level_objective_id = 3;</code>
      * @param string $var

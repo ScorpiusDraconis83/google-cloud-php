@@ -25,8 +25,9 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // [START networkmanagement_v1_generated_ReachabilityService_RerunConnectivityTest_sync]
 use Google\ApiCore\ApiException;
 use Google\ApiCore\OperationResponse;
+use Google\Cloud\NetworkManagement\V1\Client\ReachabilityServiceClient;
 use Google\Cloud\NetworkManagement\V1\ConnectivityTest;
-use Google\Cloud\NetworkManagement\V1\ReachabilityServiceClient;
+use Google\Cloud\NetworkManagement\V1\RerunConnectivityTestRequest;
 use Google\Rpc\Status;
 
 /**
@@ -43,18 +44,23 @@ use Google\Rpc\Status;
  * read permissions to the network configurations of listed projects), then
  * the reachability result returns a value of `UNKNOWN`.
  *
- * @param string $name Connectivity Test resource name using the form:
- *                     `projects/{project_id}/locations/global/connectivityTests/{test_id}`
+ * @param string $formattedName Connectivity Test resource name using the form:
+ *                              `projects/{project_id}/locations/global/connectivityTests/{test_id}`
+ *                              Please see {@see ReachabilityServiceClient::connectivityTestName()} for help formatting this field.
  */
-function rerun_connectivity_test_sample(string $name): void
+function rerun_connectivity_test_sample(string $formattedName): void
 {
     // Create a client.
     $reachabilityServiceClient = new ReachabilityServiceClient();
 
+    // Prepare the request message.
+    $request = (new RerunConnectivityTestRequest())
+        ->setName($formattedName);
+
     // Call the API and handle any network failures.
     try {
         /** @var OperationResponse $response */
-        $response = $reachabilityServiceClient->rerunConnectivityTest($name);
+        $response = $reachabilityServiceClient->rerunConnectivityTest($request);
         $response->pollUntilComplete();
 
         if ($response->operationSucceeded()) {
@@ -82,8 +88,8 @@ function rerun_connectivity_test_sample(string $name): void
  */
 function callSample(): void
 {
-    $name = '[NAME]';
+    $formattedName = ReachabilityServiceClient::connectivityTestName('[PROJECT]', '[TEST]');
 
-    rerun_connectivity_test_sample($name);
+    rerun_connectivity_test_sample($formattedName);
 }
 // [END networkmanagement_v1_generated_ReachabilityService_RerunConnectivityTest_sync]

@@ -27,7 +27,6 @@ namespace Google\Cloud\Dialogflow\Cx\V3\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -53,9 +52,11 @@ use Google\Cloud\Dialogflow\Cx\V3\ValidateAgentRequest;
 use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\Location;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use Google\Protobuf\Struct;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Service for managing [Agents][google.cloud.dialogflow.cx.v3.Agent].
@@ -68,19 +69,19 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createAgentAsync(CreateAgentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteAgentAsync(DeleteAgentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface exportAgentAsync(ExportAgentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAgentAsync(GetAgentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAgentValidationResultAsync(GetAgentValidationResultRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getGenerativeSettingsAsync(GetGenerativeSettingsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listAgentsAsync(ListAgentsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface restoreAgentAsync(RestoreAgentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateAgentAsync(UpdateAgentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateGenerativeSettingsAsync(UpdateGenerativeSettingsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface validateAgentAsync(ValidateAgentRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Agent> createAgentAsync(CreateAgentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteAgentAsync(DeleteAgentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> exportAgentAsync(ExportAgentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Agent> getAgentAsync(GetAgentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AgentValidationResult> getAgentValidationResultAsync(GetAgentValidationResultRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<GenerativeSettings> getGenerativeSettingsAsync(GetGenerativeSettingsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listAgentsAsync(ListAgentsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> restoreAgentAsync(RestoreAgentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Agent> updateAgentAsync(UpdateAgentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<GenerativeSettings> updateGenerativeSettingsAsync(UpdateGenerativeSettingsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AgentValidationResult> validateAgentAsync(ValidateAgentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
  */
 final class AgentsClient
 {
@@ -162,6 +163,25 @@ final class AgentsClient
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -286,6 +306,25 @@ final class AgentsClient
 
     /**
      * Formats a string containing the fully-qualified path to represent a
+     * secret_version resource.
+     *
+     * @param string $project
+     * @param string $secret
+     * @param string $version
+     *
+     * @return string The formatted secret_version resource.
+     */
+    public static function secretVersionName(string $project, string $secret, string $version): string
+    {
+        return self::getPathTemplate('secretVersion')->render([
+            'project' => $project,
+            'secret' => $secret,
+            'version' => $version,
+        ]);
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
      * security_settings resource.
      *
      * @param string $project
@@ -313,6 +352,7 @@ final class AgentsClient
      * - environment: projects/{project}/locations/{location}/agents/{agent}/environments/{environment}
      * - flow: projects/{project}/locations/{location}/agents/{agent}/flows/{flow}
      * - location: projects/{project}/locations/{location}
+     * - secretVersion: projects/{project}/secrets/{secret}/versions/{version}
      * - securitySettings: projects/{project}/locations/{location}/securitySettings/{security_settings}
      *
      * The optional $template argument can be supplied to specify a particular pattern,
@@ -321,14 +361,14 @@ final class AgentsClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -350,6 +390,12 @@ final class AgentsClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -383,6 +429,9 @@ final class AgentsClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException

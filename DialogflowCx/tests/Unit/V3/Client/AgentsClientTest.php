@@ -24,7 +24,6 @@ namespace Google\Cloud\Dialogflow\Cx\Tests\Unit\V3\Client;
 
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\Testing\GeneratedTest;
 use Google\ApiCore\Testing\MockTransport;
 use Google\Cloud\Dialogflow\Cx\V3\Agent;
@@ -48,6 +47,7 @@ use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\ListLocationsResponse;
 use Google\Cloud\Location\Location;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\GetOperationRequest;
 use Google\LongRunning\Operation;
 use Google\Protobuf\Any;
@@ -104,6 +104,7 @@ class AgentsClientTest extends GeneratedTest
         $securitySettings = 'securitySettings-595091902';
         $enableStackdriverLogging = true;
         $enableSpellCorrection = false;
+        $enableMultiLanguageTraining = false;
         $locked = true;
         $expectedResponse = new Agent();
         $expectedResponse->setName($name);
@@ -116,6 +117,7 @@ class AgentsClientTest extends GeneratedTest
         $expectedResponse->setSecuritySettings($securitySettings);
         $expectedResponse->setEnableStackdriverLogging($enableStackdriverLogging);
         $expectedResponse->setEnableSpellCorrection($enableSpellCorrection);
+        $expectedResponse->setEnableMultiLanguageTraining($enableMultiLanguageTraining);
         $expectedResponse->setLocked($locked);
         $transport->addResponse($expectedResponse);
         // Mock request
@@ -391,6 +393,7 @@ class AgentsClientTest extends GeneratedTest
         $securitySettings = 'securitySettings-595091902';
         $enableStackdriverLogging = true;
         $enableSpellCorrection = false;
+        $enableMultiLanguageTraining = false;
         $locked = true;
         $expectedResponse = new Agent();
         $expectedResponse->setName($name2);
@@ -403,6 +406,7 @@ class AgentsClientTest extends GeneratedTest
         $expectedResponse->setSecuritySettings($securitySettings);
         $expectedResponse->setEnableStackdriverLogging($enableStackdriverLogging);
         $expectedResponse->setEnableSpellCorrection($enableSpellCorrection);
+        $expectedResponse->setEnableMultiLanguageTraining($enableMultiLanguageTraining);
         $expectedResponse->setLocked($locked);
         $transport->addResponse($expectedResponse);
         // Mock request
@@ -805,6 +809,7 @@ class AgentsClientTest extends GeneratedTest
         $securitySettings = 'securitySettings-595091902';
         $enableStackdriverLogging = true;
         $enableSpellCorrection = false;
+        $enableMultiLanguageTraining = false;
         $locked = true;
         $expectedResponse = new Agent();
         $expectedResponse->setName($name);
@@ -817,6 +822,7 @@ class AgentsClientTest extends GeneratedTest
         $expectedResponse->setSecuritySettings($securitySettings);
         $expectedResponse->setEnableStackdriverLogging($enableStackdriverLogging);
         $expectedResponse->setEnableSpellCorrection($enableSpellCorrection);
+        $expectedResponse->setEnableMultiLanguageTraining($enableMultiLanguageTraining);
         $expectedResponse->setLocked($locked);
         $transport->addResponse($expectedResponse);
         // Mock request
@@ -1162,6 +1168,7 @@ class AgentsClientTest extends GeneratedTest
         $securitySettings = 'securitySettings-595091902';
         $enableStackdriverLogging = true;
         $enableSpellCorrection = false;
+        $enableMultiLanguageTraining = false;
         $locked = true;
         $expectedResponse = new Agent();
         $expectedResponse->setName($name);
@@ -1174,6 +1181,7 @@ class AgentsClientTest extends GeneratedTest
         $expectedResponse->setSecuritySettings($securitySettings);
         $expectedResponse->setEnableStackdriverLogging($enableStackdriverLogging);
         $expectedResponse->setEnableSpellCorrection($enableSpellCorrection);
+        $expectedResponse->setEnableMultiLanguageTraining($enableMultiLanguageTraining);
         $expectedResponse->setLocked($locked);
         $transport->addResponse($expectedResponse);
         // Mock request

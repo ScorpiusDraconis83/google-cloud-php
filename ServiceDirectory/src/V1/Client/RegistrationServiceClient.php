@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ use Google\Cloud\ServiceDirectory\V1\UpdateEndpointRequest;
 use Google\Cloud\ServiceDirectory\V1\UpdateNamespaceRequest;
 use Google\Cloud\ServiceDirectory\V1\UpdateServiceRequest;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Service Directory API for registering services. It defines the following
@@ -86,26 +87,26 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createEndpointAsync(CreateEndpointRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createNamespaceAsync(CreateNamespaceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createServiceAsync(CreateServiceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteEndpointAsync(DeleteEndpointRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteNamespaceAsync(DeleteNamespaceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteServiceAsync(DeleteServiceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getEndpointAsync(GetEndpointRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getNamespaceAsync(GetNamespaceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getServiceAsync(GetServiceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listEndpointsAsync(ListEndpointsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listNamespacesAsync(ListNamespacesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listServicesAsync(ListServicesRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateEndpointAsync(UpdateEndpointRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateNamespaceAsync(UpdateNamespaceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateServiceAsync(UpdateServiceRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Endpoint> createEndpointAsync(CreateEndpointRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PBNamespace> createNamespaceAsync(CreateNamespaceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Service> createServiceAsync(CreateServiceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteEndpointAsync(DeleteEndpointRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteNamespaceAsync(DeleteNamespaceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteServiceAsync(DeleteServiceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Endpoint> getEndpointAsync(GetEndpointRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PBNamespace> getNamespaceAsync(GetNamespaceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Service> getServiceAsync(GetServiceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listEndpointsAsync(ListEndpointsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listNamespacesAsync(ListNamespacesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listServicesAsync(ListServicesRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Endpoint> updateEndpointAsync(UpdateEndpointRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PBNamespace> updateNamespaceAsync(UpdateNamespaceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Service> updateServiceAsync(UpdateServiceRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
  */
 final class RegistrationServiceClient
 {
@@ -132,9 +133,7 @@ final class RegistrationServiceClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private static function getClientDefaults()
     {
@@ -167,8 +166,13 @@ final class RegistrationServiceClient
      *
      * @return string The formatted endpoint resource.
      */
-    public static function endpointName(string $project, string $location, string $namespace, string $service, string $endpoint): string
-    {
+    public static function endpointName(
+        string $project,
+        string $location,
+        string $namespace,
+        string $service,
+        string $endpoint
+    ): string {
         return self::getPathTemplate('endpoint')->render([
             'project' => $project,
             'location' => $location,
@@ -268,14 +272,14 @@ final class RegistrationServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -297,6 +301,12 @@ final class RegistrationServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -330,6 +340,9 @@ final class RegistrationServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -356,6 +369,8 @@ final class RegistrationServiceClient
      *
      * The async variant is {@see RegistrationServiceClient::createEndpointAsync()} .
      *
+     * @example samples/V1/RegistrationServiceClient/create_endpoint.php
+     *
      * @param CreateEndpointRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -379,6 +394,8 @@ final class RegistrationServiceClient
      * Creates a namespace, and returns the new namespace.
      *
      * The async variant is {@see RegistrationServiceClient::createNamespaceAsync()} .
+     *
+     * @example samples/V1/RegistrationServiceClient/create_namespace.php
      *
      * @param CreateNamespaceRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -404,6 +421,8 @@ final class RegistrationServiceClient
      *
      * The async variant is {@see RegistrationServiceClient::createServiceAsync()} .
      *
+     * @example samples/V1/RegistrationServiceClient/create_service.php
+     *
      * @param CreateServiceRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -428,6 +447,8 @@ final class RegistrationServiceClient
      *
      * The async variant is {@see RegistrationServiceClient::deleteEndpointAsync()} .
      *
+     * @example samples/V1/RegistrationServiceClient/delete_endpoint.php
+     *
      * @param DeleteEndpointRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -450,6 +471,8 @@ final class RegistrationServiceClient
      * the namespace.
      *
      * The async variant is {@see RegistrationServiceClient::deleteNamespaceAsync()} .
+     *
+     * @example samples/V1/RegistrationServiceClient/delete_namespace.php
      *
      * @param DeleteNamespaceRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
@@ -474,6 +497,8 @@ final class RegistrationServiceClient
      *
      * The async variant is {@see RegistrationServiceClient::deleteServiceAsync()} .
      *
+     * @example samples/V1/RegistrationServiceClient/delete_service.php
+     *
      * @param DeleteServiceRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -495,6 +520,8 @@ final class RegistrationServiceClient
      * Gets an endpoint.
      *
      * The async variant is {@see RegistrationServiceClient::getEndpointAsync()} .
+     *
+     * @example samples/V1/RegistrationServiceClient/get_endpoint.php
      *
      * @param GetEndpointRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -520,6 +547,8 @@ final class RegistrationServiceClient
      *
      * The async variant is {@see RegistrationServiceClient::getIamPolicyAsync()} .
      *
+     * @example samples/V1/RegistrationServiceClient/get_iam_policy.php
+     *
      * @param GetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -543,6 +572,8 @@ final class RegistrationServiceClient
      * Gets a namespace.
      *
      * The async variant is {@see RegistrationServiceClient::getNamespaceAsync()} .
+     *
+     * @example samples/V1/RegistrationServiceClient/get_namespace.php
      *
      * @param GetNamespaceRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -568,6 +599,8 @@ final class RegistrationServiceClient
      *
      * The async variant is {@see RegistrationServiceClient::getServiceAsync()} .
      *
+     * @example samples/V1/RegistrationServiceClient/get_service.php
+     *
      * @param GetServiceRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -591,6 +624,8 @@ final class RegistrationServiceClient
      * Lists all endpoints.
      *
      * The async variant is {@see RegistrationServiceClient::listEndpointsAsync()} .
+     *
+     * @example samples/V1/RegistrationServiceClient/list_endpoints.php
      *
      * @param ListEndpointsRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -616,6 +651,8 @@ final class RegistrationServiceClient
      *
      * The async variant is {@see RegistrationServiceClient::listNamespacesAsync()} .
      *
+     * @example samples/V1/RegistrationServiceClient/list_namespaces.php
+     *
      * @param ListNamespacesRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
      *     Optional.
@@ -640,6 +677,8 @@ final class RegistrationServiceClient
      *
      * The async variant is {@see RegistrationServiceClient::listServicesAsync()} .
      *
+     * @example samples/V1/RegistrationServiceClient/list_services.php
+     *
      * @param ListServicesRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
      *     Optional.
@@ -663,6 +702,8 @@ final class RegistrationServiceClient
      * Sets the IAM Policy for a resource (namespace or service only).
      *
      * The async variant is {@see RegistrationServiceClient::setIamPolicyAsync()} .
+     *
+     * @example samples/V1/RegistrationServiceClient/set_iam_policy.php
      *
      * @param SetIamPolicyRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -689,6 +730,8 @@ final class RegistrationServiceClient
      * The async variant is {@see RegistrationServiceClient::testIamPermissionsAsync()}
      * .
      *
+     * @example samples/V1/RegistrationServiceClient/test_iam_permissions.php
+     *
      * @param TestIamPermissionsRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -703,8 +746,10 @@ final class RegistrationServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function testIamPermissions(TestIamPermissionsRequest $request, array $callOptions = []): TestIamPermissionsResponse
-    {
+    public function testIamPermissions(
+        TestIamPermissionsRequest $request,
+        array $callOptions = []
+    ): TestIamPermissionsResponse {
         return $this->startApiCall('TestIamPermissions', $request, $callOptions)->wait();
     }
 
@@ -712,6 +757,8 @@ final class RegistrationServiceClient
      * Updates an endpoint.
      *
      * The async variant is {@see RegistrationServiceClient::updateEndpointAsync()} .
+     *
+     * @example samples/V1/RegistrationServiceClient/update_endpoint.php
      *
      * @param UpdateEndpointRequest $request     A request to house fields associated with the call.
      * @param array                 $callOptions {
@@ -737,6 +784,8 @@ final class RegistrationServiceClient
      *
      * The async variant is {@see RegistrationServiceClient::updateNamespaceAsync()} .
      *
+     * @example samples/V1/RegistrationServiceClient/update_namespace.php
+     *
      * @param UpdateNamespaceRequest $request     A request to house fields associated with the call.
      * @param array                  $callOptions {
      *     Optional.
@@ -760,6 +809,8 @@ final class RegistrationServiceClient
      * Updates a service.
      *
      * The async variant is {@see RegistrationServiceClient::updateServiceAsync()} .
+     *
+     * @example samples/V1/RegistrationServiceClient/update_service.php
      *
      * @param UpdateServiceRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -785,6 +836,8 @@ final class RegistrationServiceClient
      *
      * The async variant is {@see RegistrationServiceClient::getLocationAsync()} .
      *
+     * @example samples/V1/RegistrationServiceClient/get_location.php
+     *
      * @param GetLocationRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -808,6 +861,8 @@ final class RegistrationServiceClient
      * Lists information about the supported locations for this service.
      *
      * The async variant is {@see RegistrationServiceClient::listLocationsAsync()} .
+     *
+     * @example samples/V1/RegistrationServiceClient/list_locations.php
      *
      * @param ListLocationsRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {

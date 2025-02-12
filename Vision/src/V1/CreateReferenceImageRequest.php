@@ -16,20 +16,21 @@ use Google\Protobuf\Internal\GPBUtil;
 class CreateReferenceImageRequest extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Required. Resource name of the product in which to create the reference image.
+     * Required. Resource name of the product in which to create the reference
+     * image.
      * Format is
      * `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * Required. The reference image to create.
      * If an image ID is specified, it is ignored.
      *
      * Generated from protobuf field <code>.google.cloud.vision.v1.ReferenceImage reference_image = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $reference_image = null;
+    protected $reference_image = null;
     /**
      * A user-supplied resource id for the ReferenceImage to be added. If set,
      * the server will attempt to use this value as the resource id. If it is
@@ -38,10 +39,11 @@ class CreateReferenceImageRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string reference_image_id = 3;</code>
      */
-    private $reference_image_id = '';
+    protected $reference_image_id = '';
 
     /**
-     * @param string                                 $parent           Required. Resource name of the product in which to create the reference image.
+     * @param string                                 $parent           Required. Resource name of the product in which to create the reference
+     *                                                                 image.
      *
      *                                                                 Format is
      *                                                                 `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`. Please see
@@ -72,7 +74,8 @@ class CreateReferenceImageRequest extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type string $parent
-     *           Required. Resource name of the product in which to create the reference image.
+     *           Required. Resource name of the product in which to create the reference
+     *           image.
      *           Format is
      *           `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.
      *     @type \Google\Cloud\Vision\V1\ReferenceImage $reference_image
@@ -91,7 +94,8 @@ class CreateReferenceImageRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. Resource name of the product in which to create the reference image.
+     * Required. Resource name of the product in which to create the reference
+     * image.
      * Format is
      * `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.
      *
@@ -104,7 +108,8 @@ class CreateReferenceImageRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. Resource name of the product in which to create the reference image.
+     * Required. Resource name of the product in which to create the reference
+     * image.
      * Format is
      * `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.
      *

@@ -23,7 +23,24 @@ class GetAccessBindingRequest extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $name = '';
+    protected $name = '';
+
+    /**
+     * @param string $name Required. The name of the access binding to retrieve.
+     *                     Formats:
+     *                     - accounts/{account}/accessBindings/{accessBinding}
+     *                     - properties/{property}/accessBindings/{accessBinding}
+     *                     Please see {@see AnalyticsAdminServiceClient::accessBindingName()} for help formatting this field.
+     *
+     * @return \Google\Analytics\Admin\V1alpha\GetAccessBindingRequest
+     *
+     * @experimental
+     */
+    public static function build(string $name): self
+    {
+        return (new self())
+            ->setName($name);
+    }
 
     /**
      * Constructor.

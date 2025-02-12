@@ -16,30 +16,32 @@ use Google\Protobuf\Internal\GPBUtil;
 class CreateServiceRequest extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Required. Resource [name](https://cloud.google.com/monitoring/api/v3#project_name) of
-     * the parent workspace. The format is:
+     * Required. Resource
+     * [name](https://cloud.google.com/monitoring/api/v3#project_name) of the
+     * parent Metrics Scope. The format is:
      *     projects/[PROJECT_ID_OR_NUMBER]
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * Optional. The Service id to use for this Service. If omitted, an id will be
      * generated instead. Must match the pattern `[a-z0-9\-]+`
      *
      * Generated from protobuf field <code>string service_id = 3;</code>
      */
-    private $service_id = '';
+    protected $service_id = '';
     /**
      * Required. The `Service` to create.
      *
      * Generated from protobuf field <code>.google.monitoring.v3.Service service = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $service = null;
+    protected $service = null;
 
     /**
-     * @param string                              $parent  Required. Resource [name](https://cloud.google.com/monitoring/api/v3#project_name) of
-     *                                                     the parent workspace. The format is:
+     * @param string                              $parent  Required. Resource
+     *                                                     [name](https://cloud.google.com/monitoring/api/v3#project_name) of the
+     *                                                     parent Metrics Scope. The format is:
      *
      *                                                     projects/[PROJECT_ID_OR_NUMBER]
      * @param \Google\Cloud\Monitoring\V3\Service $service Required. The `Service` to create.
@@ -62,8 +64,9 @@ class CreateServiceRequest extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type string $parent
-     *           Required. Resource [name](https://cloud.google.com/monitoring/api/v3#project_name) of
-     *           the parent workspace. The format is:
+     *           Required. Resource
+     *           [name](https://cloud.google.com/monitoring/api/v3#project_name) of the
+     *           parent Metrics Scope. The format is:
      *               projects/[PROJECT_ID_OR_NUMBER]
      *     @type string $service_id
      *           Optional. The Service id to use for this Service. If omitted, an id will be
@@ -78,8 +81,9 @@ class CreateServiceRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. Resource [name](https://cloud.google.com/monitoring/api/v3#project_name) of
-     * the parent workspace. The format is:
+     * Required. Resource
+     * [name](https://cloud.google.com/monitoring/api/v3#project_name) of the
+     * parent Metrics Scope. The format is:
      *     projects/[PROJECT_ID_OR_NUMBER]
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
@@ -91,8 +95,9 @@ class CreateServiceRequest extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Required. Resource [name](https://cloud.google.com/monitoring/api/v3#project_name) of
-     * the parent workspace. The format is:
+     * Required. Resource
+     * [name](https://cloud.google.com/monitoring/api/v3#project_name) of the
+     * parent Metrics Scope. The format is:
      *     projects/[PROJECT_ID_OR_NUMBER]
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>

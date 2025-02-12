@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,9 +44,11 @@ use Google\Cloud\AIPlatform\V1\DirectRawPredictResponse;
 use Google\Cloud\AIPlatform\V1\ExplainRequest;
 use Google\Cloud\AIPlatform\V1\ExplainResponse;
 use Google\Cloud\AIPlatform\V1\GenerateContentRequest;
+use Google\Cloud\AIPlatform\V1\GenerateContentResponse;
 use Google\Cloud\AIPlatform\V1\PredictRequest;
 use Google\Cloud\AIPlatform\V1\PredictResponse;
 use Google\Cloud\AIPlatform\V1\RawPredictRequest;
+use Google\Cloud\AIPlatform\V1\StreamRawPredictRequest;
 use Google\Cloud\AIPlatform\V1\StreamingPredictRequest;
 use Google\Cloud\Iam\V1\GetIamPolicyRequest;
 use Google\Cloud\Iam\V1\Policy;
@@ -57,6 +59,7 @@ use Google\Cloud\Location\GetLocationRequest;
 use Google\Cloud\Location\ListLocationsRequest;
 use Google\Cloud\Location\Location;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: A service for online predictions and explanations.
@@ -69,16 +72,17 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface directPredictAsync(DirectPredictRequest $request, array $optionalArgs = [])
- * @method PromiseInterface directRawPredictAsync(DirectRawPredictRequest $request, array $optionalArgs = [])
- * @method PromiseInterface explainAsync(ExplainRequest $request, array $optionalArgs = [])
- * @method PromiseInterface predictAsync(PredictRequest $request, array $optionalArgs = [])
- * @method PromiseInterface rawPredictAsync(RawPredictRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
- * @method PromiseInterface testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DirectPredictResponse> directPredictAsync(DirectPredictRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<DirectRawPredictResponse> directRawPredictAsync(DirectRawPredictRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ExplainResponse> explainAsync(ExplainRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<GenerateContentResponse> generateContentAsync(GenerateContentRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PredictResponse> predictAsync(PredictRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<HttpBody> rawPredictAsync(RawPredictRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> getIamPolicyAsync(GetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Policy> setIamPolicyAsync(SetIamPolicyRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<TestIamPermissionsResponse> testIamPermissionsAsync(TestIamPermissionsRequest $request, array $optionalArgs = [])
  */
 final class PredictionServiceClient
 {
@@ -107,6 +111,7 @@ final class PredictionServiceClient
     /** The default scopes required by the service. */
     public static $serviceScopes = [
         'https://www.googleapis.com/auth/cloud-platform',
+        'https://www.googleapis.com/auth/cloud-platform.read-only',
     ];
 
     private static function getClientDefaults()
@@ -126,6 +131,25 @@ final class PredictionServiceClient
                 ],
             ],
         ];
+    }
+
+    /**
+     * Formats a string containing the fully-qualified path to represent a
+     * cached_content resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $cachedContent
+     *
+     * @return string The formatted cached_content resource.
+     */
+    public static function cachedContentName(string $project, string $location, string $cachedContent): string
+    {
+        return self::getPathTemplate('cachedContent')->render([
+            'project' => $project,
+            'location' => $location,
+            'cached_content' => $cachedContent,
+        ]);
     }
 
     /**
@@ -177,8 +201,12 @@ final class PredictionServiceClient
      *
      * @return string The formatted project_location_publisher_model resource.
      */
-    public static function projectLocationPublisherModelName(string $project, string $location, string $publisher, string $model): string
-    {
+    public static function projectLocationPublisherModelName(
+        string $project,
+        string $location,
+        string $publisher,
+        string $model
+    ): string {
         return self::getPathTemplate('projectLocationPublisherModel')->render([
             'project' => $project,
             'location' => $location,
@@ -188,12 +216,33 @@ final class PredictionServiceClient
     }
 
     /**
+     * Formats a string containing the fully-qualified path to represent a rag_corpus
+     * resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $ragCorpus
+     *
+     * @return string The formatted rag_corpus resource.
+     */
+    public static function ragCorpusName(string $project, string $location, string $ragCorpus): string
+    {
+        return self::getPathTemplate('ragCorpus')->render([
+            'project' => $project,
+            'location' => $location,
+            'rag_corpus' => $ragCorpus,
+        ]);
+    }
+
+    /**
      * Parses a formatted name string and returns an associative array of the components in the name.
      * The following name formats are supported:
      * Template: Pattern
+     * - cachedContent: projects/{project}/locations/{location}/cachedContents/{cached_content}
      * - endpoint: projects/{project}/locations/{location}/endpoints/{endpoint}
      * - projectLocationEndpoint: projects/{project}/locations/{location}/endpoints/{endpoint}
      * - projectLocationPublisherModel: projects/{project}/locations/{location}/publishers/{publisher}/models/{model}
+     * - ragCorpus: projects/{project}/locations/{location}/ragCorpora/{rag_corpus}
      *
      * The optional $template argument can be supplied to specify a particular pattern,
      * and must match one of the templates listed above. If no $template argument is
@@ -201,14 +250,14 @@ final class PredictionServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -230,6 +279,12 @@ final class PredictionServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -263,6 +318,9 @@ final class PredictionServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -285,8 +343,8 @@ final class PredictionServiceClient
     }
 
     /**
-     * Perform an unary online prediction request for Vertex first-party products
-     * and frameworks.
+     * Perform an unary online prediction request to a gRPC model server for
+     * Vertex first-party products and frameworks.
      *
      * The async variant is {@see PredictionServiceClient::directPredictAsync()} .
      *
@@ -312,7 +370,8 @@ final class PredictionServiceClient
     }
 
     /**
-     * Perform an online prediction request through gRPC.
+     * Perform an unary online prediction request to a gRPC model server for
+     * custom containers.
      *
      * The async variant is {@see PredictionServiceClient::directRawPredictAsync()} .
      *
@@ -332,8 +391,10 @@ final class PredictionServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function directRawPredict(DirectRawPredictRequest $request, array $callOptions = []): DirectRawPredictResponse
-    {
+    public function directRawPredict(
+        DirectRawPredictRequest $request,
+        array $callOptions = []
+    ): DirectRawPredictResponse {
         return $this->startApiCall('DirectRawPredict', $request, $callOptions)->wait();
     }
 
@@ -371,6 +432,32 @@ final class PredictionServiceClient
     public function explain(ExplainRequest $request, array $callOptions = []): ExplainResponse
     {
         return $this->startApiCall('Explain', $request, $callOptions)->wait();
+    }
+
+    /**
+     * Generate content with multimodal inputs.
+     *
+     * The async variant is {@see PredictionServiceClient::generateContentAsync()} .
+     *
+     * @example samples/V1/PredictionServiceClient/generate_content.php
+     *
+     * @param GenerateContentRequest $request     A request to house fields associated with the call.
+     * @param array                  $callOptions {
+     *     Optional.
+     *
+     *     @type RetrySettings|array $retrySettings
+     *           Retry settings to use for this call. Can be a {@see RetrySettings} object, or an
+     *           associative array of retry settings parameters. See the documentation on
+     *           {@see RetrySettings} for example usage.
+     * }
+     *
+     * @return GenerateContentResponse
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function generateContent(GenerateContentRequest $request, array $callOptions = []): GenerateContentResponse
+    {
+        return $this->startApiCall('GenerateContent', $request, $callOptions)->wait();
     }
 
     /**
@@ -459,6 +546,50 @@ final class PredictionServiceClient
     }
 
     /**
+     * Perform a streaming online prediction request to a gRPC model server for
+     * Vertex first-party products and frameworks.
+     *
+     * @example samples/V1/PredictionServiceClient/stream_direct_predict.php
+     *
+     * @param array $callOptions {
+     *     Optional.
+     *
+     *     @type int $timeoutMillis
+     *           Timeout to use for this call.
+     * }
+     *
+     * @return BidiStream
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function streamDirectPredict(array $callOptions = []): BidiStream
+    {
+        return $this->startApiCall('StreamDirectPredict', null, $callOptions);
+    }
+
+    /**
+     * Perform a streaming online prediction request to a gRPC model server for
+     * custom containers.
+     *
+     * @example samples/V1/PredictionServiceClient/stream_direct_raw_predict.php
+     *
+     * @param array $callOptions {
+     *     Optional.
+     *
+     *     @type int $timeoutMillis
+     *           Timeout to use for this call.
+     * }
+     *
+     * @return BidiStream
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function streamDirectRawPredict(array $callOptions = []): BidiStream
+    {
+        return $this->startApiCall('StreamDirectRawPredict', null, $callOptions);
+    }
+
+    /**
      * Generate content with multimodal inputs with streaming support.
      *
      * @example samples/V1/PredictionServiceClient/stream_generate_content.php
@@ -478,6 +609,28 @@ final class PredictionServiceClient
     public function streamGenerateContent(GenerateContentRequest $request, array $callOptions = []): ServerStream
     {
         return $this->startApiCall('StreamGenerateContent', $request, $callOptions);
+    }
+
+    /**
+     * Perform a streaming online prediction with an arbitrary HTTP payload.
+     *
+     * @example samples/V1/PredictionServiceClient/stream_raw_predict.php
+     *
+     * @param StreamRawPredictRequest $request     A request to house fields associated with the call.
+     * @param array                   $callOptions {
+     *     Optional.
+     *
+     *     @type int $timeoutMillis
+     *           Timeout to use for this call.
+     * }
+     *
+     * @return ServerStream
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function streamRawPredict(StreamRawPredictRequest $request, array $callOptions = []): ServerStream
+    {
+        return $this->startApiCall('StreamRawPredict', $request, $callOptions);
     }
 
     /**
@@ -659,8 +812,10 @@ final class PredictionServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function testIamPermissions(TestIamPermissionsRequest $request, array $callOptions = []): TestIamPermissionsResponse
-    {
+    public function testIamPermissions(
+        TestIamPermissionsRequest $request,
+        array $callOptions = []
+    ): TestIamPermissionsResponse {
         return $this->startApiCall('TestIamPermissions', $request, $callOptions)->wait();
     }
 }

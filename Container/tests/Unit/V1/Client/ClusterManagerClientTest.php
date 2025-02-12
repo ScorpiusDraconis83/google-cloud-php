@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,7 +99,9 @@ class ClusterManagerClientTest extends GeneratedTest
     /** @return CredentialsWrapper */
     private function createCredentials()
     {
-        return $this->getMockBuilder(CredentialsWrapper::class)->disableOriginalConstructor()->getMock();
+        return $this->getMockBuilder(CredentialsWrapper::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /** @return ClusterManagerClient */
@@ -143,12 +145,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new CancelOperationRequest();
         try {
@@ -199,12 +204,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new CheckAutopilotCompatibilityRequest();
         try {
@@ -271,12 +279,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new CompleteIPRotationRequest();
         try {
@@ -324,12 +335,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new CompleteNodePoolUpgradeRequest();
         try {
@@ -376,8 +390,7 @@ class ClusterManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $cluster = new Cluster();
-        $request = (new CreateClusterRequest())
-            ->setCluster($cluster);
+        $request = (new CreateClusterRequest())->setCluster($cluster);
         $response = $gapicClient->createCluster($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -401,17 +414,19 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $cluster = new Cluster();
-        $request = (new CreateClusterRequest())
-            ->setCluster($cluster);
+        $request = (new CreateClusterRequest())->setCluster($cluster);
         try {
             $gapicClient->createCluster($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -456,8 +471,7 @@ class ClusterManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $nodePool = new NodePool();
-        $request = (new CreateNodePoolRequest())
-            ->setNodePool($nodePool);
+        $request = (new CreateNodePoolRequest())->setNodePool($nodePool);
         $response = $gapicClient->createNodePool($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -481,17 +495,19 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $nodePool = new NodePool();
-        $request = (new CreateNodePoolRequest())
-            ->setNodePool($nodePool);
+        $request = (new CreateNodePoolRequest())->setNodePool($nodePool);
         try {
             $gapicClient->createNodePool($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -556,12 +572,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new DeleteClusterRequest();
         try {
@@ -628,12 +647,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new DeleteNodePoolRequest();
         try {
@@ -685,6 +707,8 @@ class ClusterManagerClientTest extends GeneratedTest
         $tpuIpv4CidrBlock = 'tpuIpv4CidrBlock1137906646';
         $id = 'id3355';
         $etag = 'etag3123477';
+        $satisfiesPzs = false;
+        $satisfiesPzi = false;
         $expectedResponse = new Cluster();
         $expectedResponse->setName($name2);
         $expectedResponse->setDescription($description);
@@ -713,6 +737,8 @@ class ClusterManagerClientTest extends GeneratedTest
         $expectedResponse->setTpuIpv4CidrBlock($tpuIpv4CidrBlock);
         $expectedResponse->setId($id);
         $expectedResponse->setEtag($etag);
+        $expectedResponse->setSatisfiesPzs($satisfiesPzs);
+        $expectedResponse->setSatisfiesPzi($satisfiesPzi);
         $transport->addResponse($expectedResponse);
         $request = new GetClusterRequest();
         $response = $gapicClient->getCluster($request);
@@ -736,12 +762,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new GetClusterRequest();
         try {
@@ -790,12 +819,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new GetJSONWebKeysRequest();
         try {
@@ -858,12 +890,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new GetNodePoolRequest();
         try {
@@ -930,12 +965,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new \Google\Cloud\Container\V1\GetOperationRequest();
         try {
@@ -988,12 +1026,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new GetServerConfigRequest();
         try {
@@ -1042,12 +1083,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new ListClustersRequest();
         try {
@@ -1096,12 +1140,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new ListNodePoolsRequest();
         try {
@@ -1150,12 +1197,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new ListOperationsRequest();
         try {
@@ -1182,9 +1232,7 @@ class ClusterManagerClientTest extends GeneratedTest
         // Mock response
         $nextPageToken = '';
         $subnetworksElement = new UsableSubnetwork();
-        $subnetworks = [
-            $subnetworksElement,
-        ];
+        $subnetworks = [$subnetworksElement];
         $expectedResponse = new ListUsableSubnetworksResponse();
         $expectedResponse->setNextPageToken($nextPageToken);
         $expectedResponse->setSubnetworks($subnetworks);
@@ -1214,12 +1262,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new ListUsableSubnetworksRequest();
         try {
@@ -1286,12 +1337,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new RollbackNodePoolUpgradeRequest();
         try {
@@ -1338,8 +1392,7 @@ class ClusterManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $addonsConfig = new AddonsConfig();
-        $request = (new SetAddonsConfigRequest())
-            ->setAddonsConfig($addonsConfig);
+        $request = (new SetAddonsConfigRequest())->setAddonsConfig($addonsConfig);
         $response = $gapicClient->setAddonsConfig($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1363,17 +1416,19 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $addonsConfig = new AddonsConfig();
-        $request = (new SetAddonsConfigRequest())
-            ->setAddonsConfig($addonsConfig);
+        $request = (new SetAddonsConfigRequest())->setAddonsConfig($addonsConfig);
         try {
             $gapicClient->setAddonsConfig($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1422,9 +1477,7 @@ class ClusterManagerClientTest extends GeneratedTest
             'resourceLabelsKey' => $resourceLabelsValue,
         ];
         $labelFingerprint = 'labelFingerprint714995737';
-        $request = (new SetLabelsRequest())
-            ->setResourceLabels($resourceLabels)
-            ->setLabelFingerprint($labelFingerprint);
+        $request = (new SetLabelsRequest())->setResourceLabels($resourceLabels)->setLabelFingerprint($labelFingerprint);
         $response = $gapicClient->setLabels($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1450,12 +1503,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $resourceLabelsValue = 'resourceLabelsValue-1244473404';
@@ -1463,9 +1519,7 @@ class ClusterManagerClientTest extends GeneratedTest
             'resourceLabelsKey' => $resourceLabelsValue,
         ];
         $labelFingerprint = 'labelFingerprint714995737';
-        $request = (new SetLabelsRequest())
-            ->setResourceLabels($resourceLabels)
-            ->setLabelFingerprint($labelFingerprint);
+        $request = (new SetLabelsRequest())->setResourceLabels($resourceLabels)->setLabelFingerprint($labelFingerprint);
         try {
             $gapicClient->setLabels($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1510,8 +1564,7 @@ class ClusterManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $enabled = false;
-        $request = (new SetLegacyAbacRequest())
-            ->setEnabled($enabled);
+        $request = (new SetLegacyAbacRequest())->setEnabled($enabled);
         $response = $gapicClient->setLegacyAbac($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1535,17 +1588,19 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $enabled = false;
-        $request = (new SetLegacyAbacRequest())
-            ->setEnabled($enabled);
+        $request = (new SetLegacyAbacRequest())->setEnabled($enabled);
         try {
             $gapicClient->setLegacyAbac($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1590,8 +1645,7 @@ class ClusterManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $locations = [];
-        $request = (new SetLocationsRequest())
-            ->setLocations($locations);
+        $request = (new SetLocationsRequest())->setLocations($locations);
         $response = $gapicClient->setLocations($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1615,17 +1669,19 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $locations = [];
-        $request = (new SetLocationsRequest())
-            ->setLocations($locations);
+        $request = (new SetLocationsRequest())->setLocations($locations);
         try {
             $gapicClient->setLocations($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1670,8 +1726,7 @@ class ClusterManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $loggingService = 'loggingService-1700501035';
-        $request = (new SetLoggingServiceRequest())
-            ->setLoggingService($loggingService);
+        $request = (new SetLoggingServiceRequest())->setLoggingService($loggingService);
         $response = $gapicClient->setLoggingService($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1695,17 +1750,19 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $loggingService = 'loggingService-1700501035';
-        $request = (new SetLoggingServiceRequest())
-            ->setLoggingService($loggingService);
+        $request = (new SetLoggingServiceRequest())->setLoggingService($loggingService);
         try {
             $gapicClient->setLoggingService($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1787,12 +1844,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $projectId = 'projectId-1969970175';
@@ -1849,9 +1909,7 @@ class ClusterManagerClientTest extends GeneratedTest
         // Mock request
         $action = Action::UNKNOWN;
         $update = new MasterAuth();
-        $request = (new SetMasterAuthRequest())
-            ->setAction($action)
-            ->setUpdate($update);
+        $request = (new SetMasterAuthRequest())->setAction($action)->setUpdate($update);
         $response = $gapicClient->setMasterAuth($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1877,19 +1935,20 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $action = Action::UNKNOWN;
         $update = new MasterAuth();
-        $request = (new SetMasterAuthRequest())
-            ->setAction($action)
-            ->setUpdate($update);
+        $request = (new SetMasterAuthRequest())->setAction($action)->setUpdate($update);
         try {
             $gapicClient->setMasterAuth($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -1934,8 +1993,7 @@ class ClusterManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $monitoringService = 'monitoringService1469270462';
-        $request = (new SetMonitoringServiceRequest())
-            ->setMonitoringService($monitoringService);
+        $request = (new SetMonitoringServiceRequest())->setMonitoringService($monitoringService);
         $response = $gapicClient->setMonitoringService($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -1959,17 +2017,19 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $monitoringService = 'monitoringService1469270462';
-        $request = (new SetMonitoringServiceRequest())
-            ->setMonitoringService($monitoringService);
+        $request = (new SetMonitoringServiceRequest())->setMonitoringService($monitoringService);
         try {
             $gapicClient->setMonitoringService($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2014,8 +2074,7 @@ class ClusterManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $networkPolicy = new NetworkPolicy();
-        $request = (new SetNetworkPolicyRequest())
-            ->setNetworkPolicy($networkPolicy);
+        $request = (new SetNetworkPolicyRequest())->setNetworkPolicy($networkPolicy);
         $response = $gapicClient->setNetworkPolicy($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -2039,17 +2098,19 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $networkPolicy = new NetworkPolicy();
-        $request = (new SetNetworkPolicyRequest())
-            ->setNetworkPolicy($networkPolicy);
+        $request = (new SetNetworkPolicyRequest())->setNetworkPolicy($networkPolicy);
         try {
             $gapicClient->setNetworkPolicy($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2094,8 +2155,7 @@ class ClusterManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $autoscaling = new NodePoolAutoscaling();
-        $request = (new SetNodePoolAutoscalingRequest())
-            ->setAutoscaling($autoscaling);
+        $request = (new SetNodePoolAutoscalingRequest())->setAutoscaling($autoscaling);
         $response = $gapicClient->setNodePoolAutoscaling($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -2119,17 +2179,19 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $autoscaling = new NodePoolAutoscaling();
-        $request = (new SetNodePoolAutoscalingRequest())
-            ->setAutoscaling($autoscaling);
+        $request = (new SetNodePoolAutoscalingRequest())->setAutoscaling($autoscaling);
         try {
             $gapicClient->setNodePoolAutoscaling($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2174,8 +2236,7 @@ class ClusterManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $management = new NodeManagement();
-        $request = (new SetNodePoolManagementRequest())
-            ->setManagement($management);
+        $request = (new SetNodePoolManagementRequest())->setManagement($management);
         $response = $gapicClient->setNodePoolManagement($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -2199,17 +2260,19 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $management = new NodeManagement();
-        $request = (new SetNodePoolManagementRequest())
-            ->setManagement($management);
+        $request = (new SetNodePoolManagementRequest())->setManagement($management);
         try {
             $gapicClient->setNodePoolManagement($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2254,8 +2317,7 @@ class ClusterManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $nodeCount = 1539922066;
-        $request = (new SetNodePoolSizeRequest())
-            ->setNodeCount($nodeCount);
+        $request = (new SetNodePoolSizeRequest())->setNodeCount($nodeCount);
         $response = $gapicClient->setNodePoolSize($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -2279,17 +2341,19 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $nodeCount = 1539922066;
-        $request = (new SetNodePoolSizeRequest())
-            ->setNodeCount($nodeCount);
+        $request = (new SetNodePoolSizeRequest())->setNodeCount($nodeCount);
         try {
             $gapicClient->setNodePoolSize($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2354,12 +2418,15 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         $request = new StartIPRotationRequest();
         try {
@@ -2406,8 +2473,7 @@ class ClusterManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $update = new ClusterUpdate();
-        $request = (new UpdateClusterRequest())
-            ->setUpdate($update);
+        $request = (new UpdateClusterRequest())->setUpdate($update);
         $response = $gapicClient->updateCluster($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -2431,17 +2497,19 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $update = new ClusterUpdate();
-        $request = (new UpdateClusterRequest())
-            ->setUpdate($update);
+        $request = (new UpdateClusterRequest())->setUpdate($update);
         try {
             $gapicClient->updateCluster($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2486,8 +2554,7 @@ class ClusterManagerClientTest extends GeneratedTest
         $transport->addResponse($expectedResponse);
         // Mock request
         $masterVersion = 'masterVersion-2139460613';
-        $request = (new UpdateMasterRequest())
-            ->setMasterVersion($masterVersion);
+        $request = (new UpdateMasterRequest())->setMasterVersion($masterVersion);
         $response = $gapicClient->updateMaster($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -2511,17 +2578,19 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $masterVersion = 'masterVersion-2139460613';
-        $request = (new UpdateMasterRequest())
-            ->setMasterVersion($masterVersion);
+        $request = (new UpdateMasterRequest())->setMasterVersion($masterVersion);
         try {
             $gapicClient->updateMaster($request);
             // If the $gapicClient method call did not throw, fail the test
@@ -2567,9 +2636,7 @@ class ClusterManagerClientTest extends GeneratedTest
         // Mock request
         $nodeVersion = 'nodeVersion1790136219';
         $imageType = 'imageType-1442758754';
-        $request = (new UpdateNodePoolRequest())
-            ->setNodeVersion($nodeVersion)
-            ->setImageType($imageType);
+        $request = (new UpdateNodePoolRequest())->setNodeVersion($nodeVersion)->setImageType($imageType);
         $response = $gapicClient->updateNodePool($request);
         $this->assertEquals($expectedResponse, $response);
         $actualRequests = $transport->popReceivedCalls();
@@ -2595,19 +2662,20 @@ class ClusterManagerClientTest extends GeneratedTest
         $status = new stdClass();
         $status->code = Code::DATA_LOSS;
         $status->details = 'internal error';
-        $expectedExceptionMessage  = json_encode([
-            'message' => 'internal error',
-            'code' => Code::DATA_LOSS,
-            'status' => 'DATA_LOSS',
-            'details' => [],
-        ], JSON_PRETTY_PRINT);
+        $expectedExceptionMessage = json_encode(
+            [
+                'message' => 'internal error',
+                'code' => Code::DATA_LOSS,
+                'status' => 'DATA_LOSS',
+                'details' => [],
+            ],
+            JSON_PRETTY_PRINT
+        );
         $transport->addResponse(null, $status);
         // Mock request
         $nodeVersion = 'nodeVersion1790136219';
         $imageType = 'imageType-1442758754';
-        $request = (new UpdateNodePoolRequest())
-            ->setNodeVersion($nodeVersion)
-            ->setImageType($imageType);
+        $request = (new UpdateNodePoolRequest())->setNodeVersion($nodeVersion)->setImageType($imageType);
         try {
             $gapicClient->updateNodePool($request);
             // If the $gapicClient method call did not throw, fail the test

@@ -20,13 +20,29 @@ class CreateDisplayVideo360AdvertiserLinkProposalRequest extends \Google\Protobu
      *
      * Generated from protobuf field <code>string parent = 1 [(.google.api.field_behavior) = REQUIRED, (.google.api.resource_reference) = {</code>
      */
-    private $parent = '';
+    protected $parent = '';
     /**
      * Required. The DisplayVideo360AdvertiserLinkProposal to create.
      *
      * Generated from protobuf field <code>.google.analytics.admin.v1alpha.DisplayVideo360AdvertiserLinkProposal display_video_360_advertiser_link_proposal = 2 [(.google.api.field_behavior) = REQUIRED];</code>
      */
-    private $display_video_360_advertiser_link_proposal = null;
+    protected $display_video_360_advertiser_link_proposal = null;
+
+    /**
+     * @param string                                                                $parent                                Required. Example format: properties/1234
+     *                                                                                                                     Please see {@see AnalyticsAdminServiceClient::propertyName()} for help formatting this field.
+     * @param \Google\Analytics\Admin\V1alpha\DisplayVideo360AdvertiserLinkProposal $displayVideo360AdvertiserLinkProposal Required. The DisplayVideo360AdvertiserLinkProposal to create.
+     *
+     * @return \Google\Analytics\Admin\V1alpha\CreateDisplayVideo360AdvertiserLinkProposalRequest
+     *
+     * @experimental
+     */
+    public static function build(string $parent, \Google\Analytics\Admin\V1alpha\DisplayVideo360AdvertiserLinkProposal $displayVideo360AdvertiserLinkProposal): self
+    {
+        return (new self())
+            ->setParent($parent)
+            ->setDisplayVideo360AdvertiserLinkProposal($displayVideo360AdvertiserLinkProposal);
+    }
 
     /**
      * Constructor.

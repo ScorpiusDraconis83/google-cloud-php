@@ -26,7 +26,7 @@ class Source extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string name = 1;</code>
      */
-    private $name = '';
+    protected $name = '';
     /**
      * The source's display name.
      * A source's display name must be unique amongst its siblings, for example,
@@ -36,7 +36,7 @@ class Source extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string display_name = 2;</code>
      */
-    private $display_name = '';
+    protected $display_name = '';
     /**
      * The description of the source (max of 1024 characters).
      * Example:
@@ -48,18 +48,18 @@ class Source extends \Google\Protobuf\Internal\Message
      *
      * Generated from protobuf field <code>string description = 3;</code>
      */
-    private $description = '';
+    protected $description = '';
     /**
-     * The canonical name of the finding. It's either
+     * The canonical name of the finding source. It's either
      * "organizations/{organization_id}/sources/{source_id}",
-     * "folders/{folder_id}/sources/{source_id}" or
+     * "folders/{folder_id}/sources/{source_id}", or
      * "projects/{project_number}/sources/{source_id}",
      * depending on the closest CRM ancestor of the resource associated with the
      * finding.
      *
      * Generated from protobuf field <code>string canonical_name = 14;</code>
      */
-    private $canonical_name = '';
+    protected $canonical_name = '';
 
     /**
      * Constructor.
@@ -87,9 +87,9 @@ class Source extends \Google\Protobuf\Internal\Message
      *           (XSS), Flash injection, mixed content (HTTP in HTTPS), and
      *           outdated or insecure libraries."
      *     @type string $canonical_name
-     *           The canonical name of the finding. It's either
+     *           The canonical name of the finding source. It's either
      *           "organizations/{organization_id}/sources/{source_id}",
-     *           "folders/{folder_id}/sources/{source_id}" or
+     *           "folders/{folder_id}/sources/{source_id}", or
      *           "projects/{project_number}/sources/{source_id}",
      *           depending on the closest CRM ancestor of the resource associated with the
      *           finding.
@@ -205,9 +205,9 @@ class Source extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The canonical name of the finding. It's either
+     * The canonical name of the finding source. It's either
      * "organizations/{organization_id}/sources/{source_id}",
-     * "folders/{folder_id}/sources/{source_id}" or
+     * "folders/{folder_id}/sources/{source_id}", or
      * "projects/{project_number}/sources/{source_id}",
      * depending on the closest CRM ancestor of the resource associated with the
      * finding.
@@ -221,9 +221,9 @@ class Source extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * The canonical name of the finding. It's either
+     * The canonical name of the finding source. It's either
      * "organizations/{organization_id}/sources/{source_id}",
-     * "folders/{folder_id}/sources/{source_id}" or
+     * "folders/{folder_id}/sources/{source_id}", or
      * "projects/{project_number}/sources/{source_id}",
      * depending on the closest CRM ancestor of the resource associated with the
      * finding.

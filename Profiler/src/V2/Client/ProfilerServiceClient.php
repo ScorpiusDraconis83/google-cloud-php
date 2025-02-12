@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,14 +37,14 @@ use Google\Cloud\Profiler\V2\CreateProfileRequest;
 use Google\Cloud\Profiler\V2\Profile;
 use Google\Cloud\Profiler\V2\UpdateProfileRequest;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Manage the collection of continuous profiling data provided by profiling
  * agents running in the cloud or by an offline provider of profiling data.
  *
- * General guidelines:
- * * Profiles for a single deployment must be created in ascending time order.
- * * Profiles can be created in either online or offline mode, see below.
+ * __The APIs listed in this service are intended for use within our profiler
+ * agents only.__
  *
  * This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods.
@@ -54,9 +54,9 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createOfflineProfileAsync(CreateOfflineProfileRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createProfileAsync(CreateProfileRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateProfileAsync(UpdateProfileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Profile> createOfflineProfileAsync(CreateOfflineProfileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Profile> createProfileAsync(CreateProfileRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Profile> updateProfileAsync(UpdateProfileRequest $request, array $optionalArgs = [])
  */
 final class ProfilerServiceClient
 {
@@ -153,14 +153,14 @@ final class ProfilerServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -182,6 +182,12 @@ final class ProfilerServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -215,6 +221,9 @@ final class ProfilerServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -237,11 +246,18 @@ final class ProfilerServiceClient
     }
 
     /**
-     * CreateOfflineProfile creates a new profile resource in the offline mode.
-     * The client provides the profile to create along with the profile bytes, the
-     * server records it.
+     * CreateOfflineProfile creates a new profile resource in the offline
+     * mode. The client provides the profile to create along with the profile
+     * bytes, the server records it.
+     *
+     * _Direct use of this API is discouraged, please use a [supported
+     * profiler
+     * agent](https://cloud.google.com/profiler/docs/about-profiler#profiling_agent)
+     * instead for profile collection._
      *
      * The async variant is {@see ProfilerServiceClient::createOfflineProfileAsync()} .
+     *
+     * @example samples/V2/ProfilerServiceClient/create_offline_profile.php
      *
      * @param CreateOfflineProfileRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
@@ -265,6 +281,11 @@ final class ProfilerServiceClient
     /**
      * CreateProfile creates a new profile resource in the online mode.
      *
+     * _Direct use of this API is discouraged, please use a [supported
+     * profiler
+     * agent](https://cloud.google.com/profiler/docs/about-profiler#profiling_agent)
+     * instead for profile collection._
+     *
      * The server ensures that the new profiles are created at a constant rate per
      * deployment, so the creation request may hang for some time until the next
      * profile session is available.
@@ -279,6 +300,8 @@ final class ProfilerServiceClient
      *
      *
      * The async variant is {@see ProfilerServiceClient::createProfileAsync()} .
+     *
+     * @example samples/V2/ProfilerServiceClient/create_profile.php
      *
      * @param CreateProfileRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -305,7 +328,14 @@ final class ProfilerServiceClient
      * offline mode is currently not supported: the profile content must be
      * provided at the time of the profile creation.
      *
+     * _Direct use of this API is discouraged, please use a [supported
+     * profiler
+     * agent](https://cloud.google.com/profiler/docs/about-profiler#profiling_agent)
+     * instead for profile collection._
+     *
      * The async variant is {@see ProfilerServiceClient::updateProfileAsync()} .
+     *
+     * @example samples/V2/ProfilerServiceClient/update_profile.php
      *
      * @param UpdateProfileRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {

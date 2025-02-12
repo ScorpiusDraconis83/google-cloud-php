@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\Workflows\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -44,8 +43,10 @@ use Google\Cloud\Workflows\V1\GetWorkflowRequest;
 use Google\Cloud\Workflows\V1\ListWorkflowsRequest;
 use Google\Cloud\Workflows\V1\UpdateWorkflowRequest;
 use Google\Cloud\Workflows\V1\Workflow;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Workflows is used to deploy and execute workflow programs.
@@ -60,13 +61,13 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createWorkflowAsync(CreateWorkflowRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteWorkflowAsync(DeleteWorkflowRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getWorkflowAsync(GetWorkflowRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listWorkflowsAsync(ListWorkflowsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateWorkflowAsync(UpdateWorkflowRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createWorkflowAsync(CreateWorkflowRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteWorkflowAsync(DeleteWorkflowRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Workflow> getWorkflowAsync(GetWorkflowRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listWorkflowsAsync(ListWorkflowsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> updateWorkflowAsync(UpdateWorkflowRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Location> getLocationAsync(GetLocationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listLocationsAsync(ListLocationsRequest $request, array $optionalArgs = [])
  */
 final class WorkflowsClient
 {
@@ -148,6 +149,25 @@ final class WorkflowsClient
     }
 
     /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
+    }
+
+    /**
      * Formats a string containing the fully-qualified path to represent a crypto_key
      * resource.
      *
@@ -218,14 +238,14 @@ final class WorkflowsClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -247,6 +267,12 @@ final class WorkflowsClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -280,6 +306,9 @@ final class WorkflowsClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException

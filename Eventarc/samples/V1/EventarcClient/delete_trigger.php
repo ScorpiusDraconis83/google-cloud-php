@@ -25,7 +25,8 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 // [START eventarc_v1_generated_Eventarc_DeleteTrigger_sync]
 use Google\ApiCore\ApiException;
 use Google\ApiCore\OperationResponse;
-use Google\Cloud\Eventarc\V1\EventarcClient;
+use Google\Cloud\Eventarc\V1\Client\EventarcClient;
+use Google\Cloud\Eventarc\V1\DeleteTriggerRequest;
 use Google\Cloud\Eventarc\V1\Trigger;
 use Google\Rpc\Status;
 
@@ -34,18 +35,20 @@ use Google\Rpc\Status;
  *
  * @param string $formattedName The name of the trigger to be deleted. Please see
  *                              {@see EventarcClient::triggerName()} for help formatting this field.
- * @param bool   $validateOnly  If set, validate the request and preview the review, but do not
- *                              post it.
  */
-function delete_trigger_sample(string $formattedName, bool $validateOnly): void
+function delete_trigger_sample(string $formattedName): void
 {
     // Create a client.
     $eventarcClient = new EventarcClient();
 
+    // Prepare the request message.
+    $request = (new DeleteTriggerRequest())
+        ->setName($formattedName);
+
     // Call the API and handle any network failures.
     try {
         /** @var OperationResponse $response */
-        $response = $eventarcClient->deleteTrigger($formattedName, $validateOnly);
+        $response = $eventarcClient->deleteTrigger($request);
         $response->pollUntilComplete();
 
         if ($response->operationSucceeded()) {
@@ -74,8 +77,7 @@ function delete_trigger_sample(string $formattedName, bool $validateOnly): void
 function callSample(): void
 {
     $formattedName = EventarcClient::triggerName('[PROJECT]', '[LOCATION]', '[TRIGGER]');
-    $validateOnly = false;
 
-    delete_trigger_sample($formattedName, $validateOnly);
+    delete_trigger_sample($formattedName);
 }
 // [END eventarc_v1_generated_Eventarc_DeleteTrigger_sync]

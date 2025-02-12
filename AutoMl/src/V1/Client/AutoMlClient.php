@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ namespace Google\Cloud\AutoMl\V1\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
-use Google\ApiCore\LongRunning\OperationsClient;
 use Google\ApiCore\OperationResponse;
 use Google\ApiCore\PagedListResponse;
 use Google\ApiCore\ResourceHelperTrait;
@@ -57,8 +56,10 @@ use Google\Cloud\AutoMl\V1\ModelEvaluation;
 use Google\Cloud\AutoMl\V1\UndeployModelRequest;
 use Google\Cloud\AutoMl\V1\UpdateDatasetRequest;
 use Google\Cloud\AutoMl\V1\UpdateModelRequest;
+use Google\LongRunning\Client\OperationsClient;
 use Google\LongRunning\Operation;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: AutoML Server API.
@@ -84,24 +85,24 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createDatasetAsync(CreateDatasetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface createModelAsync(CreateModelRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteDatasetAsync(DeleteDatasetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteModelAsync(DeleteModelRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deployModelAsync(DeployModelRequest $request, array $optionalArgs = [])
- * @method PromiseInterface exportDataAsync(ExportDataRequest $request, array $optionalArgs = [])
- * @method PromiseInterface exportModelAsync(ExportModelRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getAnnotationSpecAsync(GetAnnotationSpecRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getDatasetAsync(GetDatasetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getModelAsync(GetModelRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getModelEvaluationAsync(GetModelEvaluationRequest $request, array $optionalArgs = [])
- * @method PromiseInterface importDataAsync(ImportDataRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listDatasetsAsync(ListDatasetsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listModelEvaluationsAsync(ListModelEvaluationsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listModelsAsync(ListModelsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface undeployModelAsync(UndeployModelRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateDatasetAsync(UpdateDatasetRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateModelAsync(UpdateModelRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createDatasetAsync(CreateDatasetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> createModelAsync(CreateModelRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteDatasetAsync(DeleteDatasetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deleteModelAsync(DeleteModelRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> deployModelAsync(DeployModelRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> exportDataAsync(ExportDataRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> exportModelAsync(ExportModelRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<AnnotationSpec> getAnnotationSpecAsync(GetAnnotationSpecRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Dataset> getDatasetAsync(GetDatasetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Model> getModelAsync(GetModelRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ModelEvaluation> getModelEvaluationAsync(GetModelEvaluationRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> importDataAsync(ImportDataRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listDatasetsAsync(ListDatasetsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listModelEvaluationsAsync(ListModelEvaluationsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listModelsAsync(ListModelsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<OperationResponse> undeployModelAsync(UndeployModelRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Dataset> updateDatasetAsync(UpdateDatasetRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<Model> updateModelAsync(UpdateModelRequest $request, array $optionalArgs = [])
  */
 final class AutoMlClient
 {
@@ -128,9 +129,7 @@ final class AutoMlClient
     private const CODEGEN_NAME = 'gapic';
 
     /** The default scopes required by the service. */
-    public static $serviceScopes = [
-        'https://www.googleapis.com/auth/cloud-platform',
-    ];
+    public static $serviceScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
     private $operationsClient;
 
@@ -176,10 +175,31 @@ final class AutoMlClient
      */
     public function resumeOperation($operationName, $methodName = null)
     {
-        $options = isset($this->descriptors[$methodName]['longRunning']) ? $this->descriptors[$methodName]['longRunning'] : [];
+        $options = isset($this->descriptors[$methodName]['longRunning'])
+            ? $this->descriptors[$methodName]['longRunning']
+            : [];
         $operation = new OperationResponse($operationName, $this->getOperationsClient(), $options);
         $operation->reload();
         return $operation;
+    }
+
+    /**
+     * Create the default operation client for the service.
+     *
+     * @param array $options ClientOptions for the client.
+     *
+     * @return OperationsClient
+     */
+    private function createOperationsClient(array $options)
+    {
+        // Unset client-specific configuration options
+        unset($options['serviceName'], $options['clientConfig'], $options['descriptorsConfigPath']);
+
+        if (isset($options['operationsClient'])) {
+            return $options['operationsClient'];
+        }
+
+        return new OperationsClient($options);
     }
 
     /**
@@ -193,8 +213,12 @@ final class AutoMlClient
      *
      * @return string The formatted annotation_spec resource.
      */
-    public static function annotationSpecName(string $project, string $location, string $dataset, string $annotationSpec): string
-    {
+    public static function annotationSpecName(
+        string $project,
+        string $location,
+        string $dataset,
+        string $annotationSpec
+    ): string {
         return self::getPathTemplate('annotationSpec')->render([
             'project' => $project,
             'location' => $location,
@@ -269,8 +293,12 @@ final class AutoMlClient
      *
      * @return string The formatted model_evaluation resource.
      */
-    public static function modelEvaluationName(string $project, string $location, string $model, string $modelEvaluation): string
-    {
+    public static function modelEvaluationName(
+        string $project,
+        string $location,
+        string $model,
+        string $modelEvaluation
+    ): string {
         return self::getPathTemplate('modelEvaluation')->render([
             'project' => $project,
             'location' => $location,
@@ -295,14 +323,14 @@ final class AutoMlClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -324,6 +352,12 @@ final class AutoMlClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -357,6 +391,9 @@ final class AutoMlClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -383,6 +420,8 @@ final class AutoMlClient
      * Creates a dataset.
      *
      * The async variant is {@see AutoMlClient::createDatasetAsync()} .
+     *
+     * @example samples/V1/AutoMlClient/create_dataset.php
      *
      * @param CreateDatasetRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
@@ -412,6 +451,8 @@ final class AutoMlClient
      *
      * The async variant is {@see AutoMlClient::createModelAsync()} .
      *
+     * @example samples/V1/AutoMlClient/create_model.php
+     *
      * @param CreateModelRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -440,6 +481,8 @@ final class AutoMlClient
      *
      * The async variant is {@see AutoMlClient::deleteDatasetAsync()} .
      *
+     * @example samples/V1/AutoMlClient/delete_dataset.php
+     *
      * @param DeleteDatasetRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -467,6 +510,8 @@ final class AutoMlClient
      * [metadata][google.longrunning.Operation.metadata] field.
      *
      * The async variant is {@see AutoMlClient::deleteModelAsync()} .
+     *
+     * @example samples/V1/AutoMlClient/delete_model.php
      *
      * @param DeleteModelRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -502,6 +547,8 @@ final class AutoMlClient
      *
      * The async variant is {@see AutoMlClient::deployModelAsync()} .
      *
+     * @example samples/V1/AutoMlClient/deploy_model.php
+     *
      * @param DeployModelRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -527,6 +574,8 @@ final class AutoMlClient
      * [response][google.longrunning.Operation.response] field when it completes.
      *
      * The async variant is {@see AutoMlClient::exportDataAsync()} .
+     *
+     * @example samples/V1/AutoMlClient/export_data.php
      *
      * @param ExportDataRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -558,6 +607,8 @@ final class AutoMlClient
      *
      * The async variant is {@see AutoMlClient::exportModelAsync()} .
      *
+     * @example samples/V1/AutoMlClient/export_model.php
+     *
      * @param ExportModelRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
      *     Optional.
@@ -581,6 +632,8 @@ final class AutoMlClient
      * Gets an annotation spec.
      *
      * The async variant is {@see AutoMlClient::getAnnotationSpecAsync()} .
+     *
+     * @example samples/V1/AutoMlClient/get_annotation_spec.php
      *
      * @param GetAnnotationSpecRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -606,6 +659,8 @@ final class AutoMlClient
      *
      * The async variant is {@see AutoMlClient::getDatasetAsync()} .
      *
+     * @example samples/V1/AutoMlClient/get_dataset.php
+     *
      * @param GetDatasetRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -630,6 +685,8 @@ final class AutoMlClient
      *
      * The async variant is {@see AutoMlClient::getModelAsync()} .
      *
+     * @example samples/V1/AutoMlClient/get_model.php
+     *
      * @param GetModelRequest $request     A request to house fields associated with the call.
      * @param array           $callOptions {
      *     Optional.
@@ -653,6 +710,8 @@ final class AutoMlClient
      * Gets a model evaluation.
      *
      * The async variant is {@see AutoMlClient::getModelEvaluationAsync()} .
+     *
+     * @example samples/V1/AutoMlClient/get_model_evaluation.php
      *
      * @param GetModelEvaluationRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
@@ -686,6 +745,8 @@ final class AutoMlClient
      *
      * The async variant is {@see AutoMlClient::importDataAsync()} .
      *
+     * @example samples/V1/AutoMlClient/import_data.php
+     *
      * @param ImportDataRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -709,6 +770,8 @@ final class AutoMlClient
      * Lists datasets in a project.
      *
      * The async variant is {@see AutoMlClient::listDatasetsAsync()} .
+     *
+     * @example samples/V1/AutoMlClient/list_datasets.php
      *
      * @param ListDatasetsRequest $request     A request to house fields associated with the call.
      * @param array               $callOptions {
@@ -734,6 +797,8 @@ final class AutoMlClient
      *
      * The async variant is {@see AutoMlClient::listModelEvaluationsAsync()} .
      *
+     * @example samples/V1/AutoMlClient/list_model_evaluations.php
+     *
      * @param ListModelEvaluationsRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -748,8 +813,10 @@ final class AutoMlClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listModelEvaluations(ListModelEvaluationsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listModelEvaluations(
+        ListModelEvaluationsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListModelEvaluations', $request, $callOptions);
     }
 
@@ -757,6 +824,8 @@ final class AutoMlClient
      * Lists models.
      *
      * The async variant is {@see AutoMlClient::listModelsAsync()} .
+     *
+     * @example samples/V1/AutoMlClient/list_models.php
      *
      * @param ListModelsRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
@@ -788,6 +857,8 @@ final class AutoMlClient
      *
      * The async variant is {@see AutoMlClient::undeployModelAsync()} .
      *
+     * @example samples/V1/AutoMlClient/undeploy_model.php
+     *
      * @param UndeployModelRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -812,6 +883,8 @@ final class AutoMlClient
      *
      * The async variant is {@see AutoMlClient::updateDatasetAsync()} .
      *
+     * @example samples/V1/AutoMlClient/update_dataset.php
+     *
      * @param UpdateDatasetRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -835,6 +908,8 @@ final class AutoMlClient
      * Updates a model.
      *
      * The async variant is {@see AutoMlClient::updateModelAsync()} .
+     *
+     * @example samples/V1/AutoMlClient/update_model.php
      *
      * @param UpdateModelRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {

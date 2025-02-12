@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ use Google\Cloud\Monitoring\V3\ListUptimeCheckIpsRequest;
 use Google\Cloud\Monitoring\V3\UpdateUptimeCheckConfigRequest;
 use Google\Cloud\Monitoring\V3\UptimeCheckConfig;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: The UptimeCheckService API is used to manage (list, create, delete, edit)
@@ -60,12 +61,12 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface createUptimeCheckConfigAsync(CreateUptimeCheckConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface deleteUptimeCheckConfigAsync(DeleteUptimeCheckConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface getUptimeCheckConfigAsync(GetUptimeCheckConfigRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listUptimeCheckConfigsAsync(ListUptimeCheckConfigsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface listUptimeCheckIpsAsync(ListUptimeCheckIpsRequest $request, array $optionalArgs = [])
- * @method PromiseInterface updateUptimeCheckConfigAsync(UpdateUptimeCheckConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<UptimeCheckConfig> createUptimeCheckConfigAsync(CreateUptimeCheckConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<void> deleteUptimeCheckConfigAsync(DeleteUptimeCheckConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<UptimeCheckConfig> getUptimeCheckConfigAsync(GetUptimeCheckConfigRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listUptimeCheckConfigsAsync(ListUptimeCheckConfigsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PagedListResponse> listUptimeCheckIpsAsync(ListUptimeCheckIpsRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<UptimeCheckConfig> updateUptimeCheckConfigAsync(UpdateUptimeCheckConfigRequest $request, array $optionalArgs = [])
  */
 final class UptimeCheckServiceClient
 {
@@ -135,6 +136,25 @@ final class UptimeCheckServiceClient
     }
 
     /**
+     * Formats a string containing the fully-qualified path to represent a function
+     * resource.
+     *
+     * @param string $project
+     * @param string $location
+     * @param string $function
+     *
+     * @return string The formatted function resource.
+     */
+    public static function functionName(string $project, string $location, string $function): string
+    {
+        return self::getPathTemplate('function')->render([
+            'project' => $project,
+            'location' => $location,
+            'function' => $function,
+        ]);
+    }
+
+    /**
      * Formats a string containing the fully-qualified path to represent a
      * organization_uptime_check_config resource.
      *
@@ -190,6 +210,7 @@ final class UptimeCheckServiceClient
      * The following name formats are supported:
      * Template: Pattern
      * - folderUptimeCheckConfig: folders/{folder}/uptimeCheckConfigs/{uptime_check_config}
+     * - function: projects/{project}/locations/{location}/functions/{function}
      * - organizationUptimeCheckConfig: organizations/{organization}/uptimeCheckConfigs/{uptime_check_config}
      * - projectUptimeCheckConfig: projects/{project}/uptimeCheckConfigs/{uptime_check_config}
      * - uptimeCheckConfig: projects/{project}/uptimeCheckConfigs/{uptime_check_config}
@@ -200,14 +221,14 @@ final class UptimeCheckServiceClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
@@ -229,6 +250,12 @@ final class UptimeCheckServiceClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -262,6 +289,9 @@ final class UptimeCheckServiceClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
@@ -289,6 +319,8 @@ final class UptimeCheckServiceClient
      * The async variant is
      * {@see UptimeCheckServiceClient::createUptimeCheckConfigAsync()} .
      *
+     * @example samples/V3/UptimeCheckServiceClient/create_uptime_check_config.php
+     *
      * @param CreateUptimeCheckConfigRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
      *     Optional.
@@ -303,8 +335,10 @@ final class UptimeCheckServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function createUptimeCheckConfig(CreateUptimeCheckConfigRequest $request, array $callOptions = []): UptimeCheckConfig
-    {
+    public function createUptimeCheckConfig(
+        CreateUptimeCheckConfigRequest $request,
+        array $callOptions = []
+    ): UptimeCheckConfig {
         return $this->startApiCall('CreateUptimeCheckConfig', $request, $callOptions)->wait();
     }
 
@@ -315,6 +349,8 @@ final class UptimeCheckServiceClient
      *
      * The async variant is
      * {@see UptimeCheckServiceClient::deleteUptimeCheckConfigAsync()} .
+     *
+     * @example samples/V3/UptimeCheckServiceClient/delete_uptime_check_config.php
      *
      * @param DeleteUptimeCheckConfigRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
@@ -339,6 +375,8 @@ final class UptimeCheckServiceClient
      * The async variant is
      * {@see UptimeCheckServiceClient::getUptimeCheckConfigAsync()} .
      *
+     * @example samples/V3/UptimeCheckServiceClient/get_uptime_check_config.php
+     *
      * @param GetUptimeCheckConfigRequest $request     A request to house fields associated with the call.
      * @param array                       $callOptions {
      *     Optional.
@@ -353,8 +391,10 @@ final class UptimeCheckServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function getUptimeCheckConfig(GetUptimeCheckConfigRequest $request, array $callOptions = []): UptimeCheckConfig
-    {
+    public function getUptimeCheckConfig(
+        GetUptimeCheckConfigRequest $request,
+        array $callOptions = []
+    ): UptimeCheckConfig {
         return $this->startApiCall('GetUptimeCheckConfig', $request, $callOptions)->wait();
     }
 
@@ -364,6 +404,8 @@ final class UptimeCheckServiceClient
      *
      * The async variant is
      * {@see UptimeCheckServiceClient::listUptimeCheckConfigsAsync()} .
+     *
+     * @example samples/V3/UptimeCheckServiceClient/list_uptime_check_configs.php
      *
      * @param ListUptimeCheckConfigsRequest $request     A request to house fields associated with the call.
      * @param array                         $callOptions {
@@ -379,16 +421,20 @@ final class UptimeCheckServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function listUptimeCheckConfigs(ListUptimeCheckConfigsRequest $request, array $callOptions = []): PagedListResponse
-    {
+    public function listUptimeCheckConfigs(
+        ListUptimeCheckConfigsRequest $request,
+        array $callOptions = []
+    ): PagedListResponse {
         return $this->startApiCall('ListUptimeCheckConfigs', $request, $callOptions);
     }
 
     /**
-     * Returns the list of IP addresses that checkers run from
+     * Returns the list of IP addresses that checkers run from.
      *
      * The async variant is {@see UptimeCheckServiceClient::listUptimeCheckIpsAsync()}
      * .
+     *
+     * @example samples/V3/UptimeCheckServiceClient/list_uptime_check_ips.php
      *
      * @param ListUptimeCheckIpsRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
@@ -418,6 +464,8 @@ final class UptimeCheckServiceClient
      * The async variant is
      * {@see UptimeCheckServiceClient::updateUptimeCheckConfigAsync()} .
      *
+     * @example samples/V3/UptimeCheckServiceClient/update_uptime_check_config.php
+     *
      * @param UpdateUptimeCheckConfigRequest $request     A request to house fields associated with the call.
      * @param array                          $callOptions {
      *     Optional.
@@ -432,8 +480,10 @@ final class UptimeCheckServiceClient
      *
      * @throws ApiException Thrown if the API call fails.
      */
-    public function updateUptimeCheckConfig(UpdateUptimeCheckConfigRequest $request, array $callOptions = []): UptimeCheckConfig
-    {
+    public function updateUptimeCheckConfig(
+        UpdateUptimeCheckConfigRequest $request,
+        array $callOptions = []
+    ): UptimeCheckConfig {
         return $this->startApiCall('UpdateUptimeCheckConfig', $request, $callOptions)->wait();
     }
 }

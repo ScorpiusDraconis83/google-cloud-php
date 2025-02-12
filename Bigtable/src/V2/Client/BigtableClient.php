@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ namespace Google\Cloud\Bigtable\V2\Client;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\CredentialsWrapper;
 use Google\ApiCore\GapicClientTrait;
+use Google\ApiCore\InsecureCredentialsWrapper;
 use Google\ApiCore\ResourceHelperTrait;
 use Google\ApiCore\RetrySettings;
 use Google\ApiCore\ServerStream;
@@ -35,6 +36,7 @@ use Google\ApiCore\ValidationException;
 use Google\Auth\FetchAuthTokenInterface;
 use Google\Cloud\Bigtable\V2\CheckAndMutateRowRequest;
 use Google\Cloud\Bigtable\V2\CheckAndMutateRowResponse;
+use Google\Cloud\Bigtable\V2\ExecuteQueryRequest;
 use Google\Cloud\Bigtable\V2\GenerateInitialChangeStreamPartitionsRequest;
 use Google\Cloud\Bigtable\V2\MutateRowRequest;
 use Google\Cloud\Bigtable\V2\MutateRowResponse;
@@ -48,7 +50,9 @@ use Google\Cloud\Bigtable\V2\ReadModifyWriteRowRequest;
 use Google\Cloud\Bigtable\V2\ReadModifyWriteRowResponse;
 use Google\Cloud\Bigtable\V2\ReadRowsRequest;
 use Google\Cloud\Bigtable\V2\SampleRowKeysRequest;
+use Grpc\ChannelCredentials;
 use GuzzleHttp\Promise\PromiseInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service Description: Service for reading from and writing to existing Bigtable tables.
@@ -61,10 +65,10 @@ use GuzzleHttp\Promise\PromiseInterface;
  * name, and additionally a parseName method to extract the individual identifiers
  * contained within formatted names that are returned by the API.
  *
- * @method PromiseInterface checkAndMutateRowAsync(CheckAndMutateRowRequest $request, array $optionalArgs = [])
- * @method PromiseInterface mutateRowAsync(MutateRowRequest $request, array $optionalArgs = [])
- * @method PromiseInterface pingAndWarmAsync(PingAndWarmRequest $request, array $optionalArgs = [])
- * @method PromiseInterface readModifyWriteRowAsync(ReadModifyWriteRowRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<CheckAndMutateRowResponse> checkAndMutateRowAsync(CheckAndMutateRowRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<MutateRowResponse> mutateRowAsync(MutateRowRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<PingAndWarmResponse> pingAndWarmAsync(PingAndWarmRequest $request, array $optionalArgs = [])
+ * @method PromiseInterface<ReadModifyWriteRowResponse> readModifyWriteRowAsync(ReadModifyWriteRowRequest $request, array $optionalArgs = [])
  */
 final class BigtableClient
 {
@@ -120,6 +124,27 @@ final class BigtableClient
     }
 
     /**
+     * Formats a string containing the fully-qualified path to represent a
+     * authorized_view resource.
+     *
+     * @param string $project
+     * @param string $instance
+     * @param string $table
+     * @param string $authorizedView
+     *
+     * @return string The formatted authorized_view resource.
+     */
+    public static function authorizedViewName(string $project, string $instance, string $table, string $authorizedView): string
+    {
+        return self::getPathTemplate('authorizedView')->render([
+            'project' => $project,
+            'instance' => $instance,
+            'table' => $table,
+            'authorized_view' => $authorizedView,
+        ]);
+    }
+
+    /**
      * Formats a string containing the fully-qualified path to represent a instance
      * resource.
      *
@@ -159,6 +184,7 @@ final class BigtableClient
      * Parses a formatted name string and returns an associative array of the components in the name.
      * The following name formats are supported:
      * Template: Pattern
+     * - authorizedView: projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}
      * - instance: projects/{project}/instances/{instance}
      * - table: projects/{project}/instances/{instance}/tables/{table}
      *
@@ -168,20 +194,24 @@ final class BigtableClient
      * listed, then parseName will check each of the supported templates, and return
      * the first match.
      *
-     * @param string $formattedName The formatted name string
-     * @param string $template      Optional name of template to match
+     * @param string  $formattedName The formatted name string
+     * @param ?string $template      Optional name of template to match
      *
      * @return array An associative array from name component IDs to component values.
      *
      * @throws ValidationException If $formattedName could not be matched.
      */
-    public static function parseName(string $formattedName, string $template = null): array
+    public static function parseName(string $formattedName, ?string $template = null): array
     {
         return self::parseFormattedName($formattedName, $template);
     }
 
     /**
      * Constructor.
+     *
+     * Setting the "BIGTABLE_EMULATOR_HOST" environment variable will automatically set
+     * the API Endpoint to the value specified in the variable, as well as ensure that
+     * empty credentials are used in the transport layer.
      *
      * @param array $options {
      *     Optional. Options for configuring the service API wrapper.
@@ -197,6 +227,12 @@ final class BigtableClient
      *           {@see \Google\Auth\FetchAuthTokenInterface} object or
      *           {@see \Google\ApiCore\CredentialsWrapper} object. Note that when one of these
      *           objects are provided, any settings in $credentialsConfig will be ignored.
+     *           *Important*: If you accept a credential configuration (credential
+     *           JSON/File/Stream) from an external source for authentication to Google Cloud
+     *           Platform, you must validate it before providing it to any Google API or library.
+     *           Providing an unvalidated credential configuration to Google APIs can compromise
+     *           the security of your systems and data. For more information {@see
+     *           https://cloud.google.com/docs/authentication/external/externally-sourced-credentials}
      *     @type array $credentialsConfig
      *           Options used to configure credentials, including auth token caching, for the
      *           client. For a full list of supporting configuration options, see
@@ -230,12 +266,16 @@ final class BigtableClient
      *     @type callable $clientCertSource
      *           A callable which returns the client cert as a string. This can be used to
      *           provide a certificate and private key to the transport layer for mTLS.
+     *     @type false|LoggerInterface $logger
+     *           A PSR-3 compliant logger. If set to false, logging is disabled, ignoring the
+     *           'GOOGLE_SDK_PHP_LOGGING' environment flag
      * }
      *
      * @throws ValidationException
      */
     public function __construct(array $options = [])
     {
+        $options = $this->setDefaultEmulatorConfig($options);
         $clientOptions = $this->buildClientOptions($options);
         $this->setClientOptions($clientOptions);
     }
@@ -255,6 +295,8 @@ final class BigtableClient
      * Mutates a row atomically based on the output of a predicate Reader filter.
      *
      * The async variant is {@see BigtableClient::checkAndMutateRowAsync()} .
+     *
+     * @example samples/V2/BigtableClient/check_and_mutate_row.php
      *
      * @param CheckAndMutateRowRequest $request     A request to house fields associated with the call.
      * @param array                    $callOptions {
@@ -276,10 +318,34 @@ final class BigtableClient
     }
 
     /**
+     * Executes a BTQL query against a particular Cloud Bigtable instance.
+     *
+     * @example samples/V2/BigtableClient/execute_query.php
+     *
+     * @param ExecuteQueryRequest $request     A request to house fields associated with the call.
+     * @param array               $callOptions {
+     *     Optional.
+     *
+     *     @type int $timeoutMillis
+     *           Timeout to use for this call.
+     * }
+     *
+     * @return ServerStream
+     *
+     * @throws ApiException Thrown if the API call fails.
+     */
+    public function executeQuery(ExecuteQueryRequest $request, array $callOptions = []): ServerStream
+    {
+        return $this->startApiCall('ExecuteQuery', $request, $callOptions);
+    }
+
+    /**
      * NOTE: This API is intended to be used by Apache Beam BigtableIO.
      * Returns the current list of partitions that make up the table's
      * change stream. The union of partitions will cover the entire keyspace.
      * Partitions can be read with `ReadChangeStream`.
+     *
+     * @example samples/V2/BigtableClient/generate_initial_change_stream_partitions.php
      *
      * @param GenerateInitialChangeStreamPartitionsRequest $request     A request to house fields associated with the call.
      * @param array                                        $callOptions {
@@ -303,6 +369,8 @@ final class BigtableClient
      * unchanged unless explicitly changed by `mutation`.
      *
      * The async variant is {@see BigtableClient::mutateRowAsync()} .
+     *
+     * @example samples/V2/BigtableClient/mutate_row.php
      *
      * @param MutateRowRequest $request     A request to house fields associated with the call.
      * @param array            $callOptions {
@@ -328,6 +396,8 @@ final class BigtableClient
      * atomically as in MutateRow, but the entire batch is not executed
      * atomically.
      *
+     * @example samples/V2/BigtableClient/mutate_rows.php
+     *
      * @param MutateRowsRequest $request     A request to house fields associated with the call.
      * @param array             $callOptions {
      *     Optional.
@@ -350,6 +420,8 @@ final class BigtableClient
      * This call is not required but may be useful for connection keep-alive.
      *
      * The async variant is {@see BigtableClient::pingAndWarmAsync()} .
+     *
+     * @example samples/V2/BigtableClient/ping_and_warm.php
      *
      * @param PingAndWarmRequest $request     A request to house fields associated with the call.
      * @param array              $callOptions {
@@ -375,6 +447,8 @@ final class BigtableClient
      * Reads changes from a table's change stream. Changes will
      * reflect both user-initiated mutations and mutations that are caused by
      * garbage collection.
+     *
+     * @example samples/V2/BigtableClient/read_change_stream.php
      *
      * @param ReadChangeStreamRequest $request     A request to house fields associated with the call.
      * @param array                   $callOptions {
@@ -402,6 +476,8 @@ final class BigtableClient
      *
      * The async variant is {@see BigtableClient::readModifyWriteRowAsync()} .
      *
+     * @example samples/V2/BigtableClient/read_modify_write_row.php
+     *
      * @param ReadModifyWriteRowRequest $request     A request to house fields associated with the call.
      * @param array                     $callOptions {
      *     Optional.
@@ -428,6 +504,8 @@ final class BigtableClient
      * atomicity of each row will still be preserved. See the
      * ReadRowsResponse documentation for details.
      *
+     * @example samples/V2/BigtableClient/read_rows.php
+     *
      * @param ReadRowsRequest $request     A request to house fields associated with the call.
      * @param array           $callOptions {
      *     Optional.
@@ -451,6 +529,8 @@ final class BigtableClient
      * which can be used to break up the data for distributed tasks like
      * mapreduces.
      *
+     * @example samples/V2/BigtableClient/sample_row_keys.php
+     *
      * @param SampleRowKeysRequest $request     A request to house fields associated with the call.
      * @param array                $callOptions {
      *     Optional.
@@ -466,5 +546,27 @@ final class BigtableClient
     public function sampleRowKeys(SampleRowKeysRequest $request, array $callOptions = []): ServerStream
     {
         return $this->startApiCall('SampleRowKeys', $request, $callOptions);
+    }
+
+    /** Configure the gapic configuration to use a service emulator. */
+    private function setDefaultEmulatorConfig(array $options): array
+    {
+        $emulatorHost = getenv('BIGTABLE_EMULATOR_HOST');
+        if (empty($emulatorHost)) {
+            return $options;
+        }
+
+        if ($scheme = parse_url($emulatorHost, PHP_URL_SCHEME)) {
+            $search = $scheme . '://';
+            $emulatorHost = str_replace($search, '', $emulatorHost);
+        }
+
+        $options['apiEndpoint'] ??= $emulatorHost;
+        if (class_exists(ChannelCredentials::class)) {
+            $options['transportConfig']['grpc']['stubOpts']['credentials'] ??= ChannelCredentials::createInsecure();
+        }
+
+        $options['credentials'] ??= new InsecureCredentialsWrapper();
+        return $options;
     }
 }

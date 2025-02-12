@@ -24,9 +24,10 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 // [START securitycenter_v1_generated_SecurityCenter_SetFindingState_sync]
 use Google\ApiCore\ApiException;
+use Google\Cloud\SecurityCenter\V1\Client\SecurityCenterClient;
 use Google\Cloud\SecurityCenter\V1\Finding;
 use Google\Cloud\SecurityCenter\V1\Finding\State;
-use Google\Cloud\SecurityCenter\V1\SecurityCenterClient;
+use Google\Cloud\SecurityCenter\V1\SetFindingStateRequest;
 use Google\Protobuf\Timestamp;
 
 /**
@@ -35,9 +36,9 @@ use Google\Protobuf\Timestamp;
  * @param string $formattedName The [relative resource
  *                              name](https://cloud.google.com/apis/design/resource_names#relative_resource_name)
  *                              of the finding. Example:
- *                              "organizations/{organization_id}/sources/{source_id}/findings/{finding_id}",
- *                              "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
- *                              "projects/{project_id}/sources/{source_id}/findings/{finding_id}". Please see
+ *                              `organizations/{organization_id}/sources/{source_id}/findings/{finding_id}`,
+ *                              `folders/{folder_id}/sources/{source_id}/findings/{finding_id}`,
+ *                              `projects/{project_id}/sources/{source_id}/findings/{finding_id}`. Please see
  *                              {@see SecurityCenterClient::findingName()} for help formatting this field.
  * @param int    $state         The desired State of the finding.
  */
@@ -46,13 +47,17 @@ function set_finding_state_sample(string $formattedName, int $state): void
     // Create a client.
     $securityCenterClient = new SecurityCenterClient();
 
-    // Prepare any non-scalar elements to be passed along with the request.
+    // Prepare the request message.
     $startTime = new Timestamp();
+    $request = (new SetFindingStateRequest())
+        ->setName($formattedName)
+        ->setState($state)
+        ->setStartTime($startTime);
 
     // Call the API and handle any network failures.
     try {
         /** @var Finding $response */
-        $response = $securityCenterClient->setFindingState($formattedName, $state, $startTime);
+        $response = $securityCenterClient->setFindingState($request);
         printf('Response data: %s' . PHP_EOL, $response->serializeToJsonString());
     } catch (ApiException $ex) {
         printf('Call failed with message: %s' . PHP_EOL, $ex->getMessage());

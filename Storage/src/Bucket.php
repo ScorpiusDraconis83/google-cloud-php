@@ -30,7 +30,6 @@ use Google\Cloud\Core\Upload\StreamableUploader;
 use Google\Cloud\PubSub\Topic;
 use Google\Cloud\Storage\Connection\ConnectionInterface;
 use Google\Cloud\Storage\Connection\IamBucket;
-use Google\Cloud\Storage\SigningHelper;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\MimeType;
 use GuzzleHttp\Psr7\Utils;
@@ -246,10 +245,8 @@ class Bucket
      *           are `true`, `false`, `md5` and `crc32`. If true, either md5 or
      *           crc32c will be chosen based on your platform. If false, no
      *           validation hash will be sent. Choose either `md5` or `crc32` to
-     *           force a hash method regardless of performance implications. In
-     *           PHP versions earlier than 7.4, performance will be very
-     *           adversely impacted by using crc32c unless you install the
-     *           `crc32c` PHP extension. **Defaults to** `true`.
+     *           force a hash method regardless of performance implications.
+     *           **Defaults to** `true`.
      *     @type int $chunkSize If provided the upload will be done in chunks.
      *           The size must be in multiples of 262144 bytes. With chunking
      *           you have increased reliability at the risk of higher overhead.
@@ -365,10 +362,8 @@ class Bucket
      *           are `true`, `false`, `md5` and `crc32`. If true, either md5 or
      *           crc32c will be chosen based on your platform. If false, no
      *           validation hash will be sent. Choose either `md5` or `crc32` to
-     *           force a hash method regardless of performance implications. In
-     *           PHP versions earlier than 7.4, performance will be very
-     *           adversely impacted by using crc32c unless you install the
-     *           `crc32c` PHP extension. **Defaults to** `true`.ß
+     *           force a hash method regardless of performance implications.
+     *           **Defaults to** `true`.
      *     @type string $predefinedAcl Predefined ACL to apply to the object.
      *           Acceptable values include, `"authenticatedRead"`,
      *           `"bucketOwnerFullControl"`, `"bucketOwnerRead"`, `"private"`,
@@ -596,6 +591,9 @@ class Bucket
      *           from the `encryptionKey` on your behalf if not provided, but
      *           for best performance it is recommended to pass in a cached
      *           version of the already calculated SHA.
+     *     @type boolean $softDeleted If true, returns the metadata of the
+     *           soft-deleted object. If true, generation must also be specified,
+     *           and alt=media cannot be specified.
      * }
      * @return StorageObject
      */
@@ -615,6 +613,50 @@ class Bucket
             ]),
             $encryptionKey,
             $encryptionKeySHA256
+        );
+    }
+
+    /**
+     * Restores an object.
+     *
+     * Example:
+     * ```
+     * $object = $bucket->restore('file.txt');
+     * ```
+     *
+     * @param string $name The name of the object to restore.
+     * @param string $generation Request a specific generation of the object.
+     * @param array $options [optional] {
+     *     Configuration Options.
+     *
+     *     @type string $restoreToken Must be specified when getting a soft-deleted object from
+     *           an HNS-enabled bucket that has a name and generation conflict with another object in the same bucket.
+     *     @type string $ifGenerationMatch Makes the operation conditional on whether
+     *           the object's current generation matches the given value.
+     *     @type string $ifGenerationNotMatch Makes the operation conditional on whether
+     *           the object's current generation matches the given value.
+     *     @type string $ifMetagenerationMatch If set, only restores
+     *           if its metageneration matches this value.
+     *     @type string $ifMetagenerationNotMatch If set, only restores
+     *           if its metageneration does not match this value.
+     * }
+     * @return StorageObject
+     */
+    public function restore($name, $generation, array $options = [])
+    {
+        $res = $this->connection->restoreObject([
+            'bucket' => $this->identity['bucket'],
+            'generation' => $generation,
+            'object' => $name,
+        ] + $options);
+        return new StorageObject(
+            $this->connection,
+            $name,
+            $this->identity['bucket'],
+            $res['generation'], // restored object will have a new generation
+            $res + array_filter([
+                'requesterProjectId' => $this->identity['userProject']
+            ])
         );
     }
 
@@ -645,6 +687,9 @@ class Bucket
      *           from the prefix, contain delimiter will have their name,
      *           truncated after the delimiter, returned in prefixes. Duplicate
      *           prefixes are omitted.
+     *     @type bool $includeFoldersAsPrefixes If true, will also include folders
+     *           and managed folders (besides objects) in the returned prefixes.
+     *           Only applicable if delimiter is set to '/'.
      *     @type int $maxResults Maximum number of results to return per
      *           request. **Defaults to** `1000`.
      *     @type int $resultLimit Limit the number of results returned in total.
@@ -1132,6 +1177,9 @@ class Bucket
      * @param array $options [optional] {
      *     Configuration options.
      *
+     *     @type string $generation If present, selects a specific soft-deleted
+     *           version of this bucket instead of the live version.
+     *           This parameter is required if softDeleted is set to true.
      *     @type string $ifMetagenerationMatch Makes the return of the bucket
      *           metadata conditional on whether the bucket's current
      *           metageneration matches the given value.
@@ -1140,6 +1188,8 @@ class Bucket
      *           metageneration does not match the given value.
      *     @type string $projection Determines which properties to return. May
      *           be either `"full"` or `"noAcl"`.
+     *     @type bool $softDeleted If true, returns the soft-deleted bucket.
+     *           This parameter is required if generation is specified.
      * }
      * @return array
      */
@@ -1163,6 +1213,9 @@ class Bucket
      * @param array $options [optional] {
      *     Configuration options.
      *
+     *     @type string $generation If present, selects a specific soft-deleted
+     *           version of this bucket instead of the live version.
+     *           This parameter is required if softDeleted is set to true.
      *     @type string $ifMetagenerationMatch Makes the return of the bucket
      *           metadata conditional on whether the bucket's current
      *           metageneration matches the given value.
@@ -1171,6 +1224,8 @@ class Bucket
      *           metageneration does not match the given value.
      *     @type string $projection Determines which properties to return. May
      *           be either `"full"` or `"noAcl"`.
+     *     @type bool $softDeleted If true, returns the soft-deleted bucket.
+     *           This parameter is required if generation is specified.
      * }
      * @return array
      */

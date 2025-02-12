@@ -7,7 +7,7 @@ namespace Google\Cloud\NetApp\V1;
 use UnexpectedValueException;
 
 /**
- * The service levels - Storage Pool, Volumes
+ * The service level of a storage pool and its volumes.
  *
  * Protobuf type <code>google.cloud.netapp.v1.ServiceLevel</code>
  */
@@ -32,17 +32,24 @@ class ServiceLevel
      */
     const EXTREME = 2;
     /**
-     * Standard (Software offering)
+     * Standard service level.
      *
      * Generated from protobuf enum <code>STANDARD = 3;</code>
      */
     const STANDARD = 3;
+    /**
+     * Flex service level.
+     *
+     * Generated from protobuf enum <code>FLEX = 4;</code>
+     */
+    const FLEX = 4;
 
     private static $valueToName = [
         self::SERVICE_LEVEL_UNSPECIFIED => 'SERVICE_LEVEL_UNSPECIFIED',
         self::PREMIUM => 'PREMIUM',
         self::EXTREME => 'EXTREME',
         self::STANDARD => 'STANDARD',
+        self::FLEX => 'FLEX',
     ];
 
     public static function name($value)
